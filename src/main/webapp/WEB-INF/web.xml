@@ -7,13 +7,13 @@
   version="2.4">
   <display-name>shorindocs</display-name>
   <description>shorindocs - Document Management Platform</description>
-
+<!-- 
   <listener>
     <description>Used to cleanup when a session is destroyed</description>
     <display-name>ZK Session Cleaner</display-name>
     <listener-class>org.zkoss.zk.ui.http.HttpSessionListener</listener-class>
   </listener>
-
+-->
   <filter>
     <filter-name>authenticateFilter</filter-name>
     <filter-class>com.shorindo.docs.AuthenticateFilter</filter-class>
@@ -42,6 +42,7 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+<!-- 
   <servlet>
     <description>The servlet loads the DSP pages.</description>
     <servlet-name>dspLoader</servlet-name>
@@ -84,16 +85,15 @@
     <servlet-name>auEngine</servlet-name>
     <url-pattern>/zkau/*</url-pattern>
   </servlet-mapping>
+-->
 
   <servlet>
     <servlet-name>Dispatcher</servlet-name>
     <servlet-class>com.shorindo.docs.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
-<!-- 
   <servlet-mapping>
     <servlet-name>Dispatcher</servlet-name>
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
--->
 </web-app>

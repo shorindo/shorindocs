@@ -15,31 +15,67 @@
  */
 package com.shorindo.docs;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * 
  */
 public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(DispatcherServlet.class);
+    private static final Properties siteProperties = new Properties();
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        String path = config.getServletContext().getRealPath("/WEB-INF/site.properties");
+        InputStream is = null;
+        try {
+            is = new FileInputStream(path);
+            siteProperties.load(is);
+            PropertyConfigurator.configure(siteProperties);
+            DatabaseManager.init(siteProperties);
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
+    }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         String path = req.getPathInfo();
-        System.out.println("path=" + path);
-        if (path.endsWith
-                (".jsp")) {
+        if (path.endsWith(".jsp")) {
             RequestDispatcher dispatcher = req.getServletContext().getNamedDispatcher("jsp");
             dispatcher.forward(req, res);
         } else {
-            req.getRequestDispatcher("/view.jsp").forward(req, res);
+            System.out.println("path=" + path);
+            String id = path.substring(1);
+            try {
+                ContentModel model = DatabaseManager.selectOne(ContentModel.class, "SELECT * FROM CONTENT WHERE CONTENT_ID=?", id);
+                ContentHandler handler = ContentHandler.getHandler(model);
+                req.setAttribute("content", handler.view(new Properties()));
+                req.getRequestDispatcher("/view.jsp").forward(req, res);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
