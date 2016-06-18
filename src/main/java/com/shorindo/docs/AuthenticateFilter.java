@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorodo.docs;
+package com.shorindo.docs;
 
 import java.io.IOException;
 
@@ -27,13 +27,14 @@ import javax.servlet.ServletResponse;
 /**
  * 
  */
-public class EncodingFilter implements Filter {
+public class AuthenticateFilter implements Filter {
 
     public void destroy() {
     }
 
     public void doFilter(ServletRequest req, ServletResponse res,
             FilterChain chain) throws IOException, ServletException {
+        chain.doFilter(req, res);
     }
 
     public void init(FilterConfig config) throws ServletException {

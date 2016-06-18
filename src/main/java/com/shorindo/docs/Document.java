@@ -13,30 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorodo.docs;
+package com.shorindo.docs;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import java.util.Properties;
 
 /**
  * 
  */
-public class AuthenticateFilter implements Filter {
-
-    public void destroy() {
-    }
-
-    public void doFilter(ServletRequest req, ServletResponse res,
-            FilterChain chain) throws IOException, ServletException {
-    }
-
-    public void init(FilterConfig config) throws ServletException {
-    }
-
+public abstract class Document {
+    public abstract void load(String text);
+    public abstract String view(Properties props);
+    public abstract String edit(Properties props);
+    public abstract String[] getActions();
 }

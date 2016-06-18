@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorodo.docs;
+package com.shorindo.docs;
 
 import java.io.IOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,15 @@ public class DispatcherServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
+        String path = req.getPathInfo();
+        System.out.println("path=" + path);
+        if (path.endsWith
+                (".jsp")) {
+            RequestDispatcher dispatcher = req.getServletContext().getNamedDispatcher("jsp");
+            dispatcher.forward(req, res);
+        } else {
+            req.getRequestDispatcher("/view.jsp").forward(req, res);
+        }
     }
 
 }
