@@ -15,7 +15,10 @@
  */
 package com.shorindo.docs;
 
+import java.beans.PropertyDescriptor;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -23,8 +26,11 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSourceFactory;
+import org.apache.commons.dbutils.BasicRowProcessor;
+import org.apache.commons.dbutils.BeanProcessor;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.RowProcessor;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 
@@ -52,14 +58,16 @@ public abstract class DatabaseManager {
     }
 
     public static <T>T selectOne(Class<T> clazz, String sql, Object... params) throws SQLException {
+        RowProcessor rp = new BasicRowProcessor(new UnderscoreProcessor());
         QueryRunner runner = new QueryRunner(dataSource);
-        ResultSetHandler<T> rsh = new BeanHandler<T>(clazz);
+        ResultSetHandler<T> rsh = new BeanHandler<T>(clazz, rp);
         return runner.query(sql, rsh, params);
     }
 
     public static <T> List<T> select(Class<T> clazz, String sql, Object... params) throws SQLException {
+        RowProcessor rp = new BasicRowProcessor(new UnderscoreProcessor());
         QueryRunner runner = new QueryRunner(dataSource);
-        BeanListHandler<T> rsh = new BeanListHandler<T>(clazz);
+        BeanListHandler<T> rsh = new BeanListHandler<T>(clazz, rp);
         return (List<T>)runner.query(sql, rsh, params);
     }
 
@@ -173,4 +181,26 @@ public abstract class DatabaseManager {
 //        }
 //    }
 
+    public static class UnderscoreProcessor extends BeanProcessor {
+        @Override
+        protected int[] mapColumnsToProperties(ResultSetMetaData rsmd,
+                PropertyDescriptor[] props) throws SQLException {
+            int cols = rsmd.getColumnCount();
+            int columnToProperty[] = new int[cols + 1];
+            Arrays.fill(columnToProperty, PROPERTY_NOT_FOUND);
+            for (int col = 1; col <= cols; col++) {
+                String columnName = rsmd.getColumnName(col);
+                for (int i = 0; i < props.length; i++) {
+                    if (equalsColumnProperty(columnName, props[i].getName())) {
+                        columnToProperty[col] = i;
+                        break;
+                    }
+                }
+            }
+            return columnToProperty;
+        }
+        private boolean equalsColumnProperty(String colName, String propName) {
+            return colName.replaceAll("_", "").equalsIgnoreCase(propName);
+        }
+    }
 }

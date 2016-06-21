@@ -92,8 +92,10 @@
     <servlet-class>com.shorindo.docs.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
+
   <servlet-mapping>
     <servlet-name>Dispatcher</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/</url-pattern>
   </servlet-mapping>
+
 </web-app>

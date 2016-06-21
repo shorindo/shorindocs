@@ -17,6 +17,9 @@ package com.shorindo.docs.plaintext;
 
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
+import com.shorindo.docs.Action;
 import com.shorindo.docs.ContentHandler;
 import com.shorindo.docs.ContentModel;
 
@@ -24,16 +27,10 @@ import com.shorindo.docs.ContentModel;
  * 
  */
 public class PlainTextHandler extends ContentHandler {
-    private static final String[] actions = new String[] { "view" };
-    private ContentModel model;
+    private static final Logger LOG = Logger.getLogger(PlainTextHandler.class);
 
     public PlainTextHandler(ContentModel model) {
-        this.model = model;
-    }
-
-    @Override
-    public String[] getActions() {
-        return actions;
+        super(model);
     }
 
     @Override
@@ -41,9 +38,26 @@ public class PlainTextHandler extends ContentHandler {
         return "text/plain";
     }
 
-    @Override
+    @Override @Action
     public String view(Properties params) {
-        return model.getBody();
+        LOG.trace("view()");
+        setAttribute("body", getModel().getBody()
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "&quot;")
+                .replaceAll("\n", "<br>\n"));
+        return "/jsp/view.jsp";
     }
 
+    @Action
+    public String edit(Properties params) {
+        LOG.trace("edit()");
+        setAttribute("body", getModel().getBody()
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "&quot;"));
+        return "/jsp/edit.jsp";
+    }
 }

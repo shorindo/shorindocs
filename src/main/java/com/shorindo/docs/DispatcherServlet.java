@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.servlet.RequestDispatcher;
@@ -27,6 +28,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.arnx.jsonic.JSON;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -61,21 +64,34 @@ public class DispatcherServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        String path = req.getPathInfo();
-        if (path.endsWith(".jsp")) {
-            RequestDispatcher dispatcher = req.getServletContext().getNamedDispatcher("jsp");
+        String id = req.getServletPath().substring(1);
+        String ext = req.getServletPath().replaceAll("^(.*?)(\\.([^\\.]+))?$", "$3");
+        if (ext != null && !"".equals(ext)) {
+            RequestDispatcher dispatcher = req.getSession().getServletContext().getNamedDispatcher("default");
             dispatcher.forward(req, res);
-        } else {
-            System.out.println("path=" + path);
-            String id = path.substring(1);
-            try {
-                ContentModel model = DatabaseManager.selectOne(ContentModel.class, "SELECT * FROM CONTENT WHERE CONTENT_ID=?", id);
-                ContentHandler handler = ContentHandler.getHandler(model);
-                req.setAttribute("content", handler.view(new Properties()));
-                req.getRequestDispatcher("/view.jsp").forward(req, res);
-            } catch (SQLException e) {
-                e.printStackTrace();
+            return;
+        }
+        String action = req.getParameter("action");
+        if (action == null || "".equals(action)) {
+            action = "view";
+        }
+        try {
+            ContentHandler handler = ContentHandler.getHandler(id);
+            if (handler == null) {
+                res.setStatus(500);
+                return;
             }
+            req.setAttribute("title", handler.getModel().getTitle());
+            req.setAttribute("search", handler.search());
+            req.setAttribute("content", handler.action(action, new Properties()));
+            for (Entry<String,Object> entry : handler.getAttributes().entrySet()) {
+                req.setAttribute(entry.getKey(), entry.getValue());
+            }
+            req.getRequestDispatcher("/jsp/layout.jsp").forward(req, res);
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
         }
     }
 
