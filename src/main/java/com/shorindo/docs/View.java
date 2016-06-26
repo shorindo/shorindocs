@@ -15,15 +15,14 @@
  */
 package com.shorindo.docs;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.annotation.ElementType;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * 
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Action {
+public interface View {
+    public void setProperty(String key, Object value);
+    public String getContentType();
+    public InputStream getContent() throws IOException;
 }

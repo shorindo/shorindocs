@@ -16,6 +16,8 @@
 package com.shorindo.docs;
 
 import java.beans.PropertyDescriptor;
+import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -54,6 +56,16 @@ public abstract class DatabaseManager {
             dataSource = BasicDataSourceFactory.createDataSource(params);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
+        }
+    }
+    
+    public static void shutdown() {
+        for (Enumeration<Driver> e = DriverManager.getDrivers(); e.hasMoreElements();) {
+            try {
+                DriverManager.deregisterDriver(e.nextElement());
+            } catch (SQLException ex) {
+                LOG.error(ex.getMessage(), ex);
+            }
         }
     }
 

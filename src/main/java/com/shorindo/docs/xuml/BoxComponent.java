@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
-
-import java.util.Properties;
+package com.shorindo.docs.xuml;
 
 /**
  * 
  */
-public abstract class Document {
-    public abstract void load(String text);
-    public abstract String view(Properties props);
-    public abstract String edit(Properties props);
-    public abstract String[] getActions();
+@Tag("box")
+public class BoxComponent extends Component {
+
+    @Override
+    public String getHtml() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div class=\"box\">");
+        for (Component c : getChildList()) {
+            sb.append(c.getHtml());
+        }
+        sb.append("</div>");
+        return sb.toString();
+    }
+
 }

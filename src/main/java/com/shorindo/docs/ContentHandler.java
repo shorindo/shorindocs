@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.shorindo.docs.plaintext.PlainTextHandler;
+import com.shorindo.docs.text.TextHandler;
 
 /**
  * 
@@ -33,30 +33,24 @@ public abstract class ContentHandler {
     private static final Logger LOG = Logger.getLogger(ContentHandler.class);
     private Map<String,Object> attributes = new HashMap<String,Object>();
     private ContentModel model;
-    public abstract String getContentType();
-    public abstract String view(Properties params);
 
-    public static ContentHandler getHandler(ContentModel model) {
-        if ("text/plain".equals(model.getContentType())) {
-            return new PlainTextHandler(model);
-        } else {
-            return null;
-        }
-    }
+    public abstract View view(Properties params);
 
-    public static ContentHandler getHandler(String id) throws IOException {
+    public static ContentHandler getHandler(String id) throws ContentException {
         try {
             ContentModel model = DatabaseManager.selectOne(
                     ContentModel.class,
                     "SELECT * FROM CONTENT WHERE CONTENT_ID=? AND STATUS=0",
                     id);
-            if ("text/plain".equals(model.getContentType())) {
-                return new PlainTextHandler(model);
+            if (model == null) {
+                throw new ContentException("model not found:" + id);
+            } else if ("text/plain".equals(model.getContentType())) {
+                return new TextHandler(model);
             } else {
-                return null;
+                throw new ContentException("handler not found:" + model.getContentType());
             }
         } catch (SQLException e) {
-            throw new IOException(e.getMessage());
+            throw new ContentException(e.getMessage(), e);
         }
     }
 
@@ -83,14 +77,15 @@ public abstract class ContentHandler {
         return attributes;
     }
 
-    public String action(String name, Properties params) {
+    public View action(String name, Properties params) {
         try {
             Method method = getClass().getMethod(name, Properties.class);
-            if (method.getAnnotation(Action.class) != null &&
-                    method.getReturnType().isAssignableFrom(String.class)) {
-                return (String)method.invoke(this, params);
+            if (method.getAnnotation(Actionable.class) != null &&
+                    method.getReturnType().isAssignableFrom(View.class)) {
+                return (View)method.invoke(this, params);
             } else {
                 LOG.warn("no suitable method '" + name + "' exists");
+                return view(params);
             }
         } catch (SecurityException e) {
             LOG.error(e.getMessage(), e);
@@ -103,21 +98,30 @@ public abstract class ContentHandler {
         } catch (InvocationTargetException e) {
             LOG.error(e.getMessage(), e);
         }
-        return "";
-    }
-
-    public ContentModel save(ContentModel model) throws IOException {
         return null;
     }
 
-    @Action
-    public List<ContentModel> search() throws SQLException {
+    public View save(ContentModel model) throws IOException {
+        return null;
+    }
+
+    @Actionable
+    public View create(Properties params) {
+        return null;
+    }
+
+    @Actionable
+    public List<ContentModel> search() throws ContentException {
         LOG.trace("search()");
-        return DatabaseManager.select(
-                ContentModel.class,
-                "SELECT CONTENT_ID, CONTENT_TYPE, TITLE, UPDATE_DATE " +
-                "FROM   CONTENT " +
-                "ORDER BY UPDATE_DATE DESC " +
-                "LIMIT 10");
+        try {
+            return DatabaseManager.select(
+                    ContentModel.class,
+                    "SELECT CONTENT_ID, CONTENT_TYPE, TITLE, UPDATE_DATE " +
+                    "FROM   CONTENT " +
+                    "ORDER BY UPDATE_DATE DESC " +
+                    "LIMIT 10");
+        } catch (SQLException e) {
+            throw new ContentException(e.getMessage(), e);
+        }
     }
 }

@@ -13,51 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.plaintext;
+package com.shorindo.docs.text;
 
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import com.shorindo.docs.Action;
+import com.shorindo.docs.Actionable;
 import com.shorindo.docs.ContentHandler;
 import com.shorindo.docs.ContentModel;
+import com.shorindo.docs.View;
+import com.shorindo.docs.view.JsonView;
+import com.shorindo.docs.view.XumlView;
 
 /**
  * 
  */
-public class PlainTextHandler extends ContentHandler {
-    private static final Logger LOG = Logger.getLogger(PlainTextHandler.class);
+public class TextHandler extends ContentHandler {
+    private static final Logger LOG = Logger.getLogger(TextHandler.class);
 
-    public PlainTextHandler(ContentModel model) {
+    public TextHandler(ContentModel model) {
         super(model);
     }
 
-    @Override
-    public String getContentType() {
-        return "text/plain";
-    }
-
-    @Override @Action
-    public String view(Properties params) {
+    @Override @Actionable
+    public View view(Properties params) {
         LOG.trace("view()");
-        setAttribute("body", getModel().getBody()
+        View view = new XumlView("/path/to/xul");
+        view.setProperty("title", getModel().getTitle());
+        view.setProperty("_caller", getModel().getBody()
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;")
                 .replaceAll("\n", "<br>\n"));
-        return "/jsp/view.jsp";
+        return view;
     }
 
-    @Action
-    public String edit(Properties params) {
+    @Actionable
+    public View edit(Properties params) {
         LOG.trace("edit()");
-        setAttribute("body", getModel().getBody()
+        setAttribute("_caller", getModel().getBody()
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;"));
-        return "/jsp/edit.jsp";
+        return new JsonView(getModel());
     }
 }
