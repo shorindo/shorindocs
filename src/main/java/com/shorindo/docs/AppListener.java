@@ -26,6 +26,9 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import com.shorindo.docs.view.XumlView;
+import com.shorindo.docs.xuml.XumlEngine;
+
 /**
  * 
  */
@@ -58,6 +61,8 @@ public class AppListener implements ServletContextListener {
         }
 
         findClass(event.getServletContext().getRealPath("/WEB-INF/classes"));
+        XumlEngine.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
+        XumlView.setBasePath(event.getServletContext().getRealPath("/"));
     }
 
     private void findClass(String path) {

@@ -31,6 +31,14 @@ public abstract class Component {
         childList = new ArrayList<Component>();
     }
 
+    public XumlDocument getDocument() {
+        Component parent = this;
+        while (!(parent instanceof XumlDocument)) {
+            parent = parent.getParent();
+        }
+        return (XumlDocument)parent;
+    }
+
     public Component getParent() {
         return parent;
     }

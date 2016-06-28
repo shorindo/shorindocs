@@ -18,8 +18,9 @@ package com.shorindo.docs.xuml;
 /**
  * 
  */
-@Tag("window")
+@Componentable("window")
 public class WindowComponent extends Component {
+    private String title;
 
     @Override
     public String getHtml() {
@@ -32,4 +33,7 @@ public class WindowComponent extends Component {
         return sb.toString();
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

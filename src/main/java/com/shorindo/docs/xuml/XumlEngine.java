@@ -17,12 +17,15 @@ package com.shorindo.docs.xuml;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -30,35 +33,34 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import com.shorindo.docs.BeanUtils;
+
 /**
  * 
  */
 public class XumlEngine {
+    private static final Logger LOG = Logger.getLogger(XumlEngine.class);
     private static Map<String,Class<?>> componentMap = new HashMap<String,Class<?>>();
 
     public static void main(String[] args) {
         try {
             init("C:/Users/kazm/workspace/shorindocs/target/classes");
-//            defineComponent(WindowComponent.class);
-//            defineComponent(BoxComponent.class);
-//            defineComponent(HBoxComponent.class);
-//            defineComponent(VBoxComponent.class);
-
             String xml =
-                    "<window xmlns:html='http://www.w3.org/1999/xhtml'>" +
+                    "<window>" +
                     "  <vbox>" +
                     "    <hbox>" +
-                    "      <box><html:div>side</html:div></box>" +
-                    "      <box><text-viewer data-source=\"aaa\"/></box>" +
+                    "      <box><div>side</div></box>" +
+                    "      <box><text-viewer data-source=\"${document}\"/></box>" +
                     "    </hbox>" +
                     "  </vbox>" +
                     "</window>";
             XumlEngine engine = new XumlEngine();
-            engine.parse(new ByteArrayInputStream(xml.getBytes()));
+            XumlDocument document = engine.parse(new ByteArrayInputStream(xml.getBytes()));
+            System.out.println(document.getHtml());
         } catch (SAXException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
 
     }
@@ -68,7 +70,7 @@ public class XumlEngine {
     }
 
     private static void defineComponent(Class<?> c) {
-        Tag tag = c.getAnnotation(Tag.class);
+        Componentable tag = c.getAnnotation(Componentable.class);
         if (tag != null && tag.value() != null) {
             componentMap.put(tag.value(), c);
         }
@@ -89,19 +91,19 @@ public class XumlEngine {
                 try {
                     Class<?> c = Class.forName(className);
                     if (Component.class.isAssignableFrom(c)) {
-                        System.out.println("class:" + c.getName());
                         defineComponent(c);
+                        LOG.info("Component[" + c.getName() + "] loaded.");
                     }
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    LOG.error(e.getMessage(), e);
                 }
             }
         }
     }
 
-    public void parse(InputStream input) throws SAXException, IOException {
+    public XumlDocument parse(InputStream input) throws SAXException, IOException {
         XMLReader reader = XMLReaderFactory.createXMLReader();
-        final DocumentComponent document = new DocumentComponent();
+        final XumlDocument document = new XumlDocument();
 
         reader.setContentHandler(new DefaultHandler() {
             private Map<String,String> prefixMap = new HashMap<String,String>();
@@ -113,19 +115,20 @@ public class XumlEngine {
             }
 
             public void startElement(String uri, String localName,
-                    String qName, Attributes atts) throws SAXException {
-                System.out.println(qName);
+                    String qName, Attributes attrs) throws SAXException {
+                //System.out.println(qName);
                 Class<?> comp = componentMap.get(qName);
                 if (comp != null) {
                     try {
                         curr = curr.add((Component)comp.newInstance());
+                        setProperties(curr, attrs);
                     } catch (InstantiationException e) {
-                        e.printStackTrace();
+                        LOG.error(e.getMessage(), e);
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                        LOG.error(e.getMessage(), e);
                     }
                 } else {
-                    curr = curr.add(new HtmlComponent(localName));
+                    curr = curr.add(new GeneralComponent(localName));
                 }
             }
 
@@ -140,13 +143,21 @@ public class XumlEngine {
                 String text = new String(ch, start, length);
                 text = text.trim();
                 if (text.length() > 0) {
-                    System.out.println("#" + text);
+                    //System.out.println("#" + text);
                     curr.add(new TextComponent(text));
                 }
             }
         });
         reader.parse(new InputSource(input));
-        System.out.println(document.getHtml());
+        LOG.info(document.getHtml());
+        return document;
     }
 
+    private void setProperties(Object bean, Attributes attrs) {
+        for (int i = 0; i < attrs.getLength(); i++) {
+            String name = attrs.getQName(i);
+            String value = attrs.getValue(i);
+            BeanUtils.setProperty(bean, name, value);
+        }
+    }
 }

@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map.Entry;
@@ -25,6 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.shorindo.docs.view.XumlView;
 
 /**
  * 
@@ -38,6 +41,7 @@ public class DispatcherServlet extends HttpServlet {
             throws ServletException, IOException {
         String id = req.getServletPath().substring(1);
         String ext = req.getServletPath().replaceAll("^(.*?)(\\.([^\\.]+))?$", "$3");
+        LOG.debug("service(" + id + ")");
         if (ext != null && !"".equals(ext)) {
             RequestDispatcher dispatcher = req.getSession().getServletContext().getNamedDispatcher("default");
             dispatcher.forward(req, res);
@@ -49,17 +53,19 @@ public class DispatcherServlet extends HttpServlet {
         }
         try {
             ContentHandler handler = ContentHandler.getHandler(id);
-            View view = handler.action(action, new Properties());
-            for (Entry<String,Object> entry : handler.getAttributes().entrySet()) {
-                req.setAttribute(entry.getKey(), entry.getValue());
-            }
+            AbstractView view = handler.action(action, new Properties());
+            view.setAttribute("application", req.getSession().getServletContext());
+            view.setAttribute("request", req);
+            view.setAttribute("response", res);
+            view.setAttribute("session", req.getSession());
             res.setContentType(view.getContentType());
             byte[] b = new byte[4096];
             int len;
-            InputStream is = view.getContent();
+            InputStream is = new ByteArrayInputStream(view.getContent().getBytes("UTF-8"));
             while ((len = is.read(b)) > 0) {
                 res.getOutputStream().write(b, 0, len);
             }
+            is.close();
         } catch (ContentException e) {
             LOG.error(e.getMessage(), e);
             res.setStatus(500);

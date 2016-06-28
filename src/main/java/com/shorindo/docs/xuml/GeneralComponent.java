@@ -13,16 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
-
-import java.io.IOException;
-import java.io.InputStream;
+package com.shorindo.docs.xuml;
 
 /**
  * 
  */
-public interface View {
-    public void setProperty(String key, Object value);
-    public String getContentType();
-    public InputStream getContent() throws IOException;
+public class GeneralComponent extends Component {
+    private String tagName;
+
+    public GeneralComponent(String tagName) {
+        super();
+        this.tagName = tagName;
+    }
+
+    @Override
+    public String getHtml() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<" + tagName + ">");
+        for (Component c : getChildList()) {
+            sb.append(c.getHtml());
+        }
+        sb.append("</" + tagName + ">");
+        return sb.toString();
+    }
+
 }

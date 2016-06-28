@@ -13,28 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.xuml;
+package com.shorindo.docs;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
  */
-public class HtmlComponent extends Component {
-    private String tagName;
+public abstract class AbstractView {
+    private Map<String,Object> attrs = new HashMap<String,Object>();
 
-    public HtmlComponent(String tagName) {
-        super();
-        this.tagName = tagName;
+    public void setAttribute(String key, Object value) {
+        attrs.put(key, value);
     }
 
-    @Override
-    public String getHtml() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<" + tagName + ">");
-        for (Component c : getChildList()) {
-            sb.append(c.getHtml());
-        }
-        sb.append("</" + tagName + ">");
-        return sb.toString();
+    public Object getAttribute(String key) {
+        return attrs.get(key);
     }
 
+    public void setMessageResources() {
+        //TODO
+    }
+
+    public abstract String getContentType();
+    public abstract String getContent() throws IOException;
 }

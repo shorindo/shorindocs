@@ -16,12 +16,12 @@
 package com.shorindo.docs.text;
 
 import com.shorindo.docs.xuml.Component;
-import com.shorindo.docs.xuml.Tag;
+import com.shorindo.docs.xuml.Componentable;
 
 /**
  * 
  */
-@Tag("text-editor")
+@Componentable("text-editor")
 public class TextEditor extends Component {
 
     @Override

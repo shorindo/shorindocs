@@ -15,33 +15,59 @@
  */
 package com.shorindo.docs.view;
 
-import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.shorindo.docs.View;
+import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
+
+import com.shorindo.docs.AbstractView;
+import com.shorindo.docs.xuml.XumlDocument;
+import com.shorindo.docs.xuml.XumlEngine;
 
 /**
  * 
  */
-public class XumlView implements View {
-    Map<String,Object> beans = new HashMap<String,Object>();
+public class XumlView extends AbstractView {
+    private static String BASE_PATH = "/";
+    private static final Logger LOG = Logger.getLogger(XumlView.class);
+    private XumlDocument document;
 
-    public XumlView(String template) {
+    public static void setBasePath(String path) {
+        BASE_PATH = path;
     }
 
-    public void setProperty(String key, Object value) {
-        beans.put(key, value);
+    public XumlView(String path) {
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(new File(BASE_PATH + path));
+            document = new XumlEngine().parse(fis);
+        } catch (FileNotFoundException e) {
+            LOG.error(e.getMessage(), e);
+        } catch (SAXException e) {
+            LOG.error(e.getMessage(), e);
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        } finally {
+            if (fis != null)
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    LOG.error(e.getMessage(), e);
+                }
+        }
     }
 
     public String getContentType() {
         return "text/html; charset=UTF-8";
     }
 
-    public InputStream getContent() throws IOException {
-        return new ByteArrayInputStream(((String)beans.get("_caller")).getBytes("UTF-8"));
+    public String getContent() throws IOException {
+        return document.getHtml();
     }
 
 }

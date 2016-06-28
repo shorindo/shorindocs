@@ -18,7 +18,7 @@ package com.shorindo.docs.xuml;
 /**
  * 
  */
-@Tag("vbox")
+@Componentable("vbox")
 public class VBoxComponent extends Component {
 
     @Override

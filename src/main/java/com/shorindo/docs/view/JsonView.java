@@ -15,20 +15,16 @@
  */
 package com.shorindo.docs.view;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 import net.arnx.jsonic.JSON;
-import net.arnx.jsonic.JSONException;
 
-import com.shorindo.docs.View;
+import com.shorindo.docs.AbstractView;
 
 /**
  * 
  */
-public class JsonView implements View {
+public class JsonView extends AbstractView {
     private Object bean;
 
     public JsonView(Object bean) {
@@ -39,11 +35,8 @@ public class JsonView implements View {
         return "application/json; charset=UTF-8";
     }
 
-    public InputStream getContent() throws IOException {
-        return new ByteArrayInputStream(JSON.encode(bean).getBytes("UTF-8"));
-    }
-
-    public void setProperty(String key, Object value) {
+    public String getContent() throws IOException {
+        return JSON.encode(bean);
     }
 
 }

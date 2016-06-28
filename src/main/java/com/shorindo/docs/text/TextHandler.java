@@ -22,8 +22,7 @@ import org.apache.log4j.Logger;
 import com.shorindo.docs.Actionable;
 import com.shorindo.docs.ContentHandler;
 import com.shorindo.docs.ContentModel;
-import com.shorindo.docs.View;
-import com.shorindo.docs.view.JsonView;
+import com.shorindo.docs.AbstractView;
 import com.shorindo.docs.view.XumlView;
 
 /**
@@ -37,27 +36,28 @@ public class TextHandler extends ContentHandler {
     }
 
     @Override @Actionable
-    public View view(Properties params) {
+    public AbstractView view(Properties params) {
         LOG.trace("view()");
-        View view = new XumlView("/path/to/xul");
-        view.setProperty("title", getModel().getTitle());
-        view.setProperty("_caller", getModel().getBody()
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll("\"", "&quot;")
-                .replaceAll("\n", "<br>\n"));
+        AbstractView view = new XumlView("/WEB-INF/xuml/template.xuml");
+        view.setAttribute("document", getModel());
+//        view.setProperty("docs:abc", getModel().getBody()
+//                .replaceAll("&", "&amp;")
+//                .replaceAll("<", "&lt;")
+//                .replaceAll(">", "&gt;")
+//                .replaceAll("\"", "&quot;")
+//                .replaceAll("\n", "<br>\n"));
         return view;
     }
 
     @Actionable
-    public View edit(Properties params) {
+    public AbstractView edit(Properties params) {
         LOG.trace("edit()");
-        setAttribute("_caller", getModel().getBody()
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll("\"", "&quot;"));
-        return new JsonView(getModel());
+//        setAttribute("document", getModel());
+//        setAttribute("document", getModel().getBody()
+//                .replaceAll("&", "&amp;")
+//                .replaceAll("<", "&lt;")
+//                .replaceAll(">", "&gt;")
+//                .replaceAll("\"", "&quot;"));
+        return new XumlView("/WEB-INF/xuml/template.xuml");
     }
 }

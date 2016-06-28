@@ -15,19 +15,25 @@
  */
 package com.shorindo.docs.xuml;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 
  */
-public class DocumentComponent extends Component {
+public class XumlDocument extends Component {
+    private Map<String,Object> dsMap = new HashMap<String,Object>();
+
     @Override
     public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<!doctype html>");
         sb.append("<html>");
         sb.append("<head>");
-        sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8>");
-        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"\">");
-        sb.append("<script type=\"text/javascript\" src=\"\"></script");
+        sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
+        sb.append("<title>${document.title}</title>");
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"${application.contextPath}/css/xuml.css\">");
+        sb.append("<script type=\"text/javascript\" src=\"${application.contextPath}\"></script>");
         sb.append("</head>");
         sb.append("<body>");
         for (Component c : getChildList()) {
@@ -38,4 +44,14 @@ public class DocumentComponent extends Component {
         return sb.toString();
     }
 
+    public void setProperty(String key, String value) {
+    }
+
+    public void setData(String dataSource, Object result) {
+        dsMap.put(dataSource, result);
+    }
+
+    public String getData(String dataSource) {
+        return (String)dsMap.get(dataSource);
+    }
 }

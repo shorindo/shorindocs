@@ -18,7 +18,7 @@ package com.shorindo.docs.xuml;
 /**
  * 
  */
-@Tag("hbox")
+@Componentable("hbox")
 public class HBoxComponent extends Component {
 
     @Override

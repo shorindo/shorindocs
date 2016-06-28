@@ -34,7 +34,7 @@ public abstract class ContentHandler {
     private Map<String,Object> attributes = new HashMap<String,Object>();
     private ContentModel model;
 
-    public abstract View view(Properties params);
+    public abstract AbstractView view(Properties params);
 
     public static ContentHandler getHandler(String id) throws ContentException {
         try {
@@ -69,20 +69,20 @@ public abstract class ContentHandler {
         return model;
     }
 
-    public void setAttribute(String key, Object value) {
-        attributes.put(key, value);
-    }
-    
-    public Map<String,Object> getAttributes() {
-        return attributes;
-    }
+//    public void setAttribute(String key, Object value) {
+//        attributes.put(key, value);
+//    }
+//    
+//    public Map<String,Object> getAttributes() {
+//        return attributes;
+//    }
 
-    public View action(String name, Properties params) {
+    public AbstractView action(String name, Properties params) {
         try {
             Method method = getClass().getMethod(name, Properties.class);
             if (method.getAnnotation(Actionable.class) != null &&
-                    method.getReturnType().isAssignableFrom(View.class)) {
-                return (View)method.invoke(this, params);
+                    method.getReturnType().isAssignableFrom(AbstractView.class)) {
+                return (AbstractView)method.invoke(this, params);
             } else {
                 LOG.warn("no suitable method '" + name + "' exists");
                 return view(params);
@@ -101,12 +101,12 @@ public abstract class ContentHandler {
         return null;
     }
 
-    public View save(ContentModel model) throws IOException {
+    public AbstractView save(ContentModel model) throws IOException {
         return null;
     }
 
     @Actionable
-    public View create(Properties params) {
+    public AbstractView create(Properties params) {
         return null;
     }
 

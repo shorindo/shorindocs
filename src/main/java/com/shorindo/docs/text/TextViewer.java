@@ -15,18 +15,26 @@
  */
 package com.shorindo.docs.text;
 
+import org.apache.log4j.Logger;
+
 import com.shorindo.docs.xuml.Component;
-import com.shorindo.docs.xuml.Tag;
+import com.shorindo.docs.xuml.Componentable;
 
 /**
  * 
  */
-@Tag("text-viewer")
+@Componentable("text-viewer")
 public class TextViewer extends Component {
+    private static final Logger LOG = Logger.getLogger(TextViewer.class);
 
     @Override
     public String getHtml() {
-        return "<div class=\"text-viewer\"></div>";
+        return "<div class=\"text-viewer\">" +
+                "Hello World" +
+                "</div>";
     }
 
+    public void setDataSource(String value) {
+        LOG.trace("setDataSource(" + value + ")");
+    }
 }

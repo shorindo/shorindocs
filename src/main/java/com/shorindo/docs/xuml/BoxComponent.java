@@ -18,7 +18,7 @@ package com.shorindo.docs.xuml;
 /**
  * 
  */
-@Tag("box")
+@Componentable("box")
 public class BoxComponent extends Component {
 
     @Override

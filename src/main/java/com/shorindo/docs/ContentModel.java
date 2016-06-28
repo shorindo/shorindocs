@@ -26,6 +26,7 @@ public class ContentModel {
     private int status;
     private String title;
     private String body;
+    private String template = "/WEB-INF/xuml/template.xuml";
     private Date createDate;
     private Date updateDate;
     private String ownerId;
@@ -60,6 +61,12 @@ public class ContentModel {
     }
     public void setBody(String body) {
         this.body = body;
+    }
+    public String getTemplate() {
+        return template;
+    }
+    public void setTemplate(String template) {
+        this.template = template;
     }
     public Date getCreateDate() {
         return createDate;
