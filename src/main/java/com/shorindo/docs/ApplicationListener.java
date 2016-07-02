@@ -15,7 +15,6 @@
  */
 package com.shorindo.docs;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,14 +25,13 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.shorindo.docs.view.XumlView;
-import com.shorindo.docs.xuml.XumlEngine;
+import com.shorindo.docs.xuml.XumlView;
 
 /**
  * 
  */
-public class AppListener implements ServletContextListener {
-    private static final Logger LOG = Logger.getLogger(AppListener.class);
+public class ApplicationListener implements ServletContextListener {
+    private static final Logger LOG = Logger.getLogger(ApplicationListener.class);
 
     public void contextDestroyed(ServletContextEvent event) {
         LOG.trace("contextDestroyed()");
@@ -60,15 +58,7 @@ public class AppListener implements ServletContextListener {
             }
         }
 
-        findClass(event.getServletContext().getRealPath("/WEB-INF/classes"));
-        XumlEngine.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
-        XumlView.setBasePath(event.getServletContext().getRealPath("/"));
+        XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
     }
 
-    private void findClass(String path) {
-        ClassLoader loader = new ClassFinder();
-    }
-
-    public static class ClassFinder extends ClassLoader {
-    }
 }

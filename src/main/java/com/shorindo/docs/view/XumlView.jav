@@ -19,47 +19,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import com.shorindo.docs.AbstractView;
-import com.shorindo.docs.xuml.XumlDocument;
 import com.shorindo.docs.xuml.XumlEngine;
 
 /**
  * 
  */
 public class XumlView extends AbstractView {
-    private static String BASE_PATH = "/";
     private static final Logger LOG = Logger.getLogger(XumlView.class);
-    private XumlDocument document;
+    private InputStream is;
+    private XumlView document;
 
-    public static void setBasePath(String path) {
-        BASE_PATH = path;
-    }
-
-    public XumlView(String path) {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(new File(BASE_PATH + path));
-            document = new XumlEngine().parse(fis);
-        } catch (FileNotFoundException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (SAXException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
-        } finally {
-            if (fis != null)
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    LOG.error(e.getMessage(), e);
-                }
-        }
+    public XumlView(InputStream is) {
+        this.is = is;
     }
 
     public String getContentType() {
@@ -67,6 +44,15 @@ public class XumlView extends AbstractView {
     }
 
     public String getContent() throws IOException {
+        try {
+            document = new XumlEngine().parse(is);
+        } catch (FileNotFoundException e) {
+            throw new IOException(e.getMessage());
+        } catch (SAXException e) {
+            throw new IOException(e.getMessage());
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        }
         return document.getHtml();
     }
 

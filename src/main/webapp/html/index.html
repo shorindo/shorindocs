@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/w2ui-1.4.3.min.css">
+<style type="text/css">
+body { margin:0 }
+</style>
+<script type="text/javascript" src="../js/jquery-2.1.4.js"></script>
+<script type="text/javascript" src="../js/w2ui-1.4.3.min.js"></script>
+<script type="text/javascript">
+var main = {
+    layout: {
+        name: "main",
+        panels: [
+            { type:"top", content:"title", size:30, resizable:false },
+            { type:"left", content:"left", size:200, resizable:true },
+            { type:"main", content:"main", resizable:true }
+        ]
+    }
+}
+$(function () {
+    var wh = $(window).height();
+    $('#layout').css('height', wh);
+    $('#layout').w2layout(main.layout);
+});
+</script>
+</head>
+<body style="margin:0;">
+<div id="layout"></div>
+</body>
+</html>

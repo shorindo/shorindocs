@@ -21,7 +21,8 @@ package com.shorindo.docs.xuml;
 public class TextComponent extends Component {
     private String text;
 
-    public TextComponent(String text) {
+    public TextComponent(XumlView view, String text) {
+        super(view);
         this.text = text;
     }
 

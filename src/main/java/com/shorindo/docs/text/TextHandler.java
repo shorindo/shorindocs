@@ -15,15 +15,13 @@
  */
 package com.shorindo.docs.text;
 
-import java.util.Properties;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.shorindo.docs.Actionable;
 import com.shorindo.docs.ContentHandler;
 import com.shorindo.docs.ContentModel;
-import com.shorindo.docs.AbstractView;
-import com.shorindo.docs.view.XumlView;
 
 /**
  * 
@@ -36,28 +34,27 @@ public class TextHandler extends ContentHandler {
     }
 
     @Override @Actionable
-    public AbstractView view(Properties params) {
+    public String view(Map<String,Object> params) {
         LOG.trace("view()");
-        AbstractView view = new XumlView("/WEB-INF/xuml/template.xuml");
-        view.setAttribute("document", getModel());
-//        view.setProperty("docs:abc", getModel().getBody()
-//                .replaceAll("&", "&amp;")
-//                .replaceAll("<", "&lt;")
-//                .replaceAll(">", "&gt;")
-//                .replaceAll("\"", "&quot;")
-//                .replaceAll("\n", "<br>\n"));
-        return view;
+        params.put("document", getModel());
+        params.put("content", getModel().getBody()
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "&quot;")
+                .replaceAll("\n", "<br/>"));
+        return "text/viewer.xuml";
     }
 
     @Actionable
-    public AbstractView edit(Properties params) {
+    public String edit(Map<String,Object> params) {
         LOG.trace("edit()");
-//        setAttribute("document", getModel());
-//        setAttribute("document", getModel().getBody()
-//                .replaceAll("&", "&amp;")
-//                .replaceAll("<", "&lt;")
-//                .replaceAll(">", "&gt;")
-//                .replaceAll("\"", "&quot;"));
-        return new XumlView("/WEB-INF/xuml/template.xuml");
+        params.put("document", getModel());
+        params.put("content", getModel().getBody()
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "&quot;"));
+        return "text/editor.xuml";
     }
 }

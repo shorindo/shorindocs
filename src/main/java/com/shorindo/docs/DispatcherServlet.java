@@ -15,11 +15,13 @@
  */
 package com.shorindo.docs;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
+import java.util.ResourceBundle;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -27,7 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.shorindo.docs.view.XumlView;
+import com.shorindo.docs.xuml.XumlView;
 
 /**
  * 
@@ -42,6 +44,10 @@ public class DispatcherServlet extends HttpServlet {
         String id = req.getServletPath().substring(1);
         String ext = req.getServletPath().replaceAll("^(.*?)(\\.([^\\.]+))?$", "$3");
         LOG.debug("service(" + id + ")");
+        if ("xuml".equals(ext)) {
+            doXuml(req, res);
+            return;
+        }
         if (ext != null && !"".equals(ext)) {
             RequestDispatcher dispatcher = req.getSession().getServletContext().getNamedDispatcher("default");
             dispatcher.forward(req, res);
@@ -53,23 +59,41 @@ public class DispatcherServlet extends HttpServlet {
         }
         try {
             ContentHandler handler = ContentHandler.getHandler(id);
-            AbstractView view = handler.action(action, new Properties());
+            Map<String,Object> params = new HashMap<String,Object>();
+            for (Enumeration<?> e = req.getAttributeNames(); e.hasMoreElements();) {
+                String key = (String)e.nextElement();
+                Object value = req.getAttribute(key);
+                params.put(key, value);
+            }
+            String forward = handler.action(action, params);
+            for (Entry<String,Object> entry : params.entrySet()) {
+                req.setAttribute(entry.getKey(), entry.getValue());
+            }
+            req.getRequestDispatcher(forward).forward(req, res);
+        } catch (ContentException e) {
+            res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void doXuml(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        InputStream is = getClass().getResourceAsStream(req.getServletPath());
+        try {
+            XumlView view = new XumlView(is);
+            view.setMessageResources(ResourceBundle.getBundle("messages", req.getLocale()));
             view.setAttribute("application", req.getSession().getServletContext());
             view.setAttribute("request", req);
             view.setAttribute("response", res);
             view.setAttribute("session", req.getSession());
-            res.setContentType(view.getContentType());
-            byte[] b = new byte[4096];
-            int len;
-            InputStream is = new ByteArrayInputStream(view.getContent().getBytes("UTF-8"));
-            while ((len = is.read(b)) > 0) {
-                res.getOutputStream().write(b, 0, len);
+            for (Enumeration<?> e = req.getAttributeNames(); e.hasMoreElements();) {
+                String key = (String)e.nextElement();
+                Object value = req.getAttribute(key);
+                view.setAttribute(key, value);
             }
+            res.setContentType(view.getContentType());
+            res.getOutputStream().print(view.getContent());
+        } finally {
             is.close();
-        } catch (ContentException e) {
-            LOG.error(e.getMessage(), e);
-            res.setStatus(500);
         }
     }
-
 }

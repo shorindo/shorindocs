@@ -21,8 +21,8 @@ package com.shorindo.docs.xuml;
 public class GeneralComponent extends Component {
     private String tagName;
 
-    public GeneralComponent(String tagName) {
-        super();
+    public GeneralComponent(XumlView view, String tagName) {
+        super(view);
         this.tagName = tagName;
     }
 

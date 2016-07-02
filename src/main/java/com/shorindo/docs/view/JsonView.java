@@ -39,4 +39,9 @@ public class JsonView extends AbstractView {
         return JSON.encode(bean);
     }
 
+    @Override
+    public void setAttribute(String key, Object value) {
+        // TODO Auto-generated method stub
+    }
+
 }

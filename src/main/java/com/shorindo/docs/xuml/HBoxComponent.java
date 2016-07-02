@@ -21,6 +21,10 @@ package com.shorindo.docs.xuml;
 @Componentable("hbox")
 public class HBoxComponent extends Component {
 
+    public HBoxComponent(XumlView view) {
+        super(view);
+    }
+
     @Override
     public String getHtml() {
         StringBuilder sb = new StringBuilder();

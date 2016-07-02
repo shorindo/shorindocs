@@ -19,19 +19,25 @@ import org.apache.log4j.Logger;
 
 import com.shorindo.docs.xuml.Component;
 import com.shorindo.docs.xuml.Componentable;
+import com.shorindo.docs.xuml.XumlView;
 
 /**
  * 
  */
 @Componentable("text-viewer")
 public class TextViewer extends Component {
+
+    public TextViewer(XumlView view) {
+        super(view);
+    }
+
     private static final Logger LOG = Logger.getLogger(TextViewer.class);
 
     @Override
     public String getHtml() {
-        return "<div class=\"text-viewer\">" +
-                "Hello World" +
-                "</div>";
+        return "<div class=\"text-viewer\">\n" +
+                "@{content}\n" +
+                "</div>\n";
     }
 
     public void setDataSource(String value) {

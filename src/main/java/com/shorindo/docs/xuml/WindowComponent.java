@@ -22,14 +22,27 @@ package com.shorindo.docs.xuml;
 public class WindowComponent extends Component {
     private String title;
 
+    public WindowComponent(XumlView view) {
+        super(view);
+    }
+
     @Override
     public String getHtml() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"window\">");
+        sb.append("<!doctype html>\n");
+        sb.append("<html>\n");
+        sb.append("<head>\n");
+        sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
+        sb.append("<title>${document.title}</title>\n");
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"${application.contextPath}/css/xuml.css\">\n");
+        sb.append("<script type=\"text/javascript\" src=\"${application.contextPath}/js/xuml.js\"></script>\n");
+        sb.append("</head>\n");
+        sb.append("<body>\n");
         for (Component c : getChildList()) {
             sb.append(c.getHtml());
         }
-        sb.append("</div>");
+        sb.append("</body>\n");
+        sb.append("</html>\n");
         return sb.toString();
     }
 

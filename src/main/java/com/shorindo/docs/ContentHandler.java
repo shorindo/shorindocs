@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -31,10 +30,9 @@ import com.shorindo.docs.text.TextHandler;
  */
 public abstract class ContentHandler {
     private static final Logger LOG = Logger.getLogger(ContentHandler.class);
-    private Map<String,Object> attributes = new HashMap<String,Object>();
     private ContentModel model;
 
-    public abstract AbstractView view(Properties params);
+    public abstract String view(Map<String,Object> params);
 
     public static ContentHandler getHandler(String id) throws ContentException {
         try {
@@ -77,12 +75,12 @@ public abstract class ContentHandler {
 //        return attributes;
 //    }
 
-    public AbstractView action(String name, Properties params) {
+    public String action(String name, Map<String,Object> params) {
         try {
-            Method method = getClass().getMethod(name, Properties.class);
+            Method method = getClass().getMethod(name, Map.class);
             if (method.getAnnotation(Actionable.class) != null &&
-                    method.getReturnType().isAssignableFrom(AbstractView.class)) {
-                return (AbstractView)method.invoke(this, params);
+                    method.getReturnType().isAssignableFrom(String.class)) {
+                return (String)method.invoke(this, params);
             } else {
                 LOG.warn("no suitable method '" + name + "' exists");
                 return view(params);
@@ -101,12 +99,12 @@ public abstract class ContentHandler {
         return null;
     }
 
-    public AbstractView save(ContentModel model) throws IOException {
+    public String save(ContentModel model) throws IOException {
         return null;
     }
 
     @Actionable
-    public AbstractView create(Properties params) {
+    public String create(Properties params) {
         return null;
     }
 

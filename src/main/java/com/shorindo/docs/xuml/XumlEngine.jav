@@ -19,11 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -33,7 +30,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.shorindo.docs.BeanUtils;
+import com.shorindo.docs.BeanManager;
 
 /**
  * 
@@ -55,7 +52,7 @@ public class XumlEngine {
                     "  </vbox>" +
                     "</window>";
             XumlEngine engine = new XumlEngine();
-            XumlDocument document = engine.parse(new ByteArrayInputStream(xml.getBytes()));
+            XumlView document = engine.parse(new ByteArrayInputStream(xml.getBytes()));
             System.out.println(document.getHtml());
         } catch (SAXException e) {
             LOG.error(e.getMessage(), e);
@@ -101,13 +98,13 @@ public class XumlEngine {
         }
     }
 
-    public XumlDocument parse(InputStream input) throws SAXException, IOException {
+    public XumlView parse(InputStream input) throws SAXException, IOException {
         XMLReader reader = XMLReaderFactory.createXMLReader();
-        final XumlDocument document = new XumlDocument();
+        final XumlView document = new XumlView();
 
         reader.setContentHandler(new DefaultHandler() {
             private Map<String,String> prefixMap = new HashMap<String,String>();
-            private Component curr = document;
+            private Component curr;
 
             public void startPrefixMapping(String prefix, String uri)
                     throws SAXException {
@@ -120,7 +117,13 @@ public class XumlEngine {
                 Class<?> comp = componentMap.get(qName);
                 if (comp != null) {
                     try {
-                        curr = curr.add((Component)comp.newInstance());
+                        if (curr == null) {
+                            curr = (Component)comp.newInstance();
+                            document.setComponent(curr);
+                            curr.setView(document);
+                        } else {
+                            curr = curr.add((Component)comp.newInstance());
+                        }
                         setProperties(curr, attrs);
                     } catch (InstantiationException e) {
                         LOG.error(e.getMessage(), e);
@@ -128,7 +131,7 @@ public class XumlEngine {
                         LOG.error(e.getMessage(), e);
                     }
                 } else {
-                    curr = curr.add(new GeneralComponent(localName));
+                    curr = curr.add(new GeneralComponent(root, localName));
                 }
             }
 
@@ -157,7 +160,7 @@ public class XumlEngine {
         for (int i = 0; i < attrs.getLength(); i++) {
             String name = attrs.getQName(i);
             String value = attrs.getValue(i);
-            BeanUtils.setProperty(bean, name, value);
+            BeanManager.setProperty(bean, name, value);
         }
     }
 }

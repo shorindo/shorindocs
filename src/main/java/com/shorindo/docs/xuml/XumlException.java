@@ -13,27 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.text;
-
-import com.shorindo.docs.xuml.Component;
-import com.shorindo.docs.xuml.Componentable;
-import com.shorindo.docs.xuml.XumlView;
+package com.shorindo.docs.xuml;
 
 /**
  * 
  */
-@Componentable("text-editor")
-public class TextEditor extends Component {
+public class XumlException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-    public TextEditor(XumlView view) {
-        super(view);
+    /**
+     * 
+     */
+    public XumlException() {
+        super();
     }
 
-    @Override
-    public String getHtml() {
-        return "<textarea class=\"text-editor\">" +
-                "@{content}" +
-                "</textarea>";
+    /**
+     * @param message
+     */
+    public XumlException(String message) {
+        super(message);
+    }
+
+    /**
+     * @param cause
+     */
+    public XumlException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    public XumlException(String message, Throwable cause) {
+        super(message, cause);
     }
 
 }

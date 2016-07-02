@@ -1,0 +1,3 @@
+<window title="editor - ${document.title}">
+<text-editor/>
+</window>
