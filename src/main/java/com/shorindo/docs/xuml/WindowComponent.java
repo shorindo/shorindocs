@@ -21,6 +21,8 @@ package com.shorindo.docs.xuml;
 @Componentable("window")
 public class WindowComponent extends Component {
     private String title;
+    private String height = "auto";
+    private String width = "auto";
 
     public WindowComponent(XumlView view) {
         super(view);
@@ -33,11 +35,22 @@ public class WindowComponent extends Component {
         sb.append("<html>\n");
         sb.append("<head>\n");
         sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
-        sb.append("<title>${document.title}</title>\n");
+        sb.append("<title>" + title + "</title>\n");
         sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"${application.contextPath}/css/xuml.css\">\n");
         sb.append("<script type=\"text/javascript\" src=\"${application.contextPath}/js/xuml.js\"></script>\n");
         sb.append("</head>\n");
-        sb.append("<body>\n");
+        sb.append("<body class=\"");
+        if ("fill".equals(height)) {
+            sb.append("xuml-height-fill ");
+        } else if ("auto".equals(height)) {
+            sb.append("xuml-height-auto");
+        }
+        if ("fill".equals(width)) {
+            sb.append("xuml-width-fill ");
+        } else if ("auto".equals(width)) {
+            sb.append("xuml-width-auto ");
+        }
+        sb.append("\">");
         for (Component c : getChildList()) {
             sb.append(c.getHtml());
         }
@@ -48,5 +61,13 @@ public class WindowComponent extends Component {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
+    }
+
+    public void setWidth(String width) {
+        this.width = width;
     }
 }

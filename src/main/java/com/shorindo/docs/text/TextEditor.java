@@ -31,9 +31,11 @@ public class TextEditor extends Component {
 
     @Override
     public String getHtml() {
-        return "<textarea class=\"text-editor\">" +
+        return "<div class=\"text-editor\">" +
+                "<textarea class=\"text-editor xuml-width-fill xuml-height-fill\">" +
                 "@{content}" +
-                "</textarea>";
+                "</textarea>" +
+                "</div>";
     }
 
 }

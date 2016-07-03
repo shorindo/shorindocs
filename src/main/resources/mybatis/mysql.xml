@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mybatis">
+
+  <resultMap id="resultMapContentModel" type="com.shorindo.docs.ContentModel">
+    <result property="contentId"   column="content_id" />
+    <result property="contentType" column="content_type" />
+    <result property="title"       column="title" />
+    <result property="body"        column="body"/>
+  </resultMap>
+
+  <sql id="createContent">
+    CREATE TABLE CONTENT (
+        CONTENT_ID      VARCHAR(64),
+        CONTENT_TYPE    VARCHAR(255),
+        STATUS          INT,
+        TITLE           TEXT,
+        BODY            TEXT,
+        CREATE_DATE     DATETIME,
+        UPDATE_DATE     DATETIME,
+        OWNER_ID        VARCHAR(64),
+        ACL_ID          VARCHAR(64),
+        PRIMARY KEY (CONTENT_ID, STATUS)
+    )
+  </sql>
+
+  <sql id="createContentHistory">
+        CREATE TABLE CONTENT_HISTORY (
+        CONTENT_ID      VARCHAR(64),
+        CONTENT_TYPE    VARCHAR(255),
+        VERSION         VARCHAR(16),
+        TITLE           TEXT,
+        BODY            TEXT,
+        CREATE_DATE     DATETIME,
+        UPDATE_DATE     DATETIME,
+        OWNER_ID        VARCHAR(64),
+        ACL_ID          VARCHAR(64),
+        PRIMARY KEY (CONTENT_ID, VERSION)
+    )
+  </sql>
+
+  <select id="getContent" resultMap="resultMapContentModel">
+    SELECT * FROM content WHERE content_id = #{id}
+  </select>
+</mapper>

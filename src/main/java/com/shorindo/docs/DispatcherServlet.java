@@ -71,7 +71,8 @@ public class DispatcherServlet extends HttpServlet {
             }
             req.getRequestDispatcher(forward).forward(req, res);
         } catch (ContentException e) {
-            res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            LOG.error(e.getMessage(), e);
+            res.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
@@ -91,7 +92,7 @@ public class DispatcherServlet extends HttpServlet {
                 view.setAttribute(key, value);
             }
             res.setContentType(view.getContentType());
-            res.getOutputStream().print(view.getContent());
+            res.getOutputStream().write(view.getContent().getBytes());
         } finally {
             is.close();
         }

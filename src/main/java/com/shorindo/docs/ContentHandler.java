@@ -19,11 +19,15 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.ibatis.session.SqlSession;
+
 import com.shorindo.docs.text.TextHandler;
+import com.shorindo.docs.DatabaseManager.Transactional;
 
 /**
  * 
@@ -34,12 +38,16 @@ public abstract class ContentHandler {
 
     public abstract String view(Map<String,Object> params);
 
-    public static ContentHandler getHandler(String id) throws ContentException {
+    public static ContentHandler getHandler(final String id) throws ContentException {
+
         try {
-            ContentModel model = DatabaseManager.selectOne(
-                    ContentModel.class,
-                    "SELECT * FROM CONTENT WHERE CONTENT_ID=? AND STATUS=0",
-                    id);
+            ContentModel model = DatabaseManager.transaction(new Transactional<ContentModel>() {
+                public ContentModel run(SqlSession session) throws SQLException {
+                    Map<String,String> map = new HashMap<String,String>();
+                    map.put("id", id);
+                    return session.selectOne("mybatis.getContent", map);
+                }
+            });
             if (model == null) {
                 throw new ContentException("model not found:" + id);
             } else if ("text/plain".equals(model.getContentType())) {
@@ -47,17 +55,17 @@ public abstract class ContentHandler {
             } else {
                 throw new ContentException("handler not found:" + model.getContentType());
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new ContentException(e.getMessage(), e);
         }
     }
 
-    public static ContentModel getContentModel(String id) throws SQLException {
-        return DatabaseManager.selectOne(
-                ContentModel.class,
-                "SELECT * FROM CONTENT WHERE CONTENT_ID=? AND STATUS=0",
-                id);
-    }
+//    public static ContentModel getContentModel(String id) throws SQLException {
+//        return DatabaseManager.selectOne(
+//                ContentModel.class,
+//                "SELECT * FROM CONTENT WHERE CONTENT_ID=? AND STATUS=0",
+//                id);
+//    }
 
     public ContentHandler(ContentModel model) {
         this.model = model;
@@ -108,18 +116,18 @@ public abstract class ContentHandler {
         return null;
     }
 
-    @Actionable
-    public List<ContentModel> search() throws ContentException {
-        LOG.trace("search()");
-        try {
-            return DatabaseManager.select(
-                    ContentModel.class,
-                    "SELECT CONTENT_ID, CONTENT_TYPE, TITLE, UPDATE_DATE " +
-                    "FROM   CONTENT " +
-                    "ORDER BY UPDATE_DATE DESC " +
-                    "LIMIT 10");
-        } catch (SQLException e) {
-            throw new ContentException(e.getMessage(), e);
-        }
-    }
+//    @Actionable
+//    public List<ContentModel> search() throws ContentException {
+//        LOG.trace("search()");
+//        try {
+//            return DatabaseManager.select(
+//                    ContentModel.class,
+//                    "SELECT CONTENT_ID, CONTENT_TYPE, TITLE, UPDATE_DATE " +
+//                    "FROM   CONTENT " +
+//                    "ORDER BY UPDATE_DATE DESC " +
+//                    "LIMIT 10");
+//        } catch (SQLException e) {
+//            throw new ContentException(e.getMessage(), e);
+//        }
+//    }
 }

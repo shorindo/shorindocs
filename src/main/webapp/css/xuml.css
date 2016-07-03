@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+}
+body.xuml-width-fill {
+  position:absolute;
+  top:0;
+  right:0;
+  left:0;
+  overflow-x:auto;
+}
+body.xuml-height-fill {
+  position:absolute;
+  top:0;
+  bottom:0;
+  overflow-y:auto;
+}
+textarea.text-editor {
+  border:0;
+  padding:0;
+  margin:0;
+}
+.xuml-width-fill {
+  width:100%;
+}
+.xuml-height-fill {
+  height:100%;
+}
