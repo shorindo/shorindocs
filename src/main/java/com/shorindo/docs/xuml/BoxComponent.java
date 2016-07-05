@@ -18,7 +18,7 @@ package com.shorindo.docs.xuml;
 /**
  * 
  */
-@Componentable("box")
+@ComponentReady("box")
 public class BoxComponent extends Component {
 
     public BoxComponent(XumlView view) {

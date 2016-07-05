@@ -34,8 +34,6 @@ public class ApplicationListener implements ServletContextListener {
     private static final Logger LOG = Logger.getLogger(ApplicationListener.class);
 
     public void contextDestroyed(ServletContextEvent event) {
-        LOG.trace("contextDestroyed()");
-        DatabaseManager.shutdown();
     }
 
     public void contextInitialized(ServletContextEvent event) {

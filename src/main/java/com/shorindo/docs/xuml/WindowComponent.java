@@ -18,7 +18,7 @@ package com.shorindo.docs.xuml;
 /**
  * 
  */
-@Componentable("window")
+@ComponentReady("window")
 public class WindowComponent extends Component {
     private String title;
     private String height = "auto";

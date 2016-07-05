@@ -19,42 +19,45 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.shorindo.docs.Actionable;
-import com.shorindo.docs.ContentHandler;
+import com.shorindo.docs.ActionMessage;
+import com.shorindo.docs.ActionReady;
+import com.shorindo.docs.ContentController;
 import com.shorindo.docs.ContentModel;
+import com.shorindo.docs.ContentTypeReady;
 
 /**
  * 
  */
-public class TextHandler extends ContentHandler {
+@ContentTypeReady("text/plain")
+public class TextHandler extends ContentController {
     private static final Logger LOG = Logger.getLogger(TextHandler.class);
 
     public TextHandler(ContentModel model) {
         super(model);
     }
 
-    @Override @Actionable
-    public String view(Map<String,Object> params) {
+    @Override @ActionReady
+    public void view(ActionMessage message) {
         LOG.trace("view()");
-        params.put("document", getModel());
-        params.put("content", getModel().getBody()
+        message.setAttribute("document", getModel());
+        message.setAttribute("content", getModel().getBody()
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;")
                 .replaceAll("\n", "<br/>"));
-        return "text/viewer.xuml";
+        message.setForward("text/viewer.xuml");
     }
 
-    @Actionable
-    public String edit(Map<String,Object> params) {
+    @ActionReady
+    public void edit(ActionMessage message) {
         LOG.trace("edit()");
-        params.put("document", getModel());
-        params.put("content", getModel().getBody()
+        message.setAttribute("document", getModel());
+        message.setAttribute("content", getModel().getBody()
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;"));
-        return "text/editor.xuml";
+        message.setForward("text/editor.xuml");
     }
 }

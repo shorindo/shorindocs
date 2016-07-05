@@ -58,18 +58,16 @@ public class DispatcherServlet extends HttpServlet {
             action = "view";
         }
         try {
-            ContentHandler handler = ContentHandler.getHandler(id);
+            ActionMessage message = new ActionMessage(req);
+            ContentController handler = ContentController.getHandler(id);
             Map<String,Object> params = new HashMap<String,Object>();
             for (Enumeration<?> e = req.getAttributeNames(); e.hasMoreElements();) {
                 String key = (String)e.nextElement();
                 Object value = req.getAttribute(key);
                 params.put(key, value);
             }
-            String forward = handler.action(action, params);
-            for (Entry<String,Object> entry : params.entrySet()) {
-                req.setAttribute(entry.getKey(), entry.getValue());
-            }
-            req.getRequestDispatcher(forward).forward(req, res);
+            handler.action(action, message);
+            req.getRequestDispatcher(message.getForward()).forward(req, res);
         } catch (ContentException e) {
             LOG.error(e.getMessage(), e);
             res.sendError(HttpServletResponse.SC_NOT_FOUND);

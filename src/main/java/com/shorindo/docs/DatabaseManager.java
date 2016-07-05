@@ -17,6 +17,7 @@ package com.shorindo.docs;
 
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
@@ -61,49 +62,48 @@ public abstract class DatabaseManager {
             Configuration config = new Configuration(env);
             new XMLMapperBuilder(DatabaseManager.class.getResourceAsStream("/mybatis/" + engineName + ".xml"), config, "", config.getSqlFragments()).parse();
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(config);
-
-//            params = new Properties();
-//            for (Enumeration<Object> e = props.keys(); e.hasMoreElements();) {
-//                String key = e.nextElement().toString();
-//                if (key.matches("^datasource\\..*")) {
-//                    String name = key.replaceAll("^datasource\\.(.*)$", "$1");
-//                    params.put(name, props.getProperty(key));
-//                }
-//            }
-//            dataSource = BasicDataSourceFactory.createDataSource(params);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         }
     }
-    
-    public static void shutdown() {
-//        for (Enumeration<Driver> e = DriverManager.getDrivers(); e.hasMoreElements();) {
-//            try {
-//                DriverManager.deregisterDriver(e.nextElement());
-//            } catch (SQLException ex) {
-//                LOG.error(ex.getMessage(), ex);
-//            }
-//        }
+
+    public static <T>T selectOne(String id, Object arg) {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        try {
+            return session.selectOne(id, arg);
+        } catch (Throwable th) {
+            throw new RuntimeException(th);
+        } finally {
+            session.close();
+        }
     }
-//
-//    public static <T>T selectOne(Class<T> clazz, String sql, Object... params) throws SQLException {
-//        RowProcessor rp = new BasicRowProcessor(new UnderscoreProcessor());
-//        QueryRunner runner = new QueryRunner(dataSource);
-//        ResultSetHandler<T> rsh = new BeanHandler<T>(clazz, rp);
-//        return runner.query(sql, rsh, params);
-//    }
-//
-//    public static <T> List<T> select(Class<T> clazz, String sql, Object... params) throws SQLException {
-//        RowProcessor rp = new BasicRowProcessor(new UnderscoreProcessor());
-//        QueryRunner runner = new QueryRunner(dataSource);
-//        BeanListHandler<T> rsh = new BeanListHandler<T>(clazz, rp);
-//        return (List<T>)runner.query(sql, rsh, params);
-//    }
+
+    public static <T> List<T> selectList(String id, Object arg) {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        try {
+            return session.selectList(id, arg);
+        } catch (Throwable th) {
+            throw new RuntimeException(th);
+        } finally {
+            session.close();
+        }
+    }
+
+    public static int insert(String id, Object arg) {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        try {
+            return session.insert(id, arg);
+        } catch (Throwable th) {
+            throw new RuntimeException(th);
+        } finally {
+            session.close();
+        }
+    }
 
     public static <T>T transaction(Transactional<T> callback) {
         SqlSession session = sqlSessionFactory.openSession();
         try {
-            T result = callback.run(session);
+            T result = callback.execute(session);
             session.commit();
             return result;
         } catch (Throwable th) {
@@ -115,29 +115,7 @@ public abstract class DatabaseManager {
     }
 
     public static interface Transactional<X> {
-        public X run(SqlSession session) throws SQLException;
+        public X execute(SqlSession session) throws SQLException;
     }
 
-//    public static class UnderscoreProcessor extends BeanProcessor {
-//        @Override
-//        protected int[] mapColumnsToProperties(ResultSetMetaData rsmd,
-//                PropertyDescriptor[] props) throws SQLException {
-//            int cols = rsmd.getColumnCount();
-//            int columnToProperty[] = new int[cols + 1];
-//            Arrays.fill(columnToProperty, PROPERTY_NOT_FOUND);
-//            for (int col = 1; col <= cols; col++) {
-//                String columnName = rsmd.getColumnName(col);
-//                for (int i = 0; i < props.length; i++) {
-//                    if (equalsColumnProperty(columnName, props[i].getName())) {
-//                        columnToProperty[col] = i;
-//                        break;
-//                    }
-//                }
-//            }
-//            return columnToProperty;
-//        }
-//        private boolean equalsColumnProperty(String colName, String propName) {
-//            return colName.replaceAll("_", "").equalsIgnoreCase(propName);
-//        }
-//    }
 }

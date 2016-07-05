@@ -49,7 +49,7 @@ public class XumlView extends AbstractView {
     }
 
     private static void defineComponent(Class<?> c) {
-        Componentable tag = c.getAnnotation(Componentable.class);
+        ComponentReady tag = c.getAnnotation(ComponentReady.class);
         if (tag != null && tag.value() != null) {
             componentMap.put(tag.value(), c);
         }

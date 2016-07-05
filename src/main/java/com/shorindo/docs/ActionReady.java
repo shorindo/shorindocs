@@ -25,5 +25,5 @@ import java.lang.annotation.ElementType;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Actionable {
+public @interface ActionReady {
 }

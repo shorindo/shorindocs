@@ -15,25 +15,16 @@
  */
 package com.shorindo.docs.xuml;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * 
  */
-@ComponentReady("hbox")
-public class HBoxComponent extends Component {
-
-    public HBoxComponent(XumlView view) {
-        super(view);
-    }
-
-    @Override
-    public String getHtml() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"hbox\">");
-        for (Component c : getChildList()) {
-            sb.append(c.getHtml());
-        }
-        sb.append("</div>");
-        return sb.toString();
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ComponentReady {
+    String value();
 }

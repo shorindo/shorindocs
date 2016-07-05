@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mybatis">
+<mapper namespace="docs">
 
   <resultMap id="resultMapContentModel" type="com.shorindo.docs.ContentModel">
     <result property="contentId"   column="content_id" />
@@ -42,4 +42,9 @@
   <select id="getContent" resultMap="resultMapContentModel">
     SELECT * FROM content WHERE content_id = #{id}
   </select>
+
+  <insert id="createContent">
+    INSERT INTO content (CONTENT_ID, CONTENT_TYPE, STATUS, TITLE, BODY, CREATE_DATE, UPDATE_DATE)
+    VALUES (#{contentId}, #{contentType}, 0, #{title}, #{body}, NOW(), NOW())
+  </insert>
 </mapper>

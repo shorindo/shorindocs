@@ -39,7 +39,7 @@ public abstract class AbstractView {
     public abstract String getContent() throws IOException;
 
     public void setAttribute(String key, Object value) {
-        LOG.debug("setAttribute(" + key + ", " + value + ")");
+        //LOG.debug("setAttribute(" + key + ", " + value + ")");
         attrMap.put(key, value);
     }
 

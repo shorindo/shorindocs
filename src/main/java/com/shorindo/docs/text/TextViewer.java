@@ -18,13 +18,13 @@ package com.shorindo.docs.text;
 import org.apache.log4j.Logger;
 
 import com.shorindo.docs.xuml.Component;
-import com.shorindo.docs.xuml.Componentable;
+import com.shorindo.docs.xuml.ComponentReady;
 import com.shorindo.docs.xuml.XumlView;
 
 /**
  * 
  */
-@Componentable("text-viewer")
+@ComponentReady("text-viewer")
 public class TextViewer extends Component {
 
     public TextViewer(XumlView view) {

@@ -18,7 +18,7 @@ package com.shorindo.docs.xuml;
 /**
  * 
  */
-@Componentable("vbox")
+@ComponentReady("vbox")
 public class VBoxComponent extends Component {
 
     public VBoxComponent(XumlView view) {

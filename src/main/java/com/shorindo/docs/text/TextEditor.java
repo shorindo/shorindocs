@@ -16,13 +16,13 @@
 package com.shorindo.docs.text;
 
 import com.shorindo.docs.xuml.Component;
-import com.shorindo.docs.xuml.Componentable;
+import com.shorindo.docs.xuml.ComponentReady;
 import com.shorindo.docs.xuml.XumlView;
 
 /**
  * 
  */
-@Componentable("text-editor")
+@ComponentReady("text-editor")
 public class TextEditor extends Component {
 
     public TextEditor(XumlView view) {
