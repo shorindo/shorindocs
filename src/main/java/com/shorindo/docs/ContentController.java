@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.shorindo.docs.text.TextHandler;
+import com.shorindo.docs.text.PlainTextController;
 
 /**
  * 
@@ -37,7 +37,7 @@ public abstract class ContentController extends ActionController {
             if (model == null) {
                 throw new ContentException("model not found:" + id);
             } else if ("text/plain".equals(model.getContentType())) {
-                return new TextHandler(model);
+                return new PlainTextController(model);
             } else {
                 throw new ContentException("handler not found:" + model.getContentType());
             }

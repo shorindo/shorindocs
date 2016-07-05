@@ -20,6 +20,7 @@ import java.io.IOException;
 import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.AbstractView;
+import com.shorindo.docs.ActionMessage;
 
 /**
  * 
@@ -27,7 +28,8 @@ import com.shorindo.docs.AbstractView;
 public class JsonView extends AbstractView {
     private Object bean;
 
-    public JsonView(Object bean) {
+    public JsonView(ActionMessage message, Object bean) {
+        super(message);
         this.bean = bean;
     }
 
@@ -39,9 +41,9 @@ public class JsonView extends AbstractView {
         return JSON.encode(bean);
     }
 
-    @Override
-    public void setAttribute(String key, Object value) {
-        // TODO Auto-generated method stub
-    }
+//    @Override
+//    public void setAttribute(String key, Object value) {
+//        // TODO Auto-generated method stub
+//    }
 
 }

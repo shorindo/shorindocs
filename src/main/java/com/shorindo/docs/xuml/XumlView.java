@@ -33,6 +33,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.shorindo.docs.AbstractView;
+import com.shorindo.docs.ActionMessage;
 import com.shorindo.docs.BeanManager;
 
 /**
@@ -80,7 +81,8 @@ public class XumlView extends AbstractView {
         }
     }
 
-    public XumlView(InputStream is) throws IOException {
+    public XumlView(ActionMessage message, InputStream is) throws IOException {
+        super(message);
         try {
             component = parse(is);
         } catch (SAXException e) {
@@ -150,20 +152,20 @@ public class XumlView extends AbstractView {
             if ("$".equals(m1.group(1))) {
                 if (m1.group(3) != null) {
                     sb.append(escape((String)BeanManager.getValue(
-                            getAttribute(beanName),
+                            message.getAttribute(beanName),
                             m1.group(4),
                             m1.group())));
                 } else {
-                    sb.append(escape((String)getAttribute(beanName)));
+                    sb.append(escape((String)message.getAttribute(beanName)));
                 }
             } else if ("@".equals(m1.group(1))) {
                 if (m1.group(3) != null) {
                     sb.append(BeanManager.getValue(
-                            getAttribute(beanName),
+                            message.getAttribute(beanName),
                             m1.group(4),
                             m1.group()));
                 } else {
-                    sb.append((String)getAttribute(beanName));
+                    sb.append((String)message.getAttribute(beanName));
                 }   
             } else if ("#".equals(m1.group(1))) {
                 //TODO

@@ -15,8 +15,6 @@
  */
 package com.shorindo.docs.text;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 
 import com.shorindo.docs.ActionMessage;
@@ -29,10 +27,10 @@ import com.shorindo.docs.ContentTypeReady;
  * 
  */
 @ContentTypeReady("text/plain")
-public class TextHandler extends ContentController {
-    private static final Logger LOG = Logger.getLogger(TextHandler.class);
+public class PlainTextController extends ContentController {
+    private static final Logger LOG = Logger.getLogger(PlainTextController.class);
 
-    public TextHandler(ContentModel model) {
+    public PlainTextController(ContentModel model) {
         super(model);
     }
 

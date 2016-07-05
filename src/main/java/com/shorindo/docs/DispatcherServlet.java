@@ -17,11 +17,7 @@ package com.shorindo.docs;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.ResourceBundle;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -60,13 +56,10 @@ public class DispatcherServlet extends HttpServlet {
         try {
             ActionMessage message = new ActionMessage(req);
             ContentController handler = ContentController.getHandler(id);
-            Map<String,Object> params = new HashMap<String,Object>();
-            for (Enumeration<?> e = req.getAttributeNames(); e.hasMoreElements();) {
-                String key = (String)e.nextElement();
-                Object value = req.getAttribute(key);
-                params.put(key, value);
-            }
             handler.action(action, message);
+            for (Entry<String,Object> entry : message.getAttributes().entrySet()) {
+                req.setAttribute(entry.getKey(), entry.getValue());
+            }
             req.getRequestDispatcher(message.getForward()).forward(req, res);
         } catch (ContentException e) {
             LOG.error(e.getMessage(), e);
@@ -78,17 +71,9 @@ public class DispatcherServlet extends HttpServlet {
             throws ServletException, IOException {
         InputStream is = getClass().getResourceAsStream(req.getServletPath());
         try {
-            XumlView view = new XumlView(is);
-            view.setMessageResources(ResourceBundle.getBundle("messages", req.getLocale()));
-            view.setAttribute("application", req.getSession().getServletContext());
-            view.setAttribute("request", req);
-            view.setAttribute("response", res);
-            view.setAttribute("session", req.getSession());
-            for (Enumeration<?> e = req.getAttributeNames(); e.hasMoreElements();) {
-                String key = (String)e.nextElement();
-                Object value = req.getAttribute(key);
-                view.setAttribute(key, value);
-            }
+            ActionMessage message = new ActionMessage(req);
+            XumlView view = new XumlView(message, is);
+            message.setAttribute("application", req.getSession().getServletContext());
             res.setContentType(view.getContentType());
             res.getOutputStream().write(view.getContent().getBytes());
         } finally {

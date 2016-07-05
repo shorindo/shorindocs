@@ -15,40 +15,24 @@
  */
 package com.shorindo.docs;
 
-import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
-import java.util.ResourceBundle;
 
 /**
  * 
  */
 public abstract class AbstractView {
     private static final Logger LOG = Logger.getLogger(AbstractView.class);
-//    private static final Pattern p1 = Pattern.compile("^([^\\.]+)(.*)$");
-//    private static final Pattern p2 = Pattern.compile("\\.([^\\.]+)");
-    private Map<String,Object> attrMap = new HashMap<String,Object>();
-    private ResourceBundle bundle;
+    protected ActionMessage message;
 
     public abstract String getContentType();
     public abstract String getContent() throws IOException;
 
-    public void setAttribute(String key, Object value) {
-        //LOG.debug("setAttribute(" + key + ", " + value + ")");
-        attrMap.put(key, value);
-    }
-
-    public Object getAttribute(String key) {
-        return attrMap.get(key);
-    }
-
-    public void setMessageResources(ResourceBundle bundle) {
-        this.bundle = bundle;
+    public AbstractView(ActionMessage message) {
+        this.message = message;
     }
 
     protected InputStream filter(InputStream is) {
@@ -60,7 +44,7 @@ public abstract class AbstractView {
         String name = in.substring(2, in.length() - 1);
         String value = in;
         if ("$".equals(type)) {
-            return BeanManager.getValue(attrMap, name, in).toString();
+            return BeanManager.getValue(message.getAttributes(), name, in).toString();
 //            Matcher m1 = p1.matcher(name);
 //            if (!m1.matches()) {
 //                return in;
@@ -88,7 +72,7 @@ public abstract class AbstractView {
 //            }
         } else if ("#".equals(type)) {
             try {
-                value = bundle.getString(name);
+                value = message.getMessage(name);
             } catch (Exception e) {
                 e.printStackTrace();
                 value = in;
@@ -175,29 +159,29 @@ public abstract class AbstractView {
         }
     }
 
-    public static void main(String[] args) {
-        AbstractView view = new AbstractView() {
-            @Override
-            public String getContentType() {
-                return null;
-            }
-
-            @Override
-            public String getContent() throws IOException {
-                return null;
-            }
-        };
-        view.setAttribute("abc", "ABC");
-        try {
-            String s = "123${abc}456";
-            InputStream is = new ByteArrayInputStream(s.getBytes());
-            int c;
-            while ((c = is.read()) != -1) {
-                System.out.write((byte)c);
-            }
-            System.out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        AbstractView view = new AbstractView() {
+//            @Override
+//            public String getContentType() {
+//                return null;
+//            }
+//
+//            @Override
+//            public String getContent() throws IOException {
+//                return null;
+//            }
+//        };
+//        view.setAttribute("abc", "ABC");
+//        try {
+//            String s = "123${abc}456";
+//            InputStream is = new ByteArrayInputStream(s.getBytes());
+//            int c;
+//            while ((c = is.read()) != -1) {
+//                System.out.write((byte)c);
+//            }
+//            System.out.flush();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
