@@ -20,7 +20,7 @@ import java.util.Date;
 /**
  * 
  */
-public class ContentModel {
+public class DocumentModel {
     private String contentId;
     private String contentType;
     private int status;

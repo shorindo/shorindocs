@@ -55,7 +55,7 @@ public class DispatcherServlet extends HttpServlet {
         }
         try {
             ActionMessage message = new ActionMessage(req);
-            ContentController handler = ContentController.getHandler(id);
+            DocumentController handler = DocumentController.getHandler(id);
             handler.action(action, message);
             for (Entry<String,Object> entry : message.getAttributes().entrySet()) {
                 req.setAttribute(entry.getKey(), entry.getValue());

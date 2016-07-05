@@ -19,18 +19,18 @@ import org.apache.log4j.Logger;
 
 import com.shorindo.docs.ActionMessage;
 import com.shorindo.docs.ActionReady;
-import com.shorindo.docs.ContentController;
-import com.shorindo.docs.ContentModel;
+import com.shorindo.docs.DocumentController;
+import com.shorindo.docs.DocumentModel;
 import com.shorindo.docs.ContentTypeReady;
 
 /**
  * 
  */
 @ContentTypeReady("text/plain")
-public class PlainTextController extends ContentController {
+public class PlainTextController extends DocumentController {
     private static final Logger LOG = Logger.getLogger(PlainTextController.class);
 
-    public PlainTextController(ContentModel model) {
+    public PlainTextController(DocumentModel model) {
         super(model);
     }
 

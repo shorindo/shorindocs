@@ -26,14 +26,14 @@ import com.shorindo.docs.text.PlainTextController;
 /**
  * 
  */
-public abstract class ContentController extends ActionController {
-    private static final Logger LOG = Logger.getLogger(ContentController.class);
-    private ContentModel model;
+public abstract class DocumentController extends ActionController {
+    private static final Logger LOG = Logger.getLogger(DocumentController.class);
+    private DocumentModel model;
 
-    public static ContentController getHandler(final String id) throws ContentException {
+    public static DocumentController getHandler(final String id) throws ContentException {
 
         try {
-            ContentModel model = getContentModel(id);
+            DocumentModel model = getContentModel(id);
             if (model == null) {
                 throw new ContentException("model not found:" + id);
             } else if ("text/plain".equals(model.getContentType())) {
@@ -46,17 +46,17 @@ public abstract class ContentController extends ActionController {
         }
     }
 
-    public static ContentModel getContentModel(String id) throws SQLException {
+    public static DocumentModel getContentModel(String id) throws SQLException {
         Map<String,String> map = new HashMap<String,String>();
         map.put("id", id);
         return DatabaseManager.selectOne("docs.getContent", map);
     }
 
-    public ContentController(ContentModel model) {
+    public DocumentController(DocumentModel model) {
         this.model = model;
     }
 
-    public ContentModel getModel() {
+    public DocumentModel getModel() {
         return model;
     }
 
@@ -68,7 +68,7 @@ public abstract class ContentController extends ActionController {
     public String create(Map<String,Object> params) throws ContentException {
         for (int i = 0; i < 10; i++) {
             String id = String.valueOf(new Random().nextLong());
-            ContentModel model = new ContentModel();
+            DocumentModel model = new DocumentModel();
             model.setContentId(id);
             model.setContentType((String)params.get("contentType"));
             if (DatabaseManager.insert("docs.createContent", model) > 0) {
@@ -80,7 +80,7 @@ public abstract class ContentController extends ActionController {
     }
 
     @ActionReady
-    public List<ContentModel> search(Map<String,Object> params) throws ContentException {
+    public List<DocumentModel> search(Map<String,Object> params) throws ContentException {
         LOG.trace("search()");
         return DatabaseManager.selectList("searchContent", null);
     }
