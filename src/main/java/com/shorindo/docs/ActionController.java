@@ -23,19 +23,21 @@ import java.lang.reflect.Method;
 public abstract class ActionController {
     private static final Logger LOG = Logger.getLogger(ActionController.class);
 
-    public abstract void view(ActionMessage message);
+    public abstract AbstractView view(ActionContext context);
 
-    public final void action(String name, ActionMessage message) {
+    public final AbstractView action(String name, ActionContext context) {
         try {
-            Method method = getClass().getMethod(name, ActionMessage.class);
-            if (method.getAnnotation(ActionReady.class) != null) {
-                method.invoke(this, message);
+            Method method = getClass().getMethod(name, ActionContext.class);
+            if (method.getAnnotation(ActionReady.class) != null &&
+                    AbstractView.class.isAssignableFrom(method.getReturnType())) {
+                return (AbstractView)method.invoke(this, context);
             } else {
                 LOG.warn("no suitable method '" + name + "' exists");
-                view(message);
+                return view(context);
             }
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
+            return null;
         }
     }
 }

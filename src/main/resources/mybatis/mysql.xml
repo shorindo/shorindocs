@@ -2,16 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="docs">
 
-  <resultMap id="resultMapContentModel" type="com.shorindo.docs.ContentModel">
+  <resultMap id="resultMapDocumentModel" type="com.shorindo.docs.DocumentModel">
     <result property="contentId"   column="content_id" />
     <result property="contentType" column="content_type" />
     <result property="title"       column="title" />
     <result property="body"        column="body"/>
   </resultMap>
 
-  <sql id="createContent">
-    CREATE TABLE CONTENT (
-        CONTENT_ID      VARCHAR(64),
+  <sql id="createDocument">
+    CREATE TABLE DOCUMENT (
+        DOCUMENT_ID      VARCHAR(64),
         CONTENT_TYPE    VARCHAR(255),
         STATUS          INT,
         TITLE           TEXT,
@@ -20,13 +20,13 @@
         UPDATE_DATE     DATETIME,
         OWNER_ID        VARCHAR(64),
         ACL_ID          VARCHAR(64),
-        PRIMARY KEY (CONTENT_ID, STATUS)
+        PRIMARY KEY (DOCUMENT_ID, STATUS)
     )
   </sql>
 
-  <sql id="createContentHistory">
-        CREATE TABLE CONTENT_HISTORY (
-        CONTENT_ID      VARCHAR(64),
+  <sql id="createDocumentHistory">
+    CREATE TABLE DOCUMENT_HISTORY (
+        DOCUMENT_ID      VARCHAR(64),
         CONTENT_TYPE    VARCHAR(255),
         VERSION         VARCHAR(16),
         TITLE           TEXT,
@@ -35,16 +35,16 @@
         UPDATE_DATE     DATETIME,
         OWNER_ID        VARCHAR(64),
         ACL_ID          VARCHAR(64),
-        PRIMARY KEY (CONTENT_ID, VERSION)
+        PRIMARY KEY (DOCUMENT_ID, VERSION)
     )
   </sql>
 
-  <select id="getContent" resultMap="resultMapContentModel">
-    SELECT * FROM content WHERE content_id = #{id}
+  <select id="getDocument" resultMap="resultMapDocumentModel">
+    SELECT * FROM document WHERE document_id = #{id}
   </select>
 
-  <insert id="createContent">
-    INSERT INTO content (CONTENT_ID, CONTENT_TYPE, STATUS, TITLE, BODY, CREATE_DATE, UPDATE_DATE)
-    VALUES (#{contentId}, #{contentType}, 0, #{title}, #{body}, NOW(), NOW())
+  <insert id="createDocument">
+    INSERT INTO document (DOCUMENT_ID, CONTENT_TYPE, STATUS, TITLE, BODY, CREATE_DATE, UPDATE_DATE)
+    VALUES (#{documentId}, #{contentType}, 0, #{title}, #{body}, NOW(), NOW())
   </insert>
 </mapper>

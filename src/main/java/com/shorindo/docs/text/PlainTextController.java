@@ -17,7 +17,8 @@ package com.shorindo.docs.text;
 
 import org.apache.log4j.Logger;
 
-import com.shorindo.docs.ActionMessage;
+import com.shorindo.docs.AbstractView;
+import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionReady;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentModel;
@@ -35,27 +36,31 @@ public class PlainTextController extends DocumentController {
     }
 
     @Override @ActionReady
-    public void view(ActionMessage message) {
+    public AbstractView view(ActionContext context) {
         LOG.trace("view()");
-        message.setAttribute("document", getModel());
-        message.setAttribute("content", getModel().getBody()
+        context.setAttribute("document", getModel());
+        String body = getModel().getBody() == null ? "" : getModel().getBody();
+        context.setAttribute("content", body
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;")
                 .replaceAll("\n", "<br/>"));
-        message.setForward("text/viewer.xuml");
+        context.setForward("text/viewer.xuml");
+        return null;
     }
 
     @ActionReady
-    public void edit(ActionMessage message) {
+    public AbstractView edit(ActionContext context) {
         LOG.trace("edit()");
-        message.setAttribute("document", getModel());
-        message.setAttribute("content", getModel().getBody()
+        context.setAttribute("document", getModel());
+        String body = getModel().getBody() == null ? "" : getModel().getBody();
+        context.setAttribute("content", body
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;"));
-        message.setForward("text/editor.xuml");
+        context.setForward("text/editor.xuml");
+        return null;
     }
 }

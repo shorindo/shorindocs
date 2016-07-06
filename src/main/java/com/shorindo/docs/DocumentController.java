@@ -49,7 +49,7 @@ public abstract class DocumentController extends ActionController {
     public static DocumentModel getContentModel(String id) throws SQLException {
         Map<String,String> map = new HashMap<String,String>();
         map.put("id", id);
-        return DatabaseManager.selectOne("docs.getContent", map);
+        return DatabaseManager.selectOne("docs.getDocument", map);
     }
 
     public DocumentController(DocumentModel model) {
@@ -65,16 +65,16 @@ public abstract class DocumentController extends ActionController {
     }
 
     @ActionReady
-    public String create(Map<String,Object> params) throws ContentException {
+    public AbstractView create(ActionContext context) throws ContentException {
         for (int i = 0; i < 10; i++) {
-            String id = String.valueOf(new Random().nextLong());
+            String id = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
             DocumentModel model = new DocumentModel();
-            model.setContentId(id);
-            model.setContentType((String)params.get("contentType"));
-            if (DatabaseManager.insert("docs.createContent", model) > 0) {
-                return id + "?action=edit";
+            model.setDocumentId(id);
+            model.setContentType((String)context.getParameter("contentType"));
+            if (DatabaseManager.insert("docs.createDocument", model) > 0) {
+                context.setForward("redirect:" + id + "?action=edit");
+                break;
             }
-            
         }
         return null;
     }
@@ -82,6 +82,6 @@ public abstract class DocumentController extends ActionController {
     @ActionReady
     public List<DocumentModel> search(Map<String,Object> params) throws ContentException {
         LOG.trace("search()");
-        return DatabaseManager.selectList("searchContent", null);
+        return DatabaseManager.selectList("searchDocument", null);
     }
 }

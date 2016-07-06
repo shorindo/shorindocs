@@ -33,7 +33,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.shorindo.docs.AbstractView;
-import com.shorindo.docs.ActionMessage;
+import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.BeanManager;
 
 /**
@@ -42,7 +42,6 @@ import com.shorindo.docs.BeanManager;
 public class XumlView extends AbstractView {
     private static final Logger LOG = Logger.getLogger(XumlView.class);
     private static final Map<String,Class<?>> componentMap = new HashMap<String,Class<?>>();
-    private Map<String,Object> dsMap = new HashMap<String,Object>();
     private Component component;
 
     public static void init(String path) {
@@ -81,8 +80,8 @@ public class XumlView extends AbstractView {
         }
     }
 
-    public XumlView(ActionMessage message, InputStream is) throws IOException {
-        super(message);
+    public XumlView(ActionContext context, InputStream is) throws IOException {
+        super(context);
         try {
             component = parse(is);
         } catch (SAXException e) {
@@ -90,14 +89,6 @@ public class XumlView extends AbstractView {
         } catch (IOException e) {
             throw new IOException(e.getMessage());
         }
-    }
-
-    public void setData(String dataSource, Object result) {
-        dsMap.put(dataSource, result);
-    }
-
-    public String getData(String dataSource) {
-        return (String)dsMap.get(dataSource);
     }
 
     @Override
@@ -152,23 +143,23 @@ public class XumlView extends AbstractView {
             if ("$".equals(m1.group(1))) {
                 if (m1.group(3) != null) {
                     sb.append(escape((String)BeanManager.getValue(
-                            message.getAttribute(beanName),
+                            context.getAttribute(beanName),
                             m1.group(4),
                             m1.group())));
                 } else {
-                    sb.append(escape((String)message.getAttribute(beanName)));
+                    sb.append(escape((String)context.getAttribute(beanName)));
                 }
             } else if ("@".equals(m1.group(1))) {
                 if (m1.group(3) != null) {
                     sb.append(BeanManager.getValue(
-                            message.getAttribute(beanName),
+                            context.getAttribute(beanName),
                             m1.group(4),
                             m1.group()));
                 } else {
-                    sb.append((String)message.getAttribute(beanName));
+                    sb.append((String)context.getAttribute(beanName));
                 }   
             } else if ("#".equals(m1.group(1))) {
-                //TODO
+                sb.append(context.getMessage(m1.group(2) + m1.group(3)));
             }
             start = m1.end();
             end = m1.end();
@@ -180,10 +171,14 @@ public class XumlView extends AbstractView {
     }
 
     public String escape(String in) {
-        return in.toString().replaceAll("&", "&amp;")
+        if (in == null) {
+            return in;
+        } else {
+            return in.toString().replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;");
+        }
     }
 
     public class XumlHandler extends DefaultHandler {

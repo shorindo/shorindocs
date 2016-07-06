@@ -54,13 +54,18 @@ public class DispatcherServlet extends HttpServlet {
             action = "view";
         }
         try {
-            ActionMessage message = new ActionMessage(req);
+            ActionContext context = new ActionContext(req);
             DocumentController handler = DocumentController.getHandler(id);
-            handler.action(action, message);
-            for (Entry<String,Object> entry : message.getAttributes().entrySet()) {
+            handler.action(action, context);
+            for (Entry<String,Object> entry : context.getAttributes().entrySet()) {
                 req.setAttribute(entry.getKey(), entry.getValue());
             }
-            req.getRequestDispatcher(message.getForward()).forward(req, res);
+            String forward = context.getForward();
+            if (forward.startsWith("redirect:")) {
+                res.sendRedirect(forward.substring(9));
+            } else {
+                req.getRequestDispatcher(forward).forward(req, res);
+            }
         } catch (ContentException e) {
             LOG.error(e.getMessage(), e);
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -71,9 +76,9 @@ public class DispatcherServlet extends HttpServlet {
             throws ServletException, IOException {
         InputStream is = getClass().getResourceAsStream(req.getServletPath());
         try {
-            ActionMessage message = new ActionMessage(req);
-            XumlView view = new XumlView(message, is);
-            message.setAttribute("application", req.getSession().getServletContext());
+            ActionContext context = new ActionContext(req);
+            XumlView view = new XumlView(context, is);
+            context.setAttribute("application", req.getSession().getServletContext());
             res.setContentType(view.getContentType());
             res.getOutputStream().write(view.getContent().getBytes());
         } finally {

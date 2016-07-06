@@ -26,15 +26,15 @@ import javax.servlet.http.HttpSession;
 /**
  * 
  */
-public class ActionMessage {
-    private static final Logger LOG = Logger.getLogger(ActionMessage.class);
+public class ActionContext {
+    private static final Logger LOG = Logger.getLogger(ActionContext.class);
     private ResourceBundle bundle;
     private Map<String,Object> requestMap = new HashMap<String,Object>();
     private Map<String,Object> sessionMap = new HashMap<String,Object>();
     private Map<String,String> paramMap = new HashMap<String,String>();
     private String forward;
 
-    public ActionMessage(HttpServletRequest req) {
+    public ActionContext(HttpServletRequest req) {
         req.getAuthType();
         req.getCharacterEncoding();
         req.getContentLength();

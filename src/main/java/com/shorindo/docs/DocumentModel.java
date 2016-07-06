@@ -21,7 +21,7 @@ import java.util.Date;
  * 
  */
 public class DocumentModel {
-    private String contentId;
+    private String documentId;
     private String contentType;
     private int status;
     private String title;
@@ -32,11 +32,11 @@ public class DocumentModel {
     private String ownerId;
     private String aclId;
 
-    public String getContentId() {
-        return contentId;
+    public String getDocumentId() {
+        return documentId;
     }
-    public void setContentId(String contentId) {
-        this.contentId = contentId;
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
     public String getContentType() {
         return contentType;

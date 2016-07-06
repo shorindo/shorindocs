@@ -20,7 +20,7 @@ import java.io.IOException;
 import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.AbstractView;
-import com.shorindo.docs.ActionMessage;
+import com.shorindo.docs.ActionContext;
 
 /**
  * 
@@ -28,8 +28,8 @@ import com.shorindo.docs.ActionMessage;
 public class JsonView extends AbstractView {
     private Object bean;
 
-    public JsonView(ActionMessage message, Object bean) {
-        super(message);
+    public JsonView(ActionContext context, Object bean) {
+        super(context);
         this.bean = bean;
     }
 

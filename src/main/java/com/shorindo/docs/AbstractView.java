@@ -26,13 +26,13 @@ import java.util.Queue;
  */
 public abstract class AbstractView {
     private static final Logger LOG = Logger.getLogger(AbstractView.class);
-    protected ActionMessage message;
+    protected ActionContext context;
 
     public abstract String getContentType();
     public abstract String getContent() throws IOException;
 
-    public AbstractView(ActionMessage message) {
-        this.message = message;
+    public AbstractView(ActionContext context) {
+        this.context = context;
     }
 
     protected InputStream filter(InputStream is) {
@@ -44,7 +44,7 @@ public abstract class AbstractView {
         String name = in.substring(2, in.length() - 1);
         String value = in;
         if ("$".equals(type)) {
-            return BeanManager.getValue(message.getAttributes(), name, in).toString();
+            return BeanManager.getValue(context.getAttributes(), name, in).toString();
 //            Matcher m1 = p1.matcher(name);
 //            if (!m1.matches()) {
 //                return in;
@@ -72,7 +72,7 @@ public abstract class AbstractView {
 //            }
         } else if ("#".equals(type)) {
             try {
-                value = message.getMessage(name);
+                value = context.getMessage(name);
             } catch (Exception e) {
                 e.printStackTrace();
                 value = in;
