@@ -32,14 +32,14 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.shorindo.core.AbstractView;
+import com.shorindo.core.View;
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.BeanManager;
 
 /**
  * 
  */
-public class XumlView extends AbstractView {
+public class XumlView extends View {
     private static final Logger LOG = Logger.getLogger(XumlView.class);
     private static final Map<String,Class<?>> componentMap = new HashMap<String,Class<?>>();
     private Component component;

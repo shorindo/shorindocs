@@ -19,13 +19,13 @@ import java.io.IOException;
 
 import net.arnx.jsonic.JSON;
 
-import com.shorindo.core.AbstractView;
+import com.shorindo.core.View;
 import com.shorindo.core.ActionContext;
 
 /**
  * 
  */
-public class JsonView extends AbstractView {
+public class JsonView extends View {
     private Object bean;
 
     public JsonView(ActionContext context, Object bean) {

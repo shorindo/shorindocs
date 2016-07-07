@@ -23,14 +23,14 @@ import java.lang.reflect.Method;
 public abstract class ActionController {
     private static final Logger LOG = Logger.getLogger(ActionController.class);
 
-    public abstract AbstractView view(ActionContext context);
+    public abstract View view(ActionContext context);
 
-    public final AbstractView action(String name, ActionContext context) {
+    public final View action(String name, ActionContext context) {
         try {
             Method method = getClass().getMethod(name, ActionContext.class);
             if (method.getAnnotation(ActionReady.class) != null &&
-                    AbstractView.class.isAssignableFrom(method.getReturnType())) {
-                return (AbstractView)method.invoke(this, context);
+                    View.class.isAssignableFrom(method.getReturnType())) {
+                return (View)method.invoke(this, context);
             } else {
                 LOG.warn("no suitable method '" + name + "' exists");
                 return view(context);

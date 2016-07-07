@@ -17,7 +17,7 @@ package com.shorindo.docs.text;
 
 import org.apache.log4j.Logger;
 
-import com.shorindo.core.AbstractView;
+import com.shorindo.core.View;
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionReady;
 import com.shorindo.core.ContentTypeReady;
@@ -36,7 +36,7 @@ public class PlainTextController extends DocumentController {
     }
 
     @Override @ActionReady
-    public AbstractView view(ActionContext context) {
+    public View view(ActionContext context) {
         LOG.trace("view()");
         context.setAttribute("document", getModel());
         String body = getModel().getBody() == null ? "" : getModel().getBody();
@@ -51,7 +51,7 @@ public class PlainTextController extends DocumentController {
     }
 
     @ActionReady
-    public AbstractView edit(ActionContext context) {
+    public View edit(ActionContext context) {
         LOG.trace("edit()");
         context.setAttribute("document", getModel());
         String body = getModel().getBody() == null ? "" : getModel().getBody();

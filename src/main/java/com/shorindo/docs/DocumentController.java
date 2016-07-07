@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.shorindo.core.AbstractView;
+import com.shorindo.core.View;
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionController;
 import com.shorindo.core.ActionReady;
@@ -37,7 +37,6 @@ public abstract class DocumentController extends ActionController {
     private DocumentModel model;
 
     public static DocumentController getHandler(final String id) throws DocumentException {
-
         try {
             DocumentModel model = getContentModel(id);
             if (model == null) {
@@ -71,7 +70,7 @@ public abstract class DocumentController extends ActionController {
     }
 
     @ActionReady
-    public AbstractView create(ActionContext context) throws DocumentException {
+    public View create(ActionContext context) throws DocumentException {
         for (int i = 0; i < 10; i++) {
             String id = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
             DocumentModel model = new DocumentModel();

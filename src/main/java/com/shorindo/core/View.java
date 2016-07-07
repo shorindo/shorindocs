@@ -24,14 +24,14 @@ import java.util.Queue;
 /**
  * 
  */
-public abstract class AbstractView {
-    private static final Logger LOG = Logger.getLogger(AbstractView.class);
+public abstract class View {
+    private static final Logger LOG = Logger.getLogger(View.class);
     protected ActionContext context;
 
     public abstract String getContentType();
     public abstract String getContent() throws IOException;
 
-    public AbstractView(ActionContext context) {
+    public View(ActionContext context) {
         this.context = context;
     }
 
@@ -42,43 +42,13 @@ public abstract class AbstractView {
     protected String expandVars(String in) {
         String type = in.substring(0, 1);
         String name = in.substring(2, in.length() - 1);
-        String value = in;
         if ("$".equals(type)) {
             return BeanManager.getValue(context.getAttributes(), name, in).toString();
-//            Matcher m1 = p1.matcher(name);
-//            if (!m1.matches()) {
-//                return in;
-//            }
-//            String beanName = m1.group(1);
-//            Object bean = attrMap.get(beanName);
-//            if (bean == null) {
-//                LOG.warn("'" + beanName + "' not found.");
-//            }
-//            int start = 0;
-//            Matcher m2 = p2.matcher(m1.group(2));
-//            while (m2.find(start)) {
-//                String valueName = m2.group(1);
-//                bean = BeanManager.getProperty(bean, valueName);
-//                if (bean == null) {
-//                    break;
-//                }
-//                start = m2.end();
-//            }
-//            if (bean == null) {
-//                LOG.warn("bean '" + name + "' not found.");
-//                value = in;
-//            } else {
-//                value = bean.toString();
-//            }
         } else if ("#".equals(type)) {
-            try {
-                value = context.getMessage(name);
-            } catch (Exception e) {
-                e.printStackTrace();
-                value = in;
-            }
+            return context.getMessage(name);
+        } else {
+            return in;
         }
-        return value;
     }
 
     protected class VariableExpandFilter extends FilterInputStream {
@@ -159,29 +129,4 @@ public abstract class AbstractView {
         }
     }
 
-//    public static void main(String[] args) {
-//        AbstractView view = new AbstractView() {
-//            @Override
-//            public String getContentType() {
-//                return null;
-//            }
-//
-//            @Override
-//            public String getContent() throws IOException {
-//                return null;
-//            }
-//        };
-//        view.setAttribute("abc", "ABC");
-//        try {
-//            String s = "123${abc}456";
-//            InputStream is = new ByteArrayInputStream(s.getBytes());
-//            int c;
-//            while ((c = is.read()) != -1) {
-//                System.out.write((byte)c);
-//            }
-//            System.out.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

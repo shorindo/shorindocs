@@ -62,7 +62,12 @@ public class ActionContext {
         }
     }
     public String getMessage(String key) {
-        return bundle.getString(key);
+        try {
+            return bundle.getString(key);
+        } catch (Exception e) {
+            LOG.error("message[" + key + "] not found by " + e.getMessage());
+            return key;
+        }
     }
     public Map<String,Object> getAttributes() {
         return requestMap;
