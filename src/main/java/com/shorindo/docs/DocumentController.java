@@ -21,6 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.shorindo.core.AbstractView;
+import com.shorindo.core.ActionContext;
+import com.shorindo.core.ActionController;
+import com.shorindo.core.ActionReady;
+import com.shorindo.core.DatabaseManager;
+import com.shorindo.core.Logger;
 import com.shorindo.docs.text.PlainTextController;
 
 /**
@@ -30,19 +36,19 @@ public abstract class DocumentController extends ActionController {
     private static final Logger LOG = Logger.getLogger(DocumentController.class);
     private DocumentModel model;
 
-    public static DocumentController getHandler(final String id) throws ContentException {
+    public static DocumentController getHandler(final String id) throws DocumentException {
 
         try {
             DocumentModel model = getContentModel(id);
             if (model == null) {
-                throw new ContentException("model not found:" + id);
+                throw new DocumentException("model not found:" + id);
             } else if ("text/plain".equals(model.getContentType())) {
                 return new PlainTextController(model);
             } else {
-                throw new ContentException("handler not found:" + model.getContentType());
+                throw new DocumentException("handler not found:" + model.getContentType());
             }
         } catch (Exception e) {
-            throw new ContentException(e.getMessage(), e);
+            throw new DocumentException(e.getMessage(), e);
         }
     }
 
@@ -60,12 +66,12 @@ public abstract class DocumentController extends ActionController {
         return model;
     }
 
-    public String save(Map<String,Object> params) throws ContentException {
+    public String save(Map<String,Object> params) throws DocumentException {
         return null;
     }
 
     @ActionReady
-    public AbstractView create(ActionContext context) throws ContentException {
+    public AbstractView create(ActionContext context) throws DocumentException {
         for (int i = 0; i < 10; i++) {
             String id = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
             DocumentModel model = new DocumentModel();
@@ -80,7 +86,7 @@ public abstract class DocumentController extends ActionController {
     }
 
     @ActionReady
-    public List<DocumentModel> search(Map<String,Object> params) throws ContentException {
+    public List<DocumentModel> search(Map<String,Object> params) throws DocumentException {
         LOG.trace("search()");
         return DatabaseManager.selectList("searchDocument", null);
     }

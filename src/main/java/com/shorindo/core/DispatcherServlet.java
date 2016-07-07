@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.core;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +25,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.shorindo.docs.xuml.XumlView;
+import com.shorindo.docs.DocumentController;
+import com.shorindo.docs.DocumentException;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -66,7 +68,7 @@ public class DispatcherServlet extends HttpServlet {
             } else {
                 req.getRequestDispatcher(forward).forward(req, res);
             }
-        } catch (ContentException e) {
+        } catch (DocumentException e) {
             LOG.error(e.getMessage(), e);
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
         }

@@ -13,32 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
-
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+package com.shorindo.xuml;
 
 /**
  * 
  */
-public class EncodingFilter implements Filter {
+public class GeneralComponent extends Component {
+    private String tagName;
 
-    public void destroy() {
+    public GeneralComponent(XumlView view, String tagName) {
+        super(view);
+        this.tagName = tagName;
     }
 
-    public void doFilter(ServletRequest req, ServletResponse res,
-            FilterChain chain) throws IOException, ServletException {
-        req.setCharacterEncoding("UTF-8");
-        chain.doFilter(req, res);
-    }
-
-    public void init(FilterConfig config) throws ServletException {
+    @Override
+    public String getHtml() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<" + tagName + ">");
+        for (Component c : getChildList()) {
+            sb.append(c.getHtml());
+        }
+        sb.append("</" + tagName + ">");
+        return sb.toString();
     }
 
 }

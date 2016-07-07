@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.xuml;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.shorindo.xuml;
 
 /**
  * 
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ComponentReady {
-    String value();
+public class TextComponent extends Component {
+    private String text;
+
+    public TextComponent(XumlView view, String text) {
+        super(view);
+        this.text = text;
+    }
+
+    @Override
+    public String getHtml() {
+        return text;
+    }
+
 }

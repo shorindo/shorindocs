@@ -13,22 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.xuml;
+package com.shorindo.xuml;
 
 /**
  * 
  */
-public class TextComponent extends Component {
-    private String text;
+@ComponentReady("vbox")
+public class VBoxComponent extends Component {
 
-    public TextComponent(XumlView view, String text) {
+    public VBoxComponent(XumlView view) {
         super(view);
-        this.text = text;
     }
 
     @Override
     public String getHtml() {
-        return text;
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div class=\"vbox\">");
+        for (Component c : getChildList()) {
+            sb.append(c.getHtml());
+        }
+        sb.append("</div>");
+        return sb.toString();
     }
 
 }

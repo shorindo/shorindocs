@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.xuml;
 
 /**
  * 
  */
-public class ContentException extends Exception {
-    private static final long serialVersionUID = 1L;
+@ComponentReady("hbox")
+public class HBoxComponent extends Component {
 
-    public ContentException(String message, Throwable cause) {
-        super(message, cause);
+    public HBoxComponent(XumlView view) {
+        super(view);
     }
 
-    public ContentException(String message) {
-        super(message);
+    @Override
+    public String getHtml() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div class=\"hbox\">");
+        for (Component c : getChildList()) {
+            sb.append(c.getHtml());
+        }
+        sb.append("</div>");
+        return sb.toString();
     }
 
 }

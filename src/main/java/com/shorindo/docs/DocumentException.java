@@ -15,16 +15,18 @@
  */
 package com.shorindo.docs;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
  * 
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ContentTypeReady {
-    String value();
+public class DocumentException extends Exception {
+    private static final long serialVersionUID = 1L;
+
+    public DocumentException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public DocumentException(String message) {
+        super(message);
+    }
+
 }

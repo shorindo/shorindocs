@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.xuml;
+package com.shorindo.xuml;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,9 +32,9 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.shorindo.docs.AbstractView;
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.BeanManager;
+import com.shorindo.core.AbstractView;
+import com.shorindo.core.ActionContext;
+import com.shorindo.core.BeanManager;
 
 /**
  * 

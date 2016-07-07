@@ -17,12 +17,12 @@ package com.shorindo.docs.text;
 
 import org.apache.log4j.Logger;
 
-import com.shorindo.docs.AbstractView;
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionReady;
+import com.shorindo.core.AbstractView;
+import com.shorindo.core.ActionContext;
+import com.shorindo.core.ActionReady;
+import com.shorindo.core.ContentTypeReady;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentModel;
-import com.shorindo.docs.ContentTypeReady;
 
 /**
  * 

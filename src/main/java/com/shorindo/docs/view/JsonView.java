@@ -19,8 +19,8 @@ import java.io.IOException;
 
 import net.arnx.jsonic.JSON;
 
-import com.shorindo.docs.AbstractView;
-import com.shorindo.docs.ActionContext;
+import com.shorindo.core.AbstractView;
+import com.shorindo.core.ActionContext;
 
 /**
  * 

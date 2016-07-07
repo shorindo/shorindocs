@@ -13,41 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.xuml;
+package com.shorindo.xuml;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 
  */
-public class XumlException extends Exception {
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 
-     */
-    public XumlException() {
-        super();
-    }
-
-    /**
-     * @param message
-     */
-    public XumlException(String message) {
-        super(message);
-    }
-
-    /**
-     * @param cause
-     */
-    public XumlException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
-     * @param message
-     * @param cause
-     */
-    public XumlException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ComponentReady {
+    String value();
 }

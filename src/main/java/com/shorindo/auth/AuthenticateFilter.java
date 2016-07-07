@@ -13,27 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.xuml;
+package com.shorindo.auth;
+
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 /**
  * 
  */
-@ComponentReady("hbox")
-public class HBoxComponent extends Component {
+public class AuthenticateFilter implements Filter {
 
-    public HBoxComponent(XumlView view) {
-        super(view);
+    public void destroy() {
     }
 
-    @Override
-    public String getHtml() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"hbox\">");
-        for (Component c : getChildList()) {
-            sb.append(c.getHtml());
-        }
-        sb.append("</div>");
-        return sb.toString();
+    public void doFilter(ServletRequest req, ServletResponse res,
+            FilterChain chain) throws IOException, ServletException {
+        chain.doFilter(req, res);
+    }
+
+    public void init(FilterConfig config) throws ServletException {
     }
 
 }

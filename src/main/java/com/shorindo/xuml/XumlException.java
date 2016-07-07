@@ -13,28 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.xuml;
+package com.shorindo.xuml;
 
 /**
  * 
  */
-public class GeneralComponent extends Component {
-    private String tagName;
+public class XumlException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-    public GeneralComponent(XumlView view, String tagName) {
-        super(view);
-        this.tagName = tagName;
+    /**
+     * 
+     */
+    public XumlException() {
+        super();
     }
 
-    @Override
-    public String getHtml() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<" + tagName + ">");
-        for (Component c : getChildList()) {
-            sb.append(c.getHtml());
-        }
-        sb.append("</" + tagName + ">");
-        return sb.toString();
+    /**
+     * @param message
+     */
+    public XumlException(String message) {
+        super(message);
+    }
+
+    /**
+     * @param cause
+     */
+    public XumlException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    public XumlException(String message, Throwable cause) {
+        super(message, cause);
     }
 
 }

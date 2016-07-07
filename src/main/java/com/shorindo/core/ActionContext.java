@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.core;
 
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -68,11 +68,9 @@ public class ActionContext {
         return requestMap;
     }
     public void setAttribute(String key, Object value) {
-        LOG.debug("setAttribute(" + key + "," + value + ")@" + this);
         requestMap.put(key, value);
     }
     public Object getAttribute(String key) {
-        LOG.debug("getAttribute(" + key + ")@" + this);
         return requestMap.get(key);
     }
     public String getParameter(String key) {

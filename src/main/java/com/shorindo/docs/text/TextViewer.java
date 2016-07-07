@@ -17,9 +17,9 @@ package com.shorindo.docs.text;
 
 import org.apache.log4j.Logger;
 
-import com.shorindo.docs.xuml.Component;
-import com.shorindo.docs.xuml.ComponentReady;
-import com.shorindo.docs.xuml.XumlView;
+import com.shorindo.xuml.Component;
+import com.shorindo.xuml.ComponentReady;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 

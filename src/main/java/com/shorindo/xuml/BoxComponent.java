@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.xuml;
+package com.shorindo.xuml;
 
 /**
  * 
  */
-@ComponentReady("vbox")
-public class VBoxComponent extends Component {
+@ComponentReady("box")
+public class BoxComponent extends Component {
 
-    public VBoxComponent(XumlView view) {
+    public BoxComponent(XumlView view) {
         super(view);
     }
 
     @Override
     public String getHtml() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"vbox\">");
+        sb.append("<div class=\"box\">");
         for (Component c : getChildList()) {
             sb.append(c.getHtml());
         }
