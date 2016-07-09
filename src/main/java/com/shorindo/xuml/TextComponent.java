@@ -28,7 +28,7 @@ public class TextComponent extends Component {
 
     @Override
     public String getHtml() {
-        return text;
+        return escape(text);
     }
 
 }

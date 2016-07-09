@@ -65,7 +65,7 @@ public class BeanManager {
                 Method method = bean.getClass().getMethod(setterName, String.class);
                 method.invoke(bean, value);
             } catch (Exception e) {
-                LOG.error("setProperty()", e);
+                LOG.error("can't set property '" + name + "'");
             }
         }
     }

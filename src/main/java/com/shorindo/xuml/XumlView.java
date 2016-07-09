@@ -122,13 +122,13 @@ public class XumlView extends View {
             Class<Component> clazz = (Class<Component>) componentMap.get(componentName);
             Constructor<Component> c = clazz.getConstructor(XumlView.class);
             component = c.newInstance(this);
+            for (int i = 0; i < attrs.getLength(); i++) {
+                String name = attrs.getLocalName(i);
+                String value = attrs.getValue(i);
+                BeanManager.setProperty(component, name, value);
+            }
         } catch (Exception e) {
-            component = new GeneralComponent(this, componentName);
-        }
-        for (int i = 0; i < attrs.getLength(); i++) {
-            String name = attrs.getLocalName(i);
-            String value = attrs.getValue(i);
-            BeanManager.setProperty(component, name, value);
+            component = new GeneralComponent(this, componentName, attrs);
         }
         return component;
     }

@@ -15,21 +15,40 @@
  */
 package com.shorindo.xuml;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.xml.sax.Attributes;
+
 /**
  * 
  */
 public class GeneralComponent extends Component {
     private String tagName;
+    private Map<String,String> attrMap;
 
-    public GeneralComponent(XumlView view, String tagName) {
+    public GeneralComponent(XumlView view, String tagName, Attributes attrs) {
         super(view);
         this.tagName = tagName;
+        this.attrMap = new HashMap<String,String>();
+        for (int i = 0; i < attrs.getLength(); i++) {
+            attrMap.put(attrs.getQName(i), attrs.getValue(i));
+        }
     }
 
     @Override
     public String getHtml() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<" + tagName + ">");
+        sb.append("<" + tagName);
+        for (Entry<String,String> e : attrMap.entrySet()) {
+            sb.append(" ");
+            sb.append(e.getKey());
+            sb.append("=\"");
+            sb.append(e.getValue());
+            sb.append("\"");
+        }
+        sb.append(">");
         for (Component c : getChildList()) {
             sb.append(c.getHtml());
         }

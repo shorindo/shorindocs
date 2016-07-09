@@ -58,7 +58,25 @@ public class ActionContext {
             paramMap.put(key, req.getParameter(key));
         }
     }
-    
+
+    public String getAction() {
+        String action = paramMap.get("action");
+        if (action == null || "".equals(action)) {
+            return "view";
+        } else {
+            return action;
+        }
+    }
+
+    public String getFormat() {
+        String format = paramMap.get("format");
+        if (format == null || "".equals(format)) {
+            return "html";
+        } else {
+            return format;
+        }
+    }
+
     public String getContextPath() {
         return contextPath;
     }

@@ -28,21 +28,18 @@ public abstract class ActionController {
 
     public abstract View view(ActionContext context);
 
-    public final View action(String name, ActionContext context) {
+    public final View action(ActionContext context) {
         try {
-            if (name == null || "".equals(name)) {
-                name = "view";
-            }
-            Method method = getClass().getMethod(name, ActionContext.class);
+            Method method = getClass().getMethod(context.getAction(), ActionContext.class);
             if (method.getAnnotation(ActionReady.class) != null &&
                     View.class.isAssignableFrom(method.getReturnType())) {
                 return (View)method.invoke(this, context);
             } else {
-                LOG.warn("no suitable method '" + name + "' exists.");
+                LOG.warn("no suitable method '" + context.getAction() + "' exists.");
                 return view(context);
             }
         } catch (Exception e) {
-            LOG.warn("no suitable method '" + name + "' exists.", e);
+            LOG.warn("no suitable method '" + context.getAction() + "' exists.", e);
             return view(context);
         }
     }

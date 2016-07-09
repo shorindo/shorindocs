@@ -65,14 +65,12 @@ public class ActionServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         ActionContext context = new ActionContext(req);
-        String action = req.getParameter("action") != null ?
-                req.getParameter("action") : "view";
         String ext = req.getServletPath().replaceAll("^(.*?)(\\.([^\\.]+))?$", "$3");
         File file = new File(getServletContext().getRealPath(req.getServletPath()));
         View view;
 
         if (actionMap.containsKey(req.getServletPath())) {
-            view = actionMap.get(req.getServletPath()).action(action, context);
+            view = actionMap.get(req.getServletPath()).action(context);
         } else if ("xuml".equals(ext)) {
             InputStream is = getClass().getResourceAsStream(req.getServletPath());
             view = new XumlView(context, is);

@@ -26,12 +26,25 @@ public abstract class Component {
     private XumlView view;
     private Component parent;
     private String id;
+    private String outclude;
 
     public abstract String getHtml();
 
     public Component(XumlView view) {
         childList = new ArrayList<Component>();
         this.view = view;
+    }
+
+    public final String escape(String in) {
+        if (in == null) {
+            return in;
+        } else {
+            return in
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll("\"", "&quot;");
+        }
     }
 
     public XumlView getView() {
@@ -62,6 +75,14 @@ public abstract class Component {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getOutclude() {
+        return outclude;
+    }
+
+    public void setOutclude(String outclude) {
+        this.outclude = outclude;
     }
 
 }
