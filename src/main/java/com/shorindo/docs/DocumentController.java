@@ -28,6 +28,7 @@ import com.shorindo.core.annotation.ActionReady;
 import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.RedirectView;
 import com.shorindo.core.view.View;
+import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.text.PlainTextController;
 
 /**

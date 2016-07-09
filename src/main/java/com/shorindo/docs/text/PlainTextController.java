@@ -25,7 +25,7 @@ import com.shorindo.core.annotation.ContentTypeReady;
 import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.View;
 import com.shorindo.docs.DocumentController;
-import com.shorindo.docs.DocumentModel;
+import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.xuml.XumlView;
 
 /**
