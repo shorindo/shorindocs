@@ -26,6 +26,7 @@ import com.shorindo.core.DatabaseManager;
 import com.shorindo.core.Logger;
 import com.shorindo.core.annotation.ActionReady;
 import com.shorindo.core.view.ErrorView;
+import com.shorindo.core.view.JsonView;
 import com.shorindo.core.view.RedirectView;
 import com.shorindo.core.view.View;
 import com.shorindo.docs.model.DocumentModel;
@@ -96,8 +97,9 @@ public abstract class DocumentController extends ActionController {
     }
 
     @ActionReady
-    public List<DocumentModel> search(Map<String,Object> params) throws DocumentException {
+    public View search(ActionContext context) throws DocumentException {
         LOG.trace("search()");
-        return DatabaseManager.selectList("searchDocument", null);
+        List<DocumentModel> list = DatabaseManager.selectList("searchDocument", null);
+        return new JsonView(list, context);
     }
 }

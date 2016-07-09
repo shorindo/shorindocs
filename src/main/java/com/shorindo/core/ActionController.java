@@ -38,11 +38,11 @@ public abstract class ActionController {
                     View.class.isAssignableFrom(method.getReturnType())) {
                 return (View)method.invoke(this, context);
             } else {
-                LOG.warn("no suitable method '" + name + "' exists");
+                LOG.warn("no suitable method '" + name + "' exists.");
                 return view(context);
             }
         } catch (Exception e) {
-            LOG.warn("no suitable method '" + name + "' exists:" + e.getMessage());
+            LOG.warn("no suitable method '" + name + "' exists.", e);
             return view(context);
         }
     }

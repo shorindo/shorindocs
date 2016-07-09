@@ -13,48 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.view;
+package com.shorindo.core.view;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 import net.arnx.jsonic.JSON;
-import net.arnx.jsonic.JSONException;
 
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.Logger;
-import com.shorindo.core.view.View;
 
 /**
  * 
  */
 public class JsonView extends View {
-    private static final Logger LOG = Logger.getLogger(View.class);
-    private Object bean;
+    private static final Logger LOG = Logger.getLogger(JsonView.class);
+    Object bean;
 
-    public JsonView(ActionContext context, Object bean) {
+    public JsonView(Object bean, ActionContext context) {
         super(context);
         this.bean = bean;
     }
 
+    @Override
     public String getContentType() {
-        return "application/json; charset=UTF-8";
+        return "application/json";
     }
 
+    @Override
     public InputStream getContent() {
         try {
-            return new ByteArrayInputStream(JSON.encode(bean).getBytes("UTF-8"));
+            return new ByteArrayInputStream(JSON.encode(bean, true).getBytes("UTF-8"));
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-            return null;
+            return new ByteArrayInputStream(new byte[0]);
         }
     }
-
-//    @Override
-//    public void setAttribute(String key, Object value) {
-//        // TODO Auto-generated method stub
-//    }
 
 }
