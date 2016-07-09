@@ -42,7 +42,11 @@
 
   <servlet>
     <servlet-name>Dispatcher</servlet-name>
-    <servlet-class>com.shorindo.core.DispatcherServlet</servlet-class>
+    <servlet-class>com.shorindo.docs.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>/login</param-name>
+      <param-value>com.shorindo.auth.LoginController</param-value>
+    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

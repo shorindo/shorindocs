@@ -13,48 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.view;
+package com.shorindo.core.view;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
-import net.arnx.jsonic.JSON;
-import net.arnx.jsonic.JSONException;
+import org.apache.log4j.Logger;
 
 import com.shorindo.core.ActionContext;
-import com.shorindo.core.Logger;
-import com.shorindo.core.view.View;
 
 /**
  * 
  */
-public class JsonView extends View {
-    private static final Logger LOG = Logger.getLogger(View.class);
-    private Object bean;
+public class DefaultView extends View {
+    private static final Logger LOG = Logger.getLogger(DefaultView.class);
+    private File file;
 
-    public JsonView(ActionContext context, Object bean) {
+    public DefaultView(File file, ActionContext context) {
         super(context);
-        this.bean = bean;
+        this.file = file;
     }
 
+    @Override
     public String getContentType() {
-        return "application/json; charset=UTF-8";
+        String ext = file.getName().replaceAll("^.*?(\\.(.+))?$", "$2");
+        if ("css".equals(ext)) {
+            return "text/css";
+        } else if ("js".equals(ext)) {
+            return "text/javascript";
+        } else {
+            return "application/octet-stream";
+        }
     }
 
+    @Override
     public InputStream getContent() {
         try {
-            return new ByteArrayInputStream(JSON.encode(bean).getBytes("UTF-8"));
-        } catch (Exception e) {
+            return new FileInputStream(file);
+        } catch (FileNotFoundException e) {
             LOG.error(e.getMessage(), e);
             return null;
         }
     }
-
-//    @Override
-//    public void setAttribute(String key, Object value) {
-//        // TODO Auto-generated method stub
-//    }
 
 }

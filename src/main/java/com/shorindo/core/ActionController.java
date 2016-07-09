@@ -17,6 +17,9 @@ package com.shorindo.core;
 
 import java.lang.reflect.Method;
 
+import com.shorindo.core.annotation.ActionReady;
+import com.shorindo.core.view.View;
+
 /**
  * 
  */
@@ -27,6 +30,9 @@ public abstract class ActionController {
 
     public final View action(String name, ActionContext context) {
         try {
+            if (name == null || "".equals(name)) {
+                name = "view";
+            }
             Method method = getClass().getMethod(name, ActionContext.class);
             if (method.getAnnotation(ActionReady.class) != null &&
                     View.class.isAssignableFrom(method.getReturnType())) {
@@ -36,8 +42,8 @@ public abstract class ActionController {
                 return view(context);
             }
         } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-            return null;
+            LOG.warn("no suitable method '" + name + "' exists:" + e.getMessage());
+            return view(context);
         }
     }
 }

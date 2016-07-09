@@ -13,17 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.core;
+package com.shorindo.core.view;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.annotation.ElementType;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import com.shorindo.core.ActionContext;
 
 /**
  * 
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface ActionReady {
+public class ErrorView extends View {
+
+    public ErrorView(int status, ActionContext context) {
+        super(context);
+        setStatus(status);
+    }
+
+    @Override
+    public String getContentType() {
+        return "text/html; charset=UTF-8";
+    }
+
+    @Override
+    public InputStream getContent() {
+        return new ByteArrayInputStream(("ERROR - " + getStatus()).getBytes());
+    }
+
 }

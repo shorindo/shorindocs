@@ -1,0 +1,13 @@
+<window title="editor - ${document.title}" width="fill" height="fill">
+  <vbox>
+    <hbox id="header">
+      header
+    </hbox>
+    <hbox id="center">
+      <vbox>
+        edit menu
+      </vbox>
+      <text-editor/>
+    </hbox>
+  </vbox>
+</window>

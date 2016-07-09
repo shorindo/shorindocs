@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.core;
+package com.shorindo.core.view;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
+
+import com.shorindo.core.ActionContext;
+import com.shorindo.core.BeanManager;
+import com.shorindo.core.Logger;
 
 /**
  * 
@@ -27,12 +33,27 @@ import java.util.Queue;
 public abstract class View {
     private static final Logger LOG = Logger.getLogger(View.class);
     protected ActionContext context;
+    private int status = 200;
+    private Map<String,String> optionMap;
 
     public abstract String getContentType();
-    public abstract String getContent() throws IOException;
+    public abstract InputStream getContent();
 
     public View(ActionContext context) {
         this.context = context;
+        optionMap = new HashMap<String,String>();
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public Map<String, String> getOptions() {
+        return optionMap;
     }
 
     protected InputStream filter(InputStream is) {

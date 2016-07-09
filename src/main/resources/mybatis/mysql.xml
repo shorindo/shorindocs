@@ -3,7 +3,7 @@
 <mapper namespace="docs">
 
   <resultMap id="resultMapDocumentModel" type="com.shorindo.docs.DocumentModel">
-    <result property="contentId"   column="content_id" />
+    <result property="documentId"   column="document_id" />
     <result property="contentType" column="content_type" />
     <result property="title"       column="title" />
     <result property="body"        column="body"/>

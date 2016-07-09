@@ -21,12 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.shorindo.core.View;
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionController;
-import com.shorindo.core.ActionReady;
 import com.shorindo.core.DatabaseManager;
 import com.shorindo.core.Logger;
+import com.shorindo.core.annotation.ActionReady;
+import com.shorindo.core.view.ErrorView;
+import com.shorindo.core.view.RedirectView;
+import com.shorindo.core.view.View;
 import com.shorindo.docs.text.PlainTextController;
 
 /**
@@ -36,7 +38,7 @@ public abstract class DocumentController extends ActionController {
     private static final Logger LOG = Logger.getLogger(DocumentController.class);
     private DocumentModel model;
 
-    public static DocumentController getHandler(final String id) throws DocumentException {
+    public static DocumentController getController(final String id) throws DocumentException {
         try {
             DocumentModel model = getContentModel(id);
             if (model == null) {
@@ -65,8 +67,9 @@ public abstract class DocumentController extends ActionController {
         return model;
     }
 
-    public String save(Map<String,Object> params) throws DocumentException {
-        return null;
+    @ActionReady
+    public View save(ActionContext context) throws DocumentException {
+        return new RedirectView(model.getDocumentId(), context);
     }
 
     @ActionReady
@@ -77,11 +80,10 @@ public abstract class DocumentController extends ActionController {
             model.setDocumentId(id);
             model.setContentType((String)context.getParameter("contentType"));
             if (DatabaseManager.insert("docs.createDocument", model) > 0) {
-                context.setForward("redirect:" + id + "?action=edit");
-                break;
+                return new RedirectView(id + "?action=edit", context);
             }
         }
-        return null;
+        return new ErrorView(500, context);
     }
 
     @ActionReady

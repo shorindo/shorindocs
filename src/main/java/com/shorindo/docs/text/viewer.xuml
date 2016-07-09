@@ -1,0 +1,13 @@
+<window title="viewer - ${document.title}">
+  <vbox>
+    <hbox id="header">
+      header
+    </hbox>
+    <hbox id="center">
+      <vbox>
+        最近の更新
+      </vbox>
+      <text-viewer/>
+    </hbox>
+  </vbox>
+</window>

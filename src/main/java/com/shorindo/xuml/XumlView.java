@@ -15,6 +15,7 @@
  */
 package com.shorindo.xuml;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,9 +33,9 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.shorindo.core.View;
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.BeanManager;
+import com.shorindo.core.view.View;
 
 /**
  * 
@@ -97,8 +98,13 @@ public class XumlView extends View {
     }
 
     @Override
-    public String getContent() throws IOException {
-        return eval(component.getHtml());
+    public InputStream getContent() {
+        try {
+            return new ByteArrayInputStream(eval(component.getHtml()).getBytes("UTF-8"));
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return new ByteArrayInputStream(new byte[0]);
+        }
     }
 
     public Component parse(InputStream input) throws SAXException, IOException {

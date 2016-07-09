@@ -15,14 +15,18 @@
  */
 package com.shorindo.docs.text;
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 
-import com.shorindo.core.View;
 import com.shorindo.core.ActionContext;
-import com.shorindo.core.ActionReady;
-import com.shorindo.core.ContentTypeReady;
+import com.shorindo.core.annotation.ActionReady;
+import com.shorindo.core.annotation.ContentTypeReady;
+import com.shorindo.core.view.ErrorView;
+import com.shorindo.core.view.View;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentModel;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -46,8 +50,11 @@ public class PlainTextController extends DocumentController {
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;")
                 .replaceAll("\n", "<br/>"));
-        context.setForward("text/viewer.xuml");
-        return null;
+        try {
+            return new XumlView(context, getClass().getResourceAsStream("viewer.xuml"));
+        } catch (IOException e) {
+            return new ErrorView(500, context);
+        }
     }
 
     @ActionReady
@@ -60,7 +67,10 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;"));
-        context.setForward("text/editor.xuml");
-        return null;
+        try {
+            return new XumlView(context, getClass().getResourceAsStream("editor.xuml"));
+        } catch (IOException e) {
+            return new ErrorView(500, context);
+        }
     }
 }

@@ -17,6 +17,7 @@ package com.shorindo.core;
 
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -28,23 +29,19 @@ import javax.servlet.http.HttpSession;
  */
 public class ActionContext {
     private static final Logger LOG = Logger.getLogger(ActionContext.class);
+    private String contextPath;
+    private String servletPath;
+    private Locale locale;
     private ResourceBundle bundle;
     private Map<String,Object> requestMap = new HashMap<String,Object>();
-    private Map<String,Object> sessionMap = new HashMap<String,Object>();
+    private Map<String,Object> serverMap = new HashMap<String,Object>();
+    private Map<String,Object> clientMap = new HashMap<String,Object>();
     private Map<String,String> paramMap = new HashMap<String,String>();
-    private String forward;
 
     public ActionContext(HttpServletRequest req) {
-        req.getAuthType();
-        req.getCharacterEncoding();
-        req.getContentLength();
-        req.getContentType();
-        req.getContextPath();
-        req.getLocale();
-        req.getRemoteAddr();
-        req.getServletPath();
-        req.getUserPrincipal();
-        //req.getCookies();
+        contextPath = req.getContextPath();
+        servletPath = req.getServletPath();
+        locale = req.getLocale();
 
         bundle = ResourceBundle.getBundle("messages", req.getLocale());
         for (Enumeration<?> e = req.getAttributeNames(); e.hasMoreElements();) {
@@ -54,13 +51,26 @@ public class ActionContext {
         HttpSession session = req.getSession();
         for (Enumeration<?> e = session.getAttributeNames(); e.hasMoreElements();) {
             String key = (String)e.nextElement();
-            sessionMap.put(key, session.getAttribute(key));
+            serverMap.put(key, session.getAttribute(key));
         }
         for (Enumeration<?> e = req.getParameterNames(); e.hasMoreElements();) {
             String key = (String)e.nextElement();
             paramMap.put(key, req.getParameter(key));
         }
     }
+    
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public String getServletPath() {
+        return servletPath;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
     public String getMessage(String key) {
         try {
             return bundle.getString(key);
@@ -80,11 +90,5 @@ public class ActionContext {
     }
     public String getParameter(String key) {
         return paramMap.get(key);
-    }
-    public void setForward(String forward) {
-        this.forward = forward;
-    }
-    public String getForward() {
-        return forward;
     }
 }
