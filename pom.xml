@@ -5,6 +5,10 @@
   <packaging>war</packaging>
   <name>shorindocs</name>
   <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <tomcat.webapps>C:/Program Files/apache/apache-tomcat-7.0.42/webapps</tomcat.webapps>
+  </properties>
   <dependencies>
   	<dependency>
   		<groupId>mysql</groupId>
@@ -29,13 +33,11 @@
   	</dependency>
   	<dependency>
   		<groupId>javax.servlet</groupId>
-  		<artifactId>servlet-api</artifactId>
+  		<artifactId>javax.servlet-api</artifactId>
+  		<version>3.0.1</version>
   		<scope>provided</scope>
   	</dependency>
   </dependencies>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
   <build>
     <finalName>docs</finalName>
     <plugins>
@@ -64,7 +66,7 @@
         <configuration>
           <tasks>
             <echo message="release" />
-            <copy file="target/docs.war" todir="C:/Program Files/apache/apache-tomcat-7.0.42/webapps"/>
+            <copy file="target/docs.war" todir="${tomcat.webapps}"/>
           </tasks>
         </configuration>
       </plugin>

@@ -39,12 +39,18 @@
     )
   </sql>
 
-  <select id="getDocument" resultMap="resultMapDocumentModel">
-    SELECT * FROM document WHERE document_id = #{id}
+  <select id="getDocument" parameterType="com.shorindo.docs.DocumentModel" resultMap="resultMapDocumentModel">
+    SELECT * FROM document WHERE document_id = #{documentId}
   </select>
 
-  <insert id="createDocument">
+  <insert id="createDocument" parameterType="com.shorindo.docs.DocumentModel">
     INSERT INTO document (DOCUMENT_ID, CONTENT_TYPE, STATUS, TITLE, BODY, CREATE_DATE, UPDATE_DATE)
     VALUES (#{documentId}, #{contentType}, 0, #{title}, #{body}, NOW(), NOW())
   </insert>
+  
+  <update id="updateDocument" parameterType="com.shorindo.docs.DocumentModel">
+    UPDATE document
+    SET    TITLE=#{title}, BODY=#{body}, UPDATE_DATE=NOW()
+    WHERE  document_id=#{documentId} AND status=0 
+  </update>
 </mapper>

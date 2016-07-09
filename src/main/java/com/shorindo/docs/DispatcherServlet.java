@@ -43,8 +43,7 @@ public class DispatcherServlet extends ActionServlet {
 
         try {
             DocumentController controller = DocumentController.getController(id);
-            String action = req.getParameter("action");
-            View view = controller.action(action, context);
+            View view = controller.action(req.getParameter("action"), context);
             output(res, view);
         } catch (DocumentException e) {
             super.service(req, res);

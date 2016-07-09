@@ -100,6 +100,17 @@ public abstract class DatabaseManager {
         }
     }
 
+    public static int update(String id, Object arg) {
+        SqlSession session = sqlSessionFactory.openSession(true);
+        try {
+            return session.update(id, arg);
+        } catch (Throwable th) {
+            throw new RuntimeException(th);
+        } finally {
+            session.close();
+        }
+    }
+
     public static <T>T transaction(Transactional<T> callback) {
         SqlSession session = sqlSessionFactory.openSession();
         try {

@@ -16,7 +16,6 @@
 package com.shorindo.docs;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -46,7 +45,7 @@ public abstract class DocumentController extends ActionController {
             } else if ("text/plain".equals(model.getContentType())) {
                 return new PlainTextController(model);
             } else {
-                throw new DocumentException("handler not found:" + model.getContentType());
+                throw new DocumentException("controller not found:" + model.getContentType());
             }
         } catch (Exception e) {
             throw new DocumentException(e.getMessage(), e);
@@ -54,9 +53,9 @@ public abstract class DocumentController extends ActionController {
     }
 
     public static DocumentModel getContentModel(String id) throws SQLException {
-        Map<String,String> map = new HashMap<String,String>();
-        map.put("id", id);
-        return DatabaseManager.selectOne("docs.getDocument", map);
+        DocumentModel model = new DocumentModel();
+        model.setDocumentId(id);
+        return DatabaseManager.selectOne("docs.getDocument", model);
     }
 
     public DocumentController(DocumentModel model) {
@@ -69,7 +68,14 @@ public abstract class DocumentController extends ActionController {
 
     @ActionReady
     public View save(ActionContext context) throws DocumentException {
-        return new RedirectView(model.getDocumentId(), context);
+        DocumentModel model = getModel();
+        model.setTitle(context.getParameter("title"));
+        model.setBody(context.getParameter("body"));
+        if (DatabaseManager.update("docs.updateDocument", model) > 0) {
+            return new RedirectView(model.getDocumentId(), context);
+        } else {
+            return new ErrorView(500, context);
+        }
     }
 
     @ActionReady
@@ -78,7 +84,9 @@ public abstract class DocumentController extends ActionController {
             String id = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
             DocumentModel model = new DocumentModel();
             model.setDocumentId(id);
-            model.setContentType((String)context.getParameter("contentType"));
+            model.setContentType(context.getParameter("contentType"));
+            model.setTitle(context.getParameter("title"));
+            model.setBody(context.getParameter("body"));
             if (DatabaseManager.insert("docs.createDocument", model) > 0) {
                 return new RedirectView(id + "?action=edit", context);
             }
