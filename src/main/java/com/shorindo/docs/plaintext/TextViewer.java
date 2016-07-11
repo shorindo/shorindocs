@@ -13,29 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.xuml;
+package com.shorindo.docs.plaintext;
+
+import org.apache.log4j.Logger;
+
+import com.shorindo.xuml.Component;
+import com.shorindo.xuml.ComponentReady;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-@ComponentReady("vbox")
-public class VBoxComponent extends Component {
+@ComponentReady("text-viewer")
+public class TextViewer extends Component {
 
-    public VBoxComponent(XumlView view) {
+    public TextViewer(XumlView view) {
         super(view);
     }
 
+    private static final Logger LOG = Logger.getLogger(TextViewer.class);
+
     @Override
     public String getHtml() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<table class=\"vbox\" style=\"" + getStyles() + "\">");
-        for (Component c : getChildList()) {
-            sb.append("<tr><td>");
-            sb.append(c.getHtml());
-            sb.append("</td></tr>");
-        }
-        sb.append("</table>");
-        return sb.toString();
+        return "<div class=\"text-viewer\">\n" +
+                "@{content}\n" +
+                "</div>\n";
     }
 
+    public void setDataSource(String value) {
+        LOG.trace("setDataSource(" + value + ")");
+    }
 }

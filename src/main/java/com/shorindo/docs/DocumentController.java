@@ -30,7 +30,7 @@ import com.shorindo.core.view.JsonView;
 import com.shorindo.core.view.RedirectView;
 import com.shorindo.core.view.View;
 import com.shorindo.docs.model.DocumentModel;
-import com.shorindo.docs.text.PlainTextController;
+import com.shorindo.docs.plaintext.PlainTextController;
 
 /**
  * 

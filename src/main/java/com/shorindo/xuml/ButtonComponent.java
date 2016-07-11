@@ -13,29 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.text;
-
-import com.shorindo.xuml.Component;
-import com.shorindo.xuml.ComponentReady;
-import com.shorindo.xuml.XumlView;
+package com.shorindo.xuml;
 
 /**
  * 
  */
-@ComponentReady("text-editor")
-public class TextEditor extends Component {
+@ComponentReady("button")
+public class ButtonComponent extends Component {
+    private String label;
 
-    public TextEditor(XumlView view) {
+    public ButtonComponent(XumlView view) {
         super(view);
     }
 
     @Override
     public String getHtml() {
-        return "<div class=\"text-editor\">" +
-                "<textarea class=\"text-editor xuml-width-fill xuml-height-fill\">" +
-                "@{content}" +
-                "</textarea>" +
-                "</div>";
+        return "<input type=\"button\"" +
+                (label != null ? " value=\"" + label + "\"" : "") +
+                ">";
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 }

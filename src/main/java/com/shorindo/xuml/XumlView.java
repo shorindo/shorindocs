@@ -230,7 +230,7 @@ public class XumlView extends View {
             String text = new String(ch, start, length);
             text = text.trim();
             if (text.length() > 0) {
-                curr.add(new TextComponent(view, text));
+                curr.add(new CDATAComponent(view, text));
             }
         }
     }

@@ -1,0 +1,13 @@
+<window title="editor - ${document.title}" width="fill" height="fill">
+  <vbox>
+    <hbox id="header" height="30px">
+      &lt;image&gt; ${document.title}
+    </hbox>
+    <hbox id="center">
+      <vbox width="200px">
+        編集メニュー
+      </vbox>
+      <text-editor data-source="docs:${document.documentId}"/>
+    </hbox>
+  </vbox>
+</window>

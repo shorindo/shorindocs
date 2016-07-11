@@ -1,0 +1,27 @@
+<window title="viewer - ${document.title}">
+  <vbox>
+    <hbox id="header" height="30px">
+      &lt;image&gt; ${document.title}
+    </hbox>
+    <hbox id="center">
+      <vbox width="200px">
+        #{recent.change}
+        <hbox>
+          <textbox/>
+          <button label="検索"/>
+        </hbox>
+        <listbox data-source="docs:${document.documentId}?action=search">
+          <template>
+            <listitem/>
+          </template>
+        </listbox>
+        <include src="path:/to/file.xuml"/>
+      </vbox>
+      <box id="main">
+        <outclude src="class:/com/shorindo/docs/xuml/sideleft.xuml#main">
+          <text-viewer data-source="docs:${document.documentId}"/>
+        </outclude>
+      </box>
+    </hbox>
+  </vbox>
+</window>

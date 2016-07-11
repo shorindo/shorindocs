@@ -28,7 +28,7 @@ public class BoxComponent extends Component {
     @Override
     public String getHtml() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"box\">");
+        sb.append("<div class=\"box\" style=\"" + getStyles() + "\">");
         for (Component c : getChildList()) {
             sb.append(c.getHtml());
         }

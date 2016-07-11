@@ -13,22 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.xuml;
+package com.shorindo.docs.plaintext;
+
+import com.shorindo.xuml.Component;
+import com.shorindo.xuml.ComponentReady;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-public class TextComponent extends Component {
-    private String text;
+@ComponentReady("text-editor")
+public class TextEditor extends Component {
 
-    public TextComponent(XumlView view, String text) {
+    public TextEditor(XumlView view) {
         super(view);
-        this.text = text;
     }
 
     @Override
     public String getHtml() {
-        return escape(text);
+        return "<div class=\"text-editor\">" +
+                "<textarea class=\"text-editor xuml-width-fill xuml-height-fill\">" +
+                "@{content}" +
+                "</textarea>" +
+                "</div>";
     }
 
 }

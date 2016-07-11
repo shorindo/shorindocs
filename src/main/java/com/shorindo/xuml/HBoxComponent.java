@@ -28,11 +28,15 @@ public class HBoxComponent extends Component {
     @Override
     public String getHtml() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"hbox\">");
+        sb.append("<table class=\"hbox\" style=\"" + getStyles() + "\"><tr>");
         for (Component c : getChildList()) {
+            sb.append("<td style=\"");
+            sb.append(c.getStyles());
+            sb.append("\">");
             sb.append(c.getHtml());
+            sb.append("</td>");
         }
-        sb.append("</div>");
+        sb.append("</td></table>");
         return sb.toString();
     }
 

@@ -1,0 +1,9 @@
+<window title="${document.title}">
+  <vbox>
+    <hbox id="header" height="30px">
+      &lt;image&gt; ${document.title}
+    </hbox>
+    <hbox id="center">
+    </hbox>
+  </vbox>
+</window>

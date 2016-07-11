@@ -16,7 +16,10 @@
 package com.shorindo.xuml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * 
@@ -26,7 +29,10 @@ public abstract class Component {
     private XumlView view;
     private Component parent;
     private String id;
-    private String outclude;
+    private String className;
+    private String width;
+    private String height;
+    private Map<String,String> styles = new HashMap<String,String>();
 
     public abstract String getHtml();
 
@@ -60,6 +66,14 @@ public abstract class Component {
     }
 
     public Component add(Component child) {
+        if (childList.size() > 0) {
+            Component last = childList.get(childList.size() - 1);
+            if (last instanceof CDATAComponent && child instanceof CDATAComponent) {
+                CDATAComponent text = (CDATAComponent)last;
+                text.setText(text.getText() + ((CDATAComponent)child).getText());
+                return text;
+            }
+        }
         childList.add(child);
         child.setParent(this);
         return child;
@@ -77,12 +91,39 @@ public abstract class Component {
         this.id = id;
     }
 
-    public String getOutclude() {
-        return outclude;
+    public String getClassName() {
+        return className;
     }
 
-    public void setOutclude(String outclude) {
-        this.outclude = outclude;
+    public void setClassName(String className) {
+        this.className = className;
     }
 
+    public String getWidth() {
+        return width;
+    }
+
+    public void setWidth(String width) {
+        this.width = width;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
+    }
+
+    protected void addStyle(String name, String value) {
+        styles.put(name, value);
+    }
+
+    protected String getStyles() {
+        StringBuffer sb = new StringBuffer();
+        for (Entry<String,String> entry : styles.entrySet()) {
+            sb.append(entry.getKey() + ":" + entry.getValue() + ";");
+        }
+        return sb.toString();
+    }
 }
