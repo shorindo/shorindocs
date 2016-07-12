@@ -15,8 +15,6 @@
  */
 package com.shorindo.core.view;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import com.shorindo.core.ActionContext;
@@ -38,7 +36,9 @@ public class ErrorView extends View {
 
     @Override
     public InputStream getContent() {
-        return new ByteArrayInputStream(("ERROR - " + getStatus()).getBytes());
+        context.setAttribute("status", getStatus());
+        context.setAttribute("message", "message");
+        return new ThymeLeafView("html/error", context).getContent();
     }
 
 }

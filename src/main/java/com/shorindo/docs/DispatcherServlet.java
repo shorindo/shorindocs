@@ -16,6 +16,7 @@
 package com.shorindo.docs;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -37,9 +38,12 @@ public class DispatcherServlet extends ActionServlet {
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         String id = req.getServletPath().substring(1);
-        ActionContext context = new ActionContext(req);
-        context.setAttribute("application", getServletContext());
+        ActionContext context = new ActionContext(req, res, getServletContext());
         LOG.debug("service(" + req.getServletPath() + ")");
+        for (Enumeration<?> e = req.getParameterNames(); e.hasMoreElements();) {
+            String key = (String)e.nextElement();
+            LOG.debug("param[" + key + "]=" + req.getParameterValues(key).length);
+        }
 
         try {
             DocumentController controller = DocumentController.getController(id);

@@ -64,7 +64,7 @@ public class ActionServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        ActionContext context = new ActionContext(req);
+        ActionContext context = new ActionContext(req, res, getServletContext());
         String ext = req.getServletPath().replaceAll("^(.*?)(\\.([^\\.]+))?$", "$3");
         File file = new File(getServletContext().getRealPath(req.getServletPath()));
         View view;

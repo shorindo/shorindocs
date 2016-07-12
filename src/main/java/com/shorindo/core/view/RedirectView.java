@@ -29,6 +29,10 @@ public class RedirectView extends View {
     public RedirectView(String location, ActionContext context) {
         super(context);
         setStatus(302);
+        if (!location.startsWith("/")) {
+            location = "/" + location;
+        }
+        location = context.getContextPath() + location;
         getOptions().put("Location", location);
     }
 

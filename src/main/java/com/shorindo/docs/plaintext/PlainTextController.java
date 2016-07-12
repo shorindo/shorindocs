@@ -15,18 +15,15 @@
  */
 package com.shorindo.docs.plaintext;
 
-import java.io.IOException;
-
 import org.apache.log4j.Logger;
 
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.annotation.ActionReady;
 import com.shorindo.core.annotation.ContentTypeReady;
-import com.shorindo.core.view.ErrorView;
+import com.shorindo.core.view.ThymeLeafView;
 import com.shorindo.core.view.View;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.model.DocumentModel;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -41,7 +38,7 @@ public class PlainTextController extends DocumentController {
 
     @Override @ActionReady
     public View view(ActionContext context) {
-        LOG.trace("view()");
+        LOG.info("view()");
         context.setAttribute("document", getModel());
         String body = getModel().getBody() == null ? "" : getModel().getBody();
         context.setAttribute("content", body
@@ -50,16 +47,12 @@ public class PlainTextController extends DocumentController {
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;")
                 .replaceAll("\n", "<br/>"));
-        try {
-            return new XumlView(context, getClass().getResourceAsStream("viewer.xuml"));
-        } catch (IOException e) {
-            return new ErrorView(500, context);
-        }
+        return new ThymeLeafView(createClassPath("html/viewer"), context);
     }
 
     @ActionReady
     public View edit(ActionContext context) {
-        LOG.trace("edit()");
+        LOG.info("edit()");
         context.setAttribute("document", getModel());
         String body = getModel().getBody() == null ? "" : getModel().getBody();
         context.setAttribute("content", body
@@ -67,10 +60,6 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;"));
-        try {
-            return new XumlView(context, getClass().getResourceAsStream("editor.xuml"));
-        } catch (IOException e) {
-            return new ErrorView(500, context);
-        }
+        return new ThymeLeafView(createClassPath("html/editor"), context);
     }
 }

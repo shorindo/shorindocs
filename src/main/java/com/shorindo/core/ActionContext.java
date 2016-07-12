@@ -21,7 +21,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -29,38 +31,57 @@ import javax.servlet.http.HttpSession;
  */
 public class ActionContext {
     private static final Logger LOG = Logger.getLogger(ActionContext.class);
+    private HttpServletRequest request;
+    private HttpServletResponse response;
+    private ServletContext servletContext;
     private String contextPath;
     private String servletPath;
     private Locale locale;
     private ResourceBundle bundle;
-    private Map<String,Object> requestMap = new HashMap<String,Object>();
-    private Map<String,Object> serverMap = new HashMap<String,Object>();
-    private Map<String,Object> clientMap = new HashMap<String,Object>();
-    private Map<String,String> paramMap = new HashMap<String,String>();
+//    private Map<String,Object> requestMap = new HashMap<String,Object>();
+//    private Map<String,Object> serverMap = new HashMap<String,Object>();
+//    private Map<String,Object> clientMap = new HashMap<String,Object>();
+//    private Map<String,String> paramMap = new HashMap<String,String>();
 
-    public ActionContext(HttpServletRequest req) {
+    public ActionContext(HttpServletRequest req, HttpServletResponse res, ServletContext ctx) {
+        request = req;
+        response = res;
+        servletContext = ctx;
         contextPath = req.getContextPath();
         servletPath = req.getServletPath();
         locale = req.getLocale();
 
         bundle = ResourceBundle.getBundle("messages", req.getLocale());
-        for (Enumeration<?> e = req.getAttributeNames(); e.hasMoreElements();) {
-            String key = (String)e.nextElement();
-            requestMap.put(key, req.getAttribute(key));
-        }
-        HttpSession session = req.getSession();
-        for (Enumeration<?> e = session.getAttributeNames(); e.hasMoreElements();) {
-            String key = (String)e.nextElement();
-            serverMap.put(key, session.getAttribute(key));
-        }
-        for (Enumeration<?> e = req.getParameterNames(); e.hasMoreElements();) {
-            String key = (String)e.nextElement();
-            paramMap.put(key, req.getParameter(key));
-        }
+//        for (Enumeration<?> e = req.getAttributeNames(); e.hasMoreElements();) {
+//            String key = (String)e.nextElement();
+//            requestMap.put(key, req.getAttribute(key));
+//        }
+//        HttpSession session = req.getSession();
+//        for (Enumeration<?> e = session.getAttributeNames(); e.hasMoreElements();) {
+//            String key = (String)e.nextElement();
+//            serverMap.put(key, session.getAttribute(key));
+//        }
+//        for (Enumeration<?> e = req.getParameterNames(); e.hasMoreElements();) {
+//            String key = (String)e.nextElement();
+//            paramMap.put(key, req.getParameter(key));
+//        }
+    }
+
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    public HttpServletResponse getResponse() {
+        return response;
+    }
+
+    public ServletContext getServletContext() {
+        return servletContext;
     }
 
     public String getAction() {
-        String action = paramMap.get("action");
+        String action = getParameter("action");
+        LOG.debug("action=" + action);
         if (action == null || "".equals(action)) {
             return "view";
         } else {
@@ -69,7 +90,7 @@ public class ActionContext {
     }
 
     public String getFormat() {
-        String format = paramMap.get("format");
+        String format = getParameter("format");
         if (format == null || "".equals(format)) {
             return "html";
         } else {
@@ -97,16 +118,15 @@ public class ActionContext {
             return key;
         }
     }
-    public Map<String,Object> getAttributes() {
-        return requestMap;
-    }
+
     public void setAttribute(String key, Object value) {
-        requestMap.put(key, value);
+        request.setAttribute(key, value);
     }
     public Object getAttribute(String key) {
-        return requestMap.get(key);
+        return request.getAttribute(key);
     }
     public String getParameter(String key) {
-        return paramMap.get(key);
+        LOG.debug("getParameter(" + key + ")=>" + request.getParameter(key));
+        return request.getParameter(key);
     }
 }

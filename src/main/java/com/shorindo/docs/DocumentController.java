@@ -67,9 +67,20 @@ public abstract class DocumentController extends ActionController {
     public DocumentModel getModel() {
         return model;
     }
+    
+    protected String createClassPath(String path) {
+        StringBuffer result = new StringBuffer();
+        result.append(getClass().getPackage().getName().replaceAll("\\.", "/"));
+        if (!path.startsWith("/")) {
+            result.append("/");
+        }
+        result.append(path);
+        return result.toString();
+    }
 
     @ActionReady
     public View save(ActionContext context) throws DocumentException {
+        LOG.info("save()");
         DocumentModel model = getModel();
         model.setTitle(context.getParameter("title"));
         model.setBody(context.getParameter("body"));
