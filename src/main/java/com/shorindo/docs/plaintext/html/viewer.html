@@ -7,6 +7,19 @@
 <title th:text="${document.title}"></title>
 </head>
 <body>
-<div class="body" th:text="${document.body}"></div>
+<div style="height:30px;display:table-cell;vertical-align:middle;">
+<span th:text="${document.title}"></span>
+<a style="float:right;margin:0 3px 0 0;" th:href="@{'/' + ${document.documentId}} + '?action=edit'">edit</a>
+<a style="float:right;margin:0 3px 0 0;" th:href="@{'/' + ${document.documentId}} + '?action=create&amp;contentType=text/plain'">create</a>
+</div>
+<div class="left" style="float:left;width:200px;">
+最近の更新
+<ul>
+  <li th:each="item : ${search_result}">
+    <a th:href="@{'/' + ${item.documentId}}" th:text="${item.title}"></a>
+  </li>
+</ul>
+</div>
+<div class="body" th:utext="${content}"></div>
 </body>
 </html>

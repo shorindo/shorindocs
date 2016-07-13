@@ -18,7 +18,8 @@ package com.shorindo.docs.plaintext;
 import org.apache.log4j.Logger;
 
 import com.shorindo.core.ActionContext;
-import com.shorindo.core.annotation.ActionReady;
+import com.shorindo.core.DatabaseManager;
+import com.shorindo.core.annotation.ActionMethod;
 import com.shorindo.core.annotation.ContentTypeReady;
 import com.shorindo.core.view.ThymeLeafView;
 import com.shorindo.core.view.View;
@@ -36,7 +37,7 @@ public class PlainTextController extends DocumentController {
         super(model);
     }
 
-    @Override @ActionReady
+    @Override @ActionMethod
     public View view(ActionContext context) {
         LOG.info("view()");
         context.setAttribute("document", getModel());
@@ -47,10 +48,12 @@ public class PlainTextController extends DocumentController {
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;")
                 .replaceAll("\n", "<br/>"));
+        context.setAttribute("search_result",
+                DatabaseManager.selectList("searchDocument", null));
         return new ThymeLeafView(createClassPath("html/viewer"), context);
     }
 
-    @ActionReady
+    @ActionMethod
     public View edit(ActionContext context) {
         LOG.info("edit()");
         context.setAttribute("document", getModel());

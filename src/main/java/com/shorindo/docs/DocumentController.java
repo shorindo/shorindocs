@@ -24,7 +24,7 @@ import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionController;
 import com.shorindo.core.DatabaseManager;
 import com.shorindo.core.Logger;
-import com.shorindo.core.annotation.ActionReady;
+import com.shorindo.core.annotation.ActionMethod;
 import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.JsonView;
 import com.shorindo.core.view.RedirectView;
@@ -67,18 +67,8 @@ public abstract class DocumentController extends ActionController {
     public DocumentModel getModel() {
         return model;
     }
-    
-    protected String createClassPath(String path) {
-        StringBuffer result = new StringBuffer();
-        result.append(getClass().getPackage().getName().replaceAll("\\.", "/"));
-        if (!path.startsWith("/")) {
-            result.append("/");
-        }
-        result.append(path);
-        return result.toString();
-    }
 
-    @ActionReady
+    @ActionMethod
     public View save(ActionContext context) throws DocumentException {
         LOG.info("save()");
         DocumentModel model = getModel();
@@ -91,7 +81,7 @@ public abstract class DocumentController extends ActionController {
         }
     }
 
-    @ActionReady
+    @ActionMethod
     public View create(ActionContext context) throws DocumentException {
         for (int i = 0; i < 10; i++) {
             String id = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
@@ -107,7 +97,7 @@ public abstract class DocumentController extends ActionController {
         return new ErrorView(500, context);
     }
 
-    @ActionReady
+    @ActionMethod
     public View search(ActionContext context) throws DocumentException {
         LOG.trace("search()");
         List<DocumentModel> list = DatabaseManager.selectList("searchDocument", null);

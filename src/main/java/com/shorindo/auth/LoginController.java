@@ -17,6 +17,7 @@ package com.shorindo.auth;
 
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionController;
+import com.shorindo.core.view.ThymeLeafView;
 import com.shorindo.core.view.View;
 
 /**
@@ -29,7 +30,7 @@ public class LoginController extends ActionController {
 
     @Override
     public View view(ActionContext context) {
-        return null;
+        return new ThymeLeafView(createClassPath("html/login"), context);
     }
 
 }

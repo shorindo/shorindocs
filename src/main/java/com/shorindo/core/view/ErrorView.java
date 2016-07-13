@@ -37,7 +37,7 @@ public class ErrorView extends View {
     @Override
     public InputStream getContent() {
         context.setAttribute("status", getStatus());
-        context.setAttribute("message", "message");
+        context.setAttribute("message", context.getMessage("error." + getStatus()));
         return new ThymeLeafView("html/error", context).getContent();
     }
 

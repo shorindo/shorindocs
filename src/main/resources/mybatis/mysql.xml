@@ -21,7 +21,7 @@
         OWNER_ID        VARCHAR(64),
         ACL_ID          VARCHAR(64),
         PRIMARY KEY (DOCUMENT_ID, STATUS)
-    )
+    ) CHARACTER SET 'utf8'
   </sql>
 
   <sql id="createDocumentHistory">
@@ -36,7 +36,7 @@
         OWNER_ID        VARCHAR(64),
         ACL_ID          VARCHAR(64),
         PRIMARY KEY (DOCUMENT_ID, VERSION)
-    )
+    ) CHARACTER SET 'utf8'
   </sql>
 
   <select id="getDocument" parameterType="com.shorindo.docs.model.DocumentModel" resultMap="resultMapDocumentModel">
