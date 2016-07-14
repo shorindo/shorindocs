@@ -19,8 +19,14 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
+import org.apache.ibatis.datasource.DataSourceException;
 import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.apache.ibatis.mapping.Environment;
@@ -41,20 +47,18 @@ public abstract class DatabaseManager {
         try {
             Properties params = new Properties();
             String engineName = "";
+            Pattern p = Pattern.compile("^datasource\\.(.*)$");
             for (Enumeration<Object> e = props.keys(); e.hasMoreElements();) {
                 String key = e.nextElement().toString();
-                if ("datasource.driverClassName".equals(key)) {
-                    params.put("driver", props.get(key));
-                } else if ("datasource.url".equals(key)) {
-                    params.put("url", props.get(key));
-                    engineName = ((String)props.get(key)).replaceAll("^[^:]+:([^:]+):.*$", "$1");
-                } else if ("datasource.username".equals(key)) {
-                    params.put("username", props.get(key));
-                } else if ("datasource.password".equals(key)) {
-                    params.put("password", props.get(key));
+                Matcher m = p.matcher(key);
+                if (m.matches()) {
+                    params.put(m.group(1), props.get(key));
+                    if ("url".equals(m.group(1))) {
+                        engineName = ((String)props.get(key)).replaceAll("^[^:]+:([^:]+):.*$", "$1");
+                    }
                 }
             }
-            DataSourceFactory dataSourceFactory = new PooledDataSourceFactory();
+            DataSourceFactory dataSourceFactory = new DbcpDataSourceFactory();
             dataSourceFactory.setProperties(params);
             Environment env = new Environment("database",
                     new JdbcTransactionFactory(),
@@ -129,4 +133,22 @@ public abstract class DatabaseManager {
         public X execute(SqlSession session) throws SQLException;
     }
 
+    public static class DbcpDataSourceFactory implements DataSourceFactory {
+
+        private DataSource datasource = null;
+
+        //@Override
+        public DataSource getDataSource() {
+            return datasource;
+        }
+
+        //@Override
+        public void setProperties(final Properties property) {
+            try {
+                datasource = BasicDataSourceFactory.createDataSource(property);
+            } catch (Exception e) {
+                throw new DataSourceException("DBCPの設定に失敗しました。", e);
+            }
+        }
+    }
 }

@@ -17,7 +17,6 @@ package com.shorindo.docs;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import com.shorindo.core.ActionContext;
@@ -29,7 +28,6 @@ import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.JsonView;
 import com.shorindo.core.view.RedirectView;
 import com.shorindo.core.view.View;
-import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.plaintext.PlainTextController;
 
 /**

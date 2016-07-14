@@ -24,7 +24,7 @@ import com.shorindo.core.annotation.ContentTypeReady;
 import com.shorindo.core.view.ThymeLeafView;
 import com.shorindo.core.view.View;
 import com.shorindo.docs.DocumentController;
-import com.shorindo.docs.model.DocumentModel;
+import com.shorindo.docs.DocumentModel;
 
 /**
  * 
