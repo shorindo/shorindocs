@@ -16,7 +16,6 @@
 package com.shorindo.core.view;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import com.shorindo.core.ActionContext;
@@ -32,7 +31,7 @@ public class RedirectView extends View {
         if (!location.startsWith("/")) {
             location = "/" + location;
         }
-        location = context.getContextPath() + location;
+        location = context.getRequest().getContextPath() + location;
         getOptions().put("Location", location);
     }
 

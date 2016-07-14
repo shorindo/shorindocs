@@ -15,16 +15,11 @@
  */
 package com.shorindo.core.view;
 
-import java.io.FilterInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
 
 import com.shorindo.core.ActionContext;
-import com.shorindo.core.BeanManager;
 import com.shorindo.core.Logger;
 
 /**

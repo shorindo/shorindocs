@@ -16,8 +16,7 @@
 package com.shorindo.docs;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Random;
+import java.util.Date;
 
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionController;
@@ -25,7 +24,6 @@ import com.shorindo.core.DatabaseManager;
 import com.shorindo.core.Logger;
 import com.shorindo.core.annotation.ActionMethod;
 import com.shorindo.core.view.ErrorView;
-import com.shorindo.core.view.JsonView;
 import com.shorindo.core.view.RedirectView;
 import com.shorindo.core.view.View;
 import com.shorindo.docs.plaintext.PlainTextController;
@@ -68,7 +66,6 @@ public abstract class DocumentController extends ActionController {
 
     @ActionMethod
     public View save(ActionContext context) throws DocumentException {
-        LOG.info("save()");
         DocumentModel model = getModel();
         model.setTitle(context.getParameter("title"));
         model.setBody(context.getParameter("body"));
@@ -82,7 +79,8 @@ public abstract class DocumentController extends ActionController {
     @ActionMethod
     public View create(ActionContext context) throws DocumentException {
         for (int i = 0; i < 10; i++) {
-            String id = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+            //String id = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+            String id = String.valueOf(new Date().getTime() % 999999999999L);
             DocumentModel model = new DocumentModel();
             model.setDocumentId(id);
             model.setContentType(context.getParameter("contentType"));
@@ -95,10 +93,9 @@ public abstract class DocumentController extends ActionController {
         return new ErrorView(500, context);
     }
 
-    @ActionMethod
-    public View search(ActionContext context) throws DocumentException {
-        LOG.trace("search()");
-        List<DocumentModel> list = DatabaseManager.selectList("searchDocument", null);
-        return new JsonView(list, context);
-    }
+//    @ActionMethod
+//    public View search(ActionContext context) throws DocumentException {
+//        List<DocumentModel> list = DatabaseManager.selectList("searchDocument", null);
+//        return new JsonView(list, context);
+//    }
 }

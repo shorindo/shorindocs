@@ -15,16 +15,12 @@
  */
 package com.shorindo.core;
 
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * 
@@ -34,8 +30,8 @@ public class ActionContext {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletContext servletContext;
-    private String contextPath;
-    private String servletPath;
+//    private String contextPath;
+//    private String servletPath;
     private Locale locale;
     private ResourceBundle bundle;
 //    private Map<String,Object> requestMap = new HashMap<String,Object>();
@@ -47,8 +43,8 @@ public class ActionContext {
         request = req;
         response = res;
         servletContext = ctx;
-        contextPath = req.getContextPath();
-        servletPath = req.getServletPath();
+//        contextPath = req.getContextPath();
+//        servletPath = req.getServletPath();
         locale = req.getLocale();
 
         bundle = ResourceBundle.getBundle("messages", req.getLocale());
@@ -81,7 +77,6 @@ public class ActionContext {
 
     public String getAction() {
         String action = getParameter("action");
-        LOG.debug("action=" + action);
         if (action == null || "".equals(action)) {
             return "view";
         } else {
@@ -98,13 +93,13 @@ public class ActionContext {
         }
     }
 
-    public String getContextPath() {
-        return contextPath;
-    }
-
-    public String getServletPath() {
-        return servletPath;
-    }
+//    public String getContextPath() {
+//        return contextPath;
+//    }
+//
+//    public String getServletPath() {
+//        return servletPath;
+//    }
 
     public Locale getLocale() {
         return locale;

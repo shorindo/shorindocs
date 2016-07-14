@@ -28,7 +28,6 @@ import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.datasource.DataSourceException;
 import org.apache.ibatis.datasource.DataSourceFactory;
-import org.apache.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;

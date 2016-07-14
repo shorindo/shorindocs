@@ -43,7 +43,7 @@ public class ActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ActionServlet.class);
     private Map<String,ActionController> actionMap;
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -83,7 +83,7 @@ public class ActionServlet extends HttpServlet {
         output(res, view);
     }
 
-    protected void output( HttpServletResponse res, View view) {
+    protected final void output( HttpServletResponse res, View view) {
         for (Entry<String,String> entry : view.getOptions().entrySet()) {
             res.setHeader(entry.getKey(), entry.getValue());
         }
