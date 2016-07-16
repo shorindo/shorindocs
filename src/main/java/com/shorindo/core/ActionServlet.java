@@ -34,7 +34,6 @@ import com.shorindo.core.Logger;
 import com.shorindo.core.view.DefaultView;
 import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.View;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -65,22 +64,26 @@ public class ActionServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         ActionContext context = new ActionContext(req, res, getServletContext());
-        String ext = req.getServletPath().replaceAll("^(.*?)(\\.([^\\.]+))?$", "$3");
+        if (!dispatch(context)) {
+            output(res, new ErrorView(404, context));
+        }
+    }
+
+    protected boolean dispatch(ActionContext context)
+            throws ServletException, IOException {
+        HttpServletRequest req = context.getRequest();
+        HttpServletResponse res = context.getResponse();
         File file = new File(getServletContext().getRealPath(req.getServletPath()));
-        View view;
 
         if (actionMap.containsKey(req.getServletPath())) {
-            view = actionMap.get(req.getServletPath()).action(context);
-        } else if ("xuml".equals(ext)) {
-            InputStream is = getClass().getResourceAsStream(req.getServletPath());
-            view = new XumlView(context, is);
-            is.close();
+            output(res, actionMap.get(req.getServletPath()).action(context));
+            return true;
         } else if (file.exists()) {
-            view = new DefaultView(file, context);
+            output(res, new DefaultView(file, context));
+            return true;
         } else {
-            view = new ErrorView(404, context);
+            return false;
         }
-        output(res, view);
     }
 
     protected final void output( HttpServletResponse res, View view) {

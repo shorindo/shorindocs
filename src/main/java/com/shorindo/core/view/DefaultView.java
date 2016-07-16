@@ -19,6 +19,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
@@ -29,11 +33,17 @@ import com.shorindo.core.ActionContext;
  */
 public class DefaultView extends View {
     private static final Logger LOG = Logger.getLogger(DefaultView.class);
+    private static final SimpleDateFormat format =
+        new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
     private File file;
 
     public DefaultView(File file, ActionContext context) {
         super(context);
         this.file = file;
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        getOptions().put("Last-Modified",
+                format.format(new Date(file.lastModified())));
+//        getOptions().put("Cache-Control", "public");
     }
 
     @Override

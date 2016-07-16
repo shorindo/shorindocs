@@ -2,24 +2,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
-<title th:text="${document.title}"></title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+  <script type="text/javascript" th:src="@{/js/script.js}"></script>
+  <title th:text="${document.title}"></title>
 </head>
 <body>
 <div style="height:30px;display:table-cell;vertical-align:middle;">
-<span th:text="${document.title}"></span>
-<a style="float:right;margin:0 3px 0 0;" th:href="@{'/' + ${document.documentId}} + '?action=edit'">edit</a>
-<a style="float:right;margin:0 3px 0 0;" th:href="@{'/' + ${document.documentId}} + '?action=create&amp;contentType=text/plain'">create</a>
+  <span th:text="${document.title}"></span>
+  <a style="float:right;margin:0 3px 0 0;" th:href="@{'/' + ${document.documentId}} + '?action=edit'">edit</a>
+  <a style="float:right;margin:0 3px 0 0;" th:href="@{'/' + ${document.documentId}} + '?action=create&amp;contentType=text/plain'">create</a>
 </div>
 <div class="left" style="float:left;width:200px;">
-最近の更新
-<ul>
+  最近の更新
+  <ul>
   <li th:each="item : ${search_result}">
     <a th:href="@{'/' + ${item.documentId}}" th:text="${item.title}"></a>
   </li>
-</ul>
+  </ul>
 </div>
-<div class="body" th:utext="${content}"></div>
+<div class="body" th:utext="${content}" style="padding-left:210px;"></div>
 </body>
 </html>

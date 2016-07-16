@@ -16,11 +16,11 @@
 package com.shorindo.docs;
 
 import java.sql.SQLException;
-import java.util.Date;
 
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionController;
 import com.shorindo.core.DatabaseManager;
+import com.shorindo.core.IdGenerator;
 import com.shorindo.core.Logger;
 import com.shorindo.core.annotation.ActionMethod;
 import com.shorindo.core.view.ErrorView;
@@ -78,19 +78,29 @@ public abstract class DocumentController extends ActionController {
 
     @ActionMethod
     public View create(ActionContext context) throws DocumentException {
-        for (int i = 0; i < 10; i++) {
-            //String id = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-            String id = String.valueOf(new Date().getTime() % 999999999999L);
-            DocumentModel model = new DocumentModel();
-            model.setDocumentId(id);
-            model.setContentType(context.getParameter("contentType"));
-            model.setTitle(context.getParameter("title"));
-            model.setBody(context.getParameter("body"));
-            if (DatabaseManager.insert("docs.createDocument", model) > 0) {
-                return new RedirectView(id + "?action=edit", context);
-            }
+        String id = String.valueOf(IdGenerator.getId());
+        DocumentModel model = new DocumentModel();
+        model.setDocumentId(id);
+        model.setContentType(context.getParameter("contentType"));
+        model.setTitle(context.getParameter("title"));
+        model.setBody(context.getParameter("body"));
+        if (DatabaseManager.insert("docs.createDocument", model) > 0) {
+            return new RedirectView(id + "?action=edit", context);
+        } else {
+            return new ErrorView(500, context);
         }
-        return new ErrorView(500, context);
+    }
+
+    @ActionMethod
+    public View remove(ActionContext context) throws DocumentException {
+        DocumentModel model = getModel();
+        if ("index".equals(model.getDocumentId())) {
+            return new RedirectView("/index", context);
+        } else if (DatabaseManager.update("docs.removeDocument", model) > 0) {
+            return new RedirectView("/index", context);
+        } else {
+            return new ErrorView(500, context);
+        }
     }
 
 //    @ActionMethod

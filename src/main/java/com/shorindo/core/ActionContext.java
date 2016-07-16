@@ -30,37 +30,15 @@ public class ActionContext {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletContext servletContext;
-//    private String contextPath;
-//    private String servletPath;
     private Locale locale;
     private ResourceBundle bundle;
-//    private Map<String,Object> requestMap = new HashMap<String,Object>();
-//    private Map<String,Object> serverMap = new HashMap<String,Object>();
-//    private Map<String,Object> clientMap = new HashMap<String,Object>();
-//    private Map<String,String> paramMap = new HashMap<String,String>();
 
     public ActionContext(HttpServletRequest req, HttpServletResponse res, ServletContext ctx) {
         request = req;
         response = res;
         servletContext = ctx;
-//        contextPath = req.getContextPath();
-//        servletPath = req.getServletPath();
         locale = req.getLocale();
-
         bundle = ResourceBundle.getBundle("messages", req.getLocale());
-//        for (Enumeration<?> e = req.getAttributeNames(); e.hasMoreElements();) {
-//            String key = (String)e.nextElement();
-//            requestMap.put(key, req.getAttribute(key));
-//        }
-//        HttpSession session = req.getSession();
-//        for (Enumeration<?> e = session.getAttributeNames(); e.hasMoreElements();) {
-//            String key = (String)e.nextElement();
-//            serverMap.put(key, session.getAttribute(key));
-//        }
-//        for (Enumeration<?> e = req.getParameterNames(); e.hasMoreElements();) {
-//            String key = (String)e.nextElement();
-//            paramMap.put(key, req.getParameter(key));
-//        }
     }
 
     public HttpServletRequest getRequest() {
@@ -93,14 +71,6 @@ public class ActionContext {
         }
     }
 
-//    public String getContextPath() {
-//        return contextPath;
-//    }
-//
-//    public String getServletPath() {
-//        return servletPath;
-//    }
-
     public Locale getLocale() {
         return locale;
     }
@@ -121,7 +91,7 @@ public class ActionContext {
         return request.getAttribute(key);
     }
     public String getParameter(String key) {
-        LOG.debug("getParameter(" + key + ")=>" + request.getParameter(key));
+        //LOG.debug("getParameter(" + key + ")=>" + request.getParameter(key));
         return request.getParameter(key);
     }
 }

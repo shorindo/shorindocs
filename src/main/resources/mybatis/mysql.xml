@@ -59,4 +59,9 @@
     SET    TITLE=#{title}, BODY=#{body}, UPDATE_DATE=NOW()
     WHERE  document_id=#{documentId} AND status=0 
   </update>
+
+  <delete id="removeDocument" parameterType="com.shorindo.docs.DocumentModel">
+    DELETE FROM document
+    WHERE  document_id=#{documentId}
+  </delete>
 </mapper>

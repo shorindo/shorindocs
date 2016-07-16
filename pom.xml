@@ -32,12 +32,6 @@
   		<version>3.2.8</version>
   	</dependency>
   	<dependency>
-  		<groupId>javax.servlet</groupId>
-  		<artifactId>javax.servlet-api</artifactId>
-  		<version>3.0.1</version>
-  		<scope>provided</scope>
-  	</dependency>
-  	<dependency>
   		<groupId>org.thymeleaf</groupId>
   		<artifactId>thymeleaf</artifactId>
   		<version>2.1.4.RELEASE</version>
@@ -46,6 +40,17 @@
   		<groupId>org.apache.commons</groupId>
   		<artifactId>commons-dbcp2</artifactId>
   		<version>2.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.mozilla</groupId>
+  		<artifactId>rhino</artifactId>
+  		<version>1.7R5</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax.servlet</groupId>
+  		<artifactId>servlet-api</artifactId>
+  		<version>2.5</version>
+  		<scope>provided</scope>
   	</dependency>
   </dependencies>
   <build>
@@ -98,13 +103,4 @@
         </resource>
     </resources>
   </build>
-  <dependencyManagement>
-  	<dependencies>
-  		<dependency>
-  			<groupId>javax.servlet</groupId>
-  			<artifactId>servlet-api</artifactId>
-  			<version>2.5</version>
-  		</dependency>
-  	</dependencies>
-  </dependencyManagement>
 </project>

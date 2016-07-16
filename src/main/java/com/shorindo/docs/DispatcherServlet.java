@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionServlet;
 import com.shorindo.core.Logger;
+import com.shorindo.core.view.ErrorView;
+import com.shorindo.core.view.RedirectView;
 import com.shorindo.core.view.View;
 
 /**
@@ -40,12 +42,21 @@ public class DispatcherServlet extends ActionServlet {
         ActionContext context = new ActionContext(req, res, getServletContext());
         LOG.debug("service(" + req.getServletPath() + ")");
 
-        try {
-            DocumentController controller = DocumentController.getController(id);
-            View view = controller.action(context);
-            output(res, view);
-        } catch (DocumentException e) {
-            super.service(req, res);
+        if (id == null || "".equals(id)) {
+            output(res, new RedirectView("/index", context));
+            return;
+        }
+        if (!dispatch(context)) {
+            try {
+                DocumentController controller = DocumentController.getController(id);
+                View view = controller.action(context);
+                output(res, view);
+            } catch (DocumentException e) {
+                output(res, new ErrorView(404, context));
+            } catch (Throwable th) {
+                LOG.error(th.getMessage(), th);
+                output(res, new ErrorView(500, context));
+            }
         }
     }
 }
