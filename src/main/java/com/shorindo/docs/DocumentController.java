@@ -26,6 +26,8 @@ import com.shorindo.core.annotation.ActionMethod;
 import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.RedirectView;
 import com.shorindo.core.view.View;
+import com.shorindo.docs.form.FormController;
+import com.shorindo.docs.form.TemplateController;
 import com.shorindo.docs.plaintext.PlainTextController;
 
 /**
@@ -42,6 +44,10 @@ public abstract class DocumentController extends ActionController {
                 throw new DocumentException("model not found:" + id);
             } else if ("text/plain".equals(model.getContentType())) {
                 return new PlainTextController(model);
+            } else if ("application/x-form".equals(model.getContentType())) {
+                return new FormController(model);
+            } else if ("application/x-form-template".equals(model.getContentType())) {
+                return new TemplateController(model);
             } else {
                 throw new DocumentException("controller not found:" + model.getContentType());
             }

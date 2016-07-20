@@ -20,6 +20,23 @@
 .text-editor .center textarea {
     flex:1
 }
+table.template {
+    width:840px;
+    table-layout:fixed;
+    border-collapse: collapse;
+}
+table.template tr {
+    height:20px;
+}
+table.template td {
+    width:20px;
+    empty-cells:show;
+    border: solid 1px #EEEEEE;
+    padding:0;
+}
+table.template td:hover {
+    background:#EEEEEE;
+}
 </style>
 </head>
 <body class="text-editor">
@@ -30,9 +47,11 @@
   <a th:href="@{'/' + ${document.documentId}} + '?action=remove'">remove</a>
 </div>
 <div class="center">
-  <textarea name="body" th:text="${document.body}"></textarea>
-  <input type="submit"/>
-  <input type="button" value="CANCEL" th:onclick="'location=\'' + @{'/' + ${document.documentId}} + '\''"/>
+  <table class="template">
+    <tr th:each="i : ${#numbers.sequence(1, 60)}">
+      <td th:each="j : ${#numbers.sequence(1, 40)}" th:text="${j} % 10"></td>
+    </tr>
+  </table>
 </div>
 </form>
 </body>

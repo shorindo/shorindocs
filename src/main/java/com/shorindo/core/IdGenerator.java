@@ -24,7 +24,7 @@ import java.util.Set;
  */
 public class IdGenerator {
     private static final long BASE_TIME = 0x151f88d7980L; // 2016/01/01 00:00:00
-    private static final long TIME_MASK = bit2long(59);
+    private static final long TIME_MASK = bit2long(53);
     private static final long SEQ_MASK  = bit2long(4);
     private static long last = -1;
     private static long seq = 0;

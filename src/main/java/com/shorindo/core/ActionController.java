@@ -18,6 +18,7 @@ package com.shorindo.core;
 import java.lang.reflect.Method;
 
 import com.shorindo.core.annotation.ActionMethod;
+import com.shorindo.core.view.ThymeLeafView;
 import com.shorindo.core.view.View;
 
 /**
@@ -52,5 +53,9 @@ public abstract class ActionController {
         }
         result.append(path);
         return result.toString();
+    }
+
+    protected ThymeLeafView createThymeLeafView(String path, ActionContext context) {
+        return new ThymeLeafView(createClassPath(path), context);
     }
 }
