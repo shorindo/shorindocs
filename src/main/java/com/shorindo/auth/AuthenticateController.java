@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.xuml;
+package com.shorindo.auth;
+
+import com.shorindo.core.ActionContext;
+import com.shorindo.core.ActionController;
+import com.shorindo.core.view.View;
 
 /**
  * 
  */
-public class CDATAComponent extends Component {
-    private String text;
+public class AuthenticateController extends ActionController {
 
-    public CDATAComponent(XumlView view, String text) {
-        super(view);
-        this.text = text;
+    /**
+     * 
+     */
+    public AuthenticateController() {
+        // TODO Auto-generated constructor stub
     }
 
+    /* (non-Javadoc)
+     * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
+     */
     @Override
-    public String getHtml() {
-        return escape(text);
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public View view(ActionContext context) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

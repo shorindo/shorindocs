@@ -18,16 +18,25 @@ package com.shorindo.xuml;
 /**
  * 
  */
-@ComponentReady("textbox")
-public class TextBoxComponent extends Component {
-    
-    public TextBoxComponent(XumlView view) {
+@ComponentReady("dialog")
+public class Dialog extends Component {
+
+    public Dialog(XumlView view) {
         super(view);
     }
 
     @Override
-    public String getHtml() {
-        return "<input type=\"text\">";
+    public String render() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div class=\"dialog-pane\">");
+        sb.append("<div class=\"dialog\" style=\"" + getStyles() + "\">");
+        sb.append("<div class=\"dialog-head\">エラー</div>");
+        for (Component c : getChildList()) {
+            sb.append(c.render());
+        }
+        sb.append("</div>");
+        sb.append("</div>");
+        return sb.toString();
     }
 
 }

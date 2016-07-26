@@ -34,7 +34,7 @@ public class TextViewer extends Component {
     private static final Logger LOG = Logger.getLogger(TextViewer.class);
 
     @Override
-    public String getHtml() {
+    public String render() {
         return "<div class=\"text-viewer\">\n" +
                 "@{content}\n" +
                 "</div>\n";

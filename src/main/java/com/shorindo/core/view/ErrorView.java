@@ -15,9 +15,11 @@
  */
 package com.shorindo.core.view;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import com.shorindo.core.ActionContext;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -38,7 +40,20 @@ public class ErrorView extends View {
     public InputStream getContent() {
         context.setAttribute("status", getStatus());
         context.setAttribute("message", context.getMessage("error." + getStatus()));
-        return new ThymeLeafView("html/error", context).getContent();
+        InputStream is = getClass().getClassLoader().getResourceAsStream("xuml/error.xuml");
+        try {
+            return new XumlView(context, is).getContent();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (is != null)
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
     }
 
 }

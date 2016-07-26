@@ -18,27 +18,16 @@ package com.shorindo.xuml;
 /**
  * 
  */
-@ComponentReady("button")
-public class ButtonComponent extends Component {
-    private String label;
-
-    public ButtonComponent(XumlView view) {
+@ComponentReady("textbox")
+public class TextBox extends Component {
+    
+    public TextBox(XumlView view) {
         super(view);
     }
 
     @Override
-    public String getHtml() {
-        return "<input type=\"button\"" +
-                (label != null ? " value=\"" + label + "\"" : "") +
-                ">";
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
+    public String render() {
+        return "<input type=\"text\">";
     }
 
 }

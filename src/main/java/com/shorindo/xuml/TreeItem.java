@@ -18,24 +18,32 @@ package com.shorindo.xuml;
 /**
  * 
  */
-@ComponentReady("vbox")
-public class VBoxComponent extends Component {
+@ComponentReady("treeitem")
+public class TreeItem extends Component {
+    private String label;
 
-    public VBoxComponent(XumlView view) {
+    public TreeItem(XumlView view) {
         super(view);
     }
 
     @Override
-    public String getHtml() {
+    public String render() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<table class=\"vbox\" style=\"" + getStyles() + "\">");
+        sb.append("<tr><td class=\"treeitem\" style=\"" + getStyles() + "\">");
+        sb.append(label);
         for (Component c : getChildList()) {
-            sb.append("<tr><td>");
-            sb.append(c.getHtml());
-            sb.append("</td></tr>");
+            sb.append(c.render());
         }
-        sb.append("</table>");
+        sb.append("</td></tr>");
         return sb.toString();
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
 }

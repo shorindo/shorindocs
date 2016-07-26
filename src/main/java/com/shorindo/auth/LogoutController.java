@@ -13,34 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.xuml;
+package com.shorindo.auth;
+
+import com.shorindo.core.ActionContext;
+import com.shorindo.core.ActionController;
+import com.shorindo.core.view.View;
 
 /**
  * 
  */
-public abstract class Container extends Component {
-    private String width;
-    private String height;
+public class LogoutController extends ActionController {
 
-    public Container(XumlView view) {
-        super(view);
+    /**
+     * 
+     */
+    public LogoutController() {
+        // TODO Auto-generated constructor stub
     }
 
-    public String getWidth() {
-        return width;
+    /* (non-Javadoc)
+     * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
+     */
+    @Override
+    public View view(ActionContext context) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public void setWidth(String width) {
-        this.width = width;
-        setStyle("width", width);
-    }
-
-    public String getHeight() {
-        return height;
-    }
-
-    public void setHeight(String height) {
-        this.height = height;
-        setStyle("height", height);
-    }
 }

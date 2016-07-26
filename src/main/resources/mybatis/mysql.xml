@@ -11,11 +11,11 @@
 
   <sql id="createDocument">
     CREATE TABLE DOCUMENT (
-        DOCUMENT_ID      VARCHAR(64),
-        CONTENT_TYPE    VARCHAR(255),
+        DOCUMENT_ID     VARCHAR(64),
+        SCHEMA_ID       VARCHAR(255),
         STATUS          INT,
         TITLE           TEXT,
-        BODY            TEXT,
+        CONTENT         TEXT,
         CREATE_DATE     DATETIME,
         UPDATE_DATE     DATETIME,
         OWNER_ID        VARCHAR(64),
@@ -26,16 +26,23 @@
 
   <sql id="createDocumentHistory">
     CREATE TABLE DOCUMENT_HISTORY (
-        DOCUMENT_ID      VARCHAR(64),
-        CONTENT_TYPE    VARCHAR(255),
+        DOCUMENT_ID     VARCHAR(64),
+        SCHEMA_ID       VARCHAR(255),
         VERSION         VARCHAR(16),
         TITLE           TEXT,
-        BODY            TEXT,
+        CONTENT         TEXT,
         CREATE_DATE     DATETIME,
         UPDATE_DATE     DATETIME,
         OWNER_ID        VARCHAR(64),
         ACL_ID          VARCHAR(64),
         PRIMARY KEY (DOCUMENT_ID, VERSION)
+    ) CHARACTER SET 'utf8'
+  </sql>
+
+  <sql id="createDocumentSchema">
+    CREATE TABLE DOCUMENT_SCHEMA (
+        SCHEMA_ID       VARCHAR(255) PRIMARY KEY,
+        DEFINITION      TEXT
     ) CHARACTER SET 'utf8'
   </sql>
 

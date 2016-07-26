@@ -62,7 +62,7 @@ public class ThymeLeafView extends View {
         WebContext ctx = new WebContext(
                 context.getRequest(),
                 context.getResponse(),
-                context.getServletContext(),
+                context.getApplication(),
                 context.getRequest().getLocale());
         try {
             

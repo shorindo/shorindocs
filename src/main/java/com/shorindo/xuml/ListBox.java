@@ -18,29 +18,22 @@ package com.shorindo.xuml;
 /**
  * 
  */
-public abstract class Container extends Component {
-    private String width;
-    private String height;
+@ComponentReady("listbox")
+public class ListBox extends Container {
 
-    public Container(XumlView view) {
+    public ListBox(XumlView view) {
         super(view);
     }
 
-    public String getWidth() {
-        return width;
+    @Override
+    public String render() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<ul class=\"listbox\" style=\"" + getStyles() + "\">");
+        for (Component c : getChildList()) {
+            sb.append(c.render());
+        }
+        sb.append("</ul>");
+        return sb.toString();
     }
 
-    public void setWidth(String width) {
-        this.width = width;
-        setStyle("width", width);
-    }
-
-    public String getHeight() {
-        return height;
-    }
-
-    public void setHeight(String height) {
-        this.height = height;
-        setStyle("height", height);
-    }
 }

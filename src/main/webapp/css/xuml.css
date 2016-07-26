@@ -1,5 +1,9 @@
 body {
-  margin: 0;
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100vh;
+  overflow:hidden;
 }
 body.xuml-width-fill {
   position:absolute;
@@ -25,21 +29,51 @@ textarea.text-editor {
 .xuml-height-fill {
   height:100%;
 }
-table.vbox,
-table.hbox,
-table.box {
+.vbox,
+.hbox,
+.box {
   padding:0;
   margin:0;
   border-collapse:collapse;
   width:100%;
 }
-table.vbox td,
-table.hbox td,
-table.box td{
+.vbox {
+  display:flex;
+  flex-direction:column;
+}
+.hbox {
+  display:flex;
+  flex-direction:row;
+}
+.spacer {
+  width:0;
+  height:0;
+  flex:1;
+}
+.listbox {
+  margin:0;
   padding:0;
 }
-table.vbox tr,
-table.hbox tr,
-table.box tr{
-  vertical-align:top;
+.dialog-pane {
+  position:fixed;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(128, 128, 128, 0.5);
+}
+.dialog {
+  width:400px;
+  height:300px;
+  border:1px solid gray;
+  background:white;
+  opacity:1;
+}
+.dialog-head {
+  background:gray;
+  color:white;
+  padding:2px 5px;
 }

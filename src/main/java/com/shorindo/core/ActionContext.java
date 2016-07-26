@@ -39,6 +39,10 @@ public class ActionContext {
         servletContext = ctx;
         locale = req.getLocale();
         bundle = ResourceBundle.getBundle("messages", req.getLocale());
+        this.setAttribute("request", request);
+        this.setAttribute("response", response);
+        this.setAttribute("session", request.getSession());
+        this.setAttribute("application", servletContext);
     }
 
     public HttpServletRequest getRequest() {
@@ -49,7 +53,7 @@ public class ActionContext {
         return response;
     }
 
-    public ServletContext getServletContext() {
+    public ServletContext getApplication() {
         return servletContext;
     }
 

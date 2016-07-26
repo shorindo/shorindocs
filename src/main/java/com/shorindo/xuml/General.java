@@ -24,11 +24,11 @@ import org.xml.sax.Attributes;
 /**
  * 
  */
-public class GeneralComponent extends Component {
+public class General extends Component {
     private String tagName;
     private Map<String,String> attrMap;
 
-    public GeneralComponent(XumlView view, String tagName, Attributes attrs) {
+    public General(XumlView view, String tagName, Attributes attrs) {
         super(view);
         this.tagName = tagName;
         this.attrMap = new HashMap<String,String>();
@@ -38,7 +38,7 @@ public class GeneralComponent extends Component {
     }
 
     @Override
-    public String getHtml() {
+    public String render() {
         StringBuilder sb = new StringBuilder();
         sb.append("<" + tagName);
         for (Entry<String,String> e : attrMap.entrySet()) {
@@ -50,7 +50,7 @@ public class GeneralComponent extends Component {
         }
         sb.append(">");
         for (Component c : getChildList()) {
-            sb.append(c.getHtml());
+            sb.append(c.render());
         }
         sb.append("</" + tagName + ">");
         return sb.toString();

@@ -18,26 +18,29 @@ package com.shorindo.xuml;
 /**
  * 
  */
-@ComponentReady("hbox")
-public class HBoxComponent extends Component {
+@ComponentReady("description")
+public class Description extends Component {
+    private String value = "";
 
-    public HBoxComponent(XumlView view) {
+    public Description(XumlView view) {
         super(view);
     }
 
     @Override
-    public String getHtml() {
+    public String render() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<table class=\"hbox\" style=\"" + getStyles() + "\"><tr>");
-        for (Component c : getChildList()) {
-            sb.append("<td style=\"");
-            sb.append(c.getStyles());
-            sb.append("\">");
-            sb.append(c.getHtml());
-            sb.append("</td>");
-        }
-        sb.append("</td></table>");
+        sb.append("<div class=\"description\" style=\"" + getStyles() + "\">");
+        sb.append(value);
+        sb.append("</div>");
         return sb.toString();
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

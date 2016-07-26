@@ -21,20 +21,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+import org.w3c.dom.Node;
+
 /**
  * 
  */
 public abstract class Component {
+    private static Logger LOG = Logger.getLogger(Component.class);
     private List<Component> childList;
     private XumlView view;
     private Component parent;
+    private Node context;
     private String id;
     private String className;
     private String width;
     private String height;
     private Map<String,String> styles = new HashMap<String,String>();
 
-    public abstract String getHtml();
+    public abstract String render();
 
     public Component(XumlView view) {
         childList = new ArrayList<Component>();
@@ -68,9 +73,9 @@ public abstract class Component {
     public Component add(Component child) {
         if (childList.size() > 0) {
             Component last = childList.get(childList.size() - 1);
-            if (last instanceof CDATAComponent && child instanceof CDATAComponent) {
-                CDATAComponent text = (CDATAComponent)last;
-                text.setText(text.getText() + ((CDATAComponent)child).getText());
+            if (last instanceof CDATA && child instanceof CDATA) {
+                CDATA text = (CDATA)last;
+                text.setText(text.getText() + ((CDATA)child).getText());
                 return text;
             }
         }
@@ -115,7 +120,15 @@ public abstract class Component {
         this.height = height;
     }
 
-    protected void addStyle(String name, String value) {
+    public Node getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        LOG.debug("setContext(" + view.eval(context) + ")");
+    }
+
+    protected void setStyle(String name, String value) {
         styles.put(name, value);
     }
 

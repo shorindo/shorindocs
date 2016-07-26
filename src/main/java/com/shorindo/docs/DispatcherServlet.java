@@ -15,6 +15,8 @@
  */
 package com.shorindo.docs;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -27,6 +29,7 @@ import com.shorindo.core.Logger;
 import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.RedirectView;
 import com.shorindo.core.view.View;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -46,7 +49,11 @@ public class DispatcherServlet extends ActionServlet {
             output(res, new RedirectView("/index", context));
             return;
         }
-        if (!dispatch(context)) {
+        File file = new File(req.getSession().getServletContext().getRealPath(id));
+        if (id.endsWith(".xuml") && file.exists()) {
+            View view = new XumlView(context, new FileInputStream(file));
+            output(res, view);
+        } else if (!dispatch(context)) {
             try {
                 DocumentController controller = DocumentController.getController(id);
                 View view = controller.action(context);

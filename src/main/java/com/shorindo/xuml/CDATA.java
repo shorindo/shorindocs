@@ -18,22 +18,25 @@ package com.shorindo.xuml;
 /**
  * 
  */
-@ComponentReady("box")
-public class BoxComponent extends Component {
+public class CDATA extends Component {
+    private String text;
 
-    public BoxComponent(XumlView view) {
+    public CDATA(XumlView view, String text) {
         super(view);
+        this.text = text;
     }
 
     @Override
-    public String getHtml() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"box\" style=\"" + getStyles() + "\">");
-        for (Component c : getChildList()) {
-            sb.append(c.getHtml());
-        }
-        sb.append("</div>");
-        return sb.toString();
+    public String render() {
+        return escape(text);
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
 }

@@ -19,17 +19,17 @@ package com.shorindo.xuml;
  * 
  */
 @ComponentReady("window")
-public class WindowComponent extends Component {
+public class Window extends Component {
     private String title;
     private String height = "auto";
     private String width = "auto";
 
-    public WindowComponent(XumlView view) {
+    public Window(XumlView view) {
         super(view);
     }
 
     @Override
-    public String getHtml() {
+    public String render() {
         StringBuilder sb = new StringBuilder();
         sb.append("<!doctype html>\n");
         sb.append("<html>\n");
@@ -52,7 +52,7 @@ public class WindowComponent extends Component {
         }
         sb.append("\">");
         for (Component c : getChildList()) {
-            sb.append(c.getHtml());
+            sb.append(c.render());
         }
         sb.append("</body>\n");
         sb.append("</html>\n");

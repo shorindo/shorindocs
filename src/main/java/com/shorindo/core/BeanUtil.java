@@ -23,8 +23,8 @@ import java.util.regex.Pattern;
 /**
  * 
  */
-public class BeanManager {
-    private static final Logger LOG = Logger.getLogger(BeanManager.class);
+public class BeanUtil {
+    private static final Logger LOG = Logger.getLogger(BeanUtil.class);
     private static final Pattern propPattern = Pattern.compile("([a-zA-Z])([a-z0-9]*)");
 
     private static String createMethodName(String prefix, String propertyName) {
@@ -100,7 +100,7 @@ public class BeanManager {
         try {
             return getValue(bean, name);
         } catch (BeanNotFoundException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage());
             return defaultValue;
         }
     }

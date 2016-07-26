@@ -1,0 +1,6 @@
+<window title="${status} - ${message}">
+  <dialog widht="400" heigh="300" title="${title}">
+    <description value="${message}"/>
+  </dialog>
+</window>
+

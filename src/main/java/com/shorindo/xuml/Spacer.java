@@ -18,29 +18,19 @@ package com.shorindo.xuml;
 /**
  * 
  */
-public abstract class Container extends Component {
-    private String width;
-    private String height;
+@ComponentReady("spacer")
+public class Spacer extends Component {
 
-    public Container(XumlView view) {
+    public Spacer(XumlView view) {
         super(view);
     }
 
-    public String getWidth() {
-        return width;
+    @Override
+    public String render() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div class=\"spacer\">");
+        sb.append("</div>");
+        return sb.toString();
     }
 
-    public void setWidth(String width) {
-        this.width = width;
-        setStyle("width", width);
-    }
-
-    public String getHeight() {
-        return height;
-    }
-
-    public void setHeight(String height) {
-        this.height = height;
-        setStyle("height", height);
-    }
 }

@@ -30,7 +30,7 @@ public class TextEditor extends Component {
     }
 
     @Override
-    public String getHtml() {
+    public String render() {
         return "<div class=\"text-editor\">" +
                 "<textarea class=\"text-editor xuml-width-fill xuml-height-fill\">" +
                 "@{content}" +

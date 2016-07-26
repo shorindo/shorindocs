@@ -34,7 +34,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.shorindo.core.ActionContext;
-import com.shorindo.core.BeanManager;
+import com.shorindo.core.BeanUtil;
 import com.shorindo.core.view.View;
 
 /**
@@ -100,7 +100,7 @@ public class XumlView extends View {
     @Override
     public InputStream getContent() {
         try {
-            return new ByteArrayInputStream(eval(component.getHtml()).getBytes("UTF-8"));
+            return new ByteArrayInputStream(eval(component.render()).getBytes("UTF-8"));
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             return new ByteArrayInputStream(new byte[0]);
@@ -125,10 +125,10 @@ public class XumlView extends View {
             for (int i = 0; i < attrs.getLength(); i++) {
                 String name = attrs.getLocalName(i);
                 String value = attrs.getValue(i);
-                BeanManager.setProperty(component, name, value);
+                BeanUtil.setProperty(component, name, value);
             }
         } catch (Exception e) {
-            component = new GeneralComponent(this, componentName, attrs);
+            component = new General(this, componentName, attrs);
         }
         return component;
     }
@@ -148,16 +148,16 @@ public class XumlView extends View {
             String beanName = m1.group(2);
             if ("$".equals(m1.group(1))) {
                 if (m1.group(3) != null) {
-                    sb.append(escape((String)BeanManager.getValue(
+                    sb.append(escape((String)BeanUtil.getValue(
                             context.getAttribute(beanName),
                             m1.group(4),
                             m1.group())));
                 } else {
-                    sb.append(escape((String)context.getAttribute(beanName)));
+                    sb.append(escape(String.valueOf(context.getAttribute(beanName))));
                 }
             } else if ("@".equals(m1.group(1))) {
                 if (m1.group(3) != null) {
-                    sb.append(BeanManager.getValue(
+                    sb.append(BeanUtil.getValue(
                             context.getAttribute(beanName),
                             m1.group(4),
                             m1.group()));
@@ -230,7 +230,7 @@ public class XumlView extends View {
             String text = new String(ch, start, length);
             text = text.trim();
             if (text.length() > 0) {
-                curr.add(new CDATAComponent(view, text));
+                curr.add(new CDATA(view, text));
             }
         }
     }

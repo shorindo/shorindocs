@@ -18,29 +18,27 @@ package com.shorindo.xuml;
 /**
  * 
  */
-public abstract class Container extends Component {
-    private String width;
-    private String height;
+@ComponentReady("button")
+public class Button extends Component {
+    private String label;
 
-    public Container(XumlView view) {
+    public Button(XumlView view) {
         super(view);
     }
 
-    public String getWidth() {
-        return width;
+    @Override
+    public String render() {
+        return "<input type=\"button\"" +
+                (label != null ? " value=\"" + label + "\"" : "") +
+                ">";
     }
 
-    public void setWidth(String width) {
-        this.width = width;
-        setStyle("width", width);
+    public String getLabel() {
+        return label;
     }
 
-    public String getHeight() {
-        return height;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public void setHeight(String height) {
-        this.height = height;
-        setStyle("height", height);
-    }
 }
