@@ -21,10 +21,10 @@ import com.shorindo.core.ActionContext;
 import com.shorindo.core.DatabaseManager;
 import com.shorindo.core.annotation.ActionMethod;
 import com.shorindo.core.annotation.ContentTypeReady;
-import com.shorindo.core.view.ThymeLeafView;
 import com.shorindo.core.view.View;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentModel;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -50,7 +50,7 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("\n", "<br/>"));
         context.setAttribute("search_result",
                 DatabaseManager.selectList("searchDocument", null));
-        return new ThymeLeafView(createClassPath("html/viewer"), context);
+        return new XumlView(context, createClassPath("xuml/viewer.xuml"));
     }
 
     @ActionMethod
@@ -63,6 +63,6 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;"));
-        return new ThymeLeafView(createClassPath("html/editor"), context);
+        return new XumlView(context, createClassPath("xuml/editor.xuml"));
     }
 }

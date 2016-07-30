@@ -110,6 +110,7 @@ public abstract class Component {
 
     public void setWidth(String width) {
         this.width = width;
+        this.styles.put("width", width);
     }
 
     public String getHeight() {
@@ -118,6 +119,7 @@ public abstract class Component {
 
     public void setHeight(String height) {
         this.height = height;
+        this.styles.put("height", width);
     }
 
     public Node getContext() {

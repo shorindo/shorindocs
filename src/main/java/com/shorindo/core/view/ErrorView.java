@@ -43,9 +43,6 @@ public class ErrorView extends View {
         InputStream is = getClass().getClassLoader().getResourceAsStream("xuml/error.xuml");
         try {
             return new XumlView(context, is).getContent();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
         } finally {
             if (is != null)
                 try {

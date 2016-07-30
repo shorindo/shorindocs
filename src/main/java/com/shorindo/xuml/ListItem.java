@@ -13,24 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.auth;
-
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.ActionController;
-import com.shorindo.core.view.View;
-import com.shorindo.xuml.XumlView;
+package com.shorindo.xuml;
 
 /**
  * 
  */
-public class LoginController extends ActionController {
+@ComponentReady("listitem")
+public class ListItem extends Container {
 
-    public LoginController() {
+    public ListItem(XumlView view) {
+        super(view);
     }
 
     @Override
-    public View view(ActionContext context) {
-        return new XumlView(context, createClassPath("xuml/login.xuml"));
+    public String render() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<li class=\"listitem\" style=\"" + getStyles() + "\">");
+        for (Component c : getChildList()) {
+            sb.append(c.render());
+        }
+        sb.append("</li>");
+        return sb.toString();
     }
 
 }

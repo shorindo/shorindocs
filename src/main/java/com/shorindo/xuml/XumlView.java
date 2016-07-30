@@ -81,14 +81,32 @@ public class XumlView extends View {
         }
     }
 
-    public XumlView(ActionContext context, InputStream is) throws IOException {
+    public XumlView(ActionContext context, InputStream is) {
         super(context);
         try {
             component = parse(is);
         } catch (SAXException e) {
-            throw new IOException(e.getMessage());
+            LOG.error(e.getMessage(), e);
         } catch (IOException e) {
-            throw new IOException(e.getMessage());
+            LOG.error(e.getMessage(), e);
+        }
+    }
+
+    public XumlView(ActionContext context, String classPath) {
+        super(context);
+        InputStream is = getClass().getClassLoader().getResourceAsStream(classPath);
+        try {
+            component = parse(is);
+        } catch (SAXException e) {
+            LOG.error(e.getMessage(), e);
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException e) {
+                LOG.error(e.getMessage(), e);
+            }
         }
     }
 

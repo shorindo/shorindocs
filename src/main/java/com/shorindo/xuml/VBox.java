@@ -32,7 +32,7 @@ public class VBox extends Component {
         for (Component c : getChildList()) {
             sb.append(c.render());
         }
-        sb.append("</div");
+        sb.append("</div>");
         return sb.toString();
     }
 

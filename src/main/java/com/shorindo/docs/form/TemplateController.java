@@ -18,10 +18,10 @@ package com.shorindo.docs.form;
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.annotation.ActionMethod;
 import com.shorindo.core.annotation.ContentTypeReady;
-import com.shorindo.core.view.ThymeLeafView;
 import com.shorindo.core.view.View;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentModel;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -39,12 +39,12 @@ public class TemplateController extends DocumentController {
     @Override @ActionMethod
     public View view(ActionContext context) {
         context.setAttribute("document", getModel());
-        return new ThymeLeafView(createClassPath("html/viewTemplate"), context);
+        return new XumlView(context, createClassPath("xuml/viewTemplate.xuml"));
     }
 
     @ActionMethod
     public View edit(ActionContext context) {
         context.setAttribute("document", getModel());
-        return new ThymeLeafView(createClassPath("html/editTemplate"), context);
+        return new XumlView(context, createClassPath("xuml/editTemplate.xuml"));
     }
 }
