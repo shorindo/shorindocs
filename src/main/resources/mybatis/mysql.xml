@@ -33,8 +33,6 @@
         CONTENT         TEXT,
         CREATE_DATE     DATETIME,
         UPDATE_DATE     DATETIME,
-        OWNER_ID        VARCHAR(64),
-        ACL_ID          VARCHAR(64),
         PRIMARY KEY (DOCUMENT_ID, VERSION)
     ) CHARACTER SET 'utf8'
   </sql>

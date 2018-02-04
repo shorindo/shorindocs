@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
  * 
  */
 public class ActionContext {
-    private static final Logger LOG = Logger.getLogger(ActionContext.class);
+    private static final DocsLogger LOG = DocsLogger.getLogger(ActionContext.class);
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletContext servletContext;
@@ -83,7 +83,7 @@ public class ActionContext {
         try {
             return bundle.getString(key);
         } catch (Exception e) {
-            LOG.error("message[" + key + "] not found by " + e.getMessage());
+            LOG.error(Messages.E_2001, e);
             return key;
         }
     }

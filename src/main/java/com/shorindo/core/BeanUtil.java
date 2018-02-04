@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * 
  */
 public class BeanUtil {
-    private static final Logger LOG = Logger.getLogger(BeanUtil.class);
+    private static final DocsLogger LOG = DocsLogger.getLogger(BeanUtil.class);
     private static final Pattern propPattern = Pattern.compile("([a-zA-Z])([a-z0-9]*)");
 
     private static String createMethodName(String prefix, String propertyName) {
@@ -50,7 +50,7 @@ public class BeanUtil {
                 Method method = bean.getClass().getMethod(setterName, Object.class);
                 method.invoke(bean, value);
             } catch (Exception e) {
-                LOG.error("setProperty()", e);
+                LOG.error(Messages.E_9999, e);
             }
         }
     }
@@ -65,7 +65,7 @@ public class BeanUtil {
                 Method method = bean.getClass().getMethod(setterName, String.class);
                 method.invoke(bean, value);
             } catch (Exception e) {
-                LOG.error("can't set property '" + name + "'");
+                LOG.warn(Messages.W_1001, name);
             }
         }
     }
@@ -100,7 +100,7 @@ public class BeanUtil {
         try {
             return getValue(bean, name);
         } catch (BeanNotFoundException e) {
-            LOG.error(e.getMessage());
+            LOG.error(Messages.E_9999, e);
             return defaultValue;
         }
     }

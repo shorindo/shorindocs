@@ -13,33 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.auth;
-
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.ActionController;
-import com.shorindo.core.annotation.ActionMapping;
-import com.shorindo.core.view.View;
+package com.shorindo.xuml;
 
 /**
  * 
  */
-@ActionMapping("/logout")
-public class LogoutController extends ActionController {
+@ComponentReady("link")
+public class Link extends Component {
+    private String href;
 
-    /**
-     * 
-     */
-    public LogoutController() {
-        // TODO Auto-generated constructor stub
+    public Link(XumlView view) {
+        super(view);
     }
 
-    /* (non-Javadoc)
-     * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
-     */
     @Override
-    public View view(ActionContext context) {
-        // TODO Auto-generated method stub
-        return null;
+    public String render() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<a class=\"link\" href=\"");
+        sb.append(href);
+        sb.append("\">");
+        for (Component c : getChildList()) {
+            sb.append(c.render());
+        }
+        sb.append("</a>");
+        return sb.toString();
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
     }
 
 }

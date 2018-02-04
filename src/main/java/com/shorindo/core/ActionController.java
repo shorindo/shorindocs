@@ -24,7 +24,7 @@ import com.shorindo.core.view.View;
  * 
  */
 public abstract class ActionController {
-    private static final Logger LOG = Logger.getLogger(ActionController.class);
+    private static final DocsLogger LOG = DocsLogger.getLogger(ActionController.class);
 
     public abstract View view(ActionContext context);
 
@@ -35,11 +35,11 @@ public abstract class ActionController {
                     View.class.isAssignableFrom(method.getReturnType())) {
                 return (View)method.invoke(this, context);
             } else {
-                LOG.warn("no suitable method '" + context.getAction() + "' exists.");
+                LOG.warn(Messages.W_1003, context.getAction());
                 return view(context);
             }
         } catch (Exception e) {
-            LOG.warn("no suitable method '" + context.getAction() + "' exists.", e);
+            LOG.warn(Messages.W_1003, context.getAction());
             return view(context);
         }
     }

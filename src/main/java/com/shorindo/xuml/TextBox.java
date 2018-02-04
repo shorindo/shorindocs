@@ -20,6 +20,7 @@ package com.shorindo.xuml;
  */
 @ComponentReady("textbox")
 public class TextBox extends Component {
+    private boolean multiline;
     
     public TextBox(XumlView view) {
         super(view);
@@ -27,7 +28,20 @@ public class TextBox extends Component {
 
     @Override
     public String render() {
-        return "<input type=\"text\">";
+        if (multiline) {
+            return "<textarea class=\"textbox\">" +
+                    "</textarea>";
+        } else {
+            return "<input type=\"text\">";
+        }
+    }
+
+    public boolean isMultiline() {
+        return multiline;
+    }
+
+    public void setMultiline(String multiline) {
+        this.multiline = "true".equals(multiline) ? true : false;
     }
 
 }

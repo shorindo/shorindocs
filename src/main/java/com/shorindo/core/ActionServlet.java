@@ -15,6 +15,7 @@
  */
 package com.shorindo.core;
 
+import com.shorindo.core.Messages;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.shorindo.core.ActionContext;
-import com.shorindo.core.Logger;
+import com.shorindo.core.DocsLogger;
 import com.shorindo.core.view.DefaultView;
 import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.View;
@@ -40,7 +41,7 @@ import com.shorindo.core.view.View;
  */
 public class ActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger LOG = Logger.getLogger(ActionServlet.class);
+    private static final DocsLogger LOG = DocsLogger.getLogger(ActionServlet.class);
     private Map<String,ActionController> actionMap;
 
     @Override
@@ -53,9 +54,9 @@ public class ActionServlet extends HttpServlet {
             try {
                 Class<?> clazz = Class.forName(value);
                 actionMap.put(key, (ActionController)clazz.newInstance());
-                LOG.info(key + " map to " + value);
+                LOG.info(Messages.I_0001, key, value);
             } catch (Exception ex) {
-                LOG.error("failed map " + key + " to " + value, ex);
+                LOG.error(Messages.E_2002, ex, key, value);
             }
         }
     }
@@ -100,13 +101,13 @@ public class ActionServlet extends HttpServlet {
                 res.getOutputStream().write(buf, 0, len);
             }
         } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
+            LOG.error(Messages.E_9999, e);
         } finally {
             if (is != null)
                 try {
                     is.close();
                 } catch (IOException e) {
-                    LOG.error(e.getMessage(), e);
+                    LOG.error(Messages.E_9999, e);
                 }
         }
     }

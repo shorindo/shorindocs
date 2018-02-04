@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Shorindo, Inc.
+ * Copyright 2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.auth;
+package com.shorindo.core.annotation;
 
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.ActionController;
-import com.shorindo.core.annotation.ActionMapping;
-import com.shorindo.core.view.View;
-import com.shorindo.xuml.XumlView;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 
  */
-@ActionMapping("/login")
-public class LoginController extends ActionController {
-
-    public LoginController() {
-    }
-
-    @Override
-    public View view(ActionContext context) {
-        return new XumlView(context, createClassPath("xuml/login.xuml"));
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ActionMapping {
+    public String value();
 }

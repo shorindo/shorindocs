@@ -21,7 +21,8 @@ import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionController;
 import com.shorindo.core.DatabaseManager;
 import com.shorindo.core.IdGenerator;
-import com.shorindo.core.Logger;
+import com.shorindo.core.DocsLogger;
+import com.shorindo.core.annotation.ActionMapping;
 import com.shorindo.core.annotation.ActionMethod;
 import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.RedirectView;
@@ -33,8 +34,9 @@ import com.shorindo.docs.plaintext.PlainTextController;
 /**
  * 
  */
+@ActionMapping("/*")
 public abstract class DocumentController extends ActionController {
-    private static final Logger LOG = Logger.getLogger(DocumentController.class);
+    private static final DocsLogger LOG = DocsLogger.getLogger(DocumentController.class);
     private DocumentModel model;
 
     public static DocumentController getController(final String id) throws DocumentException {

@@ -3,8 +3,8 @@
     <hbox>
       ${document.title}
       <spacer flex="1"/>
-      <a href="${document.documentId}?action=edit">edit</a>
-      <a href="${document.documentId}?action=create&amp;contentType=text/plain">create</a>
+      <link href="${document.documentId}?action=edit">edit</link>
+      <link href="${document.documentId}?action=create&amp;contentType=text/plain">create</link>
     </hbox>
     <hbox>
       <vbox width="200px">

@@ -25,7 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionServlet;
-import com.shorindo.core.Logger;
+import com.shorindo.core.DocsLogger;
+import com.shorindo.core.Messages;
 import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.RedirectView;
 import com.shorindo.core.view.View;
@@ -36,7 +37,7 @@ import com.shorindo.xuml.XumlView;
  */
 public class DispatcherServlet extends ActionServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger LOG = Logger.getLogger(DispatcherServlet.class);
+    private static final DocsLogger LOG = DocsLogger.getLogger(DispatcherServlet.class);
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
@@ -61,7 +62,7 @@ public class DispatcherServlet extends ActionServlet {
             } catch (DocumentException e) {
                 output(res, new ErrorView(404, context));
             } catch (Throwable th) {
-                LOG.error(th.getMessage(), th);
+                LOG.error(Messages.E_9999, e);
                 output(res, new ErrorView(500, context));
             }
         }

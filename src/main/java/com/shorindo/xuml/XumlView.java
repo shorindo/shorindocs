@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -35,13 +34,15 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.BeanUtil;
+import com.shorindo.core.DocsLogger;
+import com.shorindo.core.Messages;
 import com.shorindo.core.view.View;
 
 /**
  * 
  */
 public class XumlView extends View {
-    private static final Logger LOG = Logger.getLogger(XumlView.class);
+    private static final DocsLogger LOG = DocsLogger.getLogger(XumlView.class);
     private static final Map<String,Class<?>> componentMap = new HashMap<String,Class<?>>();
     private Component component;
 
@@ -72,10 +73,10 @@ public class XumlView extends View {
                     Class<?> c = Class.forName(className);
                     if (Component.class.isAssignableFrom(c)) {
                         defineComponent(c);
-                        LOG.info("Component[" + c.getName() + "] loaded.");
+                        LOG.info(Messages.I_0002, c.getName());
                     }
                 } catch (ClassNotFoundException e) {
-                    LOG.error(e.getMessage(), e);
+                    LOG.error(Messages.E_9999, e);
                 }
             }
         }
@@ -86,9 +87,9 @@ public class XumlView extends View {
         try {
             component = parse(is);
         } catch (SAXException e) {
-            LOG.error(e.getMessage(), e);
+            LOG.error(Messages.E_9999, e);
         } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
+            LOG.error(Messages.E_9999, e);
         }
     }
 
@@ -98,14 +99,14 @@ public class XumlView extends View {
         try {
             component = parse(is);
         } catch (SAXException e) {
-            LOG.error(e.getMessage(), e);
+            LOG.error(Messages.E_9999, e);
         } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
+            LOG.error(Messages.E_9999, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(e.getMessage(), e);
+                LOG.error(Messages.E_9999, e);
             }
         }
     }
@@ -120,7 +121,6 @@ public class XumlView extends View {
         try {
             return new ByteArrayInputStream(eval(component.render()).getBytes("UTF-8"));
         } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
             return new ByteArrayInputStream(new byte[0]);
         }
     }
