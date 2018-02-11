@@ -16,10 +16,10 @@
 package com.shorindo.core;
 
 import com.shorindo.core.Messages;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.DocsLogger;
+import com.shorindo.core.ClassFinder.ClassMatcher;
+import com.shorindo.core.annotation.ActionMapping;
 import com.shorindo.core.view.DefaultView;
 import com.shorindo.core.view.ErrorView;
 import com.shorindo.core.view.View;
@@ -42,23 +44,28 @@ import com.shorindo.core.view.View;
 public class ActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final DocsLogger LOG = DocsLogger.getLogger(ActionServlet.class);
-    private Map<String,ActionController> actionMap;
+    private static final Map<String,Class<?>> actionMap = new HashMap<String,Class<?>>();
 
     @Override
     public void init(ServletConfig config) throws ServletException {
+        LOG.debug("init() start");
         super.init(config);
-        actionMap = new HashMap<String,ActionController>();
-        for (Enumeration<?> e = config.getInitParameterNames(); e.hasMoreElements();) {
-            String key = e.nextElement().toString();
-            String value = config.getInitParameter(key);
-            try {
-                Class<?> clazz = Class.forName(value);
-                actionMap.put(key, (ActionController)clazz.newInstance());
-                LOG.info(Messages.I_0001, key, value);
-            } catch (Exception ex) {
-                LOG.error(Messages.E_2002, ex, key, value);
+
+        File root = new File(config.getServletContext().getRealPath("/WEB-INF/classes"));
+        ClassFinder.find(root, new ClassMatcher() {
+            public boolean matches(Class<?> clazz) {
+                ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
+                if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
+                    LOG.info(Messages.I_0001, mapping.value(), clazz);
+                    actionMap.put(mapping.value(), clazz);
+                    return true;
+                } else {
+                    return false;
+                }
             }
-        }
+        });
+
+        LOG.debug("init() end");
     }
 
     @Override
@@ -75,9 +82,19 @@ public class ActionServlet extends HttpServlet {
         HttpServletRequest req = context.getRequest();
         HttpServletResponse res = context.getResponse();
         File file = new File(getServletContext().getRealPath(req.getServletPath()));
+        Class<?> action = actionMap.get(req.getServletPath());
+        LOG.debug("path=" + action);
 
-        if (actionMap.containsKey(req.getServletPath())) {
-            output(res, actionMap.get(req.getServletPath()).action(context));
+        if (action != null) {
+            try {
+                output(res, ((ActionController)action.newInstance()).action(context));
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             return true;
         } else if (file.exists()) {
             output(res, new DefaultView(file, context));

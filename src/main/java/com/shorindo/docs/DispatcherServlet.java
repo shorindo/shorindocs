@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +39,13 @@ import com.shorindo.xuml.XumlView;
 public class DispatcherServlet extends ActionServlet {
     private static final long serialVersionUID = 1L;
     private static final DocsLogger LOG = DocsLogger.getLogger(DispatcherServlet.class);
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        LOG.debug("init() start");
+        super.init(config);
+        LOG.debug("init() end");
+    }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
@@ -62,7 +70,7 @@ public class DispatcherServlet extends ActionServlet {
             } catch (DocumentException e) {
                 output(res, new ErrorView(404, context));
             } catch (Throwable th) {
-                LOG.error(Messages.E_9999, e);
+                LOG.error(Messages.E_9999, th);
                 output(res, new ErrorView(500, context));
             }
         }

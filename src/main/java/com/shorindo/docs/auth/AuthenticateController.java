@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Shorindo, Inc.
+ * Copyright 2016-2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.auth;
+package com.shorindo.docs.auth;
 
 import com.shorindo.core.ActionContext;
 import com.shorindo.core.ActionController;
-import com.shorindo.core.annotation.ActionMapping;
 import com.shorindo.core.view.View;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-@ActionMapping("/login")
-public class LoginController extends ActionController {
+public class AuthenticateController extends ActionController {
 
-    public LoginController() {
+    /**
+     * 
+     */
+    public AuthenticateController() {
+        // TODO Auto-generated constructor stub
     }
 
+    /* (non-Javadoc)
+     * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
+     */
     @Override
     public View view(ActionContext context) {
-        return new XumlView(context, createClassPath("xuml/login.xuml"));
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

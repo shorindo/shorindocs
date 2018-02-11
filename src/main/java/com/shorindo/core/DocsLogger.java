@@ -15,58 +15,56 @@
  */
 package com.shorindo.core;
 
+import java.text.MessageFormat;
+
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * 
  */
 public class DocsLogger {
-    org.apache.log4j.Logger logger;
+    private Logger LOG;
 
     public static DocsLogger getLogger(Class<?> clazz) {
         return new DocsLogger(clazz);
     }
-    protected DocsLogger(Class<?> clazz) {
-        logger = LogManager.getLogger(clazz);
+    private DocsLogger(Class<?> clazz) {
+        LOG = LogManager.getLogger(clazz);
     }
     public void trace(String msg) {
-        logger.trace(msg);
+        LOG.trace(msg);
     }
     public void debug(String msg) {
-        logger.debug(msg);
+        LOG.debug(msg);
     }
     public void debug(String msg, Throwable th) {
-        logger.debug(msg, th);
+        LOG.debug(msg, th);
     }
-//    public void info(String msg) {
-//        logger.info(msg);
-//    }
-//    public void info(String msg, Throwable th) {
-//        logger.info(msg, th);
-//    }
-//    public void warn(String msg) {
-//        logger.warn(msg);
-//    }
-//    public void warn(String msg, Throwable th) {
-//        logger.warn(msg, th);
-//    }
-//    public void error(String msg) {
-//        logger.error(msg);
-//    }
-//    public void error(String msg, Throwable th) {
-//        logger.error(msg, th);
-//    }
-
+    public void debug(String message, Object...args) {
+        if (args.length > 0) {
+            LOG.debug(MessageFormat.format(message, args));
+        } else {
+            LOG.debug(message);
+        }
+    }
     public void info(Messages code, Object...args) {
-        logger.info(code.name() + ":" + code.getMessage(args));
+        LOG.info(code.name() + ":" + code.getMessage(args));
+    }
+    public void info(String message, Object...args) {
+        if (args.length > 0) {
+            LOG.info(MessageFormat.format(message, args));
+        } else {
+            LOG.info(message);
+        }
     }
     public void warn(Messages code, Object...args) {
-        logger.warn(code.name() + ":" + code.getMessage(args));
+        LOG.warn(code.name() + ":" + code.getMessage(args));
     }
     public void error(Messages code, Object...args) {
-        logger.error(code.name() + ":" + code.getMessage(args));
+        LOG.error(code.name() + ":" + code.getMessage(args));
     }
     public void error(Messages code, Throwable th, Object...args) {
-        logger.error(code.name() + ":" + code.getMessage(args), th);
+        LOG.error(code.name() + ":" + code.getMessage(args), th);
     }
 }

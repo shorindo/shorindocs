@@ -20,6 +20,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.text.MessageFormat;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -29,7 +31,9 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import com.shorindo.core.ClassFinder.ClassMatcher;
 import com.shorindo.core.annotation.ActionMapping;
+import com.shorindo.core.annotation.ActionMethod;
 import com.shorindo.xuml.XumlView;
 
 /**
@@ -37,9 +41,6 @@ import com.shorindo.xuml.XumlView;
  */
 public class ApplicationListener implements ServletContextListener {
     private static final DocsLogger LOG = DocsLogger.getLogger(ApplicationListener.class);
-
-    public void contextDestroyed(ServletContextEvent event) {
-    }
 
     public void contextInitialized(ServletContextEvent event) {
         LOG.trace("contextInitialized()");
@@ -61,74 +62,23 @@ public class ApplicationListener implements ServletContextListener {
             }
         }
 
-        File root = new File(event.getServletContext().getRealPath("/WEB-INF/classes"));
-        findActionController(root, root);
-        findClassFromJar(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
+//        File root = new File(event.getServletContext().getRealPath("/WEB-INF/classes"));
+//        ClassFinder.find(root, new ClassMatcher() {
+//            public boolean matches(Class<?> clazz) {
+//                ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
+//                if (mapping != null) {
+//                    LOG.info(Messages.I_0001, mapping.value(), clazz);
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            }
+//        });
 
         XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
     }
 
-    private void findActionController(File root, File base) {
-        if (base.isDirectory()) {
-            for (File child : base.listFiles()) {
-                findActionController(root, child);
-            }
-        } else if (base.getName().endsWith(".class")) {
-            int pos = root.getAbsolutePath().length() + 1;
-            String className = base.getAbsolutePath().substring(pos)
-                    .replaceAll("\\.class$", "")
-                    .replace(System.getProperty("file.separator"), ".");
-            //LOG.debug("found - " + className);
-            findActionMapping(className);
-        }
+    public void contextDestroyed(ServletContextEvent event) {
     }
 
-    private void findClassFromJar(File base) {
-        for (File jar : base.listFiles()) {
-            if (!jar.getName().endsWith(".jar")) {
-                continue;
-            }
-            
-            JarInputStream jis = null;
-            try {
-                jis = new JarInputStream(new FileInputStream(jar));
-                while (true) {
-                    JarEntry entry = jis.getNextJarEntry();
-                    if (entry == null) break;
-                    if (!entry.getName().endsWith(".class")) continue;
-                    String className = entry.getName()
-                            .replaceAll("\\.class$", "")
-                            .replace("/", ".");
-                    //LOG.debug("found - " + className);
-                    findActionMapping(className);
-                }
-            } catch (FileNotFoundException e) {
-                LOG.error(Messages.E_9999, e);
-            } catch (IOException e) {
-                LOG.error(Messages.E_9999, e);
-            } finally {
-                try {
-                    jis.close();
-                } catch (IOException e) {
-                    LOG.error(Messages.E_9999, e);
-                }
-            }
-        }
-    }
-
-    private void findActionMapping(String className) {
-        try {
-            Class<?> clazz = Class.forName(className);
-            ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
-            if (mapping != null) {
-                LOG.info(Messages.I_0003, className, mapping.value());
-            }
-        } catch (Throwable th) {
-            LOG.warn(Messages.W_1002, className);
-        }
-    }
-
-    public static class AnnotClassLoader extends ClassLoader {
-        
-    }
 }

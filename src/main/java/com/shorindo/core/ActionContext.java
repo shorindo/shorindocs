@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ActionContext {
     private static final DocsLogger LOG = DocsLogger.getLogger(ActionContext.class);
+    private ViewModel viewModel;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletContext servletContext;
@@ -34,6 +35,7 @@ public class ActionContext {
     private ResourceBundle bundle;
 
     public ActionContext(HttpServletRequest req, HttpServletResponse res, ServletContext ctx) {
+        viewModel = new ViewModel(req);
         request = req;
         response = res;
         servletContext = ctx;
@@ -43,6 +45,10 @@ public class ActionContext {
         this.setAttribute("response", response);
         this.setAttribute("session", request.getSession());
         this.setAttribute("application", servletContext);
+    }
+
+    public ViewModel getViewModel() {
+        return viewModel;
     }
 
     public HttpServletRequest getRequest() {
