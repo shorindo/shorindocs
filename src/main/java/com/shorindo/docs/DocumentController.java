@@ -17,19 +17,14 @@ package com.shorindo.docs;
 
 import java.sql.SQLException;
 
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.ActionController;
-import com.shorindo.core.DatabaseManager;
-import com.shorindo.core.IdGenerator;
-import com.shorindo.core.DocsLogger;
-import com.shorindo.core.annotation.ActionMapping;
-import com.shorindo.core.annotation.ActionMethod;
-import com.shorindo.core.view.ErrorView;
-import com.shorindo.core.view.RedirectView;
-import com.shorindo.core.view.View;
+import com.shorindo.docs.annotation.ActionMapping;
+import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.form.FormController;
 import com.shorindo.docs.form.TemplateController;
 import com.shorindo.docs.plaintext.PlainTextController;
+import com.shorindo.docs.view.ErrorView;
+import com.shorindo.docs.view.RedirectView;
+import com.shorindo.docs.view.View;
 
 /**
  * 

@@ -15,10 +15,10 @@
  */
 package com.shorindo.docs.auth;
 
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.ActionController;
-import com.shorindo.core.annotation.ActionMapping;
-import com.shorindo.core.view.View;
+import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.ActionController;
+import com.shorindo.docs.annotation.ActionMapping;
+import com.shorindo.docs.view.View;
 
 /**
  * 

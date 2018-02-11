@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.core.view;
+package com.shorindo.docs.view;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.DocsLogger;
+import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.DocsLogger;
 
 /**
  * 

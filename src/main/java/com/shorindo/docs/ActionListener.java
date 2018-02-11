@@ -13,34 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.core;
+package com.shorindo.docs;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.text.MessageFormat;
 import java.util.Properties;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.shorindo.core.ClassFinder.ClassMatcher;
-import com.shorindo.core.annotation.ActionMapping;
-import com.shorindo.core.annotation.ActionMethod;
 import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-public class ApplicationListener implements ServletContextListener {
-    private static final DocsLogger LOG = DocsLogger.getLogger(ApplicationListener.class);
+public class ActionListener implements ServletContextListener {
+    private static final DocsLogger LOG = DocsLogger.getLogger(ActionListener.class);
 
     public void contextInitialized(ServletContextEvent event) {
         LOG.trace("contextInitialized()");
@@ -61,19 +52,6 @@ public class ApplicationListener implements ServletContextListener {
                 LOG.error(Messages.E_9999, e);
             }
         }
-
-//        File root = new File(event.getServletContext().getRealPath("/WEB-INF/classes"));
-//        ClassFinder.find(root, new ClassMatcher() {
-//            public boolean matches(Class<?> clazz) {
-//                ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
-//                if (mapping != null) {
-//                    LOG.info(Messages.I_0001, mapping.value(), clazz);
-//                    return true;
-//                } else {
-//                    return false;
-//                }
-//            }
-//        });
 
         XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
     }

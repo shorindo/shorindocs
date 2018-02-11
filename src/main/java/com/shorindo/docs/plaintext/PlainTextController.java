@@ -17,13 +17,13 @@ package com.shorindo.docs.plaintext;
 
 import org.apache.log4j.Logger;
 
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.DatabaseManager;
-import com.shorindo.core.annotation.ActionMethod;
-import com.shorindo.core.annotation.ContentTypeReady;
-import com.shorindo.core.view.View;
+import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.DatabaseManager;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentModel;
+import com.shorindo.docs.annotation.ActionMethod;
+import com.shorindo.docs.annotation.ContentTypeReady;
+import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
 
 /**

@@ -15,24 +15,23 @@
  */
 package com.shorindo.docs.admin;
 
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.annotation.ActionMapping;
-import com.shorindo.core.annotation.ActionMethod;
-import com.shorindo.core.view.View;
-import com.shorindo.docs.DocumentController;
-import com.shorindo.docs.DocumentModel;
+import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.ActionController;
+import com.shorindo.docs.annotation.ActionMapping;
+import com.shorindo.docs.annotation.ActionMethod;
+import com.shorindo.docs.view.DefaultView;
+import com.shorindo.docs.view.View;
 
 /**
  * 
  */
 @ActionMapping("/admin/list")
-public class ListPagesController extends DocumentController {
+public class ListPagesController extends ActionController {
 
     /**
      * 
      */
-    public ListPagesController(DocumentModel model) {
-        super(model);
+    public ListPagesController() {
     }
 
     /**
@@ -41,7 +40,7 @@ public class ListPagesController extends DocumentController {
     @Override
     @ActionMethod
     public View view(ActionContext context) {
-        return null;
+        return new DefaultView();
     }
 
 }

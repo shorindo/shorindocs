@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.core.view;
+package com.shorindo.docs.view;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +26,7 @@ import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
-import com.shorindo.core.ActionContext;
+import com.shorindo.docs.ActionContext;
 
 /**
  * 

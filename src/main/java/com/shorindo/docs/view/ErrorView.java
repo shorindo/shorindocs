@@ -13,41 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.core.view;
+package com.shorindo.docs.view;
 
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
-import net.arnx.jsonic.JSON;
-
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.DocsLogger;
-import com.shorindo.core.Messages;
+import com.shorindo.docs.ActionContext;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-public class JsonView extends View {
-    private static final DocsLogger LOG = DocsLogger.getLogger(JsonView.class);
-    Object bean;
+public class ErrorView extends View {
 
-    public JsonView(Object bean, ActionContext context) {
+    public ErrorView(int status, ActionContext context) {
         super(context);
-        this.bean = bean;
+        setStatus(status);
     }
 
     @Override
     public String getContentType() {
-        return "application/json";
+        return "text/html; charset=UTF-8";
     }
 
     @Override
     public InputStream getContent() {
+        context.setAttribute("status", getStatus());
+        context.setAttribute("message", context.getMessage("error." + getStatus()));
+        InputStream is = getClass().getClassLoader().getResourceAsStream("xuml/error.xuml");
         try {
-            return new ByteArrayInputStream(JSON.encode(bean, true).getBytes("UTF-8"));
-        } catch (Exception e) {
-            LOG.error(Messages.E_9999, e);
-            return new ByteArrayInputStream(new byte[0]);
+            return new XumlView(context, is).getContent();
+        } finally {
+            if (is != null)
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
     }
 

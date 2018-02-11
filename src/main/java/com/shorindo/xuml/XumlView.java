@@ -32,11 +32,11 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.BeanUtil;
-import com.shorindo.core.DocsLogger;
-import com.shorindo.core.Messages;
-import com.shorindo.core.view.View;
+import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.BeanUtil;
+import com.shorindo.docs.DocsLogger;
+import com.shorindo.docs.Messages;
+import com.shorindo.docs.view.View;
 
 /**
  * 

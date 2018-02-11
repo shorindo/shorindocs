@@ -24,13 +24,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.ActionServlet;
-import com.shorindo.core.DocsLogger;
-import com.shorindo.core.Messages;
-import com.shorindo.core.view.ErrorView;
-import com.shorindo.core.view.RedirectView;
-import com.shorindo.core.view.View;
+import com.shorindo.docs.view.ErrorView;
+import com.shorindo.docs.view.RedirectView;
+import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
 
 /**

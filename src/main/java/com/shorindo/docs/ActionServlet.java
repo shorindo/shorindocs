@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.core;
-
-import com.shorindo.core.Messages;
+package com.shorindo.docs;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,13 +28,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.shorindo.core.ActionContext;
-import com.shorindo.core.DocsLogger;
-import com.shorindo.core.ClassFinder.ClassMatcher;
-import com.shorindo.core.annotation.ActionMapping;
-import com.shorindo.core.view.DefaultView;
-import com.shorindo.core.view.ErrorView;
-import com.shorindo.core.view.View;
+import com.shorindo.docs.DocsLogger;
+import com.shorindo.docs.Messages;
+import com.shorindo.docs.ClassFinder.ClassMatcher;
+import com.shorindo.docs.annotation.ActionMapping;
+import com.shorindo.docs.view.DefaultView;
+import com.shorindo.docs.view.ErrorView;
+import com.shorindo.docs.view.View;
 
 /**
  * 
@@ -89,11 +87,9 @@ public class ActionServlet extends HttpServlet {
             try {
                 output(res, ((ActionController)action.newInstance()).action(context));
             } catch (InstantiationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error(Messages.E_9999, e);
             } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error(Messages.E_9999, e);
             }
             return true;
         } else if (file.exists()) {
