@@ -73,13 +73,17 @@ public class XumlView extends View {
                     Class<?> c = Class.forName(className);
                     if (Component.class.isAssignableFrom(c)) {
                         defineComponent(c);
-                        LOG.info(Messages.I_0002, c.getName());
+                        LOG.info(Messages.I0002, c.getName());
                     }
                 } catch (ClassNotFoundException e) {
-                    LOG.error(Messages.E_9999, e);
+                    LOG.error(Messages.E9999, e);
                 }
             }
         }
+    }
+
+    public XumlView(ActionContext context, Class<?> clazz) {
+        this(context, clazz.getResourceAsStream(clazz.getSimpleName() + ".xuml"));
     }
 
     public XumlView(ActionContext context, InputStream is) {
@@ -87,26 +91,32 @@ public class XumlView extends View {
         try {
             component = parse(is);
         } catch (SAXException e) {
-            LOG.error(Messages.E_9999, e);
+            LOG.error(Messages.E9999, e);
         } catch (IOException e) {
-            LOG.error(Messages.E_9999, e);
+            LOG.error(Messages.E9999, e);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException e) {
+                LOG.error(Messages.E9999, e);
+            }
         }
     }
 
     public XumlView(ActionContext context, String classPath) {
         super(context);
-        InputStream is = getClass().getClassLoader().getResourceAsStream(classPath);
+        InputStream is = getClass().getResourceAsStream(classPath);
         try {
             component = parse(is);
         } catch (SAXException e) {
-            LOG.error(Messages.E_9999, e);
+            LOG.error(Messages.E9999, e);
         } catch (IOException e) {
-            LOG.error(Messages.E_9999, e);
+            LOG.error(Messages.E9999, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(Messages.E_9999, e);
+                LOG.error(Messages.E9999, e);
             }
         }
     }

@@ -26,20 +26,22 @@ import com.shorindo.docs.view.View;
 public abstract class ActionController {
     private static final DocsLogger LOG = DocsLogger.getLogger(ActionController.class);
 
+    @ActionMethod
     public abstract View view(ActionContext context);
 
-    public final View action(ActionContext context) {
+    public View action(ActionContext context) {
+        LOG.debug(this.getClass().getSimpleName() + ".action()");
         try {
             Method method = getClass().getMethod(context.getAction(), ActionContext.class);
             if (method.getAnnotation(ActionMethod.class) != null &&
                     View.class.isAssignableFrom(method.getReturnType())) {
                 return (View)method.invoke(this, context);
             } else {
-                LOG.warn(Messages.W_1003, context.getAction());
+                LOG.warn(Messages.W1003, context.getAction());
                 return view(context);
             }
         } catch (Exception e) {
-            LOG.warn(Messages.W_1003, context.getAction());
+            LOG.warn(Messages.W1003, context.getAction());
             return view(context);
         }
     }

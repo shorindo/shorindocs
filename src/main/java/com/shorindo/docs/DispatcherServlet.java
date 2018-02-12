@@ -46,7 +46,8 @@ public class DispatcherServlet extends ActionServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        String id = req.getServletPath().substring(1);
+        String path = req.getServletPath();
+        String id = path.substring(1);
         ActionContext context = new ActionContext(req, res, getServletContext());
         LOG.debug("service(" + req.getServletPath() + ")");
 
@@ -59,16 +60,17 @@ public class DispatcherServlet extends ActionServlet {
             View view = new XumlView(context, new FileInputStream(file));
             output(res, view);
         } else if (!dispatch(context)) {
-            try {
-                DocumentController controller = DocumentController.getController(id);
-                View view = controller.action(context);
-                output(res, view);
-            } catch (DocumentException e) {
-                output(res, new ErrorView(404, context));
-            } catch (Throwable th) {
-                LOG.error(Messages.E_9999, th);
-                output(res, new ErrorView(500, context));
-            }
+            LOG.error(Messages.E2003, path);
+//            try {
+//                DocumentController controller = DocumentController.getController(id);
+//                View view = controller.action(context);
+//                output(res, view);
+//            } catch (DocumentException e) {
+//                output(res, new ErrorView(404, context));
+//            } catch (Throwable th) {
+//                LOG.error(Messages.E_9999, th);
+//                output(res, new ErrorView(500, context));
+//            }
         }
     }
 }

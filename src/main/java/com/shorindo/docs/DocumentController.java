@@ -15,13 +15,7 @@
  */
 package com.shorindo.docs;
 
-import java.sql.SQLException;
-
-import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.form.FormController;
-import com.shorindo.docs.form.TemplateController;
-import com.shorindo.docs.plaintext.PlainTextController;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
@@ -29,41 +23,16 @@ import com.shorindo.docs.view.View;
 /**
  * 
  */
-@ActionMapping("/*")
-public abstract class DocumentController extends ActionController {
+public class DocumentController extends ActionController {
     private static final DocsLogger LOG = DocsLogger.getLogger(DocumentController.class);
     private DocumentModel model;
 
-    public static DocumentController getController(final String id) throws DocumentException {
-        try {
-            DocumentModel model = getContentModel(id);
-            if (model == null) {
-                throw new DocumentException("model not found:" + id);
-            } else if ("text/plain".equals(model.getContentType())) {
-                return new PlainTextController(model);
-            } else if ("application/x-form".equals(model.getContentType())) {
-                return new FormController(model);
-            } else if ("application/x-form-template".equals(model.getContentType())) {
-                return new TemplateController(model);
-            } else {
-                throw new DocumentException("controller not found:" + model.getContentType());
-            }
-        } catch (Exception e) {
-            throw new DocumentException(e.getMessage(), e);
-        }
+    @Override
+    public View view(ActionContext context) {
+        return new ErrorView(500, context);
     }
 
-    public static DocumentModel getContentModel(String id) throws SQLException {
-        DocumentModel model = new DocumentModel();
-        model.setDocumentId(id);
-        return DatabaseManager.selectOne("docs.getDocument", model);
-    }
-
-    public DocumentController(DocumentModel model) {
-        this.model = model;
-    }
-
-    public DocumentModel getModel() {
+    protected DocumentModel getModel() {
         return model;
     }
 

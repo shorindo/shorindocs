@@ -85,14 +85,14 @@ public class ClassFinder {
                 }
             }
         } catch (FileNotFoundException e) {
-            LOG.error(Messages.E_9999, e);
+            LOG.error(Messages.E9999, e);
         } catch (IOException e) {
-            LOG.error(Messages.E_9999, e);
+            LOG.error(Messages.E9999, e);
         } finally {
             try {
                 jis.close();
             } catch (IOException e) {
-                LOG.error(Messages.E_9999, e);
+                LOG.error(Messages.E9999, e);
             }
         }
         return result;

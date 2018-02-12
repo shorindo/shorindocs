@@ -20,6 +20,7 @@ import com.shorindo.docs.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.view.DefaultView;
+import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 
 /**
@@ -29,18 +30,11 @@ import com.shorindo.docs.view.View;
 public class ListPagesController extends ActionController {
 
     /**
-     * 
-     */
-    public ListPagesController() {
-    }
-
-    /**
      *
      */
-    @Override
-    @ActionMethod
+    @Override @ActionMethod
     public View view(ActionContext context) {
-        return new DefaultView();
+        return null;
     }
 
 }

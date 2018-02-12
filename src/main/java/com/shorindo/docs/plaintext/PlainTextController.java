@@ -33,15 +33,14 @@ import com.shorindo.xuml.XumlView;
 public class PlainTextController extends DocumentController {
     private static final Logger LOG = Logger.getLogger(PlainTextController.class);
 
-    public PlainTextController(DocumentModel model) {
-        super(model);
+    public PlainTextController() {
     }
 
     @Override @ActionMethod
     public View view(ActionContext context) {
         LOG.info("view()");
-        context.setAttribute("document", getModel());
-        String body = getModel().getBody() == null ? "" : getModel().getBody();
+        DocumentModel model = (DocumentModel)context.getAttribute("document");
+        String body = model.getBody() == null ? "" : model.getBody();
         context.setAttribute("content", body
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
@@ -50,19 +49,19 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("\n", "<br/>"));
         context.setAttribute("search_result",
                 DatabaseManager.selectList("searchDocument", null));
-        return new XumlView(context, createClassPath("xuml/viewer.xuml"));
+        return new XumlView(context, getClass());
     }
 
     @ActionMethod
     public View edit(ActionContext context) {
         LOG.info("edit()");
-        context.setAttribute("document", getModel());
-        String body = getModel().getBody() == null ? "" : getModel().getBody();
+        DocumentModel model = (DocumentModel)context.getAttribute("document");
+        String body = model.getBody() == null ? "" : model.getBody();
         context.setAttribute("content", body
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;"));
-        return new XumlView(context, createClassPath("xuml/editor.xuml"));
+        return new XumlView(context, getClass());
     }
 }

@@ -18,8 +18,6 @@ package com.shorindo.docs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
@@ -42,7 +40,7 @@ import com.shorindo.docs.view.View;
 public class ActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final DocsLogger LOG = DocsLogger.getLogger(ActionServlet.class);
-    private static final Map<String,Class<?>> actionMap = new HashMap<String,Class<?>>();
+    private static final ActionMapper actionMap = new ActionMapper();
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -54,8 +52,14 @@ public class ActionServlet extends HttpServlet {
             public boolean matches(Class<?> clazz) {
                 ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
                 if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
-                    LOG.info(Messages.I_0001, mapping.value(), clazz);
-                    actionMap.put(mapping.value(), clazz);
+                    LOG.info(Messages.I0001, mapping.value(), clazz);
+                    try {
+                        actionMap.put(mapping.value(), (ActionController)clazz.newInstance());
+                    } catch (InstantiationException e) {
+                        LOG.error(Messages.E9999, e);
+                    } catch (IllegalAccessException e) {
+                        LOG.error(Messages.E9999, e);
+                    }
                     return true;
                 } else {
                     return false;
@@ -70,8 +74,13 @@ public class ActionServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         ActionContext context = new ActionContext(req, res, getServletContext());
-        if (!dispatch(context)) {
-            output(res, new ErrorView(404, context));
+        try {
+            if (!dispatch(context)) {
+                output(res, new ErrorView(404, context));
+            }
+        } catch (Throwable th) {
+            LOG.error(Messages.E9999, th);
+            output(res, new ErrorView(500, context));
         }
     }
 
@@ -80,20 +89,13 @@ public class ActionServlet extends HttpServlet {
         HttpServletRequest req = context.getRequest();
         HttpServletResponse res = context.getResponse();
         File file = new File(getServletContext().getRealPath(req.getServletPath()));
-        Class<?> action = actionMap.get(req.getServletPath());
-        LOG.debug("path=" + action);
+        ActionController controller = actionMap.get(req.getServletPath());
 
-        if (action != null) {
-            try {
-                output(res, ((ActionController)action.newInstance()).action(context));
-            } catch (InstantiationException e) {
-                LOG.error(Messages.E_9999, e);
-            } catch (IllegalAccessException e) {
-                LOG.error(Messages.E_9999, e);
-            }
-            return true;
-        } else if (file.exists()) {
+        if (file.exists()) {
             output(res, new DefaultView(file, context));
+            return true;
+        } else if (controller != null) {
+            output(res, controller.action(context));
             return true;
         } else {
             return false;
@@ -114,13 +116,13 @@ public class ActionServlet extends HttpServlet {
                 res.getOutputStream().write(buf, 0, len);
             }
         } catch (IOException e) {
-            LOG.error(Messages.E_9999, e);
+            LOG.error(Messages.E9999, e);
         } finally {
             if (is != null)
                 try {
                     is.close();
                 } catch (IOException e) {
-                    LOG.error(Messages.E_9999, e);
+                    LOG.error(Messages.E9999, e);
                 }
         }
     }

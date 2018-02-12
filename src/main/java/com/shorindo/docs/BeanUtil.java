@@ -50,7 +50,7 @@ public class BeanUtil {
                 Method method = bean.getClass().getMethod(setterName, Object.class);
                 method.invoke(bean, value);
             } catch (Exception e) {
-                LOG.error(Messages.E_9999, e);
+                LOG.error(Messages.E9999, e);
             }
         }
     }
@@ -65,7 +65,7 @@ public class BeanUtil {
                 Method method = bean.getClass().getMethod(setterName, String.class);
                 method.invoke(bean, value);
             } catch (Exception e) {
-                LOG.warn(Messages.W_1001, name);
+                LOG.warn(Messages.W1001, name);
             }
         }
     }
@@ -100,7 +100,7 @@ public class BeanUtil {
         try {
             return getValue(bean, name);
         } catch (BeanNotFoundException e) {
-            LOG.error(Messages.E_9999, e);
+            LOG.error(Messages.E9999, e);
             return defaultValue;
         }
     }

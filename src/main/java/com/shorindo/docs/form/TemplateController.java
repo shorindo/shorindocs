@@ -16,6 +16,7 @@
 package com.shorindo.docs.form;
 
 import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.ActionController;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentModel;
 import com.shorindo.docs.annotation.ActionMethod;
@@ -27,24 +28,21 @@ import com.shorindo.xuml.XumlView;
  * 
  */
 @ContentTypeReady("application/x-form-template")
-public class TemplateController extends DocumentController {
+public class TemplateController extends ActionController {
 
     /**
      * 
      */
-    public TemplateController(DocumentModel model) {
-        super(model);
+    public TemplateController() {
     }
 
     @Override @ActionMethod
     public View view(ActionContext context) {
-        context.setAttribute("document", getModel());
         return new XumlView(context, createClassPath("xuml/viewTemplate.xuml"));
     }
 
     @ActionMethod
     public View edit(ActionContext context) {
-        context.setAttribute("document", getModel());
         return new XumlView(context, createClassPath("xuml/editTemplate.xuml"));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Shorindo, Inc.
+ * Copyright 2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth;
+package com.shorindo.docs;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionController;
-import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
  */
-@ActionMapping("/login")
-public class LoginController extends ActionController {
+public class ActionMapper {
+    Map<String,ActionController> map;
 
-    public LoginController() {
+    /**
+     * 
+     */
+    public ActionMapper() {
+        map = new HashMap<String,ActionController>();
     }
 
-    @Override
-    @ActionMethod
-    public View view(ActionContext context) {
-        return new XumlView(context, getClass());
+    public void put(String path, ActionController controller) {
+        map.put(path, controller);
     }
 
+    public ActionController get(String path) {
+        ActionController controller = map.get(path);
+        if (controller == null) {
+            controller = map.get("/*"); // FIXME
+        }
+        return controller;
+    }
 }

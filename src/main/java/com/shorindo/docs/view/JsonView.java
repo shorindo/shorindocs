@@ -46,7 +46,7 @@ public class JsonView extends View {
         try {
             return new ByteArrayInputStream(JSON.encode(bean, true).getBytes("UTF-8"));
         } catch (Exception e) {
-            LOG.error(Messages.E_9999, e);
+            LOG.error(Messages.E9999, e);
             return new ByteArrayInputStream(new byte[0]);
         }
     }
