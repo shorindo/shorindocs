@@ -43,7 +43,7 @@ public class Window extends Component {
         if ("fill".equals(height)) {
             sb.append("xuml-height-fill ");
         } else if ("auto".equals(height)) {
-            sb.append("xuml-height-auto");
+            sb.append("xuml-height-auto ");
         }
         if ("fill".equals(width)) {
             sb.append("xuml-width-fill ");

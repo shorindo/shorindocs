@@ -59,12 +59,12 @@ public class DocsLogger {
         }
     }
     public void warn(Messages code, Object...args) {
-        LOG.warn(code.name() + ":" + code.getMessage(args));
+        LOG.warn("[" + code.name() + "] " + code.getMessage(args));
     }
     public void error(Messages code, Object...args) {
-        LOG.error(code.name() + ":" + code.getMessage(args));
+        LOG.error("[" + code.name() + "] " + code.getMessage(args));
     }
     public void error(Messages code, Throwable th, Object...args) {
-        LOG.error(code.name() + ":" + code.getMessage(args), th);
+        LOG.error("[" + code.name() + "] " + code.getMessage(args), th);
     }
 }

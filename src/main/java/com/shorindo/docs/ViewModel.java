@@ -15,18 +15,22 @@
  */
 package com.shorindo.docs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * 
  */
 public class ViewModel {
+    private Map<String,Object> model;
 
     /**
      * 
      */
     protected ViewModel(HttpServletRequest request) {
-        // TODO Auto-generated constructor stub
+        model = new HashMap<String,Object>();
     }
 
 }

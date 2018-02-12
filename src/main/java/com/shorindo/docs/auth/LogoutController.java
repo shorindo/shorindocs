@@ -18,6 +18,8 @@ package com.shorindo.docs.auth;
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
+import com.shorindo.docs.annotation.ActionMethod;
+import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
 
 /**
@@ -26,20 +28,12 @@ import com.shorindo.docs.view.View;
 @ActionMapping("/logout")
 public class LogoutController extends ActionController {
 
-    /**
-     * 
-     */
     public LogoutController() {
-        // TODO Auto-generated constructor stub
     }
 
-    /* (non-Javadoc)
-     * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
-     */
-    @Override
+    @Override @ActionMethod
     public View view(ActionContext context) {
-        // TODO Auto-generated method stub
-        return null;
+        return new RedirectView("/", context);
     }
 
 }

@@ -16,6 +16,7 @@
 package com.shorindo.docs;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map.Entry;
@@ -31,8 +32,9 @@ import com.shorindo.docs.Messages;
 import com.shorindo.docs.ClassFinder.ClassMatcher;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.DefaultView;
-import com.shorindo.docs.view.ErrorView;
+import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -73,14 +75,21 @@ public class ActionServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
+        LOG.debug("service(" + req.getServletPath() + ")");
+        String path = req.getServletPath();
+        String id = path.substring(1);
         ActionContext context = new ActionContext(req, res, getServletContext());
-        try {
-            if (!dispatch(context)) {
-                output(res, new ErrorView(404, context));
-            }
-        } catch (Throwable th) {
-            LOG.error(Messages.E9999, th);
-            output(res, new ErrorView(500, context));
+
+        if (id == null || "".equals(id)) {
+            output(res, new RedirectView("/index", context));
+            return;
+        }
+        File file = new File(req.getSession().getServletContext().getRealPath(id));
+        if (id.endsWith(".xuml") && file.exists()) {
+            View view = new XumlView(context, new FileInputStream(file));
+            output(res, view);
+        } else if (!dispatch(context)) {
+            LOG.error(Messages.E2003, path);
         }
     }
 

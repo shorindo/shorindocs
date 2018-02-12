@@ -19,22 +19,21 @@ import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.view.DefaultView;
-import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-@ActionMapping("/admin/list")
-public class ListPagesController extends ActionController {
+@ActionMapping("/admin/mapping")
+public class MappingController extends ActionController {
 
     /**
      *
      */
     @Override @ActionMethod
     public View view(ActionContext context) {
-        return null;
+        return new XumlView(context, getClass());
     }
 
 }

@@ -27,8 +27,8 @@ import com.shorindo.docs.view.View;
  * 
  */
 @ActionMapping("/*")
-public final class DocumentBrokerController extends ActionController {
-    private DocsLogger LOG = DocsLogger.getLogger(DocumentBrokerController.class);
+public final class DocumentBroker extends ActionController {
+    private DocsLogger LOG = DocsLogger.getLogger(DocumentBroker.class);
 
     public static ActionController getController(DocumentModel model) throws DocumentException {
         try {
