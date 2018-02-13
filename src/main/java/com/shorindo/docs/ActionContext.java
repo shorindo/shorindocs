@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
  * 
  */
 public class ActionContext {
-    private static final DocsLogger LOG = DocsLogger.getLogger(ActionContext.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(ActionContext.class);
     private ViewModel viewModel;
     private HttpServletRequest request;
     private HttpServletResponse response;
@@ -89,7 +89,7 @@ public class ActionContext {
         try {
             return bundle.getString(key);
         } catch (Exception e) {
-            LOG.error(Messages.E2001, e);
+            LOG.error(ActionMessages.E2001, e);
             return key;
         }
     }

@@ -24,7 +24,10 @@ import com.shorindo.docs.view.View;
  * 
  */
 public abstract class ActionController {
-    private static final DocsLogger LOG = DocsLogger.getLogger(ActionController.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(ActionController.class);
+
+    public ActionController() {
+    }
 
     @ActionMethod
     public abstract View view(ActionContext context);
@@ -32,16 +35,19 @@ public abstract class ActionController {
     public View action(ActionContext context) {
         LOG.debug(this.getClass().getSimpleName() + ".action()");
         try {
-            Method method = getClass().getMethod(context.getAction(), ActionContext.class);
-            if (method.getAnnotation(ActionMethod.class) != null &&
-                    View.class.isAssignableFrom(method.getReturnType())) {
-                return (View)method.invoke(this, context);
-            } else {
-                LOG.warn(Messages.W1003, context.getAction());
-                return view(context);
+            Class<?> clazz = getClass();
+            while (clazz != null) {
+                Method method = clazz.getDeclaredMethod(context.getAction(), ActionContext.class);
+                if (method.getAnnotation(ActionMethod.class) != null &&
+                        View.class.isAssignableFrom(method.getReturnType())) {
+                    return (View)method.invoke(this, context);
+                }
+                clazz = clazz.getSuperclass();
             }
+            LOG.warn(ActionMessages.W1003, context.getAction());
+            return view(context);
         } catch (Exception e) {
-            LOG.warn(Messages.W1003, context.getAction());
+            LOG.warn(ActionMessages.W1003, context.getAction());
             return view(context);
         }
     }

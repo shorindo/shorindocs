@@ -23,13 +23,13 @@ import org.apache.log4j.Logger;
 /**
  * 
  */
-public class DocsLogger {
+public class ActionLogger {
     private Logger LOG;
 
-    public static DocsLogger getLogger(Class<?> clazz) {
-        return new DocsLogger(clazz);
+    public static ActionLogger getLogger(Class<?> clazz) {
+        return new ActionLogger(clazz);
     }
-    private DocsLogger(Class<?> clazz) {
+    private ActionLogger(Class<?> clazz) {
         LOG = LogManager.getLogger(clazz);
     }
     public void trace(String msg) {
@@ -48,7 +48,7 @@ public class DocsLogger {
             LOG.debug(message);
         }
     }
-    public void info(Messages code, Object...args) {
+    public void info(ActionMessages code, Object...args) {
         LOG.info(code.name() + ":" + code.getMessage(args));
     }
     public void info(String message, Object...args) {
@@ -58,13 +58,13 @@ public class DocsLogger {
             LOG.info(message);
         }
     }
-    public void warn(Messages code, Object...args) {
+    public void warn(ActionMessages code, Object...args) {
         LOG.warn("[" + code.name() + "] " + code.getMessage(args));
     }
-    public void error(Messages code, Object...args) {
+    public void error(ActionMessages code, Object...args) {
         LOG.error("[" + code.name() + "] " + code.getMessage(args));
     }
-    public void error(Messages code, Throwable th, Object...args) {
+    public void error(ActionMessages code, Throwable th, Object...args) {
         LOG.error("[" + code.name() + "] " + code.getMessage(args), th);
     }
 }

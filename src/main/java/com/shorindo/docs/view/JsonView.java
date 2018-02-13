@@ -21,14 +21,14 @@ import java.io.InputStream;
 import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.DocsLogger;
-import com.shorindo.docs.Messages;
+import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.ActionMessages;
 
 /**
  * 
  */
 public class JsonView extends View {
-    private static final DocsLogger LOG = DocsLogger.getLogger(JsonView.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(JsonView.class);
     Object bean;
 
     public JsonView(Object bean, ActionContext context) {
@@ -46,7 +46,7 @@ public class JsonView extends View {
         try {
             return new ByteArrayInputStream(JSON.encode(bean, true).getBytes("UTF-8"));
         } catch (Exception e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
             return new ByteArrayInputStream(new byte[0]);
         }
     }

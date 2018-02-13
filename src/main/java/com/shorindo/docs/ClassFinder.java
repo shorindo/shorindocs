@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -28,7 +29,7 @@ import java.util.jar.JarInputStream;
  * 
  */
 public class ClassFinder {
-    private static DocsLogger LOG = DocsLogger.getLogger(ClassFinder.class);
+    private static ActionLogger LOG = ActionLogger.getLogger(ClassFinder.class);
 
     public static List<Class<?>> find(File root, ClassMatcher matcher) {
         LOG.debug("find({0}, {1})", root.exists(), matcher);
@@ -83,14 +84,14 @@ public class ClassFinder {
                 }
             }
         } catch (FileNotFoundException e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
         } catch (IOException e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
         } finally {
             try {
                 jis.close();
             } catch (IOException e) {
-                LOG.error(Messages.E9999, e);
+                LOG.error(ActionMessages.E9999, e);
             }
         }
         return result;

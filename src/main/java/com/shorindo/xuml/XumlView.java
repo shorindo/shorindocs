@@ -33,16 +33,16 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.ActionMessages;
 import com.shorindo.docs.BeanUtil;
-import com.shorindo.docs.DocsLogger;
-import com.shorindo.docs.Messages;
 import com.shorindo.docs.view.View;
 
 /**
  * 
  */
 public class XumlView extends View {
-    private static final DocsLogger LOG = DocsLogger.getLogger(XumlView.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(XumlView.class);
     private static final Map<String,Class<?>> componentMap = new HashMap<String,Class<?>>();
     private Component component;
 
@@ -73,10 +73,10 @@ public class XumlView extends View {
                     Class<?> c = Class.forName(className);
                     if (Component.class.isAssignableFrom(c)) {
                         defineComponent(c);
-                        LOG.info(Messages.I0002, c.getName());
+                        LOG.info(ActionMessages.I0002, c.getName());
                     }
                 } catch (ClassNotFoundException e) {
-                    LOG.error(Messages.E9999, e);
+                    LOG.error(ActionMessages.E9999, e);
                 }
             }
         }
@@ -91,14 +91,14 @@ public class XumlView extends View {
         try {
             component = parse(is);
         } catch (SAXException e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
         } catch (IOException e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(Messages.E9999, e);
+                LOG.error(ActionMessages.E9999, e);
             }
         }
     }
@@ -109,14 +109,14 @@ public class XumlView extends View {
         try {
             component = parse(is);
         } catch (SAXException e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
         } catch (IOException e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(Messages.E9999, e);
+                LOG.error(ActionMessages.E9999, e);
             }
         }
     }

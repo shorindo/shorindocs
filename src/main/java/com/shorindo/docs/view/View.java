@@ -20,13 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.DocsLogger;
+import com.shorindo.docs.ActionLogger;
 
 /**
  * 
  */
 public abstract class View {
-    private static final DocsLogger LOG = DocsLogger.getLogger(View.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(View.class);
     protected ActionContext context;
     private int status = 200;
     private Map<String,String> optionMap;

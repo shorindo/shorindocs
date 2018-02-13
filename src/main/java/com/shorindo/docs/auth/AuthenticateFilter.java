@@ -24,13 +24,13 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import com.shorindo.docs.DocsLogger;
+import com.shorindo.docs.ActionLogger;
 
 /**
  * 
  */
 public class AuthenticateFilter implements Filter {
-    DocsLogger LOG = DocsLogger.getLogger(AuthenticateFilter.class);
+    ActionLogger LOG = ActionLogger.getLogger(AuthenticateFilter.class);
 
     public void destroy() {
     }

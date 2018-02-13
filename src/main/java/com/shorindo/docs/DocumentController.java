@@ -24,7 +24,7 @@ import com.shorindo.docs.view.View;
  * 
  */
 public class DocumentController extends ActionController {
-    private static final DocsLogger LOG = DocsLogger.getLogger(DocumentController.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(DocumentController.class);
     private DocumentModel model;
 
     @Override

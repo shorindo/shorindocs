@@ -39,7 +39,7 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
  * 
  */
 public abstract class DatabaseManager {
-    private static final DocsLogger LOG = DocsLogger.getLogger(DatabaseManager.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseManager.class);
     private static SqlSessionFactory sqlSessionFactory;
 
     public static void init(Properties props) {
@@ -66,7 +66,7 @@ public abstract class DatabaseManager {
             new XMLMapperBuilder(DatabaseManager.class.getResourceAsStream("/mybatis/" + engineName + ".xml"), config, "", config.getSqlFragments()).parse();
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(config);
         } catch (Exception e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
         }
     }
 

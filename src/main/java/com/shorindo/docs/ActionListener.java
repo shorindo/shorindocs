@@ -31,7 +31,7 @@ import com.shorindo.xuml.XumlView;
  * 
  */
 public class ActionListener implements ServletContextListener {
-    private static final DocsLogger LOG = DocsLogger.getLogger(ActionListener.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(ActionListener.class);
 
     public void contextInitialized(ServletContextEvent event) {
         LOG.trace("contextInitialized()");
@@ -44,12 +44,12 @@ public class ActionListener implements ServletContextListener {
             PropertyConfigurator.configure(siteProperties);
             DatabaseManager.init(siteProperties);
         } catch (IOException e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(Messages.E9999, e);
+                LOG.error(ActionMessages.E9999, e);
             }
         }
 

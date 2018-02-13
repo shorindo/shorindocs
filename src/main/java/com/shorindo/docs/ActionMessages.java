@@ -20,7 +20,7 @@ import java.text.MessageFormat;
 /**
  * 
  */
-public enum Messages {
+public enum ActionMessages {
     //INFO
     I0001("パス[{0}]を[{1}]にマップします。"),
     I0002("コンポーネント[{0}]をロードしました。"),
@@ -39,10 +39,10 @@ public enum Messages {
     ;
 
     String message;
-    private Messages(String message) {
+    private ActionMessages(String message) {
         this.message = message;
     }
-    private Messages(String ja, String en) {
+    private ActionMessages(String ja, String en) {
     }
     public String getCode() {
         return name();

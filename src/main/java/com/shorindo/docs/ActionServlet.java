@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.shorindo.docs.DocsLogger;
-import com.shorindo.docs.Messages;
+import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.ActionMessages;
 import com.shorindo.docs.ClassFinder.ClassMatcher;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.DefaultView;
@@ -41,7 +41,7 @@ import com.shorindo.xuml.XumlView;
  */
 public class ActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final DocsLogger LOG = DocsLogger.getLogger(ActionServlet.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(ActionServlet.class);
     private static final ActionMapper actionMap = new ActionMapper();
 
     @Override
@@ -54,13 +54,13 @@ public class ActionServlet extends HttpServlet {
             public boolean matches(Class<?> clazz) {
                 ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
                 if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
-                    LOG.info(Messages.I0001, mapping.value(), clazz);
+                    LOG.info(ActionMessages.I0001, mapping.value(), clazz);
                     try {
                         actionMap.put(mapping.value(), (ActionController)clazz.newInstance());
                     } catch (InstantiationException e) {
-                        LOG.error(Messages.E9999, e);
+                        LOG.error(ActionMessages.E9999, e);
                     } catch (IllegalAccessException e) {
-                        LOG.error(Messages.E9999, e);
+                        LOG.error(ActionMessages.E9999, e);
                     }
                     return true;
                 } else {
@@ -89,7 +89,7 @@ public class ActionServlet extends HttpServlet {
             View view = new XumlView(context, new FileInputStream(file));
             output(res, view);
         } else if (!dispatch(context)) {
-            LOG.error(Messages.E2003, path);
+            LOG.error(ActionMessages.E2003, path);
         }
     }
 
@@ -125,13 +125,13 @@ public class ActionServlet extends HttpServlet {
                 res.getOutputStream().write(buf, 0, len);
             }
         } catch (IOException e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
         } finally {
             if (is != null)
                 try {
                     is.close();
                 } catch (IOException e) {
-                    LOG.error(Messages.E9999, e);
+                    LOG.error(ActionMessages.E9999, e);
                 }
         }
     }

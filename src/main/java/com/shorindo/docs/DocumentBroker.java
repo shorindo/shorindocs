@@ -28,7 +28,7 @@ import com.shorindo.docs.view.View;
  */
 @ActionMapping("/*")
 public final class DocumentBroker extends ActionController {
-    private DocsLogger LOG = DocsLogger.getLogger(DocumentBroker.class);
+    private ActionLogger LOG = ActionLogger.getLogger(DocumentBroker.class);
 
     public static ActionController getController(DocumentModel model) throws DocumentException {
         try {
@@ -61,10 +61,10 @@ public final class DocumentBroker extends ActionController {
             context.setAttribute("document", model);
             return getController(model).action(context);
         } catch (DocumentException e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
             return null;
         } catch (SQLException e) {
-            LOG.error(Messages.E9999, e);
+            LOG.error(ActionMessages.E9999, e);
             return null;
         }
     }

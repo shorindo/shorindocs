@@ -18,7 +18,6 @@ package com.shorindo.docs.auth;
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
 
@@ -28,11 +27,10 @@ import com.shorindo.xuml.XumlView;
 @ActionMapping("/login")
 public class LoginController extends ActionController {
 
-    public LoginController() {
-    }
-
+    /**
+     * TODO
+     */
     @Override
-    @ActionMethod
     public View view(ActionContext context) {
         return new XumlView(context, getClass());
     }
