@@ -15,10 +15,14 @@
  */
 package com.shorindo.docs;
 
+import java.io.InputStream;
 import java.lang.reflect.Method;
 
 import com.shorindo.docs.annotation.ActionMethod;
+import com.shorindo.docs.view.ErrorView;
+import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -30,7 +34,7 @@ public abstract class ActionController {
     }
 
     @ActionMethod
-    public abstract View view(ActionContext context);
+    public abstract String view(ActionContext context);
 
     public View action(ActionContext context) {
         LOG.debug(this.getClass().getSimpleName() + ".action()");
@@ -39,16 +43,29 @@ public abstract class ActionController {
             while (clazz != null) {
                 Method method = clazz.getDeclaredMethod(context.getAction(), ActionContext.class);
                 if (method.getAnnotation(ActionMethod.class) != null &&
-                        View.class.isAssignableFrom(method.getReturnType())) {
-                    return (View)method.invoke(this, context);
+                        String.class.isAssignableFrom(method.getReturnType())) {
+                    return getView((String)method.invoke(this, context), context);
                 }
                 clazz = clazz.getSuperclass();
             }
             LOG.warn(ActionMessages.W1003, context.getAction());
-            return view(context);
+            return getView(view(context), context);
         } catch (Exception e) {
             LOG.warn(ActionMessages.W1003, context.getAction());
-            return view(context);
+            return new ErrorView(500);
+        }
+    }
+
+    protected View getView(String viewName, ActionContext context) {
+        if (viewName == null) {
+            return new ErrorView(404);
+        } else if (".xuml".equals(viewName)) {
+            InputStream is = getClass().getResourceAsStream(getClass().getSimpleName() + viewName);
+            return new XumlView(is);
+        } else if (viewName.startsWith("/")) {
+            return new RedirectView(viewName, context);
+        } else {
+            return new ErrorView(404);
         }
     }
 

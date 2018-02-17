@@ -26,7 +26,7 @@ public class Spacer extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<div class=\"spacer\">");
         sb.append("</div>");

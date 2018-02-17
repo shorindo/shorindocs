@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,12 +83,12 @@ public class XumlView extends View {
         }
     }
 
-    public XumlView(ActionContext context, Class<?> clazz) {
-        this(context, clazz.getResourceAsStream(clazz.getSimpleName() + ".xuml"));
-    }
+//    public XumlView(ActionContext context, Class<?> clazz) {
+//        this(context, clazz.getResourceAsStream(clazz.getSimpleName() + ".xuml"));
+//    }
 
-    public XumlView(ActionContext context, InputStream is) {
-        super(context);
+    public XumlView(InputStream is) {
+        super();
         try {
             component = parse(is);
         } catch (SAXException e) {
@@ -103,23 +104,23 @@ public class XumlView extends View {
         }
     }
 
-    public XumlView(ActionContext context, String classPath) {
-        super(context);
-        InputStream is = getClass().getResourceAsStream(classPath);
-        try {
-            component = parse(is);
-        } catch (SAXException e) {
-            LOG.error(ActionMessages.E9999, e);
-        } catch (IOException e) {
-            LOG.error(ActionMessages.E9999, e);
-        } finally {
-            try {
-                if (is != null) is.close();
-            } catch (IOException e) {
-                LOG.error(ActionMessages.E9999, e);
-            }
-        }
-    }
+//    public XumlView(ActionContext context, String classPath) {
+//        super(context);
+//        InputStream is = getClass().getResourceAsStream(classPath);
+//        try {
+//            component = parse(is);
+//        } catch (SAXException e) {
+//            LOG.error(ActionMessages.E9999, e);
+//        } catch (IOException e) {
+//            LOG.error(ActionMessages.E9999, e);
+//        } finally {
+//            try {
+//                if (is != null) is.close();
+//            } catch (IOException e) {
+//                LOG.error(ActionMessages.E9999, e);
+//            }
+//        }
+//    }
 
     @Override
     public String getContentType() {
@@ -127,11 +128,11 @@ public class XumlView extends View {
     }
 
     @Override
-    public InputStream getContent() {
+    public void render(ActionContext context, OutputStream os) {
         try {
-            return new ByteArrayInputStream(eval(component.render()).getBytes("UTF-8"));
+            os.write(eval(context, component.getHtml()).getBytes("UTF-8"));
         } catch (Exception e) {
-            return new ByteArrayInputStream(new byte[0]);
+            LOG.error(ActionMessages.E9999, e);
         }
     }
 
@@ -162,7 +163,7 @@ public class XumlView extends View {
     }
     
     private Pattern p1 = Pattern.compile("(\\$|#|@)\\{([^\\.\\}]+?)(\\.(.+?))?\\}");
-    protected String eval(String str) {
+    protected String eval(ActionContext context, String str) {
         if (str == null) {
             return str;
         }

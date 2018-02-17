@@ -27,7 +27,7 @@ public class CDATA extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         return escape(text);
     }
 

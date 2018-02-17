@@ -27,13 +27,13 @@ public class Link extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<a class=\"link\" href=\"");
         sb.append(href);
         sb.append("\">");
         for (Component c : getChildList()) {
-            sb.append(c.render());
+            sb.append(c.getHtml());
         }
         sb.append("</a>");
         return sb.toString();

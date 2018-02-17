@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Shorindo, Inc.
+ * Copyright 2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.form;
+package com.shorindo.docs.admin;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
-import com.shorindo.docs.DocumentController;
-import com.shorindo.docs.DocumentModel;
-import com.shorindo.docs.annotation.ContentTypeReady;
+import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-@ContentTypeReady("application/x-form")
-public class FormController extends ActionController {
+@ActionMapping("/admin/user")
+public class UserController extends ActionController {
 
     /**
      * 
      */
-    public FormController() {
-    }
-
-    /* (non-Javadoc)
-     * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
-     */
     @Override
     public String view(ActionContext context) {
-        // TODO Auto-generated method stub
-        return null;
+        return ".xuml";
     }
 
 }

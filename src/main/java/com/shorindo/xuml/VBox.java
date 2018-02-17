@@ -26,11 +26,11 @@ public class VBox extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<div class=\"vbox\" style=\"" + getStyles() + "\">");
         for (Component c : getChildList()) {
-            sb.append(c.render());
+            sb.append(c.getHtml());
         }
         sb.append("</div>");
         return sb.toString();

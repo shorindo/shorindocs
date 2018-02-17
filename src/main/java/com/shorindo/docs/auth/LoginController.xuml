@@ -1,5 +1,8 @@
-<window title="${status} - ${message}">
+<window title="${title}">
   <dialog width="400" height="300" title="${title}">
     <description value="${message}"/>
+    <textbox/>
+    <textbox/>
+    <button label="ログイン"/>
   </dialog>
 </window>

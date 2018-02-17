@@ -27,12 +27,12 @@ public class TreeItem extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<tr><td class=\"treeitem\" style=\"" + getStyles() + "\">");
         sb.append(label);
         for (Component c : getChildList()) {
-            sb.append(c.render());
+            sb.append(c.getHtml());
         }
         sb.append("</td></tr>");
         return sb.toString();

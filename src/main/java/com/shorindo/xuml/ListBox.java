@@ -26,11 +26,11 @@ public class ListBox extends Container {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<ul class=\"listbox\" style=\"" + getStyles() + "\">");
         for (Component c : getChildList()) {
-            sb.append(c.render());
+            sb.append(c.getHtml());
         }
         sb.append("</ul>");
         return sb.toString();

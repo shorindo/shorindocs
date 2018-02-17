@@ -27,7 +27,7 @@ public class Button extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         return "<input type=\"button\"" +
                 (label != null ? " value=\"" + label + "\"" : "") +
                 ">";

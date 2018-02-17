@@ -18,7 +18,9 @@ package com.shorindo.docs.view;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -38,12 +40,11 @@ public class DefaultView extends View {
     private File file;
 
     public DefaultView(File file, ActionContext context) {
-        super(context);
+        super();
         this.file = file;
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        getOptions().put("Last-Modified",
+        getMeta().put("Last-Modified",
                 format.format(new Date(file.lastModified())));
-//        getOptions().put("Cache-Control", "public");
     }
 
     @Override
@@ -58,13 +59,28 @@ public class DefaultView extends View {
         }
     }
 
+    /**
+     *
+     */
     @Override
-    public InputStream getContent() {
+    public void render(ActionContext context, OutputStream os) {
+        InputStream is = null;
         try {
-            return new FileInputStream(file);
-        } catch (FileNotFoundException e) {
+            is = new FileInputStream(file);
+            byte[] b = new byte[4096];
+            int l = 0;
+            while ((l = is.read(b)) > 0) {
+                os.write(b, 0, l);
+            }
+        } catch (IOException e) {
             LOG.error(e.getMessage(), e);
-            return null;
+        } finally {
+            if (is != null)
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    LOG.error(e.getMessage(), e);
+                }
         }
     }
 

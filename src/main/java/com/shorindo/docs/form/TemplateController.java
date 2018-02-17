@@ -36,13 +36,13 @@ public class TemplateController extends ActionController {
     public TemplateController() {
     }
 
-    @Override @ActionMethod
-    public View view(ActionContext context) {
-        return new XumlView(context, createClassPath("xuml/viewTemplate.xuml"));
+    @Override
+    public String view(ActionContext context) {
+        return ".xuml";
     }
 
     @ActionMethod
-    public View edit(ActionContext context) {
-        return new XumlView(context, createClassPath("xuml/editTemplate.xuml"));
+    public String edit(ActionContext context) {
+        return ".xuml";
     }
 }

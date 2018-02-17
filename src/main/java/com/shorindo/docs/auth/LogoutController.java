@@ -31,8 +31,8 @@ public class LogoutController extends ActionController {
      * TODO
      */
     @Override
-    public View view(ActionContext context) {
-        return new RedirectView("/", context);
+    public String view(ActionContext context) {
+        return "/";
     }
 
 }

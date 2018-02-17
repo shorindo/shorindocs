@@ -26,11 +26,11 @@ public class ListItem extends Container {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<li class=\"listitem\" style=\"" + getStyles() + "\">");
         for (Component c : getChildList()) {
-            sb.append(c.render());
+            sb.append(c.getHtml());
         }
         sb.append("</li>");
         return sb.toString();

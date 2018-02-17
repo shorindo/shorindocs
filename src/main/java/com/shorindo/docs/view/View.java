@@ -16,8 +16,9 @@
 package com.shorindo.docs.view;
 
 import java.io.InputStream;
-import java.util.HashMap;
+import java.io.OutputStream;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
@@ -27,16 +28,14 @@ import com.shorindo.docs.ActionLogger;
  */
 public abstract class View {
     private static final ActionLogger LOG = ActionLogger.getLogger(View.class);
-    protected ActionContext context;
     private int status = 200;
-    private Map<String,String> optionMap;
+    private Map<String,String> metaMap;
 
     public abstract String getContentType();
-    public abstract InputStream getContent();
+    public abstract void render(ActionContext context, OutputStream os);
 
-    public View(ActionContext context) {
-        this.context = context;
-        optionMap = new HashMap<String,String>();
+    public View() {
+        metaMap = new TreeMap<String,String>();
     }
 
     public int getStatus() {
@@ -47,8 +46,8 @@ public abstract class View {
         this.status = status;
     }
 
-    public Map<String, String> getOptions() {
-        return optionMap;
+    public Map<String, String> getMeta() {
+        return metaMap;
     }
 
 //    protected InputStream filter(InputStream is) {

@@ -29,7 +29,7 @@ public class Window extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<!doctype html>\n");
         sb.append("<html>\n");
@@ -52,7 +52,7 @@ public class Window extends Component {
         }
         sb.append("\">");
         for (Component c : getChildList()) {
-            sb.append(c.render());
+            sb.append(c.getHtml());
         }
         sb.append("</body>\n");
         sb.append("</html>\n");

@@ -28,8 +28,8 @@ public class DocumentController extends ActionController {
     private DocumentModel model;
 
     @Override
-    public View view(ActionContext context) {
-        return new ErrorView(500, context);
+    public String view(ActionContext context) {
+        return null;
     }
 
     protected DocumentModel getModel() {
@@ -44,7 +44,7 @@ public class DocumentController extends ActionController {
         if (DatabaseManager.update("docs.updateDocument", model) > 0) {
             return new RedirectView(model.getDocumentId(), context);
         } else {
-            return new ErrorView(500, context);
+            return new ErrorView(500);
         }
     }
 
@@ -59,7 +59,7 @@ public class DocumentController extends ActionController {
         if (DatabaseManager.insert("docs.createDocument", model) > 0) {
             return new RedirectView(id + "?action=edit", context);
         } else {
-            return new ErrorView(500, context);
+            return new ErrorView(500);
         }
     }
 
@@ -71,7 +71,7 @@ public class DocumentController extends ActionController {
         } else if (DatabaseManager.update("docs.removeDocument", model) > 0) {
             return new RedirectView("/index", context);
         } else {
-            return new ErrorView(500, context);
+            return new ErrorView(500);
         }
     }
 

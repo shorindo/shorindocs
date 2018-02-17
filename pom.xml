@@ -7,7 +7,9 @@
   <version>0.0.1-SNAPSHOT</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <tomcat.webapps>C:/Program Files/apache/apache-tomcat-7.0.42/webapps</tomcat.webapps>
+    <java.version>1.8</java.version>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
   </properties>
   <dependencies>
   	<dependency>
@@ -68,22 +70,6 @@
           </packagingExcludes>
           <downloadSources>true</downloadSources>
           <downloadJavadocs>true</downloadJavadocs>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.7.0</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <tasks>
-            <echo message="release" />
-            <copy file="target/docs.war" todir="${tomcat.webapps}"/>
-          </tasks>
         </configuration>
       </plugin>
     </plugins>

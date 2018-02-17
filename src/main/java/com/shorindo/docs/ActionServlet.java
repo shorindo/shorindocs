@@ -81,13 +81,13 @@ public class ActionServlet extends HttpServlet {
         ActionContext context = new ActionContext(req, res, getServletContext());
 
         if (id == null || "".equals(id)) {
-            output(res, new RedirectView("/index", context));
+            output(context, res, new RedirectView("/index", context));
             return;
         }
         File file = new File(req.getSession().getServletContext().getRealPath(id));
         if (id.endsWith(".xuml") && file.exists()) {
-            View view = new XumlView(context, new FileInputStream(file));
-            output(res, view);
+            View view = new XumlView(new FileInputStream(file));
+            output(context, res, view);
         } else if (!dispatch(context)) {
             LOG.error(ActionMessages.E2003, path);
         }
@@ -101,38 +101,22 @@ public class ActionServlet extends HttpServlet {
         ActionController controller = actionMap.get(req.getServletPath());
 
         if (file.exists()) {
-            output(res, new DefaultView(file, context));
+            output(context, res, new DefaultView(file, context));
             return true;
         } else if (controller != null) {
-            output(res, controller.action(context));
+            output(context, res, controller.action(context));
             return true;
         } else {
             return false;
         }
     }
 
-    protected final void output( HttpServletResponse res, View view) {
-        for (Entry<String,String> entry : view.getOptions().entrySet()) {
+    protected final void output(ActionContext context, HttpServletResponse res, View view) throws IOException {
+        for (Entry<String,String> entry : view.getMeta().entrySet()) {
             res.setHeader(entry.getKey(), entry.getValue());
         }
         res.setStatus(view.getStatus());
         res.setContentType(view.getContentType());
-        int len = 0;
-        byte[] buf = new byte[4096];
-        InputStream is = view.getContent();
-        try {
-            while ((len = is.read(buf)) > 0) {
-                res.getOutputStream().write(buf, 0, len);
-            }
-        } catch (IOException e) {
-            LOG.error(ActionMessages.E9999, e);
-        } finally {
-            if (is != null)
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    LOG.error(ActionMessages.E9999, e);
-                }
-        }
+        view.render(context, res.getOutputStream());
     }
 }

@@ -15,20 +15,22 @@
  */
 package com.shorindo.xuml;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Node;
+
+import com.shorindo.docs.ActionLogger;
 
 /**
  * 
  */
 public abstract class Component {
-    private static Logger LOG = Logger.getLogger(Component.class);
+    private static ActionLogger LOG = ActionLogger.getLogger(Component.class);
     private List<Component> childList;
     private XumlView view;
     private Component parent;
@@ -37,9 +39,10 @@ public abstract class Component {
     private String className;
     private String width;
     private String height;
+    private String flex;
     private Map<String,String> styles = new HashMap<String,String>();
 
-    public abstract String render();
+    public abstract String getHtml();
 
     public Component(XumlView view) {
         childList = new ArrayList<Component>();
@@ -122,12 +125,20 @@ public abstract class Component {
         this.styles.put("height", width);
     }
 
+    public String getFlex() {
+        return flex;
+    }
+
+    public void setFlex(String flex) {
+        this.flex = flex;
+    }
+
     public Node getContext() {
         return context;
     }
 
     public void setContext(String context) {
-        LOG.debug("setContext(" + view.eval(context) + ")");
+        //LOG.debug("setContext(" + view.eval(context) + ")");
     }
 
     protected void setStyle(String name, String value) {

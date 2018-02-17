@@ -27,7 +27,7 @@ public class TextBox extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         if (multiline) {
             return "<textarea class=\"textbox\">" +
                     "</textarea>";

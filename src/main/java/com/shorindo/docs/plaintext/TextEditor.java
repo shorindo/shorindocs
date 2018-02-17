@@ -15,6 +15,8 @@
  */
 package com.shorindo.docs.plaintext;
 
+import java.io.OutputStream;
+
 import com.shorindo.xuml.Component;
 import com.shorindo.xuml.ComponentReady;
 import com.shorindo.xuml.XumlView;
@@ -30,7 +32,7 @@ public class TextEditor extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         return "<div class=\"text-editor\">" +
                 "<textarea class=\"text-editor xuml-width-fill xuml-height-fill\">" +
                 "@{content}" +

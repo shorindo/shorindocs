@@ -18,9 +18,6 @@ package com.shorindo.docs.admin;
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -31,9 +28,9 @@ public class MappingController extends ActionController {
     /**
      *
      */
-    @Override @ActionMethod
-    public View view(ActionContext context) {
-        return new XumlView(context, getClass());
+    @Override
+    public String view(ActionContext context) {
+        return ".xuml";
     }
 
 }

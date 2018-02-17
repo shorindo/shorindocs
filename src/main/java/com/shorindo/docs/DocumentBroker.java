@@ -73,7 +73,7 @@ public final class DocumentBroker extends ActionController {
      *
      */
     @Override
-    public View view(ActionContext context) {
+    public String view(ActionContext context) {
         return null;
     }
 

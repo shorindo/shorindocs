@@ -31,8 +31,10 @@ public class LoginController extends ActionController {
      * TODO
      */
     @Override
-    public View view(ActionContext context) {
-        return new XumlView(context, getClass());
+    public String view(ActionContext context) {
+        context.setAttribute("title", "ログイン");
+        context.setAttribute("message", "ログインしてください");
+        return ".xuml";
     }
 
 }

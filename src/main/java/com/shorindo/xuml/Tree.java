@@ -26,11 +26,11 @@ public class Tree extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<table class=\"tree\" style=\"" + getStyles() + "\">");
         for (Component c : getChildList()) {
-            sb.append(c.render());
+            sb.append(c.getHtml());
         }
         sb.append("</table>");
         return sb.toString();

@@ -36,8 +36,8 @@ public class PlainTextController extends DocumentController {
     public PlainTextController() {
     }
 
-    @Override @ActionMethod
-    public View view(ActionContext context) {
+    @Override
+    public String view(ActionContext context) {
         LOG.info("view()");
         DocumentModel model = (DocumentModel)context.getAttribute("document");
         String body = model.getBody() == null ? "" : model.getBody();
@@ -49,11 +49,11 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("\n", "<br/>"));
         context.setAttribute("search_result",
                 DatabaseManager.selectList("searchDocument", null));
-        return new XumlView(context, getClass());
+        return ".xuml";
     }
 
     @ActionMethod
-    public View edit(ActionContext context) {
+    public String edit(ActionContext context) {
         LOG.info("edit()");
         DocumentModel model = (DocumentModel)context.getAttribute("document");
         String body = model.getBody() == null ? "" : model.getBody();
@@ -62,6 +62,6 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;"));
-        return new XumlView(context, getClass());
+        return ".xuml";
     }
 }

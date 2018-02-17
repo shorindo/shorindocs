@@ -17,6 +17,7 @@ package com.shorindo.docs.view;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.xuml.XumlView;
@@ -26,8 +27,8 @@ import com.shorindo.xuml.XumlView;
  */
 public class ErrorView extends View {
 
-    public ErrorView(int status, ActionContext context) {
-        super(context);
+    public ErrorView(int status) {
+        super();
         setStatus(status);
     }
 
@@ -36,13 +37,16 @@ public class ErrorView extends View {
         return "text/html; charset=UTF-8";
     }
 
+    /**
+     *
+     */
     @Override
-    public InputStream getContent() {
+    public void render(ActionContext context, OutputStream os) {
         context.setAttribute("status", getStatus());
         context.setAttribute("message", context.getMessage("error." + getStatus()));
         InputStream is = getClass().getClassLoader().getResourceAsStream("xuml/error.xuml");
         try {
-            return new XumlView(context, is).getContent();
+            new XumlView(is).render(context, os);
         } finally {
             if (is != null)
                 try {

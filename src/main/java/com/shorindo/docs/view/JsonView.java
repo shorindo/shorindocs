@@ -17,6 +17,7 @@ package com.shorindo.docs.view;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import net.arnx.jsonic.JSON;
 
@@ -32,7 +33,7 @@ public class JsonView extends View {
     Object bean;
 
     public JsonView(Object bean, ActionContext context) {
-        super(context);
+        super();
         this.bean = bean;
     }
 
@@ -42,12 +43,12 @@ public class JsonView extends View {
     }
 
     @Override
-    public InputStream getContent() {
+    public void render(ActionContext context, OutputStream os) {
         try {
-            return new ByteArrayInputStream(JSON.encode(bean, true).getBytes("UTF-8"));
+            os.write(JSON.encode(bean, true).getBytes("UTF-8"));
         } catch (Exception e) {
             LOG.error(ActionMessages.E9999, e);
-            return new ByteArrayInputStream(new byte[0]);
+            new ErrorView(500).render(context, os);
         }
     }
 

@@ -35,7 +35,7 @@ public class AuthenticateController extends ActionController {
      * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
      */
     @Override
-    public View view(ActionContext context) {
+    public String view(ActionContext context) {
         // TODO Auto-generated method stub
         return null;
     }

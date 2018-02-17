@@ -20,23 +20,32 @@ package com.shorindo.xuml;
  */
 @ComponentReady("dialog")
 public class Dialog extends Component {
+    private String title;
 
     public Dialog(XumlView view) {
         super(view);
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<div class=\"dialog-pane\">");
         sb.append("<div class=\"dialog\" style=\"" + getStyles() + "\">");
-        sb.append("<div class=\"dialog-head\">エラー</div>");
+        sb.append("<div class=\"dialog-head\">${title}</div>");
         for (Component c : getChildList()) {
-            sb.append(c.render());
+            sb.append(c.getHtml());
         }
         sb.append("</div>");
         sb.append("</div>");
         return sb.toString();
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }

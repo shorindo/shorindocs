@@ -38,7 +38,7 @@ public class General extends Component {
     }
 
     @Override
-    public String render() {
+    public String getHtml() {
         StringBuilder sb = new StringBuilder();
         sb.append("<" + tagName);
         for (Entry<String,String> e : attrMap.entrySet()) {
@@ -50,7 +50,7 @@ public class General extends Component {
         }
         sb.append(">");
         for (Component c : getChildList()) {
-            sb.append(c.render());
+            sb.append(c.getHtml());
         }
         sb.append("</" + tagName + ">");
         return sb.toString();

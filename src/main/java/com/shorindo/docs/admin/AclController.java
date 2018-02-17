@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Shorindo, Inc.
+ * Copyright 2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.xuml;
+package com.shorindo.docs.admin;
+
+import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.ActionController;
 
 /**
  * 
  */
-@ComponentReady("description")
-public class Description extends Component {
-    private String value = "";
+public class AclController extends ActionController {
 
-    public Description(XumlView view) {
-        super(view);
+    /**
+     * 
+     */
+    public AclController() {
     }
 
     @Override
-    public String getHtml() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"description\" style=\"" + getStyles() + "\">");
-        sb.append(value);
-        sb.append("</div>");
-        return sb.toString();
+    public String view(ActionContext context) {
+        return ".xuml";
     }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
+    
 }
