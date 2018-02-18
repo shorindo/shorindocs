@@ -34,11 +34,6 @@
   		<version>2.1</version>
   	</dependency>
   	<dependency>
-  		<groupId>javax.servlet</groupId>
-  		<artifactId>servlet-api</artifactId>
-  		<version>2.5</version>
-  	</dependency>
-  	<dependency>
   		<groupId>org.jmockit</groupId>
   		<artifactId>jmockit</artifactId>
   		<version>1.16</version>
@@ -54,6 +49,11 @@
   		<groupId>org.mybatis</groupId>
   		<artifactId>mybatis</artifactId>
   		<version>3.2.8</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax.servlet</groupId>
+  		<artifactId>servlet-api</artifactId>
+  		<version>2.5</version>
   	</dependency>
   </dependencies>
   <build>

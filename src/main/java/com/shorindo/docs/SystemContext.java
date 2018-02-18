@@ -18,7 +18,6 @@ package com.shorindo.docs;
 /**
  * 
  */
-public interface ActionMessages {
-    public String getCode();
-    public String getMessage(Object...args);
+public class SystemContext {
+
 }

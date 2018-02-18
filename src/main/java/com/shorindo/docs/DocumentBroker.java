@@ -21,6 +21,7 @@ import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.form.FormController;
 import com.shorindo.docs.form.TemplateController;
 import com.shorindo.docs.plaintext.PlainTextController;
+import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 
 /**
@@ -61,11 +62,11 @@ public final class DocumentBroker extends ActionController {
             context.setAttribute("document", model);
             return getController(model).action(context);
         } catch (DocumentException e) {
-            LOG.error(ActionMessages.E9999, e);
-            return null;
+            //LOG.error(ActionMessages.E9999, e);
+            return new ErrorView(404);
         } catch (SQLException e) {
-            LOG.error(ActionMessages.E9999, e);
-            return null;
+            LOG.error(SystemMessages.E9999, e);
+            return new ErrorView(404);
         }
     }
 

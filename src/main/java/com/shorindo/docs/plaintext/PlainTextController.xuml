@@ -10,7 +10,7 @@
       <vbox width="200px">
         最近の更新
         <listbox>
-          <listitem context="${document.documentId}?action=search">
+          <listitem context="${document.search_result}">
             <link href="${documentId}">${title}</link>
           </listitem>
         </listbox>

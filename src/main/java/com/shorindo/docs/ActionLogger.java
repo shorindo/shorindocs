@@ -49,7 +49,7 @@ public class ActionLogger {
         }
     }
     public void info(ActionMessages code, Object...args) {
-        LOG.info(code.name() + ":" + code.getMessage(args));
+        LOG.info(code.getCode() + ":" + code.getMessage(args));
     }
     public void info(String message, Object...args) {
         if (args.length > 0) {
@@ -59,12 +59,12 @@ public class ActionLogger {
         }
     }
     public void warn(ActionMessages code, Object...args) {
-        LOG.warn("[" + code.name() + "] " + code.getMessage(args));
+        LOG.warn("[" + code.getCode() + "] " + code.getMessage(args));
     }
     public void error(ActionMessages code, Object...args) {
-        LOG.error("[" + code.name() + "] " + code.getMessage(args));
+        LOG.error("[" + code.getCode() + "] " + code.getMessage(args));
     }
     public void error(ActionMessages code, Throwable th, Object...args) {
-        LOG.error("[" + code.name() + "] " + code.getMessage(args), th);
+        LOG.error("[" + code.getCode() + "] " + code.getMessage(args), th);
     }
 }

@@ -89,7 +89,7 @@ public class ActionContext {
         try {
             return bundle.getString(key);
         } catch (Exception e) {
-            LOG.error(ActionMessages.E2001, e);
+            LOG.error(SystemMessages.E2001, e);
             return key;
         }
     }

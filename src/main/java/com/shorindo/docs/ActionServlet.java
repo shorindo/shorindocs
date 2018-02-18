@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.ActionMessages;
+import com.shorindo.docs.SystemMessages;
 import com.shorindo.docs.ClassFinder.ClassMatcher;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.DefaultView;
@@ -54,13 +54,13 @@ public class ActionServlet extends HttpServlet {
             public boolean matches(Class<?> clazz) {
                 ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
                 if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
-                    LOG.info(ActionMessages.I0001, mapping.value(), clazz);
+                    LOG.info(SystemMessages.I0001, mapping.value(), clazz);
                     try {
                         actionMap.put(mapping.value(), (ActionController)clazz.newInstance());
                     } catch (InstantiationException e) {
-                        LOG.error(ActionMessages.E9999, e);
+                        LOG.error(SystemMessages.E9999, e);
                     } catch (IllegalAccessException e) {
-                        LOG.error(ActionMessages.E9999, e);
+                        LOG.error(SystemMessages.E9999, e);
                     }
                     return true;
                 } else {
@@ -89,7 +89,7 @@ public class ActionServlet extends HttpServlet {
             View view = new XumlView(new FileInputStream(file));
             output(context, res, view);
         } else if (!dispatch(context)) {
-            LOG.error(ActionMessages.E2003, path);
+            LOG.error(SystemMessages.E2003, path);
         }
     }
 

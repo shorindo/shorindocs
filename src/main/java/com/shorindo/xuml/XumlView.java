@@ -15,7 +15,6 @@
  */
 package com.shorindo.xuml;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +34,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.ActionMessages;
+import com.shorindo.docs.SystemMessages;
 import com.shorindo.docs.BeanUtil;
 import com.shorindo.docs.view.View;
 
@@ -74,53 +73,31 @@ public class XumlView extends View {
                     Class<?> c = Class.forName(className);
                     if (Component.class.isAssignableFrom(c)) {
                         defineComponent(c);
-                        LOG.info(ActionMessages.I0002, c.getName());
+                        LOG.info(SystemMessages.I0002, c.getName());
                     }
                 } catch (ClassNotFoundException e) {
-                    LOG.error(ActionMessages.E9999, e);
+                    LOG.error(SystemMessages.E9999, e);
                 }
             }
         }
     }
-
-//    public XumlView(ActionContext context, Class<?> clazz) {
-//        this(context, clazz.getResourceAsStream(clazz.getSimpleName() + ".xuml"));
-//    }
 
     public XumlView(InputStream is) {
         super();
         try {
             component = parse(is);
         } catch (SAXException e) {
-            LOG.error(ActionMessages.E9999, e);
+            LOG.error(SystemMessages.E9999, e);
         } catch (IOException e) {
-            LOG.error(ActionMessages.E9999, e);
+            LOG.error(SystemMessages.E9999, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(ActionMessages.E9999, e);
+                LOG.error(SystemMessages.E9999, e);
             }
         }
     }
-
-//    public XumlView(ActionContext context, String classPath) {
-//        super(context);
-//        InputStream is = getClass().getResourceAsStream(classPath);
-//        try {
-//            component = parse(is);
-//        } catch (SAXException e) {
-//            LOG.error(ActionMessages.E9999, e);
-//        } catch (IOException e) {
-//            LOG.error(ActionMessages.E9999, e);
-//        } finally {
-//            try {
-//                if (is != null) is.close();
-//            } catch (IOException e) {
-//                LOG.error(ActionMessages.E9999, e);
-//            }
-//        }
-//    }
 
     @Override
     public String getContentType() {
@@ -132,7 +109,7 @@ public class XumlView extends View {
         try {
             os.write(eval(context, component.getHtml()).getBytes("UTF-8"));
         } catch (Exception e) {
-            LOG.error(ActionMessages.E9999, e);
+            LOG.error(SystemMessages.E9999, e);
         }
     }
 
