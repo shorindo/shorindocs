@@ -15,8 +15,6 @@
  */
 package com.shorindo.docs.view;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.shorindo.docs.ActionContext;

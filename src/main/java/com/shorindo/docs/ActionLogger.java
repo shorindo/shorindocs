@@ -17,7 +17,6 @@ package com.shorindo.docs;
 
 import java.text.MessageFormat;
 
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -30,7 +29,7 @@ public class ActionLogger {
         return new ActionLogger(clazz);
     }
     private ActionLogger(Class<?> clazz) {
-        LOG = LogManager.getLogger(clazz);
+        LOG = Logger.getLogger(clazz);
     }
     public void trace(String msg) {
         LOG.trace(msg);
@@ -59,12 +58,12 @@ public class ActionLogger {
         }
     }
     public void warn(ActionMessages code, Object...args) {
-        LOG.warn("[" + code.getCode() + "] " + code.getMessage(args));
+        LOG.warn(code.getCode() + ":" + code.getMessage(args));
     }
     public void error(ActionMessages code, Object...args) {
-        LOG.error("[" + code.getCode() + "] " + code.getMessage(args));
+        LOG.error(code.getCode() + ":" + code.getMessage(args));
     }
     public void error(ActionMessages code, Throwable th, Object...args) {
-        LOG.error("[" + code.getCode() + "] " + code.getMessage(args), th);
+        LOG.error(code.getCode() + ":" + code.getMessage(args), th);
     }
 }

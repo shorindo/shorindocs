@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Shorindo, Inc.
+ * Copyright 2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth;
-
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionController;
-import com.shorindo.docs.annotation.ActionMapping;
+package com.shorindo.docs.database;
 
 /**
  * 
  */
-@ActionMapping("/login")
-public class LoginController extends ActionController {
-
-    /**
-     * TODO
-     */
-    @Override
-    public String view(ActionContext context) {
-        context.setAttribute("title", "ログイン");
-        context.setAttribute("message", "ログインしてください");
-        return ".xuml";
-    }
+public interface SchemaType {
 
 }

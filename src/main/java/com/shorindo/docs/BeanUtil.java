@@ -26,6 +26,22 @@ import java.util.regex.Pattern;
 public class BeanUtil {
     private static final ActionLogger LOG = ActionLogger.getLogger(BeanUtil.class);
     private static final Pattern propPattern = Pattern.compile("([a-zA-Z])([a-z0-9]*)");
+    private static Pattern SNAKE_PATTERN = Pattern.compile("_*([^_])([^_]*)");
+
+    public static String under2camel(String name) {
+        Matcher m = SNAKE_PATTERN.matcher(name);
+        StringBuilder sb = new StringBuilder();
+        int start = 0;
+        while (m.find(start)) {
+            sb.append(m.group(1).toUpperCase());
+            String rest = m.group(2);
+            if (rest != null) {
+                sb.append(rest.toLowerCase());
+            }
+            start = m.end();
+        }
+        return sb.toString();
+    }
 
     private static String createMethodName(String prefix, String propertyName) {
         String getterName = prefix;
@@ -86,6 +102,10 @@ public class BeanUtil {
                 throw new BeanNotFoundException(name + " from " + bean);
             }
         }
+    }
+
+    public static void setSnakeProperty(Object bean, String name, Object value) {
+        
     }
 
     public static Object getValue(Object bean, String name) throws BeanNotFoundException {

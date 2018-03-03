@@ -25,15 +25,15 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
-
 import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.SystemMessages;
 
 /**
  * 
  */
 public class DefaultView extends View {
-    private static final Logger LOG = Logger.getLogger(DefaultView.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(DefaultView.class);
     private static final SimpleDateFormat format =
         new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
     private File file;
@@ -72,13 +72,13 @@ public class DefaultView extends View {
                 os.write(b, 0, l);
             }
         } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
+            LOG.error(SystemMessages.E9999, e);
         } finally {
             if (is != null)
                 try {
                     is.close();
                 } catch (IOException e) {
-                    LOG.error(e.getMessage(), e);
+                    LOG.error(SystemMessages.E9999, e);
                 }
         }
     }

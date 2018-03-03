@@ -18,8 +18,6 @@ package com.shorindo.docs.admin;
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 

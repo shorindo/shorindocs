@@ -15,7 +15,6 @@
  */
 package com.shorindo.docs;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,7 +30,7 @@ public class IdGenerator {
 
     public static void main(String args[]) {
         Set<Long> idSet = new HashSet<Long>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             long id = getId();
             System.out.println(String.format("%x", id) + ":" + String.format("%d", id));
             if (idSet.contains(id)) {
@@ -68,6 +67,6 @@ public class IdGenerator {
     }
 
     private static long getTime() {
-        return ((new Date().getTime() - BASE_TIME) & TIME_MASK) << 4;
+        return ((System.currentTimeMillis() - BASE_TIME) & TIME_MASK) << 4;
     }
 }

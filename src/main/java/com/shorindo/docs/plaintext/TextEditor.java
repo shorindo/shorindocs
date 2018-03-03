@@ -15,8 +15,6 @@
  */
 package com.shorindo.docs.plaintext;
 
-import java.io.OutputStream;
-
 import com.shorindo.xuml.Component;
 import com.shorindo.xuml.ComponentReady;
 import com.shorindo.xuml.XumlView;

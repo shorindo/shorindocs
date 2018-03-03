@@ -15,23 +15,20 @@
  */
 package com.shorindo.docs.plaintext;
 
-import org.apache.log4j.Logger;
-
 import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.DatabaseManager;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentModel;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
-import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
 @ContentTypeReady("text/plain")
 public class PlainTextController extends DocumentController {
-    private static final Logger LOG = Logger.getLogger(PlainTextController.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(PlainTextController.class);
 
     public PlainTextController() {
     }

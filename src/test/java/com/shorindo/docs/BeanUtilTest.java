@@ -17,40 +17,20 @@ package com.shorindo.docs;
 
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import mockit.Mock;
-import mockit.MockUp;
-
 import org.junit.Test;
+
+import com.shorindo.docs.BeanUtil;
 
 /**
  * 
  */
-public class JdbcTest {
+public class BeanUtilTest {
 
     @Test
-    public void test() {
-        new MockUp<String>() {
-            String it;
-            Map<String,Object> map = new HashMap<String,Object>();
-
-            @Mock public void $init(String s) {
-                map.put(s, it);
-            }
-            @Mock public String toString() {
-                return String.valueOf(it.hashCode());
-            }
-        };
-
-        String s1 = new String("s1");
-        String s2 = new String("s2");
-        System.out.println(s1);
-        System.out.println(s2);
+    public void testUnder2Camel() {
+        assertEquals("Abc", BeanUtil.under2camel("Abc"));
+        assertEquals("AbcDef", BeanUtil.under2camel("abc_def"));
+        assertEquals("AbcDefGhi", BeanUtil.under2camel("abc_def__ghi"));
     }
 
-    public static void main(String[] args) {
-        System.out.println("Hello world");
-    }
 }

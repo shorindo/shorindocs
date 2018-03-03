@@ -18,8 +18,6 @@ package com.shorindo.docs.auth;
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.view.RedirectView;
-import com.shorindo.docs.view.View;
 
 /**
  * 

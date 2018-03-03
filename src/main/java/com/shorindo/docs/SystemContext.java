@@ -15,9 +15,30 @@
  */
 package com.shorindo.docs;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 /**
  * 
  */
 public class SystemContext {
+    private static ActionLogger LOG = ActionLogger.getLogger(SystemContext.class);
+    private static Properties props = new Properties();
 
+    public static void loadProperties(InputStream is) {
+        try {
+            props.load(is);
+        } catch (IOException e) {
+            try {
+                is.close();
+            } catch (IOException e1) {
+                LOG.error(SystemMessages.E9999, e1);
+            }
+        }
+    }
+
+    public static String getProperty(String key) {
+        return props.getProperty(key);
+    }
 }

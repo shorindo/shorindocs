@@ -15,6 +15,8 @@
  */
 package com.shorindo.docs;
 
+import java.util.List;
+
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
@@ -75,7 +77,13 @@ public class DocumentController extends ActionController {
         }
     }
 
-//    @ActionMethod
+    @ActionMethod
+    public String recents(ActionContext context) throws DocumentException {
+        List<DocumentModel> list = DatabaseManager.selectList("searchDocument", null);
+        return "json";
+    }
+
+    //    @ActionMethod
 //    public View search(ActionContext context) throws DocumentException {
 //        List<DocumentModel> list = DatabaseManager.selectList("searchDocument", null);
 //        return new JsonView(list, context);

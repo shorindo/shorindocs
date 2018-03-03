@@ -15,8 +15,7 @@
  */
 package com.shorindo.docs.plaintext;
 
-import org.apache.log4j.Logger;
-
+import com.shorindo.docs.ActionLogger;
 import com.shorindo.xuml.Component;
 import com.shorindo.xuml.ComponentReady;
 import com.shorindo.xuml.XumlView;
@@ -26,12 +25,12 @@ import com.shorindo.xuml.XumlView;
  */
 @ComponentReady("text-viewer")
 public class TextViewer extends Component {
+    private static final ActionLogger LOG = ActionLogger.getLogger(TextViewer.class);
 
     public TextViewer(XumlView view) {
         super(view);
     }
 
-    private static final Logger LOG = Logger.getLogger(TextViewer.class);
 
     @Override
     public String getHtml() {

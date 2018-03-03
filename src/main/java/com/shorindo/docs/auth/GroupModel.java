@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Shorindo, Inc.
+ * Copyright 2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,28 @@
  */
 package com.shorindo.docs.auth;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionController;
-import com.shorindo.docs.annotation.ActionMapping;
+import com.shorindo.docs.database.SchemaEntity;
+import com.shorindo.docs.database.SchemaType;
 
 /**
  * 
  */
-@ActionMapping("/login")
-public class LoginController extends ActionController {
+public class GroupModel extends SchemaEntity {
+    private static final String TABLE_NAME = "GROUP";
 
-    /**
-     * TODO
-     */
+    public enum GroupType implements SchemaType {
+        GROUP_ID(),
+        GROUP_NAME();
+    }
+
     @Override
-    public String view(ActionContext context) {
-        context.setAttribute("title", "ログイン");
-        context.setAttribute("message", "ログインしてください");
-        return ".xuml";
+    public String getTableName() {
+        return TABLE_NAME;
+    }
+
+    @Override
+    public SchemaType[] getSchemaTypes() {
+        return GroupType.values();
     }
 
 }
