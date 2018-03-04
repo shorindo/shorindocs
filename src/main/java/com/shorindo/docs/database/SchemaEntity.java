@@ -22,14 +22,20 @@ import com.shorindo.docs.BeanUtil;
  */
 public abstract class SchemaEntity {
 
-    abstract public String getTableName();
-    abstract public SchemaType[] getSchemaTypes();
-
-    protected void setValue(String name, Object value) {
-        String setterName = "set" + BeanUtil.under2camel(name);
+    public String getEntityName() {
+        Table table = getClass().getAnnotation(Table.class);
+        return table == null ? null : table.value();
     }
 
-    protected Object getValue(String name) {
+    public Column[] getColumns() {
         return null;
     }
+
+//    protected void setValue(String name, Object value) {
+//        String setterName = "set" + BeanUtil.under2camel(name);
+//    }
+//
+//    protected Object getValue(String name) {
+//        return null;
+//    }
 }

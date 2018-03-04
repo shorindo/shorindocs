@@ -33,9 +33,13 @@ public class SystemContext {
             try {
                 is.close();
             } catch (IOException e1) {
-                LOG.error(SystemMessages.E9999, e1);
+                LOG.error(DocsMessages.E_9999, e1);
             }
         }
+    }
+
+    public static void init(Properties p) {
+        props.putAll(p);
     }
 
     public static String getProperty(String key) {

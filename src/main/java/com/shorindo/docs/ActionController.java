@@ -48,10 +48,10 @@ public abstract class ActionController {
                 }
                 clazz = clazz.getSuperclass();
             }
-            LOG.warn(SystemMessages.W1003, context.getAction());
+            LOG.warn(DocsMessages.W_3003, context.getAction());
             return getView(view(context), context);
         } catch (Exception e) {
-            LOG.warn(SystemMessages.W1003, context.getAction());
+            LOG.warn(DocsMessages.W_3003, context.getAction());
             return new ErrorView(500);
         }
     }

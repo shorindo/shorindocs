@@ -42,14 +42,15 @@ public class ActionListener implements ServletContextListener {
             is = new FileInputStream(path);
             siteProperties.load(is);
             PropertyConfigurator.configure(siteProperties);
+            SystemContext.init(siteProperties);
             DatabaseManager.init(siteProperties);
         } catch (IOException e) {
-            LOG.error(SystemMessages.E9999, e);
+            LOG.error(DocsMessages.E_9999, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(SystemMessages.E9999, e);
+                LOG.error(DocsMessages.E_9999, e);
             }
         }
 

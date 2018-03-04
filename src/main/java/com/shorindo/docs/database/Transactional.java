@@ -18,10 +18,14 @@ package com.shorindo.docs.database;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.DocsMessages;
+
 /**
  * 
  */
 public abstract class Transactional<T> extends DatabaseExecutor<T> {
+    private static final ActionLogger LOG = ActionLogger.getLogger(Transactional.class);
 
     @Override
     public void beginTransaction(Connection conn) throws SQLException {
@@ -30,11 +34,13 @@ public abstract class Transactional<T> extends DatabaseExecutor<T> {
 
     @Override
     public void commitTransaction(Connection conn) throws SQLException {
+        LOG.debug(DocsMessages.I_1102);
         conn.commit();
     }
 
     @Override
     public void rollbackTransaction(Connection conn) throws SQLException {
+        LOG.info(DocsMessages.I_1103);
         conn.rollback();
     }
 }

@@ -15,20 +15,29 @@
  */
 package com.shorindo.docs.database;
 
-import java.lang.reflect.Field;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXB;
 
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.DocsMessages;
 import com.shorindo.docs.SystemContext;
+import com.shorindo.docs.database.DatabaseSchema.Column;
+import com.shorindo.docs.database.DatabaseSchema.Entity;
 
 /**
  * 
@@ -37,6 +46,7 @@ public class DatabaseService {
     private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseService.class);
     private static final DatabaseService service = new DatabaseService();
     private DataSource dataSource;
+    private Map<String,Map<String,DatabaseSchema.Column>> schema;
 
     public static DatabaseService newInstance() {
         return service;
@@ -55,35 +65,104 @@ public class DatabaseService {
             props.setProperty("validationQuery", SystemContext.getProperty("datasource.validationQuery"));
             props.setProperty("testOnBorrow", SystemContext.getProperty("datasource.testOnBorrow"));
             dataSource = BasicDataSourceFactory.createDataSource(props);
+            schema = new HashMap<String,Map<String,DatabaseSchema.Column>>();
         } catch (Exception e) {
-            LOG.error(DocsMessages.E_1000, e);
+            LOG.error(DocsMessages.E_5100, e);
         }
     }
 
-    public <T>T provide(DatabaseExecutor<T> callback) {
+    public void loadSchema(InputStream is) {
+        DatabaseSchema newSchema = JAXB.unmarshal(is, DatabaseSchema.class);
+        for (Entity entity : newSchema.getEntityList()) {
+            LOG.info(DocsMessages.I_1101, newSchema.getNamespace(), entity.getName());
+            Map<String,DatabaseSchema.Column> columnMap =
+                new LinkedHashMap<String,DatabaseSchema.Column>();
+            for (DatabaseSchema.Column column : entity.getColumnList()) {
+                columnMap.put(column.getName(), column);
+            }
+            schema.put(entity.getName(), columnMap);
+        }
+    }
+
+    public List<String> validateSchema() throws SQLException {
+        return provide(new Transactional<List<String>>() {
+            @Override
+            public List<String> run(Connection conn) throws SQLException {
+                List<String> resultList = new ArrayList<String>();
+                DatabaseMetaData meta = conn.getMetaData();
+
+                for (Entry<String, Map<String, Column>> entry : schema.entrySet()) {
+                    // エンティティ定義あり、実体なしのチェック
+                    // (逆のエンティティ定義なし、実体ありのチェックはしない)
+                    String entityName = entry.getKey();
+                    Map<String, Column> entity = entry.getValue();
+                    ResultSet trset = meta.getTables(null, null, entityName, null);
+                    if (!trset.next()) {
+                        String msg = LOG.error(DocsMessages.E_5108, entityName);
+                        resultList.add(msg);
+                        trset.close();
+                        continue;
+                    }
+                    trset.close();
+
+                    ResultSet crset = meta.getColumns(null, null, entityName, null);
+                    Map<String,DatabaseSchema.Column> map
+                        = new HashMap<String,DatabaseSchema.Column>();
+                    for (DatabaseSchema.Column column : entity.values()) {
+                        map.put(column.getName(), column);
+                    }
+
+                    // カラム定義なし、実体ありのチェック
+                    while (crset.next()) {
+                        String columnName = crset.getString("COLUMN_NAME");
+                        DatabaseSchema.Column c = map.get(columnName);
+                        if (c == null) {
+                            String msg = LOG.error(DocsMessages.E_5109, entityName, c.getName());
+                            resultList.add(msg);
+                            continue;
+                        }
+                        map.remove(columnName);
+                        //TODO attrubute
+                    }
+
+                    // カラム定義あり、実体なしのチェック
+                    for (Map.Entry<String,DatabaseSchema.Column> e : map.entrySet()) {
+                        String msg = LOG.error(DocsMessages.E_5110, entityName, e.getKey());
+                        resultList.add(msg);
+                    }
+                    crset.close();
+                }
+                return resultList;
+            }
+        });
+    }
+
+    public <T>T provide(DatabaseExecutor<T> callback) throws SQLException {
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
+            callback.setConnection(conn);
             callback.beginTransaction(conn);
             T result = callback.run(conn);
             callback.commitTransaction(conn);
             return result;
         } catch (Throwable th) {
-            LOG.error(DocsMessages.E_1001, th);
+            LOG.error(DocsMessages.E_5101, th);
             if (conn != null) {
                 try {
                     callback.rollbackTransaction(conn);
                 } catch (SQLException e) {
-                    LOG.error(DocsMessages.E_1005, e);
+                    LOG.error(DocsMessages.E_5105, e);
                 }
             }
-            throw new RuntimeException(th);
+            throw new SQLException(th);
         } finally {
+            callback.removeConnection();
             if (conn != null) {
                 try {
                     conn.close();
                 } catch (SQLException e) {
-                    LOG.error(DocsMessages.E_1003, e);
+                    LOG.error(DocsMessages.E_5103, e);
                 }
             }
         }
@@ -110,9 +189,6 @@ public class DatabaseService {
         }
     }
 
-    public void createTable(Class<? extends SchemaEntity> entityClass) {
-        for (Field field : entityClass.getFields()) {
-            
-        }
+    public void createTable() {
     }
 }

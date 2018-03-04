@@ -13,30 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth;
+package com.shorindo.docs.database;
 
-import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.SchemaType;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 
  */
-public class AclModel extends SchemaEntity {
-    private static final String TABLE_NAME = "ACL";
-
-    public enum GroupType implements SchemaType {
-        ACL_ID(),
-        ACL_NAME();
-    }
-
-    @Override
-    public String getTableName() {
-        return TABLE_NAME;
-    }
-
-    @Override
-    public SchemaType[] getSchemaTypes() {
-        return GroupType.values();
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Table {
+    String value();
 }

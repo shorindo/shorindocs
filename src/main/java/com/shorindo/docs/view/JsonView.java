@@ -21,7 +21,7 @@ import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.SystemMessages;
+import com.shorindo.docs.DocsMessages;
 
 /**
  * 
@@ -45,7 +45,7 @@ public class JsonView extends View {
         try {
             os.write(JSON.encode(bean, true).getBytes("UTF-8"));
         } catch (Exception e) {
-            LOG.error(SystemMessages.E9999, e);
+            LOG.error(DocsMessages.E_9999, e);
             new ErrorView(500).render(context, os);
         }
     }

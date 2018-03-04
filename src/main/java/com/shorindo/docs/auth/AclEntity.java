@@ -16,27 +16,16 @@
 package com.shorindo.docs.auth;
 
 import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.SchemaType;
+import com.shorindo.docs.database.Table;
 
 /**
  * 
  */
-public class GroupModel extends SchemaEntity {
-    private static final String TABLE_NAME = "GROUP";
-
-    public enum GroupType implements SchemaType {
-        GROUP_ID(),
-        GROUP_NAME();
+@Table("AUTH_ACL")
+public class AclEntity extends SchemaEntity {
+    
+    @Table("AUTH_ACL_MEMBER")
+    public static class AclMemberEntity extends SchemaEntity {
+        
     }
-
-    @Override
-    public String getTableName() {
-        return TABLE_NAME;
-    }
-
-    @Override
-    public SchemaType[] getSchemaTypes() {
-        return GroupType.values();
-    }
-
 }

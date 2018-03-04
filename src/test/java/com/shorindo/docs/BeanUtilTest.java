@@ -26,11 +26,11 @@ import com.shorindo.docs.BeanUtil;
  */
 public class BeanUtilTest {
 
-    @Test
-    public void testUnder2Camel() {
-        assertEquals("Abc", BeanUtil.under2camel("Abc"));
-        assertEquals("AbcDef", BeanUtil.under2camel("abc_def"));
-        assertEquals("AbcDefGhi", BeanUtil.under2camel("abc_def__ghi"));
-    }
+//    @Test
+//    public void testUnder2Camel() {
+//        assertEquals("Abc", BeanUtil.under2camel("Abc"));
+//        assertEquals("AbcDef", BeanUtil.under2camel("abc_def"));
+//        assertEquals("AbcDefGhi", BeanUtil.under2camel("abc_def__ghi"));
+//    }
 
 }

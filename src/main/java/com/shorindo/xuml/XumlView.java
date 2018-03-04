@@ -34,8 +34,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.SystemMessages;
 import com.shorindo.docs.BeanUtil;
+import com.shorindo.docs.DocsMessages;
 import com.shorindo.docs.view.View;
 
 /**
@@ -73,10 +73,10 @@ public class XumlView extends View {
                     Class<?> c = Class.forName(className);
                     if (Component.class.isAssignableFrom(c)) {
                         defineComponent(c);
-                        LOG.info(SystemMessages.I0002, c.getName());
+                        LOG.info(DocsMessages.I_0002, c.getName());
                     }
                 } catch (ClassNotFoundException e) {
-                    LOG.error(SystemMessages.E9999, e);
+                    LOG.error(DocsMessages.E_9999, e);
                 }
             }
         }
@@ -87,14 +87,14 @@ public class XumlView extends View {
         try {
             component = parse(is);
         } catch (SAXException e) {
-            LOG.error(SystemMessages.E9999, e);
+            LOG.error(DocsMessages.E_9999, e);
         } catch (IOException e) {
-            LOG.error(SystemMessages.E9999, e);
+            LOG.error(DocsMessages.E_9999, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(SystemMessages.E9999, e);
+                LOG.error(DocsMessages.E_9999, e);
             }
         }
     }
@@ -109,7 +109,7 @@ public class XumlView extends View {
         try {
             os.write(eval(context, component.getHtml()).getBytes("UTF-8"));
         } catch (Exception e) {
-            LOG.error(SystemMessages.E9999, e);
+            LOG.error(DocsMessages.E_9999, e);
         }
     }
 

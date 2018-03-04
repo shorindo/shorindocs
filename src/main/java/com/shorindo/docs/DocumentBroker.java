@@ -65,7 +65,7 @@ public final class DocumentBroker extends ActionController {
             //LOG.error(ActionMessages.E9999, e);
             return new ErrorView(404);
         } catch (SQLException e) {
-            LOG.error(SystemMessages.E9999, e);
+            LOG.error(DocsMessages.E_9999, e);
             return new ErrorView(404);
         }
     }

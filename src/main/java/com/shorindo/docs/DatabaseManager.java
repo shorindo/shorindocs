@@ -66,7 +66,7 @@ public abstract class DatabaseManager {
             new XMLMapperBuilder(DatabaseManager.class.getResourceAsStream("/mybatis/" + engineName + ".xml"), config, "", config.getSqlFragments()).parse();
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(config);
         } catch (Exception e) {
-            LOG.error(SystemMessages.E9999, e);
+            LOG.error(DocsMessages.E_9999, e);
         }
     }
 

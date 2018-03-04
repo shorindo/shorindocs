@@ -27,7 +27,7 @@ import java.util.TimeZone;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.SystemMessages;
+import com.shorindo.docs.DocsMessages;
 
 /**
  * 
@@ -72,13 +72,13 @@ public class DefaultView extends View {
                 os.write(b, 0, l);
             }
         } catch (IOException e) {
-            LOG.error(SystemMessages.E9999, e);
+            LOG.error(DocsMessages.E_9999, e);
         } finally {
             if (is != null)
                 try {
                     is.close();
                 } catch (IOException e) {
-                    LOG.error(SystemMessages.E9999, e);
+                    LOG.error(DocsMessages.E_9999, e);
                 }
         }
     }

@@ -37,9 +37,6 @@ public class ActionLogger {
     public void debug(String msg) {
         LOG.debug(msg);
     }
-    public void debug(String msg, Throwable th) {
-        LOG.debug(msg, th);
-    }
     public void debug(String message, Object...args) {
         if (args.length > 0) {
             LOG.debug(MessageFormat.format(message, args));
@@ -47,6 +44,10 @@ public class ActionLogger {
             LOG.debug(message);
         }
     }
+    public void debug(ActionMessages code, Object...args) {
+        LOG.debug(code.getCode() + ":" + code.getMessage(args));
+    }
+
     public void info(ActionMessages code, Object...args) {
         LOG.info(code.getCode() + ":" + code.getMessage(args));
     }
@@ -60,10 +61,14 @@ public class ActionLogger {
     public void warn(ActionMessages code, Object...args) {
         LOG.warn(code.getCode() + ":" + code.getMessage(args));
     }
-    public void error(ActionMessages code, Object...args) {
-        LOG.error(code.getCode() + ":" + code.getMessage(args));
+    public String error(ActionMessages code, Object...args) {
+        String msg = code.getCode() + ":" + code.getMessage(args);
+        LOG.error(msg);
+        return msg;
     }
-    public void error(ActionMessages code, Throwable th, Object...args) {
-        LOG.error(code.getCode() + ":" + code.getMessage(args), th);
+    public String error(ActionMessages code, Throwable th, Object...args) {
+        String msg = code.getCode() + ":" + code.getMessage(args);
+        LOG.error(msg, th);
+        return msg;
     }
 }

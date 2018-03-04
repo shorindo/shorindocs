@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
+package com.shorindo.docs.auth;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.shorindo.docs.database.SchemaEntity;
+import com.shorindo.docs.database.Table;
 
 /**
  * 
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Column {
-    String value();
+@Table("AUTH_GROUP")
+public class GroupEntity extends SchemaEntity {
+
+    @Table("AUTH_GROUP_MEMBER")
+    public static class GroupMemberEntity extends SchemaEntity {
+        
+    }
 }
