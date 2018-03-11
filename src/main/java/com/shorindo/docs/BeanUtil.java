@@ -104,7 +104,7 @@ public class BeanUtil {
         }
 
         if (start != end) {
-            throw new BeanNotFoundException("指定に誤りがあります：" + name);
+            throw new BeanNotFoundException(DocsMessages.E_5007.getMessage(name));
         }
     }
 
@@ -125,19 +125,19 @@ public class BeanUtil {
 
             bean = getProperty(bean, m.group(1));
             if (bean == null && end != name.length()) {
-                throw new BeanNotFoundException("項目[" + m.group(1) + "]がありません");
+                throw new BeanNotFoundException(DocsMessages.E_5005.getMessage(m.group(1)));
             }
             if (m.group(3) != null) {
                 bean = getProperty(bean, m.group(3));
                 if (bean == null && end != name.length()) {
-                    throw new BeanNotFoundException("項目[" + m.group(3) + "]がありません");
+                    throw new BeanNotFoundException(DocsMessages.E_5005.getMessage(m.group(3)));
                 }
             }
             start = end = m.end();
         }
 
         if (start != end) {
-            throw new BeanNotFoundException("指定に誤りがあります：" + name);
+            throw new BeanNotFoundException(DocsMessages.E_5007.getMessage(name));
         }
 
         return bean;

@@ -61,7 +61,7 @@ public class BeanUtilTest {
         testGetNameError("children[]");
         testGetNameError("phone.home[123]");
     }
-    
+
     private void testGetNameError(String name) {
         Object person = createBean();
         try {
@@ -89,6 +89,25 @@ public class BeanUtilTest {
         assertEquals("090-ZZZZ-ZZZZ", BeanUtil.getValue(person, "phone[mobile]"));
         BeanUtil.setValue(person, "phone[mobile]", "090-9999-9999");
         assertEquals("090-9999-9999", BeanUtil.getValue(person, "phone[mobile]"));
+    }
+
+
+    @Test
+    public void testSetValueError() {
+        testSetNameError("value");
+        testSetNameError("children..name");
+        testSetNameError("children[]");
+        testSetNameError("phone.home[123]");
+    }
+
+    private void testSetNameError(String name) {
+        Object person = createBean();
+        try {
+            BeanUtil.setValue(person, name, "");
+            fail();
+        } catch (BeanNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private Object createBean() {
