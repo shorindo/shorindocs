@@ -23,9 +23,21 @@ import com.shorindo.docs.database.Table;
  */
 @Table("AUTH_ACL")
 public class AclEntity extends SchemaEntity {
+    private static final String ENTITY_NAME = "AUTH_ACL";
     
     @Table("AUTH_ACL_MEMBER")
     public static class AclMemberEntity extends SchemaEntity {
+        private static final String ENTITY_NAME = "AUTH_ACL_MEMBER";
+
+        @Override
+        public String getEntityName() {
+            return ENTITY_NAME;
+        }
         
+    }
+
+    @Override
+    public String getEntityName() {
+        return ENTITY_NAME;
     }
 }

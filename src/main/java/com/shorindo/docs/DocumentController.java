@@ -15,9 +15,14 @@
  */
 package com.shorindo.docs;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import com.shorindo.docs.annotation.ActionMethod;
+import com.shorindo.docs.auth.UserEntity;
+import com.shorindo.docs.database.DatabaseExecutor;
+import com.shorindo.docs.database.DatabaseService;
+import com.shorindo.docs.database.Transactional;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
@@ -27,65 +32,155 @@ import com.shorindo.docs.view.View;
  */
 public class DocumentController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentController.class);
-    private DocumentModel model;
+    private static final DatabaseService databaseService = DatabaseService.newInstance();
+    private DocumentEntity model;
 
+    /**
+     * 呼ばれることはないので何もしない
+     */
     @Override
     public String view(ActionContext context) {
         return null;
     }
 
-    protected DocumentModel getModel() {
+    /**
+     * 
+     * @return
+     */
+    protected DocumentEntity getModel() {
         return model;
     }
 
+    /*
+     * 
+     */
+    private static final DatabaseExecutor<Integer> UPDATE_EXEC = new Transactional<Integer>() {
+        @Override
+        public Integer run(Connection conn, Object... params)
+                throws SQLException {
+            DocumentEntity document = (DocumentEntity)params[0];
+            UserEntity user = (UserEntity)params[1];
+            return exec(
+                "UPDATE DOCUMENT " +
+                "SET TITLE=?, BODY=?, UPDATE_DATE=NOW() " +
+                "WHERE DOCUMENT_ID=?",
+                document.getTitle(),
+                document.getBody(),
+                document.getDocumentId()
+                );
+        }
+    };
+
+    /**
+     * 
+     * @param context
+     * @return
+     * @throws DocumentException
+     */
     @ActionMethod
     public View save(ActionContext context) throws DocumentException {
-        DocumentModel model = getModel();
+        DocumentEntity model = getModel();
         model.setTitle(context.getParameter("title"));
         model.setBody(context.getParameter("body"));
-        if (DatabaseManager.update("docs.updateDocument", model) > 0) {
-            return new RedirectView(model.getDocumentId(), context);
-        } else {
+        String id = model.getDocumentId();
+        try {
+            int result = databaseService.provide(UPDATE_EXEC, model, context.getUser());
+            if (result > 0) {
+                return new RedirectView(id + "?action=view", context);
+            } else {
+                return new ErrorView(404);
+            }
+        } catch (SQLException e) {
+            LOG.error(DocsMessages.E_9002, id);
             return new ErrorView(500);
         }
     }
 
+    /*
+     * 
+     */
+    private static final DatabaseExecutor<Integer> CREATE_EXEC = new Transactional<Integer>() {
+        @Override
+        public Integer run(Connection conn, Object... params)
+                throws SQLException {
+            DocumentEntity document = (DocumentEntity)params[0];
+            UserEntity user = (UserEntity)params[1];
+            return exec(
+                "INSERT INTO DOCUMENT " +
+                "(DOCUMENT_ID,CONTENT_TYPE,STATUS,TITLE,BODY,CREATE_DATE,UPDATE_DATE,OWNER_ID,ACL_ID) VALUES " +
+                "VALUES (?,?,?,?,?,NOW(),NOW(),?,?)",
+                document.getDocumentId(),
+                document.getContentType(),
+                document.getStatus(),
+                document.getTitle(),
+                document.getBody(),
+                user.getUserId(),
+                document.getAclId()
+                );
+        }
+    };
+
+    /**
+     * 
+     * @param context
+     * @return
+     * @throws DocumentException
+     */
     @ActionMethod
     public View create(ActionContext context) throws DocumentException {
         String id = String.valueOf(IdGenerator.getId());
-        DocumentModel model = new DocumentModel();
+        DocumentEntity model = new DocumentEntity();
         model.setDocumentId(id);
         model.setContentType(context.getParameter("contentType"));
         model.setTitle(context.getParameter("title"));
         model.setBody(context.getParameter("body"));
-        if (DatabaseManager.insert("docs.createDocument", model) > 0) {
-            return new RedirectView(id + "?action=edit", context);
-        } else {
+        try {
+            if (databaseService.provide(CREATE_EXEC, model, context.getUser()) >= 0) {
+                return new RedirectView(id + "?action=edit", context);
+            } else {
+                return new ErrorView(404);
+            }
+        } catch (SQLException e) {
+            LOG.error(DocsMessages.E_9002, id);
             return new ErrorView(500);
         }
     }
 
+    /*
+     * 
+     */
+    private static final DatabaseExecutor<Integer> REMOVE_EXEC = new Transactional<Integer>() {
+        @Override
+        public Integer run(Connection conn, Object... params)
+                throws SQLException {
+            return remove((DocumentEntity)params[0]);
+        }
+    };
+
+    /**
+     * 
+     * @param context
+     * @return
+     * @throws DocumentException
+     */
     @ActionMethod
     public View remove(ActionContext context) throws DocumentException {
-        DocumentModel model = getModel();
+        DocumentEntity model = getModel();
         if ("index".equals(model.getDocumentId())) {
             return new RedirectView("/index", context);
-        } else if (DatabaseManager.update("docs.removeDocument", model) > 0) {
-            return new RedirectView("/index", context);
         } else {
-            return new ErrorView(500);
+            try {
+                if (databaseService.provide(REMOVE_EXEC, model) > 0) {
+                    return new RedirectView("/index", context);
+                } else {
+                    LOG.error(DocsMessages.E_9999);
+                    return new ErrorView(500);
+                }
+            } catch (SQLException e) {
+                LOG.error(DocsMessages.E_9999, e);
+                return new ErrorView(500);
+            }
         }
     }
 
-    @ActionMethod
-    public String recents(ActionContext context) throws DocumentException {
-        List<DocumentModel> list = DatabaseManager.selectList("searchDocument", null);
-        return "json";
-    }
-
-    //    @ActionMethod
-//    public View search(ActionContext context) throws DocumentException {
-//        List<DocumentModel> list = DatabaseManager.selectList("searchDocument", null);
-//        return new JsonView(list, context);
-//    }
 }

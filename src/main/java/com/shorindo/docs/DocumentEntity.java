@@ -17,18 +17,31 @@ package com.shorindo.docs;
 
 import java.util.Date;
 
+import com.shorindo.docs.database.Column;
+import com.shorindo.docs.database.SchemaEntity;
+
 /**
  * 
  */
-public class DocumentModel {
+public class DocumentEntity extends SchemaEntity {
+    private static final String ENTITY_NAME = "DOCUMENT";
+    @Column("DOCUMENT_ID")
     private String documentId;
+    @Column("CONTENT_TYPE")
     private String contentType;
+    @Column("STATUS")
     private int status;
+    @Column("TITLE")
     private String title;
+    @Column("BODY")
     private String body;
+    @Column("CREATE_DATE")
     private Date createDate;
+    @Column("UPDATE_DATE")
     private Date updateDate;
+    @Column("OWNER_ID")
     private String ownerId;
+    @Column("ACL_ID")
     private String aclId;
 
     public String getDocumentId() {
@@ -84,5 +97,9 @@ public class DocumentModel {
     }
     public void setAclId(String aclId) {
         this.aclId = aclId;
+    }
+    @Override
+    public String getEntityName() {
+        return ENTITY_NAME;
     }
 }

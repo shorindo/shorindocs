@@ -23,9 +23,20 @@ import com.shorindo.docs.database.Table;
  */
 @Table("AUTH_GROUP")
 public class GroupEntity extends SchemaEntity {
+    private static final String ENTITY_NAME = "AUTH_GROUP";
 
     @Table("AUTH_GROUP_MEMBER")
     public static class GroupMemberEntity extends SchemaEntity {
+        private static final String ENTITY_NAME = "AUTH_GROUP_MEMBER";
+        @Override
+        public String getEntityName() {
+            return ENTITY_NAME;
+        }
         
+    }
+
+    @Override
+    public String getEntityName() {
+        return ENTITY_NAME;
     }
 }

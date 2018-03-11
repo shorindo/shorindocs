@@ -26,6 +26,7 @@ import com.shorindo.docs.database.Table;
  */
 @Table("AUTH_USER")
 public class UserEntity extends SchemaEntity {
+    private static final String ENTITY_NAME = "AUTH_USER";
 
     @Column("USER_ID")
     private String userId;
@@ -57,4 +58,88 @@ public class UserEntity extends SchemaEntity {
     @Column("UPDATED_DATE")
     private Date updatedDate;
 
+    @Override
+    public String getEntityName() {
+        return ENTITY_NAME;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public String getAclId() {
+        return aclId;
+    }
+
+    public void setAclId(String aclId) {
+        this.aclId = aclId;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
+    }
 }

@@ -22,9 +22,9 @@ import java.util.Properties;
 /**
  * 
  */
-public class SystemContext {
-    private static ActionLogger LOG = ActionLogger.getLogger(SystemContext.class);
-    private static Properties props = new Properties();
+public class ApplicationContext {
+    private static final ActionLogger LOG = ActionLogger.getLogger(ApplicationContext.class);
+    private static final Properties props = new Properties();
 
     public static void loadProperties(InputStream is) {
         try {

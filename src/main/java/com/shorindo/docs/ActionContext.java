@@ -22,6 +22,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.shorindo.docs.auth.UserEntity;
+
 /**
  * 
  */
@@ -45,6 +47,10 @@ public class ActionContext {
         this.setAttribute("response", response);
         this.setAttribute("session", request.getSession());
         this.setAttribute("application", servletContext);
+    }
+
+    public UserEntity getUser() {
+        return null;
     }
 
     public ViewModel getViewModel() {

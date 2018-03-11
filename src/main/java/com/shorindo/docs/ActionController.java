@@ -51,7 +51,7 @@ public abstract class ActionController {
             LOG.warn(DocsMessages.W_3003, context.getAction());
             return getView(view(context), context);
         } catch (Exception e) {
-            LOG.warn(DocsMessages.W_3003, context.getAction());
+            LOG.error(DocsMessages.W_3003, context.getAction());
             return new ErrorView(500);
         }
     }

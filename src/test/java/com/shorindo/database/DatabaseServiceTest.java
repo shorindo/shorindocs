@@ -26,11 +26,14 @@ import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.SystemContext;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.auth.AuthenticateController;
+import com.shorindo.docs.database.Column;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.SchemaEntity;
 import com.shorindo.docs.database.Transactional;
@@ -39,25 +42,28 @@ import com.shorindo.docs.database.Transactionless;
 /**
  * 
  */
-public class DatabaseServiveTest {
-    private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseServiveTest.class);
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class DatabaseServiceTest {
+    private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseServiceTest.class);
+    private static DatabaseService service;
+    
     @BeforeClass
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
-        SystemContext.loadProperties(is);
+        ApplicationContext.loadProperties(is);
         
-        DatabaseService service = DatabaseService.newInstance();
+        service = DatabaseService.newInstance();
         service.provide(new Transactionless<Integer>() {
             @Override
-            public Integer run(Connection conn) throws SQLException {
-                execute("DROP TABLE IF EXISTS FOO");
-                execute("CREATE TABLE IF NOT EXISTS FOO(" +
-                        "    STRING_VALUE VARCHAR(100) UNIQUE," +
-                        "    INT_VALUE INT," +
-                        "    DOUBLE_VALUE DOUBLE," +
-                        "    DATE_VALUE DATETIME" +
-                        ")"
+            public Integer run(Connection conn, Object...params) throws SQLException {
+                exec("DROP TABLE IF EXISTS SAMPLE");
+                exec("CREATE TABLE IF NOT EXISTS SAMPLE (" +
+                     "    STRING_VALUE VARCHAR(100) UNIQUE," +
+                     "    INT_VALUE INT," +
+                     "    DOUBLE_VALUE DOUBLE," +
+                     "    DATE_VALUE DATETIME," +
+                     "    CONSTRAINT PRIMARY KEY (STRING_VALUE, INT_VALUE)" +
+                     ")"
                         );
                 return 0;
             }
@@ -66,11 +72,10 @@ public class DatabaseServiveTest {
 
     @AfterClass
     public static void tearDownAfter() throws Exception {
-        DatabaseService service = DatabaseService.newInstance();
-        service.provide(new Transactionless<Integer>() {
+                service.provide(new Transactionless<Integer>() {
             @Override
-            public Integer run(Connection conn) throws SQLException {
-                execute("DROP TABLE FOO");
+            public Integer run(Connection conn, Object...params) throws SQLException {
+                exec("DROP TABLE SAMPLE");
                 return 0;
             }
         });
@@ -78,14 +83,13 @@ public class DatabaseServiveTest {
 
     @Test
     public void testTransactional() throws Exception {
-        DatabaseService service = DatabaseService.newInstance();
         long st = System.currentTimeMillis();
         SampleEntity result = service.provide(new Transactional<SampleEntity>() {
             @Override
-            public SampleEntity run(Connection conn) throws SQLException {
-                execute("INSERT INTO FOO VALUES('BAR', 123, 123.456, '1970/01/01 12:34:56')");
-                List<SampleEntity> result = query("SELECT * FROM FOO", SampleEntity.class);
-                return result.get(0);
+            public SampleEntity run(Connection conn, Object...params) throws SQLException {
+                exec("INSERT INTO SAMPLE VALUES('BAR', 123, 123.456, '1970/01/01 12:34:56')");
+                List<SampleEntity> resultList = query("SELECT * FROM SAMPLE", SampleEntity.class);
+                return resultList.get(0);
             }
         });
         LOG.info("elapsed:" + (System.currentTimeMillis() - st) + "ms"); 
@@ -97,44 +101,64 @@ public class DatabaseServiveTest {
 
     private static Transactionless<Integer> TL = new Transactionless<Integer>() {
         @Override
-        public Integer run(Connection conn) throws SQLException {
+        public Integer run(Connection conn, Object...params) throws SQLException {
             return query("SELECT 123", int.class).get(0);
         }
     };
 
     @Test
     public void testTransactionless() throws Exception {
-        DatabaseService service = DatabaseService.newInstance();
         assertEquals(123, (int)service.provide(TL));
     }
 
     @Test
-    public void testShortcut() throws Exception {
-        DatabaseService service = DatabaseService.newInstance();
-        service.provide(new Transactional<Boolean>() {
+    public void testPut() throws Exception {
+        int result = service.provide(new Transactional<Integer>() {
             @Override
-            public Boolean run(Connection conn) throws SQLException {
-                SampleEntity e = new SampleEntity();
-                insert(e);
-                select(e);
-                update(e);
-                select(e);
-                delete(e);
-                select(e);
-                return false;
+            public Integer run(Connection conn, Object...params) throws SQLException {
+                SampleEntity e = generateSampleEntity();
+                return put(e); 
             }
         });
+        assertEquals(1, result);
+    }
+
+    @Test
+    public void testGet() throws Exception {
+        SampleEntity e = service.provide(new Transactional<SampleEntity>() {
+            @Override
+            public SampleEntity run(Connection conn, Object...params) throws SQLException {
+                SampleEntity e = generateSampleEntity();
+                put(e);
+                return get(e);
+            }
+        });
+        assertEquals("stringValue", e.getStringValue());
+        assertEquals(123, e.getIntValue());
+    }
+
+    @Test
+    public void testRemove() throws Exception {
+        SampleEntity e = service.provide(new Transactional<SampleEntity>() {
+            @Override
+            public SampleEntity run(Connection conn, Object...params) throws SQLException {
+                SampleEntity e = generateSampleEntity();
+                put(e);
+                assertNotNull(get(e));
+                remove(e);
+                return get(e);
+            }
+        });
+        assertNull(e);
     }
 
     @Test
     public void testLoadTables() throws Exception {
-        DatabaseService service = DatabaseService.newInstance();
         service.loadTables();
     }
 
     @Test
     public void testLoadSchema() throws Exception {
-        DatabaseService service = DatabaseService.newInstance();
         InputStream is = AuthenticateController.class.getResourceAsStream("AuthenticateService.dsdl");
         service.loadSchema(is);
         is.close();
@@ -142,22 +166,39 @@ public class DatabaseServiveTest {
 
     @Test
     public void testValidateSchema() throws Exception {
-        DatabaseService service = DatabaseService.newInstance();
         InputStream is = AuthenticateController.class.getResourceAsStream("AuthenticateService.dsdl");
         service.loadSchema(is);
         is.close();
         service.validateSchema();
     }
 
+    public SampleEntity generateSampleEntity() {
+        SampleEntity entity = new SampleEntity();
+        entity.setStringValue("stringValue");
+        entity.setIntValue(123);
+        return entity;
+    }
+
     public static class SampleEntity extends SchemaEntity {
+        @Column("STRING_VALUE")
         private String stringValue;
+        @Column("SHORT_VALUE")
         private short shortValue;
+        @Column("INT_VALUE")
         private int intValue;
+        @Column("LONG_VALUE")
         private long longValue;
+        @Column("FLOAT_VALUE")
         private float floatValue;
+        @Column("DOUBLE_VALUE")
         private double doubleValue;
+        @Column("DATE_VALUE")
         private Date dateValue;
 
+        @Override
+        public String getEntityName() {
+            return "SAMPLE";
+        }
         public String getStringValue() {
             return stringValue;
         }

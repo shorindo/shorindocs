@@ -34,8 +34,8 @@ import javax.xml.bind.JAXB;
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
 
 import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.DocsMessages;
-import com.shorindo.docs.SystemContext;
 import com.shorindo.docs.database.DatabaseSchema.Column;
 import com.shorindo.docs.database.DatabaseSchema.Entity;
 
@@ -47,6 +47,7 @@ public class DatabaseService {
     private static final DatabaseService service = new DatabaseService();
     private DataSource dataSource;
     private Map<String,Map<String,DatabaseSchema.Column>> schema;
+    private Map<Class<? extends SchemaEntity>,DatabaseSchema> entityMap;
 
     public static DatabaseService newInstance() {
         return service;
@@ -58,12 +59,12 @@ public class DatabaseService {
     private DatabaseService() {
         try {
             Properties props = new Properties();
-            props.setProperty("driverClassName", SystemContext.getProperty("datasource.driverClassName"));
-            props.setProperty("url", SystemContext.getProperty("datasource.url"));
-            props.setProperty("username", SystemContext.getProperty("datasource.username"));
-            props.setProperty("password", SystemContext.getProperty("datasource.password"));
-            props.setProperty("validationQuery", SystemContext.getProperty("datasource.validationQuery"));
-            props.setProperty("testOnBorrow", SystemContext.getProperty("datasource.testOnBorrow"));
+            props.setProperty("driverClassName", ApplicationContext.getProperty("datasource.driverClassName"));
+            props.setProperty("url", ApplicationContext.getProperty("datasource.url"));
+            props.setProperty("username", ApplicationContext.getProperty("datasource.username"));
+            props.setProperty("password", ApplicationContext.getProperty("datasource.password"));
+            props.setProperty("validationQuery", ApplicationContext.getProperty("datasource.validationQuery"));
+            props.setProperty("testOnBorrow", ApplicationContext.getProperty("datasource.testOnBorrow"));
             dataSource = BasicDataSourceFactory.createDataSource(props);
             schema = new HashMap<String,Map<String,DatabaseSchema.Column>>();
         } catch (Exception e) {
@@ -87,7 +88,7 @@ public class DatabaseService {
     public List<String> validateSchema() throws SQLException {
         return provide(new Transactional<List<String>>() {
             @Override
-            public List<String> run(Connection conn) throws SQLException {
+            public List<String> run(Connection conn, Object...params) throws SQLException {
                 List<String> resultList = new ArrayList<String>();
                 DatabaseMetaData meta = conn.getMetaData();
 
@@ -117,7 +118,7 @@ public class DatabaseService {
                         String columnName = crset.getString("COLUMN_NAME");
                         DatabaseSchema.Column c = map.get(columnName);
                         if (c == null) {
-                            String msg = LOG.error(DocsMessages.E_5109, entityName, c.getName());
+                            String msg = LOG.error(DocsMessages.E_5109, entityName, columnName);
                             resultList.add(msg);
                             continue;
                         }
@@ -137,17 +138,16 @@ public class DatabaseService {
         });
     }
 
-    public <T>T provide(DatabaseExecutor<T> callback) throws SQLException {
+    public <T>T provide(DatabaseExecutor<T> callback, Object...params) throws SQLException {
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
             callback.setConnection(conn);
             callback.beginTransaction(conn);
-            T result = callback.run(conn);
+            T result = callback.run(conn, params);
             callback.commitTransaction(conn);
             return result;
         } catch (Throwable th) {
-            LOG.error(DocsMessages.E_5101, th);
             if (conn != null) {
                 try {
                     callback.rollbackTransaction(conn);

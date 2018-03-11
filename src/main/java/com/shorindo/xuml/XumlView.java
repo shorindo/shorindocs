@@ -131,7 +131,7 @@ public class XumlView extends View {
             for (int i = 0; i < attrs.getLength(); i++) {
                 String name = attrs.getLocalName(i);
                 String value = attrs.getValue(i);
-                BeanUtil.setProperty(component, name, value);
+                BeanUtil.setValue(component, name, value);
             }
         } catch (Exception e) {
             component = new General(this, componentName, attrs);

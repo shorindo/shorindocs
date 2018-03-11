@@ -15,9 +15,13 @@
  */
 package com.shorindo.docs;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.shorindo.docs.annotation.ActionMapping;
+import com.shorindo.docs.database.DatabaseExecutor;
+import com.shorindo.docs.database.DatabaseService;
+import com.shorindo.docs.database.Transactionless;
 import com.shorindo.docs.form.FormController;
 import com.shorindo.docs.form.TemplateController;
 import com.shorindo.docs.plaintext.PlainTextController;
@@ -29,9 +33,10 @@ import com.shorindo.docs.view.View;
  */
 @ActionMapping("/*")
 public final class DocumentBroker extends ActionController {
-    private ActionLogger LOG = ActionLogger.getLogger(DocumentBroker.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(DocumentBroker.class);
+    private static final DatabaseService databaseService = DatabaseService.newInstance();
 
-    public static ActionController getController(DocumentModel model) throws DocumentException {
+    public static ActionController getController(DocumentEntity model) throws DocumentException {
         try {
             if ("text/plain".equals(model.getContentType())) {
                 return new PlainTextController();
@@ -47,10 +52,17 @@ public final class DocumentBroker extends ActionController {
         }
     }
 
-    public static DocumentModel getDocumentModel(String id) throws SQLException {
-        DocumentModel model = new DocumentModel();
-        model.setDocumentId(id);
-        return DatabaseManager.selectOne("docs.getDocument", model);
+    private static DatabaseExecutor<DocumentEntity> GET_DOCUMENT_EXEC =
+            new Transactionless<DocumentEntity>() {
+        @Override
+        public DocumentEntity run(Connection conn, Object...params) throws SQLException {
+            DocumentEntity model = new DocumentEntity();
+            model.setDocumentId((String)params[0]);
+            return get(model);
+        }
+    };
+    public static DocumentEntity getDocumentModel(String id) throws SQLException {
+        return databaseService.provide(GET_DOCUMENT_EXEC, id);
     }
 
     @Override
@@ -58,7 +70,7 @@ public final class DocumentBroker extends ActionController {
         LOG.debug("action()");
         try {
             String id = context.getRequest().getServletPath().substring(1);
-            DocumentModel model = getDocumentModel(id);
+            DocumentEntity model = getDocumentModel(id);
             context.setAttribute("document", model);
             return getController(model).action(context);
         } catch (DocumentException e) {

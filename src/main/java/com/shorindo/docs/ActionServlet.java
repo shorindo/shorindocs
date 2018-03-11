@@ -73,7 +73,8 @@ public class ActionServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        LOG.debug("service(" + req.getServletPath() + ")");
+        LOG.info("service(" + req.getServletPath() + ") start");
+        long st = System.currentTimeMillis();
         String path = req.getServletPath();
         String id = path.substring(1);
         ActionContext context = new ActionContext(req, res, getServletContext());
@@ -89,6 +90,8 @@ public class ActionServlet extends HttpServlet {
         } else if (!dispatch(context)) {
             LOG.error(DocsMessages.E_5003, path);
         }
+        LOG.info("service(" + req.getServletPath() + ") end : " +
+                (System.currentTimeMillis() - st) + " ms");
     }
 
     protected boolean dispatch(ActionContext context)

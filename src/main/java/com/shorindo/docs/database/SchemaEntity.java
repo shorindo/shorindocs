@@ -15,27 +15,11 @@
  */
 package com.shorindo.docs.database;
 
-import com.shorindo.docs.BeanUtil;
-
 /**
  * 
  */
 public abstract class SchemaEntity {
 
-    public String getEntityName() {
-        Table table = getClass().getAnnotation(Table.class);
-        return table == null ? null : table.value();
-    }
+    public abstract String getEntityName();
 
-    public Column[] getColumns() {
-        return null;
-    }
-
-//    protected void setValue(String name, Object value) {
-//        String setterName = "set" + BeanUtil.under2camel(name);
-//    }
-//
-//    protected Object getValue(String name) {
-//        return null;
-//    }
 }

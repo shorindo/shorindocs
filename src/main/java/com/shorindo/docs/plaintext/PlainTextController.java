@@ -15,13 +15,19 @@
  */
 package com.shorindo.docs.plaintext;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DatabaseManager;
+import com.shorindo.docs.DocsMessages;
 import com.shorindo.docs.DocumentController;
-import com.shorindo.docs.DocumentModel;
+import com.shorindo.docs.DocumentEntity;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
+import com.shorindo.docs.database.DatabaseService;
+import com.shorindo.docs.database.Transactionless;
 
 /**
  * 
@@ -29,14 +35,15 @@ import com.shorindo.docs.annotation.ContentTypeReady;
 @ContentTypeReady("text/plain")
 public class PlainTextController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(PlainTextController.class);
+    private static final DatabaseService databaseService = DatabaseService.newInstance();
 
     public PlainTextController() {
     }
 
     @Override
     public String view(ActionContext context) {
-        LOG.info("view()");
-        DocumentModel model = (DocumentModel)context.getAttribute("document");
+        LOG.trace("view()");
+        DocumentEntity model = (DocumentEntity)context.getAttribute("document");
         String body = model.getBody() == null ? "" : model.getBody();
         context.setAttribute("content", body
                 .replaceAll("&", "&amp;")
@@ -44,15 +51,18 @@ public class PlainTextController extends DocumentController {
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;")
                 .replaceAll("\n", "<br/>"));
-        context.setAttribute("search_result",
-                DatabaseManager.selectList("searchDocument", null));
+        try {
+            context.setAttribute("search_result", recents());
+        } catch (SQLException e) {
+            LOG.error(DocsMessages.E_9001, e);
+        }
         return ".xuml";
     }
 
     @ActionMethod
     public String edit(ActionContext context) {
-        LOG.info("edit()");
-        DocumentModel model = (DocumentModel)context.getAttribute("document");
+        LOG.trace("edit()");
+        DocumentEntity model = (DocumentEntity)context.getAttribute("document");
         String body = model.getBody() == null ? "" : model.getBody();
         context.setAttribute("content", body
                 .replaceAll("&", "&amp;")
@@ -60,5 +70,19 @@ public class PlainTextController extends DocumentController {
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;"));
         return ".xuml";
+    }
+
+    private List<DocumentEntity> recents() throws SQLException {
+        return databaseService.provide(new Transactionless<List<DocumentEntity>>() {
+            @Override
+            public List<DocumentEntity> run(Connection conn, Object...params) throws SQLException {
+                return query(
+                        "SELECT document_id,title,update_date " +
+                        "FROM   document " +
+                        "ORDER  BY update_date DESC " +
+                        "LIMIT  10",
+                        DocumentEntity.class);
+            }
+        });
     }
 }
