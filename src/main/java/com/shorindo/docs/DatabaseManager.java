@@ -38,6 +38,7 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 /**
  * 
  */
+@Deprecated
 public abstract class DatabaseManager {
     private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseManager.class);
     private static SqlSessionFactory sqlSessionFactory;
