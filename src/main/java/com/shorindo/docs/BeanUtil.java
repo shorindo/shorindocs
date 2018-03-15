@@ -28,13 +28,24 @@ import java.util.regex.Pattern;
  */
 public class BeanUtil {
     private static final ActionLogger LOG = ActionLogger.getLogger(BeanUtil.class);
-    private static final Pattern propPattern = Pattern.compile("([a-zA-Z])([a-z0-9]*)");
+    private static final Pattern PROPERTY_PATTERN = Pattern.compile("([a-zA-Z])([a-z0-9]*)");
     private static final Pattern SNAKE_PATTERN = Pattern.compile("_*([^_])([^_]*)");
 
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public static String snake2camel(String name) {
         return snake2camel(name, true);
     }
 
+    /**
+     * 
+     * @param name
+     * @param upcaseFirst
+     * @return
+     */
     public static String snake2camel(String name, boolean upcaseFirst) {
         Matcher m = SNAKE_PATTERN.matcher(name);
         StringBuilder sb = new StringBuilder();
@@ -58,9 +69,15 @@ public class BeanUtil {
         return sb.toString();
     }
 
+    /**
+     * 
+     * @param prefix
+     * @param propertyName
+     * @return
+     */
     private static String createMethodName(String prefix, String propertyName) {
         String getterName = prefix;
-        Matcher matcher = propPattern.matcher(propertyName);
+        Matcher matcher = PROPERTY_PATTERN.matcher(propertyName);
         int start = 0;
         while (matcher.find(start)) {
             getterName +=
@@ -71,6 +88,13 @@ public class BeanUtil {
         return getterName;
     }
 
+    /**
+     * 
+     * @param bean
+     * @param name
+     * @param value
+     * @throws BeanNotFoundException
+     */
     public static void setValue(Object bean, String name, Object value) throws BeanNotFoundException {
         Matcher m = BEAN_PATTERN.matcher(name);
         int start = 0, end = 0;
@@ -108,12 +132,24 @@ public class BeanUtil {
         }
     }
 
+    /**
+     * 
+     * @param value
+     * @return
+     */
     private static boolean isNumeric(String value) {
         return value == null ?
                 false :
                 (value.matches("^\\d+$") ? true : false);
     }
 
+    /**
+     * 
+     * @param bean
+     * @param name
+     * @return
+     * @throws BeanNotFoundException
+     */
     public static Object getValue(Object bean, String name) throws BeanNotFoundException {
         Matcher m = BEAN_PATTERN.matcher(name);
         int start = 0, end = 0;
@@ -143,6 +179,13 @@ public class BeanUtil {
         return bean;
     }
 
+    /**
+     * 
+     * @param bean
+     * @param name
+     * @param defaultValue
+     * @return
+     */
     public static Object getValue(Object bean, String name, Object defaultValue) {
         try {
             return getValue(bean, name);
@@ -152,15 +195,46 @@ public class BeanUtil {
         }
     }
 
+    /**
+     * 
+     * @param bean
+     * @param name
+     * @return
+     * @throws BeanNotFoundException
+     */
     public static byte getValueAsByte(Object bean, String name) throws BeanNotFoundException {
         return ((Byte)getValue(bean, name)).byteValue();
     }
+
+    /**
+     * 
+     * @param bean
+     * @param name
+     * @return
+     * @throws BeanNotFoundException
+     */
     public static short getValueAsShort(Object bean, String name) throws BeanNotFoundException {
         return ((Short)getValue(bean, name)).shortValue();
     }
+
+    /**
+     * 
+     * @param bean
+     * @param name
+     * @return
+     * @throws BeanNotFoundException
+     */
     public static int getValueAsInt(Object bean, String name) throws BeanNotFoundException {
         return ((Integer)getValue(bean, name)).intValue();
     }
+
+    /**
+     * 
+     * @param bean
+     * @param name
+     * @return
+     * @throws BeanNotFoundException
+     */
     public static long getValueAsLong(Object bean, String name) throws BeanNotFoundException {
         return ((Long)getValue(bean, name)).longValue();
     }
@@ -168,6 +242,13 @@ public class BeanUtil {
     private static final Pattern BEAN_PATTERN =
             Pattern.compile("\\.?([^\\.\\[\\s]+)(\\[([^\\]]+)\\])?");
 
+    /**
+     * 
+     * @param bean
+     * @param name
+     * @param value
+     * @throws BeanNotFoundException
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void setProperty(Object bean, String name, Object value)
             throws BeanNotFoundException {
@@ -207,6 +288,13 @@ public class BeanUtil {
         }
     }
 
+    /**
+     * 
+     * @param bean
+     * @param name
+     * @return
+     * @throws BeanNotFoundException
+     */
     @SuppressWarnings("rawtypes")
     private static Object getProperty(Object bean, String name) throws BeanNotFoundException {
         if (bean instanceof Map) {
@@ -233,6 +321,9 @@ public class BeanUtil {
         }
     }
 
+    /**
+     * 
+     */
     public static class BeanNotFoundException extends Exception {
         private static final long serialVersionUID = 1L;
 

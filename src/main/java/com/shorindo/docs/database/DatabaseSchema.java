@@ -176,6 +176,12 @@ public class DatabaseSchema {
         public void setUnique(boolean unique) {
             this.unique = unique;
         }
+        public int getPrimaryKey() {
+            return primaryKey;
+        }
+        public void setPrimaryKey(int primaryKey) {
+            this.primaryKey = primaryKey;
+        }
     }
 
     public static class View implements Entity {

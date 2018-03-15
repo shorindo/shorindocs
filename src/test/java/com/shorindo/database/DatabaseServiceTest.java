@@ -34,6 +34,7 @@ import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.auth.AuthenticateController;
 import com.shorindo.docs.database.Column;
+import com.shorindo.docs.database.DatabaseSchema;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.SchemaEntity;
 import com.shorindo.docs.database.Transactional;
@@ -167,9 +168,12 @@ public class DatabaseServiceTest {
     @Test
     public void testValidateSchema() throws Exception {
         InputStream is = AuthenticateController.class.getResourceAsStream("AuthenticateService.dsdl");
-        service.loadSchema(is);
-        is.close();
-        service.validateSchema();
+        try {
+            DatabaseSchema schema = service.loadSchema(is);
+            service.validateSchema(schema);
+        } finally {
+            is.close();
+        }
     }
 
     public SampleEntity generateSampleEntity() {

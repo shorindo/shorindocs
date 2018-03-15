@@ -19,6 +19,7 @@ import java.util.Date;
 
 import com.shorindo.docs.database.Column;
 import com.shorindo.docs.database.SchemaEntity;
+import com.shorindo.docs.database.SchemaType;
 import com.shorindo.docs.database.Table;
 
 /**
@@ -61,6 +62,10 @@ public class UserEntity extends SchemaEntity {
     @Override
     public String getEntityName() {
         return ENTITY_NAME;
+    }
+
+    public SchemaType[] getTypes() {
+        return UserType.values();
     }
 
     public String getUserId() {
@@ -141,5 +146,70 @@ public class UserEntity extends SchemaEntity {
 
     public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    private static enum UserType implements SchemaType {
+        USER_ID     ("varchar",  36, 0, 1, true,  true,  null),
+        LOGIN_ID    ("varchar",  80, 0, 0, true,  true,  null),
+        PASSWORD    ("varchar",  80, 0, 0, true,  false, null),
+        DISPLAY_NAME("varchar",  80, 0, 0, true,  true,  null),
+        MAIL        ("varchar",  80, 0, 0, false, false, null),
+        STATUS      ("smallint",  0, 0, 0, true,  false, 1),
+        CREATED_DATE("timestamp", 0, 0, 0, true,  false, null),
+        UPDATED_DATE("timestamp", 0, 0, 0, true,  false, null)
+        ;
+
+        private String jdbcType = "varchar";
+        private int size = 0;
+        private int precision = 0;
+        private int primary = 0;
+        private boolean notNull = false;
+        private boolean unique = false;
+        private Object defaultValue = null;
+
+        private UserType(String jdbcType, int size, int precision,
+                int primary, boolean notNull, boolean unique, Object defaultValue) {
+        }
+
+        @Override
+        public String getColumnName() {
+            return name();
+        }
+
+        @Override
+        public String getType() {
+            return jdbcType;
+        }
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+
+        @Override
+        public int getPrecision() {
+            return precision;
+        }
+
+        @Override
+        public int getPrimary() {
+            return primary;
+        }
+
+        @Override
+        public boolean isNotNull() {
+            return notNull;
+        }
+
+        @Override
+        public boolean isUnique() {
+            return unique;
+        }
+
+        @Override
+        public Object getDefault() {
+            return defaultValue;
+        }
+        
     }
 }

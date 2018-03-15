@@ -13,18 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
+package com.shorindo.docs;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.Test;
 
 /**
  * 
  */
-public interface SchemaType {
-    public String getColumnName();
-    public String getType();
-    public int getSize();
-    public int getPrecision();
-    public int getPrimary();
-    public boolean isNotNull();
-    public boolean isUnique();
-    public Object getDefault();
+public class IdentityProviderTest {
+
+    @Test
+    public void testNewId() throws Exception {
+        Set<Long> idSet = new HashSet<Long>();
+        for (int i = 0; i < 1000; i++) {
+            long id = IdentityProvider.newId();
+            System.out.println(String.format("%x", id) + ":" + String.format("%d", id));
+            if (idSet.contains(id)) {
+                throw new RuntimeException("conflict");
+            } else {
+                idSet.add(id);
+            }
+        }
+    }
+
 }

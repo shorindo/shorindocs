@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.ClassFinder.ClassMatcher;
+import com.shorindo.docs.ResourceFinder.ResourceMatcher;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.DefaultView;
 import com.shorindo.docs.view.RedirectView;
@@ -48,7 +48,7 @@ public class ActionServlet extends HttpServlet {
         super.init(config);
 
         File root = new File(config.getServletContext().getRealPath("/WEB-INF/classes"));
-        ClassFinder.find(root, new ClassMatcher() {
+        ResourceFinder.find(root, new ResourceMatcher() {
             public boolean matches(Class<?> clazz) {
                 ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
                 if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
@@ -56,9 +56,9 @@ public class ActionServlet extends HttpServlet {
                     try {
                         actionMap.put(mapping.value(), (ActionController)clazz.newInstance());
                     } catch (InstantiationException e) {
-                        LOG.error(DocsMessages.E_9999, e);
+                        LOG.error(DocsMessages.E_9004, e, mapping.value());
                     } catch (IllegalAccessException e) {
-                        LOG.error(DocsMessages.E_9999, e);
+                        LOG.error(DocsMessages.E_9004, e, mapping.value());
                     }
                     return true;
                 } else {

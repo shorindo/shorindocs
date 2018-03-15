@@ -41,8 +41,6 @@ public class DocumentEntity extends SchemaEntity {
     private Date updateDate;
     @Column("OWNER_ID")
     private String ownerId;
-    @Column("ACL_ID")
-    private String aclId;
 
     public String getDocumentId() {
         return documentId;
@@ -91,12 +89,6 @@ public class DocumentEntity extends SchemaEntity {
     }
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
-    }
-    public String getAclId() {
-        return aclId;
-    }
-    public void setAclId(String aclId) {
-        this.aclId = aclId;
     }
     @Override
     public String getEntityName() {

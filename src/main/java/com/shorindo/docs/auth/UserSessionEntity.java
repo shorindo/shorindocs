@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Shorindo, Inc.
+ * Copyright 2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,25 @@
  */
 package com.shorindo.docs.auth;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionController;
+import com.shorindo.docs.database.SchemaEntity;
 
 /**
  * 
  */
-public class AuthenticateController extends ActionController {
-    private static AuthenticateService service = AuthenticateService.getInstance();
+public class UserSessionEntity extends SchemaEntity {
 
     /**
      * 
      */
-    public AuthenticateController() {
+    public UserSessionEntity() {
         // TODO Auto-generated constructor stub
     }
 
     /* (non-Javadoc)
-     * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
+     * @see com.shorindo.docs.database.SchemaEntity#getEntityName()
      */
     @Override
-    public String view(ActionContext context) {
+    public String getEntityName() {
         // TODO Auto-generated method stub
         return null;
     }

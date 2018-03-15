@@ -45,7 +45,6 @@ public class DocumentController extends ActionController {
 
     /**
      * 
-     * @return
      */
     protected DocumentEntity getModel() {
         return model;
@@ -63,10 +62,11 @@ public class DocumentController extends ActionController {
             return exec(
                 "UPDATE DOCUMENT " +
                 "SET TITLE=?, BODY=?, UPDATE_DATE=NOW() " +
-                "WHERE DOCUMENT_ID=?",
+                "WHERE DOCUMENT_ID=? AND OWNER_ID=?",
                 document.getTitle(),
                 document.getBody(),
-                document.getDocumentId()
+                document.getDocumentId(),
+                user.getUserId()
                 );
         }
     };
@@ -107,15 +107,14 @@ public class DocumentController extends ActionController {
             UserEntity user = (UserEntity)params[1];
             return exec(
                 "INSERT INTO DOCUMENT " +
-                "(DOCUMENT_ID,CONTENT_TYPE,STATUS,TITLE,BODY,CREATE_DATE,UPDATE_DATE,OWNER_ID,ACL_ID) VALUES " +
-                "VALUES (?,?,?,?,?,NOW(),NOW(),?,?)",
+                "(DOCUMENT_ID,CONTENT_TYPE,STATUS,TITLE,BODY,CREATE_DATE,UPDATE_DATE,OWNER_ID) VALUES " +
+                "VALUES (?,?,?,?,?,NOW(),NOW(),?)",
                 document.getDocumentId(),
                 document.getContentType(),
                 document.getStatus(),
                 document.getTitle(),
                 document.getBody(),
-                user.getUserId(),
-                document.getAclId()
+                user.getUserId()
                 );
         }
     };
@@ -128,7 +127,7 @@ public class DocumentController extends ActionController {
      */
     @ActionMethod
     public View create(ActionContext context) throws DocumentException {
-        String id = String.valueOf(IdGenerator.getId());
+        String id = String.valueOf(IdentityProvider.newId());
         DocumentEntity model = new DocumentEntity();
         model.setDocumentId(id);
         model.setContentType(context.getParameter("contentType"));
@@ -153,7 +152,8 @@ public class DocumentController extends ActionController {
         @Override
         public Integer run(Connection conn, Object... params)
                 throws SQLException {
-            return remove((DocumentEntity)params[0]);
+            DocumentEntity document = (DocumentEntity)params[0];
+            return remove(document);
         }
     };
 
@@ -166,18 +166,19 @@ public class DocumentController extends ActionController {
     @ActionMethod
     public View remove(ActionContext context) throws DocumentException {
         DocumentEntity model = getModel();
-        if ("index".equals(model.getDocumentId())) {
+        String id = model.getDocumentId();
+        if ("index".equals(id)) {
             return new RedirectView("/index", context);
         } else {
             try {
                 if (databaseService.provide(REMOVE_EXEC, model) > 0) {
                     return new RedirectView("/index", context);
                 } else {
-                    LOG.error(DocsMessages.E_9999);
+                    LOG.error(DocsMessages.E_9003, id);
                     return new ErrorView(500);
                 }
             } catch (SQLException e) {
-                LOG.error(DocsMessages.E_9999, e);
+                LOG.error(DocsMessages.E_9003, e, id);
                 return new ErrorView(500);
             }
         }

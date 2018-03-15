@@ -40,6 +40,9 @@ public class PlainTextController extends DocumentController {
     public PlainTextController() {
     }
 
+    /**
+     * 
+     */
     @Override
     public String view(ActionContext context) {
         LOG.trace("view()");
@@ -59,6 +62,11 @@ public class PlainTextController extends DocumentController {
         return ".xuml";
     }
 
+    /**
+     * 
+     * @param context
+     * @return
+     */
     @ActionMethod
     public String edit(ActionContext context) {
         LOG.trace("edit()");
@@ -72,17 +80,28 @@ public class PlainTextController extends DocumentController {
         return ".xuml";
     }
 
+    /*
+     * 
+     */
+    private static final Transactionless<List<DocumentEntity>> RECENTS_EXEC =
+            new Transactionless<List<DocumentEntity>>() {            
+        @Override
+        public List<DocumentEntity> run(Connection conn, Object...params) throws SQLException {
+            return query(
+                "SELECT document_id,title,update_date " +
+                "FROM   document " +
+                "ORDER  BY update_date DESC " +
+                "LIMIT  10",
+                DocumentEntity.class);
+        }
+    };
+    
+    /**
+     * 
+     * @return
+     * @throws SQLException
+     */
     private List<DocumentEntity> recents() throws SQLException {
-        return databaseService.provide(new Transactionless<List<DocumentEntity>>() {
-            @Override
-            public List<DocumentEntity> run(Connection conn, Object...params) throws SQLException {
-                return query(
-                        "SELECT document_id,title,update_date " +
-                        "FROM   document " +
-                        "ORDER  BY update_date DESC " +
-                        "LIMIT  10",
-                        DocumentEntity.class);
-            }
-        });
+        return databaseService.provide(RECENTS_EXEC);
     }
 }

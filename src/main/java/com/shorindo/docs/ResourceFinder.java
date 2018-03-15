@@ -27,15 +27,28 @@ import java.util.jar.JarInputStream;
 /**
  * 
  */
-public class ClassFinder {
-    private static ActionLogger LOG = ActionLogger.getLogger(ClassFinder.class);
+public class ResourceFinder {
+    private static ActionLogger LOG = ActionLogger.getLogger(ResourceFinder.class);
 
-    public static List<Class<?>> find(File root, ClassMatcher matcher) {
+    /**
+     * 
+     * @param root
+     * @param matcher
+     * @return
+     */
+    public static List<Class<?>> find(File root, ResourceMatcher matcher) {
         LOG.debug("find({0}, {1})", root.exists(), matcher);
         return find(root, root, matcher);
     }
-    
-    private static List<Class<?>> find(File root, File curr, ClassMatcher matcher) {
+
+    /**
+     * 
+     * @param root
+     * @param curr
+     * @param matcher
+     * @return
+     */
+    private static List<Class<?>> find(File root, File curr, ResourceMatcher matcher) {
         List<Class<?>> result = new ArrayList<Class<?>>();
         if (curr.isDirectory()) {
             for (File child : curr.listFiles()) {
@@ -60,7 +73,13 @@ public class ClassFinder {
         return result;
     }
 
-    private static List<Class<?>> findFromJar(File jar, ClassMatcher matcher) {
+    /**
+     * 
+     * @param jar
+     * @param matcher
+     * @return
+     */
+    private static List<Class<?>> findFromJar(File jar, ResourceMatcher matcher) {
         List<Class<?>> result = new ArrayList<Class<?>>();
         JarInputStream jis = null;
         try {
@@ -96,7 +115,10 @@ public class ClassFinder {
         return result;
     }
 
-    public static interface ClassMatcher {
+    /**
+     * 
+     */
+    public static interface ResourceMatcher {
         public boolean matches(Class<?> clazz);
     }
 }

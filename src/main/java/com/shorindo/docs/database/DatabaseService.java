@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -36,8 +37,6 @@ import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.DocsMessages;
-import com.shorindo.docs.database.DatabaseSchema.Column;
-import com.shorindo.docs.database.DatabaseSchema.Entity;
 
 /**
  * 
@@ -46,10 +45,8 @@ public class DatabaseService {
     private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseService.class);
     private static final DatabaseService service = new DatabaseService();
     private DataSource dataSource;
-    private Map<String,Map<String,DatabaseSchema.Column>> schema;
-    private Map<Class<? extends SchemaEntity>,DatabaseSchema> entityMap;
 
-    public static DatabaseService newInstance() {
+    public static synchronized DatabaseService newInstance() {
         return service;
     }
 
@@ -66,37 +63,45 @@ public class DatabaseService {
             props.setProperty("validationQuery", ApplicationContext.getProperty("datasource.validationQuery"));
             props.setProperty("testOnBorrow", ApplicationContext.getProperty("datasource.testOnBorrow"));
             dataSource = BasicDataSourceFactory.createDataSource(props);
-            schema = new HashMap<String,Map<String,DatabaseSchema.Column>>();
         } catch (Exception e) {
             LOG.error(DocsMessages.E_5100, e);
         }
     }
 
-    public void loadSchema(InputStream is) {
+    /**
+     * 
+     * @param is
+     */
+    public DatabaseSchema loadSchema(InputStream is) {
         DatabaseSchema newSchema = JAXB.unmarshal(is, DatabaseSchema.class);
-        for (Entity entity : newSchema.getEntityList()) {
+        for (DatabaseSchema.Entity entity : newSchema.getEntityList()) {
             LOG.info(DocsMessages.I_1101, newSchema.getNamespace(), entity.getName());
             Map<String,DatabaseSchema.Column> columnMap =
                 new LinkedHashMap<String,DatabaseSchema.Column>();
             for (DatabaseSchema.Column column : entity.getColumnList()) {
                 columnMap.put(column.getName(), column);
             }
-            schema.put(entity.getName(), columnMap);
         }
+        return newSchema;
     }
 
-    public List<String> validateSchema() throws SQLException {
-        return provide(new Transactional<List<String>>() {
+    /**
+     * 
+     * @return
+     * @throws SQLException
+     */
+    public List<String> validateSchema(DatabaseSchema schema) throws SQLException {
+        return provide(new Transactionless<List<String>>() {
             @Override
             public List<String> run(Connection conn, Object...params) throws SQLException {
                 List<String> resultList = new ArrayList<String>();
                 DatabaseMetaData meta = conn.getMetaData();
+                boolean valid = true;
 
-                for (Entry<String, Map<String, Column>> entry : schema.entrySet()) {
+                for (DatabaseSchema.Entity entity : schema.getEntityList()) {
                     // エンティティ定義あり、実体なしのチェック
                     // (逆のエンティティ定義なし、実体ありのチェックはしない)
-                    String entityName = entry.getKey();
-                    Map<String, Column> entity = entry.getValue();
+                    String entityName = entity.getName();
                     ResultSet trset = meta.getTables(null, null, entityName, null);
                     if (!trset.next()) {
                         String msg = LOG.error(DocsMessages.E_5108, entityName);
@@ -109,7 +114,7 @@ public class DatabaseService {
                     ResultSet crset = meta.getColumns(null, null, entityName, null);
                     Map<String,DatabaseSchema.Column> map
                         = new HashMap<String,DatabaseSchema.Column>();
-                    for (DatabaseSchema.Column column : entity.values()) {
+                    for (DatabaseSchema.Column column : entity.getColumnList()) {
                         map.put(column.getName(), column);
                     }
 
@@ -120,24 +125,34 @@ public class DatabaseService {
                         if (c == null) {
                             String msg = LOG.error(DocsMessages.E_5109, entityName, columnName);
                             resultList.add(msg);
-                            continue;
+                            valid = false;
+                        } else {
+                            map.remove(columnName);
+                            //TODO attrubute
                         }
-                        map.remove(columnName);
-                        //TODO attrubute
                     }
 
                     // カラム定義あり、実体なしのチェック
                     for (Map.Entry<String,DatabaseSchema.Column> e : map.entrySet()) {
                         String msg = LOG.error(DocsMessages.E_5110, entityName, e.getKey());
                         resultList.add(msg);
+                        valid = false;
                     }
                     crset.close();
+                    LOG.info(DocsMessages.I_1104, entityName);
                 }
                 return resultList;
             }
         });
     }
 
+    /**
+     * 
+     * @param callback
+     * @param params
+     * @return
+     * @throws SQLException
+     */
     public <T>T provide(DatabaseExecutor<T> callback, Object...params) throws SQLException {
         Connection conn = null;
         try {
@@ -168,6 +183,10 @@ public class DatabaseService {
         }
     }
 
+    /**
+     * 
+     * @throws SQLException
+     */
     public void loadTables() throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
             DatabaseMetaData meta = conn.getMetaData();
@@ -189,6 +208,45 @@ public class DatabaseService {
         }
     }
 
-    public void createTable() {
+    /**
+     * 
+     */
+    public String generateDDL(DatabaseSchema.Table table) throws SQLException {
+        StringBuilder sb = new StringBuilder();
+        Map<Integer,String> primaryMap = new TreeMap<Integer,String>();
+        sb.append("CREATE TABLE IF NOT EXISTS " + table.getName() + " (\n");
+        String sep = "    ";
+        for (DatabaseSchema.Column column : table.getColumnList()) {
+            sb.append(sep + column.getName() + " " + column.getType());
+            if (column.getSize() > 0) {
+                sb.append("(" + column.getSize() + ")");
+            }
+            if (column.isNotNull()) {
+                sb.append(" NOT NULL");
+            }
+            if (column.isUnique()) {
+                sb.append(" UNIQUE");
+            }
+            if (column.getPrimaryKey() > 0) {
+                if (primaryMap.containsKey(column.getPrimaryKey())) {
+                    throw new SQLException(DocsMessages.E_5122.getMessage(
+                            column.getName(),
+                            column.getPrimaryKey()));
+                } else {
+                    primaryMap.put(column.getPrimaryKey(), column.getName());
+                }
+            }
+            sep = ",\n    ";
+        }
+        if (primaryMap.size() > 0) {
+            sep = ",\n    CONSTRAINT PRIMARY KEY (";
+            for (Entry<Integer,String> entry : primaryMap.entrySet()) {
+                sb.append(sep + entry.getValue());
+                sep = ", ";
+            }
+            sb.append(")\n");
+        }
+        sb.append(")");
+        return sb.toString();
     }
 }

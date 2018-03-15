@@ -61,12 +61,27 @@ public abstract class DatabaseExecutor<T> {
         local.remove();
     }
 
+    /**
+     * 
+     * @param sql
+     * @param params
+     * @return
+     * @throws SQLException
+     */
     protected final int exec(String sql, Object...params) throws SQLException {
         Connection conn = local.get();
         PreparedStatement stmt = conn.prepareStatement(sql);
         return stmt.executeUpdate(sql);
     }
 
+    /**
+     * 
+     * @param sql
+     * @param clazz
+     * @param params
+     * @return
+     * @throws SQLException
+     */
     protected final <E> List<E> query(String sql, Class<E> clazz, Object...params) throws SQLException {
         LOG.debug("検索処理開始：" + sql);
         long st = System.currentTimeMillis();
@@ -113,6 +128,12 @@ public abstract class DatabaseExecutor<T> {
         rset.wasNull();
     }
 
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws SQLException
+     */
     protected final <E extends SchemaEntity> E get(E entity) throws SQLException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
@@ -152,6 +173,12 @@ public abstract class DatabaseExecutor<T> {
         }
     }
 
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws SQLException
+     */
     protected final int put(SchemaEntity entity) throws SQLException {
         int result = 0;
         result = update(entity);
@@ -161,7 +188,13 @@ public abstract class DatabaseExecutor<T> {
             return insert(entity);
         }
     }
-    
+
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws SQLException
+     */
     protected final int remove(SchemaEntity entity) throws SQLException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
@@ -353,6 +386,12 @@ public abstract class DatabaseExecutor<T> {
             }
     }
 
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws SQLException
+     */
     protected int insert(SchemaEntity entity) throws SQLException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
@@ -375,6 +414,12 @@ public abstract class DatabaseExecutor<T> {
         }
     }
 
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws SQLException
+     */
     protected int update(SchemaEntity entity) throws SQLException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
@@ -722,6 +767,9 @@ public abstract class DatabaseExecutor<T> {
         }
     }
 
+    /**
+     * 
+     */
     protected static class EntityMapping {
         private String entityName;
         private String selectSql;
@@ -848,6 +896,9 @@ public abstract class DatabaseExecutor<T> {
         }
     }
 
+    /**
+     * 
+     */
     protected static class ColumnMapping {
         private String columnName;
         private Field field;

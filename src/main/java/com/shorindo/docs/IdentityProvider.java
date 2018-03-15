@@ -15,47 +15,33 @@
  */
 package com.shorindo.docs;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * http://d.hatena.ne.jp/maachang/20150624/1435116219
  */
-public class IdGenerator {
+public class IdentityProvider {
+    private static final ActionLogger LOG = ActionLogger.getLogger(IdentityProvider.class);
     private static final long BASE_TIME = 0x151f88d7980L; // 2016/01/01 00:00:00
     private static final long TIME_MASK = bit2long(53);
-    private static final long SEQ_MASK  = bit2long(4);
+    private static final long SEQ_MASK  = bit2long(6);
+    private static final long SERVER_MASK = bit2long(4);
     private static long last = -1;
     private static long seq = 0;
+    private static long host = 0;
 
-    public static void main(String args[]) {
-        Set<Long> idSet = new HashSet<Long>();
-        for (int i = 0; i < 1000; i++) {
-            long id = getId();
-            System.out.println(String.format("%x", id) + ":" + String.format("%d", id));
-            if (idSet.contains(id)) {
-                throw new RuntimeException("conflict");
-            } else {
-                idSet.add(id);
-            }
-        }
-    }
-
-    public synchronized static long getId() {
+    public synchronized static long newId() {
         long time = getTime();
         seq = (seq  + 1) & SEQ_MASK;
         if (last == time && seq == 0) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOG.warn(DocsMessages.W_3004, e);
             }
             last = time = getTime();
-            seq = 0;
         } else {
             last = time;
         }
-        return time | seq;
+        return time | (seq << 4) | host;
     }
 
     private static long bit2long(int bit) {
@@ -67,6 +53,6 @@ public class IdGenerator {
     }
 
     private static long getTime() {
-        return ((System.currentTimeMillis() - BASE_TIME) & TIME_MASK) << 4;
+        return ((System.currentTimeMillis() - BASE_TIME) & TIME_MASK) << 10;
     }
 }
