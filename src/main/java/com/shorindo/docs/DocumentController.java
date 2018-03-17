@@ -19,7 +19,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.auth.UserEntity;
+import com.shorindo.docs.auth.entity.UserEntity;
+import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseExecutor;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.Transactional;
@@ -56,7 +57,7 @@ public class DocumentController extends ActionController {
     private static final DatabaseExecutor<Integer> UPDATE_EXEC = new Transactional<Integer>() {
         @Override
         public Integer run(Connection conn, Object... params)
-                throws SQLException {
+                throws DatabaseException {
             DocumentEntity document = (DocumentEntity)params[0];
             UserEntity user = (UserEntity)params[1];
             return exec(
@@ -90,7 +91,7 @@ public class DocumentController extends ActionController {
             } else {
                 return new ErrorView(404);
             }
-        } catch (SQLException e) {
+        } catch (DatabaseException e) {
             LOG.error(DocsMessages.E_9002, id);
             return new ErrorView(500);
         }
@@ -102,7 +103,7 @@ public class DocumentController extends ActionController {
     private static final DatabaseExecutor<Integer> CREATE_EXEC = new Transactional<Integer>() {
         @Override
         public Integer run(Connection conn, Object... params)
-                throws SQLException {
+                throws DatabaseException {
             DocumentEntity document = (DocumentEntity)params[0];
             UserEntity user = (UserEntity)params[1];
             return exec(
@@ -139,7 +140,7 @@ public class DocumentController extends ActionController {
             } else {
                 return new ErrorView(404);
             }
-        } catch (SQLException e) {
+        } catch (DatabaseException e) {
             LOG.error(DocsMessages.E_9002, id);
             return new ErrorView(500);
         }
@@ -151,7 +152,7 @@ public class DocumentController extends ActionController {
     private static final DatabaseExecutor<Integer> REMOVE_EXEC = new Transactional<Integer>() {
         @Override
         public Integer run(Connection conn, Object... params)
-                throws SQLException {
+                throws DatabaseException {
             DocumentEntity document = (DocumentEntity)params[0];
             return remove(document);
         }
@@ -177,7 +178,7 @@ public class DocumentController extends ActionController {
                     LOG.error(DocsMessages.E_9003, id);
                     return new ErrorView(500);
                 }
-            } catch (SQLException e) {
+            } catch (DatabaseException e) {
                 LOG.error(DocsMessages.E_9003, e, id);
                 return new ErrorView(500);
             }

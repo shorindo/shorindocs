@@ -15,22 +15,39 @@
  */
 package com.shorindo.docs.database;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 /**
  * 
  */
-public interface SchemaType {
-    public String getColumnName();
-    public String getType();
-    public int getSize();
-    public int getPrecision();
-    public int getPrimary();
-    public boolean isNotNull();
-    public boolean isUnique();
-    public Object getDefault();
-    public Field getField();
-    public Method getSetMethod();
-    public Method getGetMethod();
+public class DatabaseException extends Exception {
+    private static final long serialVersionUID = 1530910919656505688L;
+
+    /**
+     * 
+     */
+    public DatabaseException() {
+        super();
+    }
+
+    /**
+     * @param message
+     */
+    public DatabaseException(String message) {
+        super(message);
+    }
+
+    /**
+     * @param cause
+     */
+    public DatabaseException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    public DatabaseException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

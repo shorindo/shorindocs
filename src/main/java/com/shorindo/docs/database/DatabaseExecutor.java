@@ -48,10 +48,10 @@ public abstract class DatabaseExecutor<T> {
     private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseExecutor.class);
     private static ThreadLocal<Connection> local = new ThreadLocal<Connection>();
 
-    public abstract T run(Connection conn, Object...params) throws SQLException;
-    public abstract void beginTransaction(Connection conn) throws SQLException;
-    public abstract void commitTransaction(Connection conn) throws SQLException;
-    public abstract void rollbackTransaction(Connection conn) throws SQLException;
+    public abstract T run(Connection conn, Object...params) throws DatabaseException;
+    public abstract void beginTransaction(Connection conn) throws DatabaseException;
+    public abstract void commitTransaction(Connection conn) throws DatabaseException;
+    public abstract void rollbackTransaction(Connection conn) throws DatabaseException;
 
     protected void setConnection(Connection conn) {
         local.set(conn);
@@ -68,10 +68,14 @@ public abstract class DatabaseExecutor<T> {
      * @return
      * @throws SQLException
      */
-    protected final int exec(String sql, Object...params) throws SQLException {
+    protected final int exec(String sql, Object...params) throws DatabaseException {
         Connection conn = local.get();
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        return stmt.executeUpdate(sql);
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            return stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     /**
@@ -82,19 +86,23 @@ public abstract class DatabaseExecutor<T> {
      * @return
      * @throws SQLException
      */
-    protected final <E> List<E> query(String sql, Class<E> clazz, Object...params) throws SQLException {
+    protected final <E> List<E> query(String sql, Class<E> clazz, Object...params) throws DatabaseException {
         LOG.debug("検索処理開始：" + sql);
         long st = System.currentTimeMillis();
-        Connection conn = local.get();
-        PreparedStatement stmt = conn.prepareStatement(sql);
         List<E> resultList = new ArrayList<E>();
         int index = 1;
-        for (Object param : params) {
-            setColumnByClass(stmt, index, param);
-            index++;
-        }
-        ResultSet rset = stmt.executeQuery();
+        Connection conn = local.get();
+        PreparedStatement stmt = null;
+        ResultSet rset = null;
+
         try {
+            stmt = conn.prepareStatement(sql);
+            for (Object param : params) {
+                setColumnByClass(stmt, index, param);
+                index++;
+            }
+
+            rset = stmt.executeQuery();
             ResultSetMapper[] mappers = null;
             while (rset.next()) {
                 mappers = generateMappers(mappers, rset.getMetaData(), clazz);
@@ -102,13 +110,15 @@ public abstract class DatabaseExecutor<T> {
                 resultList.add(bean);
             }
         } catch (InstantiationException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (IllegalAccessException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (IllegalArgumentException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (InvocationTargetException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
         } finally {
             dispose(stmt);
             dispose(rset);
@@ -118,15 +128,15 @@ public abstract class DatabaseExecutor<T> {
         return resultList;
     }
 
-    private void setParam(PreparedStatement stmt, int index, Object param) throws SQLException {
-        if (param == null) {
-            stmt.setObject(index, null);
-        }
-    }
-    private void getResult(ResultSet rset, int index, Class<?> paramClass) throws SQLException {
-        rset.getObject(index);
-        rset.wasNull();
-    }
+//    private void setParam(PreparedStatement stmt, int index, Object param) throws SQLException {
+//        if (param == null) {
+//            stmt.setObject(index, null);
+//        }
+//    }
+//    private void getResult(ResultSet rset, int index, Class<?> paramClass) throws SQLException {
+//        rset.getObject(index);
+//        rset.wasNull();
+//    }
 
     /**
      * 
@@ -134,14 +144,15 @@ public abstract class DatabaseExecutor<T> {
      * @return
      * @throws SQLException
      */
-    protected final <E extends SchemaEntity> E get(E entity) throws SQLException {
+    protected final <E extends SchemaEntity> E get(E entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
         LOG.debug("検索処理開始：" + mapping.getSelectSql());
         long st = System.currentTimeMillis();
-        PreparedStatement stmt = conn.prepareStatement(mapping.getSelectSql());
+        PreparedStatement stmt = null;
         ResultSet rset = null;
         try {
+            stmt = conn.prepareStatement(mapping.getSelectSql());
             int index = 1;
             for (ColumnMapping columnMapping : mapping.getColumns()) {
                 if (columnMapping.getPrimaryKey() > 0) {
@@ -162,11 +173,13 @@ public abstract class DatabaseExecutor<T> {
             LOG.debug("検索処理終了：" + (System.currentTimeMillis() - st) + " ms");
             return entity;
         } catch (IllegalAccessException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (IllegalArgumentException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (InvocationTargetException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
         } finally {
             dispose(stmt);
             dispose(rset);
@@ -179,7 +192,7 @@ public abstract class DatabaseExecutor<T> {
      * @return
      * @throws SQLException
      */
-    protected final int put(SchemaEntity entity) throws SQLException {
+    protected final int put(SchemaEntity entity) throws DatabaseException {
         int result = 0;
         result = update(entity);
         if (result > 0) {
@@ -195,14 +208,15 @@ public abstract class DatabaseExecutor<T> {
      * @return
      * @throws SQLException
      */
-    protected final int remove(SchemaEntity entity) throws SQLException {
+    protected final int remove(SchemaEntity entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
         LOG.debug("削除処理開始：" + mapping.getUpdateSql());
-        PreparedStatement stmt = conn.prepareStatement(mapping.getDeleteSql());
+        PreparedStatement stmt = null;
         int index = 1;
 
         try {
+            stmt = conn.prepareStatement(mapping.getDeleteSql());
             for (ColumnMapping columnMapping : mapping.getColumns()) {
                 if (columnMapping.getPrimaryKey() > 0) {
                     index = applySetMethod(stmt, entity, columnMapping, index);
@@ -210,11 +224,13 @@ public abstract class DatabaseExecutor<T> {
             }
             return stmt.executeUpdate();
         } catch (IllegalAccessException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (IllegalArgumentException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (InvocationTargetException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
         } finally {
             dispose(stmt);
         }
@@ -274,6 +290,7 @@ public abstract class DatabaseExecutor<T> {
         for (int i = 0; i < mappers.length; i++) {
             Method setter = mappers[i].getSetter();
             Method getter = mappers[i].getGetter();
+LOG.debug("setter=" + setter + ", getter=" + getter);
             setter.invoke(bean, getter.invoke(rset, i + 1));
         }
         return bean;
@@ -392,23 +409,26 @@ public abstract class DatabaseExecutor<T> {
      * @return
      * @throws SQLException
      */
-    protected int insert(SchemaEntity entity) throws SQLException {
+    protected int insert(SchemaEntity entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
         LOG.debug("新規登録開始：" + mapping.getInsertSql());
-        PreparedStatement stmt = conn.prepareStatement(mapping.getInsertSql());
+        PreparedStatement stmt = null;
         int index = 1;
         try {
+            stmt = conn.prepareStatement(mapping.getInsertSql());
             for (ColumnMapping columnMapping : mapping.getColumns()) {
                 index = applySetMethod(stmt, entity, columnMapping, index);
             }
             return stmt.executeUpdate();
         } catch (IllegalAccessException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (IllegalArgumentException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (InvocationTargetException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
         } finally {
             dispose(stmt);
         }
@@ -420,13 +440,14 @@ public abstract class DatabaseExecutor<T> {
      * @return
      * @throws SQLException
      */
-    protected int update(SchemaEntity entity) throws SQLException {
+    protected int update(SchemaEntity entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
         LOG.debug("更新処理開始：" + mapping.getUpdateSql());
-        PreparedStatement stmt = conn.prepareStatement(mapping.getUpdateSql());
+        PreparedStatement stmt = null;
         int index = 1;
         try {
+            stmt = conn.prepareStatement(mapping.getUpdateSql());
             for (ColumnMapping columnMapping : mapping.getColumns()) {
                 if (columnMapping.getPrimaryKey() <= 0) {
                     index = applySetMethod(stmt, entity, columnMapping, index);
@@ -439,21 +460,22 @@ public abstract class DatabaseExecutor<T> {
             }
             return stmt.executeUpdate();
         } catch (IllegalAccessException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (IllegalArgumentException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
         } catch (InvocationTargetException e) {
-            throw new SQLException(e);
+            throw new DatabaseException(e);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
         } finally {
             dispose(stmt);
         }
     }
 
     private int applySetMethod(Statement stmt, SchemaEntity entity, ColumnMapping mapping, int index)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            throws DatabaseException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Method setMethod = mapping.getStatementSetMethod();
-        Field field = mapping.getField();
-        setMethod.invoke(stmt, index, field.get(entity));
+        setMethod.invoke(stmt, index, entity.getByName(mapping.getColumnName()));
         return index + 1;
     }
 
@@ -592,23 +614,20 @@ public abstract class DatabaseExecutor<T> {
 //    }
 
     @SuppressWarnings("resource")
-    private EntityMapping bind(Connection conn, SchemaEntity entity) throws SQLException {
+    private EntityMapping bind(Connection conn, SchemaEntity entity) throws DatabaseException {
         long st = System.currentTimeMillis();
         EntityMapping entityMapping = new EntityMapping(entity.getEntityName());
-        DatabaseMetaData meta = conn.getMetaData();
         ResultSet primarySet = null;
         ResultSet columnSet = null;
 
         try {
+            DatabaseMetaData meta = conn.getMetaData();
+
             // 対象フィールドの一覧取得
             Map<String,Field> fieldMap = new TreeMap<String,Field>();
-            for (Field field : entity.getClass().getDeclaredFields()) {
-                Column column = field.getAnnotation(Column.class);
-                if (column != null) {
-                    //LOG.debug(field + "=" + column);
-                    fieldMap.put(column.value(), field);
-                    field.setAccessible(true);
-                }
+
+            for (SchemaType type : entity.getTypes()) {
+                fieldMap.put(type.getColumnName(), type.getField());
             }
 
             primarySet = meta.getPrimaryKeys(null, null, entity.getEntityName());
@@ -635,7 +654,7 @@ public abstract class DatabaseExecutor<T> {
                 if (field != null) {
                     columnCache.setField(field);
                 } else {
-                    throw new SQLException(DocsMessages.E_5118.getMessage(columnName));
+                    throw new SQLException(DocsMessages.E_5119.getMessage(columnName));
                 }
 
                 // PreparedStatement/ResultSetのsetter/getter
@@ -649,6 +668,8 @@ public abstract class DatabaseExecutor<T> {
 
                 entityMapping.putColumn(columnName, columnCache);
             }
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
         } finally {
             dispose(primarySet);
             dispose(columnSet);
@@ -701,6 +722,11 @@ public abstract class DatabaseExecutor<T> {
                 };
             case DATE:
                 return new Method[] {
+                        PreparedStatement.class.getMethod("setDate", int.class, java.sql.Date.class),
+                        ResultSet.class.getMethod("getDate", int.class)
+                };
+            case TIMESTAMP:
+                return new Method[] {
                         PreparedStatement.class.getMethod("setTimestamp", int.class, Timestamp.class),
                         ResultSet.class.getMethod("getTimestamp", int.class)
                 };
@@ -747,7 +773,8 @@ public abstract class DatabaseExecutor<T> {
         DOUBLE      (double.class),
         DOUBLE_OBJECT(Double.class),
         STRING      (String.class),
-        DATE        (Date.class)
+        DATE        (Date.class),
+        TIMESTAMP   (Timestamp.class)
         ;
         
         private Class<?> type;

@@ -28,19 +28,31 @@ public abstract class Transactional<T> extends DatabaseExecutor<T> {
     private static final ActionLogger LOG = ActionLogger.getLogger(Transactional.class);
 
     @Override
-    public void beginTransaction(Connection conn) throws SQLException {
-        conn.setAutoCommit(false);
+    public void beginTransaction(Connection conn) throws DatabaseException {
+        try {
+            conn.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
-    public void commitTransaction(Connection conn) throws SQLException {
+    public void commitTransaction(Connection conn) throws DatabaseException {
         LOG.debug(DocsMessages.I_1102);
-        conn.commit();
+        try {
+            conn.commit();
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
-    public void rollbackTransaction(Connection conn) throws SQLException {
+    public void rollbackTransaction(Connection conn) throws DatabaseException {
         LOG.info(DocsMessages.I_1103);
-        conn.rollback();
+        try {
+            conn.rollback();
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
     }
 }

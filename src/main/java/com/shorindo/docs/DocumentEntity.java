@@ -15,33 +15,164 @@
  */
 package com.shorindo.docs;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Date;
 
-import com.shorindo.docs.database.Column;
 import com.shorindo.docs.database.SchemaEntity;
+import com.shorindo.docs.database.SchemaType;
 
 /**
  * 
  */
 public class DocumentEntity extends SchemaEntity {
+    public enum DocumentTypes implements SchemaType {
+        DOCUMENT_ID ("varchar",  64, 0, 1, true, true, null),
+        CONTENT_TYPE("varchar", 255, 0, 0, true, false, null),
+        STATUS      ("int",       0, 0, 0, true, false, null),
+        TITLE       ("text",      0, 0, 0, true, false, null),
+        BODY        ("text",      0, 0, 0, true, false, null),
+        CREATE_DATE ("timestamp", 0, 0, 0, true, false, null),
+        UPDATE_DATE ("timestamp", 0, 0, 0, true, false, null),
+        OWNER_ID    ("varchar",  64, 0, 0, true, false, null),
+        ACL_ID      ("varchar",  64, 0, 0, true, false, null)
+        ;
+
+        private String jdbcType;
+        private int size;
+        private int precision;
+        private int primary;
+        private boolean notNull;
+        private boolean unique;
+        private Object defaultValue;
+        private Field field;
+        private Method setMethod;
+        private Method getMethod;
+
+        private DocumentTypes(String jdbcType, int size, int precision,
+                int primary, boolean notNull, boolean unique, Object defaultValue) {
+            this.jdbcType = jdbcType;
+            this.size = size;
+            this.precision = precision;
+            this.precision = primary;
+            this.notNull = notNull;
+            this.unique = unique;
+            this.defaultValue = defaultValue;
+
+            String beanName = BeanUtil.snake2camel(name(), false);
+            try {
+                field = DocumentEntity.class.getDeclaredField(beanName);
+                field.setAccessible(true); // TODO そのうち除去
+            } catch (NoSuchFieldException e) {
+                LOG.error(DocsMessages.E_5119, e, name(), beanName);
+                return;
+            } catch (SecurityException e) {
+                LOG.error(DocsMessages.E_5119, e, name(), beanName);
+                return;
+            }
+
+            String setterName = "set" + BeanUtil.snake2camel(name(), true);
+            try {
+                setMethod = DocumentEntity.class.getMethod(setterName, field.getType());
+            } catch (NoSuchMethodException e) {
+                LOG.error(DocsMessages.E_5120, e, name(), setterName);
+            } catch (SecurityException e) {
+                LOG.error(DocsMessages.E_5120, e, name(), setterName);
+            }
+
+            String getterName = "get" + BeanUtil.snake2camel(name(), true);
+            try {
+                getMethod = DocumentEntity.class.getMethod(getterName);
+            } catch (NoSuchMethodException e) {
+                LOG.error(DocsMessages.E_5120, e, name(), getterName);
+            } catch (SecurityException e) {
+                LOG.error(DocsMessages.E_5120, e, name(), getterName);
+            }
+        }
+
+        @Override
+        public String getColumnName() {
+            return name();
+        }
+
+        @Override
+        public String getType() {
+            return jdbcType;
+        }
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+
+        @Override
+        public int getPrecision() {
+            return precision;
+        }
+
+        @Override
+        public int getPrimary() {
+            return primary;
+        }
+
+        @Override
+        public boolean isNotNull() {
+            return notNull;
+        }
+
+        @Override
+        public boolean isUnique() {
+            return unique;
+        }
+
+        @Override
+        public Object getDefault() {
+            return defaultValue;
+        }
+
+        @Override
+        public Field getField() {
+            return field;
+        }
+
+        @Override
+        public Method getSetMethod() {
+            return setMethod;
+        }
+
+        @Override
+        public Method getGetMethod() {
+            return getMethod;
+        }
+        
+    }
+
+    private static final ActionLogger LOG = ActionLogger.getLogger(DocumentEntity.class);
     private static final String ENTITY_NAME = "DOCUMENT";
-    @Column("DOCUMENT_ID")
+
     private String documentId;
-    @Column("CONTENT_TYPE")
     private String contentType;
-    @Column("STATUS")
     private int status;
-    @Column("TITLE")
     private String title;
-    @Column("BODY")
     private String body;
-    @Column("CREATE_DATE")
     private Date createDate;
-    @Column("UPDATE_DATE")
     private Date updateDate;
-    @Column("OWNER_ID")
     private String ownerId;
 
+    private String aclId;
+
+    @Override
+    public String getEntityName() {
+        return ENTITY_NAME;
+    }
+    @Override
+    public SchemaType[] getTypes() {
+        return DocumentTypes.values();
+    }
+    @Override
+    public SchemaType getType(String name) {
+        return DocumentTypes.valueOf(name);
+    }
     public String getDocumentId() {
         return documentId;
     }
@@ -90,8 +221,10 @@ public class DocumentEntity extends SchemaEntity {
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
     }
-    @Override
-    public String getEntityName() {
-        return ENTITY_NAME;
+    public String getAclId() {
+        return aclId;
+    }
+    public void setAclId(String aclId) {
+        this.aclId = aclId;
     }
 }

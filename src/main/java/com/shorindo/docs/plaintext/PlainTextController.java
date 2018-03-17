@@ -26,6 +26,7 @@ import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentEntity;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
+import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.Transactionless;
 
@@ -56,7 +57,7 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("\n", "<br/>"));
         try {
             context.setAttribute("search_result", recents());
-        } catch (SQLException e) {
+        } catch (DatabaseException e) {
             LOG.error(DocsMessages.E_9001, e);
         }
         return ".xuml";
@@ -86,7 +87,7 @@ public class PlainTextController extends DocumentController {
     private static final Transactionless<List<DocumentEntity>> RECENTS_EXEC =
             new Transactionless<List<DocumentEntity>>() {            
         @Override
-        public List<DocumentEntity> run(Connection conn, Object...params) throws SQLException {
+        public List<DocumentEntity> run(Connection conn, Object...params) throws DatabaseException {
             return query(
                 "SELECT document_id,title,update_date " +
                 "FROM   document " +
@@ -101,7 +102,7 @@ public class PlainTextController extends DocumentController {
      * @return
      * @throws SQLException
      */
-    private List<DocumentEntity> recents() throws SQLException {
+    private List<DocumentEntity> recents() throws DatabaseException {
         return databaseService.provide(RECENTS_EXEC);
     }
 }

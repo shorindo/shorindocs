@@ -26,16 +26,16 @@ import javax.xml.bind.annotation.XmlElements;
  * 
  */
 public class DatabaseSchema {
-    private String namespace;
+    private String packageName;
     private List<Entity> entityList = new ArrayList<Entity>();
     private List<Relation> relationList = new ArrayList<Relation>();
     
-    @XmlAttribute(name="namespace")
-    public String getNamespace() {
-        return namespace;
+    @XmlAttribute(name="package")
+    public String getPackage() {
+        return packageName;
     }
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
+    public void setPackage(String namespace) {
+        this.packageName = namespace;
     }
     @XmlElements({
         @XmlElement(name="table", type=Table.class),
@@ -117,6 +117,7 @@ public class DatabaseSchema {
         private String name;
         private List<String> aliasList;
         private String type;
+        private String javaType;
         private int size;
         private int precision;
         private int primaryKey = 0;
@@ -147,6 +148,13 @@ public class DatabaseSchema {
         }
         public Column setType(String type) {
             this.type = type;
+            return this;
+        }
+        public String getJavaType() {
+            return javaType;
+        }
+        public Column setJavaType(String javaType) {
+            this.javaType = javaType;
             return this;
         }
         public int getSize() {

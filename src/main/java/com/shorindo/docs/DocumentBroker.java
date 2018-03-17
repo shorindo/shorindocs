@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.shorindo.docs.annotation.ActionMapping;
+import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseExecutor;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.Transactionless;
@@ -52,18 +53,18 @@ public final class DocumentBroker extends ActionController {
         }
     }
 
+    public static DocumentEntity getDocumentModel(String id) throws DatabaseException {
+        return databaseService.provide(GET_DOCUMENT_EXEC, id);
+    }
     private static DatabaseExecutor<DocumentEntity> GET_DOCUMENT_EXEC =
             new Transactionless<DocumentEntity>() {
         @Override
-        public DocumentEntity run(Connection conn, Object...params) throws SQLException {
+        public DocumentEntity run(Connection conn, Object...params) throws DatabaseException {
             DocumentEntity model = new DocumentEntity();
             model.setDocumentId((String)params[0]);
             return get(model);
         }
     };
-    public static DocumentEntity getDocumentModel(String id) throws SQLException {
-        return databaseService.provide(GET_DOCUMENT_EXEC, id);
-    }
 
     @Override
     public View action(ActionContext context) {
@@ -74,11 +75,11 @@ public final class DocumentBroker extends ActionController {
             context.setAttribute("document", model);
             return getController(model).action(context);
         } catch (DocumentException e) {
-            //LOG.error(ActionMessages.E9999, e);
-            return new ErrorView(404);
-        } catch (SQLException e) {
-            LOG.error(DocsMessages.E_9999, e);
-            return new ErrorView(404);
+            LOG.error(DocsMessages.E_5008, e);
+            return new ErrorView(500);
+        } catch (DatabaseException e) {
+            LOG.error(DocsMessages.E_5008, e);
+            return new ErrorView(500);
         }
     }
 

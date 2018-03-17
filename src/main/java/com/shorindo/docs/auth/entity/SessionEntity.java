@@ -13,30 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
+package com.shorindo.docs.auth.entity;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import com.shorindo.docs.database.SchemaEntity;
+import com.shorindo.docs.database.SchemaType;
 
 /**
  * 
  */
-public abstract class Transactionless<T> extends DatabaseExecutor<T> {
+public class SessionEntity extends SchemaEntity {
+    private static final String ENTITY_NAME = "AUTH_SESSION";
 
-    @Override
-    public void beginTransaction(Connection conn) throws DatabaseException {
-        try {
-            conn.setAutoCommit(true);
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
+    /**
+     * 
+     */
+    public SessionEntity() {
     }
 
     @Override
-    public void commitTransaction(Connection conn) throws DatabaseException {
+    public String getEntityName() {
+        return ENTITY_NAME;
     }
 
     @Override
-    public void rollbackTransaction(Connection conn) throws DatabaseException {
+    public SchemaType[] getTypes() {
+        return null;
     }
+
+    /* (non-Javadoc)
+     * @see com.shorindo.docs.database.SchemaEntity#getType(java.lang.String)
+     */
+    @Override
+    public SchemaType getType(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

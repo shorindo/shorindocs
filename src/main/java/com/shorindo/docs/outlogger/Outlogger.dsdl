@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<schema namespace="auth">
+<schema namespace="outlogger">
     <table>
         <name>DOCS_OUTLOGGER</name>
         <column>
@@ -44,7 +44,7 @@
             </references>
         </column>
         <column>
-            <name>OWNER_ID</name>
+            <name>CREATED_USER</name>
             <type>varchar</type>
             <size>36</size>
             <notNull>true</notNull>
@@ -56,6 +56,15 @@
             <name>CREATED_DATE</name>
             <type>datetime</type>
             <notNull>true</notNull>
+        </column>
+        <column>
+            <name>UPDATED_USER</name>
+            <type>varchar</type>
+            <size>36</size>
+            <notNull>true</notNull>
+            <references>
+                <referTo>AUTH_USER.USER_ID</referTo>
+            </references>
         </column>
         <column>
             <name>UPDATED_DATE</name>

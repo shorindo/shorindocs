@@ -23,6 +23,10 @@ import java.util.List;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.DocsMessages;
+import com.shorindo.docs.auth.entity.GroupEntity;
+import com.shorindo.docs.auth.entity.SessionEntity;
+import com.shorindo.docs.auth.entity.UserEntity;
+import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseExecutor;
 import com.shorindo.docs.database.DatabaseSchema;
 import com.shorindo.docs.database.DatabaseService;
@@ -56,7 +60,7 @@ public class AuthenticateService {
 //                    doDDL((DatabaseSchema.Table)entity);
 //                }
 //            }
-        } catch (SQLException e) {
+        } catch (DatabaseException e) {
             LOG.error(DocsMessages.E_5123);
         } finally {
             try {
@@ -74,12 +78,12 @@ public class AuthenticateService {
             LOG.debug("doDDL => " + ddl);
             databaseService.provide(new Transactionless<Integer>() {
                 @Override
-                public Integer run(Connection conn, Object...params) throws SQLException {
+                public Integer run(Connection conn, Object...params) throws DatabaseException {
                     return exec(ddl);
                 }
             
             }, ddl);
-        } catch (SQLException e) {
+        } catch (DatabaseException e) {
             LOG.error(DocsMessages.E_5121, e, tableName);
         }
     }
@@ -87,10 +91,10 @@ public class AuthenticateService {
     /*
      * 
      */
-    private static final DatabaseExecutor<UserSessionEntity> LOGIN_EXEC = new Transactional<UserSessionEntity>() {
+    private static final DatabaseExecutor<SessionEntity> LOGIN_EXEC = new Transactional<SessionEntity>() {
         @Override
-        public UserSessionEntity run(Connection conn, Object... params)
-                throws SQLException {
+        public SessionEntity run(Connection conn, Object... params)
+                throws DatabaseException {
             String userId = (String)params[0];
             String password = (String)params[1];
 
@@ -98,7 +102,7 @@ public class AuthenticateService {
             user.setUserId(userId);
             user = get(user);
             if (user == null) {
-                throw new SQLException();
+                throw new DatabaseException();
             }
 
             List<GroupEntity> groupList = query("SELECT * FROM AUTH_GROUP WHERE USER_ID=?",
@@ -115,15 +119,15 @@ public class AuthenticateService {
      * @return
      * @throws AuthenticateException
      */
-    public UserSessionEntity login(String userId, String password) throws AuthenticateException {
+    public SessionEntity login(String userId, String password) throws AuthenticateException {
         try {
             return databaseService.provide(LOGIN_EXEC, userId, password);
-        } catch (SQLException e) {
+        } catch (DatabaseException e) {
             throw new AuthenticateException(e);
         }
     }
 
-    public void logout(UserSessionEntity session) {
+    public void logout(SessionEntity session) {
     }
 
     public UserEntity createUser() {

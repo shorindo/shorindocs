@@ -13,30 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth;
+package com.shorindo.docs.auth.entity;
 
 import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.Table;
+import com.shorindo.docs.database.SchemaType;
 
 /**
  * 
  */
-@Table("AUTH_GROUP")
-public class GroupEntity extends SchemaEntity {
-    private static final String ENTITY_NAME = "AUTH_GROUP";
-
-    @Table("AUTH_GROUP_MEMBER")
-    public static class GroupMemberEntity extends SchemaEntity {
-        private static final String ENTITY_NAME = "AUTH_GROUP_MEMBER";
-        @Override
-        public String getEntityName() {
-            return ENTITY_NAME;
-        }
-        
-    }
+public class AclMemberEntity extends SchemaEntity {
+    private static final String ENTITY_NAME = "AUTH_ACL_MEMBER";
 
     @Override
     public String getEntityName() {
         return ENTITY_NAME;
     }
+
+    @Override
+    public SchemaType[] getTypes() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.shorindo.docs.database.SchemaEntity#getType(java.lang.String)
+     */
+    @Override
+    public SchemaType getType(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
 }

@@ -30,6 +30,8 @@ public class BeanUtil {
     private static final ActionLogger LOG = ActionLogger.getLogger(BeanUtil.class);
     private static final Pattern PROPERTY_PATTERN = Pattern.compile("([a-zA-Z])([a-z0-9]*)");
     private static final Pattern SNAKE_PATTERN = Pattern.compile("_*([^_])([^_]*)");
+    private static final Pattern CAMEL_PATTERN = Pattern.compile("(.[^A-Z0-9]*)");
+    private static final Pattern BEAN_PATTERN = Pattern.compile("\\.?([^\\.\\[\\s]+)(\\[([^\\]]+)\\])?");
 
     /**
      * 
@@ -63,6 +65,23 @@ public class BeanUtil {
             String rest = m.group(2);
             if (rest != null) {
                 sb.append(rest.toLowerCase());
+            }
+            start = m.end();
+        }
+        return sb.toString();
+    }
+
+    public static String camel2snake(String name) {
+        Matcher m = CAMEL_PATTERN.matcher(name);
+        StringBuilder sb = new StringBuilder();
+        int start = 0;
+        boolean first = true;
+        while (m.find(start)) {
+            if (first) {
+                sb.append(m.group(1).toUpperCase());
+                first = false;
+            } else {
+                sb.append("_" + m.group(1).toUpperCase());
             }
             start = m.end();
         }
@@ -238,9 +257,6 @@ public class BeanUtil {
     public static long getValueAsLong(Object bean, String name) throws BeanNotFoundException {
         return ((Long)getValue(bean, name)).longValue();
     }
-
-    private static final Pattern BEAN_PATTERN =
-            Pattern.compile("\\.?([^\\.\\[\\s]+)(\\[([^\\]]+)\\])?");
 
     /**
      * 

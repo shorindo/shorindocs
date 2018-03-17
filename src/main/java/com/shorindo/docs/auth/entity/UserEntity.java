@@ -13,50 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth;
+package com.shorindo.docs.auth.entity;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Date;
 
-import com.shorindo.docs.database.Column;
+import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.BeanUtil;
+import com.shorindo.docs.DocsMessages;
 import com.shorindo.docs.database.SchemaEntity;
 import com.shorindo.docs.database.SchemaType;
-import com.shorindo.docs.database.Table;
 
 /**
  * 
  */
-@Table("AUTH_USER")
 public class UserEntity extends SchemaEntity {
+    private static final ActionLogger LOG = ActionLogger.getLogger(UserEntity.class);
     private static final String ENTITY_NAME = "AUTH_USER";
 
-    @Column("USER_ID")
     private String userId;
-
-    @Column("LOGIN_NAME")
-    private String loginName;
-
-    @Column("DISPLAY_NAME")
+    private String loginId;
     private String displayName;
-
-    @Column("PASSWORD")
     private String password;
-
-    @Column("MAIL")
     private String mail;
-
-    @Column("ROLE_NAME")
-    private String roleName = "PUBLIC";
-
-    @Column("ACL_ID")
-    private String aclId;
-
-    @Column("STATUS")
     private int status;
-
-    @Column("CREATED_DATE")
     private Date createdDate;
-
-    @Column("UPDATED_DATE")
     private Date updatedDate;
 
     @Override
@@ -64,8 +46,14 @@ public class UserEntity extends SchemaEntity {
         return ENTITY_NAME;
     }
 
+    @Override
     public SchemaType[] getTypes() {
-        return UserType.values();
+        return UserTypes.values();
+    }
+
+    @Override
+    public SchemaType getType(String name) {
+        return UserTypes.valueOf(name);
     }
 
     public String getUserId() {
@@ -76,12 +64,12 @@ public class UserEntity extends SchemaEntity {
         this.userId = userId;
     }
 
-    public String getLoginName() {
-        return loginName;
+    public String getLoginId() {
+        return loginId;
     }
 
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
+    public void setLoginId(String loginId) {
+        this.loginId = loginId;
     }
 
     public String getDisplayName() {
@@ -108,22 +96,6 @@ public class UserEntity extends SchemaEntity {
         this.mail = mail;
     }
 
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public String getAclId() {
-        return aclId;
-    }
-
-    public void setAclId(String aclId) {
-        this.aclId = aclId;
-    }
-
     public int getStatus() {
         return status;
     }
@@ -148,7 +120,7 @@ public class UserEntity extends SchemaEntity {
         this.updatedDate = updatedDate;
     }
 
-    private static enum UserType implements SchemaType {
+    private static enum UserTypes implements SchemaType {
         USER_ID     ("varchar",  36, 0, 1, true,  true,  null),
         LOGIN_ID    ("varchar",  80, 0, 0, true,  true,  null),
         PASSWORD    ("varchar",  80, 0, 0, true,  false, null),
@@ -159,16 +131,56 @@ public class UserEntity extends SchemaEntity {
         UPDATED_DATE("timestamp", 0, 0, 0, true,  false, null)
         ;
 
-        private String jdbcType = "varchar";
-        private int size = 0;
-        private int precision = 0;
-        private int primary = 0;
-        private boolean notNull = false;
-        private boolean unique = false;
-        private Object defaultValue = null;
+        private String jdbcType;
+        private int size;
+        private int precision;
+        private int primary;
+        private boolean notNull;
+        private boolean unique;
+        private Object defaultValue;
+        private Field field;
+        private Method setMethod;
+        private Method getMethod;
 
-        private UserType(String jdbcType, int size, int precision,
+        private UserTypes(String jdbcType, int size, int precision,
                 int primary, boolean notNull, boolean unique, Object defaultValue) {
+            this.jdbcType = jdbcType;
+            this.size = size;
+            this.precision = precision;
+            this.precision = primary;
+            this.notNull = notNull;
+            this.unique = unique;
+            this.defaultValue = defaultValue;
+
+            String beanName = BeanUtil.snake2camel(name(), false);
+            try {
+                field = UserEntity.class.getDeclaredField(beanName);
+                field.setAccessible(true); // TODO そのうち除去
+            } catch (NoSuchFieldException e) {
+                LOG.error(DocsMessages.E_5119, e, name(), beanName);
+                return;
+            } catch (SecurityException e) {
+                LOG.error(DocsMessages.E_5119, e, name(), beanName);
+                return;
+            }
+
+            String setterName = "set" + BeanUtil.snake2camel(name(), true);
+            try {
+                setMethod = UserEntity.class.getMethod(setterName, field.getType());
+            } catch (NoSuchMethodException e) {
+                LOG.error(DocsMessages.E_5120, e, name(), setterName);
+            } catch (SecurityException e) {
+                LOG.error(DocsMessages.E_5120, e, name(), setterName);
+            }
+
+            String getterName = "get" + BeanUtil.snake2camel(name(), true);
+            try {
+                getMethod = UserEntity.class.getMethod(getterName);
+            } catch (NoSuchMethodException e) {
+                LOG.error(DocsMessages.E_5120, e, name(), getterName);
+            } catch (SecurityException e) {
+                LOG.error(DocsMessages.E_5120, e, name(), getterName);
+            }
         }
 
         @Override
@@ -210,6 +222,21 @@ public class UserEntity extends SchemaEntity {
         public Object getDefault() {
             return defaultValue;
         }
-        
+
+        @Override
+        public Field getField() {
+            return field;
+        }
+
+        @Override
+        public Method getSetMethod() {
+            return setMethod;
+        }
+
+        @Override
+        public Method getGetMethod() {
+            return getMethod;
+        }
     }
+
 }

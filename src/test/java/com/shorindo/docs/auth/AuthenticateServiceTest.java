@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.auth;
+package com.shorindo.docs.auth;
 
 import static org.junit.Assert.*;
 
