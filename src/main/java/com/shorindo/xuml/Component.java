@@ -78,9 +78,11 @@ public abstract class Component {
             if (last instanceof CDATA && child instanceof CDATA) {
                 CDATA text = (CDATA)last;
                 text.setText(text.getText() + ((CDATA)child).getText());
+                //LOG.debug("コンポーネント[CDATA]を追加します。");
                 return text;
             }
         }
+        //LOG.debug("コンポーネント[" + child + "]を追加します。");
         childList.add(child);
         child.setParent(this);
         return child;
@@ -140,6 +142,14 @@ public abstract class Component {
         //LOG.debug("setContext(" + view.eval(context) + ")");
     }
 
+    public void setStyle(String style) {
+        String[] styles = style.split("\\s*;\\s*");
+        for (String part : styles) {
+            String[] keyValue = part.split("\\s*:\\s*");
+            setStyle(keyValue[0], keyValue[1]);
+        }
+    }
+
     protected void setStyle(String name, String value) {
         styles.put(name, value);
     }
@@ -149,6 +159,17 @@ public abstract class Component {
         for (Entry<String,String> entry : styles.entrySet()) {
             sb.append(entry.getKey() + ":" + entry.getValue() + ";");
         }
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<" + getClass().getSimpleName() + ">");
+        for (Component child : getChildList()) {
+            sb.append(child.toString());
+        }
+        sb.append("</" + getClass().getSimpleName() + ">");
         return sb.toString();
     }
 }

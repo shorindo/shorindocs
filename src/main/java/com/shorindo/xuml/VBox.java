@@ -15,11 +15,14 @@
  */
 package com.shorindo.xuml;
 
+import com.shorindo.docs.ActionLogger;
+
 /**
  * 
  */
 @ComponentReady("vbox")
 public class VBox extends Component {
+    private static final ActionLogger LOG = ActionLogger.getLogger(VBox.class);
 
     public VBox(XumlView view) {
         super(view);

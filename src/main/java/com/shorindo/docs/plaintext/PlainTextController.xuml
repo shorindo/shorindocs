@@ -1,7 +1,7 @@
-<window title="${document.title}">
+<window title="{{document.title}}">
   <vbox>
     <hbox>
-      ${document.title}
+      {{document.title}}
       <spacer flex="1"/>
       <link href="?action=edit">edit</link>
       <link href="?action=create&amp;contentType=text/plain">create</link>
@@ -10,13 +10,15 @@
       <vbox width="200px">
         最近の更新
         <listbox>
-          <listitem context="${document.search_result}">
-            <link href="${documentId}">${title}</link>
+          {{#recents}}
+          <listitem>
+            <link href="{{documentId}}">{{title}}</link>
           </listitem>
+          {{/recents}}
         </listbox>
       </vbox>
       <vbox flex="1">
-        ${document.body}
+        {{document.body}}
       </vbox>
     </hbox>
   </vbox>

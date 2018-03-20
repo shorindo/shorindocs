@@ -15,7 +15,10 @@
  */
 package com.shorindo.docs;
 
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
@@ -100,6 +103,14 @@ public class ActionContext {
         }
     }
 
+    public Map<String,Object> getAttributes() {
+        Map<String,Object> resultMap = new HashMap<String,Object>();
+        for (Enumeration<?> e = request.getAttributeNames(); e.hasMoreElements();) {
+            String name = (String)e.nextElement();
+            resultMap.put(name, request.getAttribute(name));
+        }
+        return resultMap;
+    }
     public void setAttribute(String key, Object value) {
         request.setAttribute(key, value);
     }

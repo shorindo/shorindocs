@@ -17,6 +17,7 @@ package com.shorindo.docs;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.auth.entity.UserEntity;
@@ -24,6 +25,7 @@ import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseExecutor;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.Transactional;
+import com.shorindo.docs.database.Transactionless;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
@@ -31,18 +33,10 @@ import com.shorindo.docs.view.View;
 /**
  * 
  */
-public class DocumentController extends ActionController {
+public abstract class DocumentController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentController.class);
     private static final DatabaseService databaseService = DatabaseService.newInstance();
     private DocumentEntity model;
-
-    /**
-     * 呼ばれることはないので何もしない
-     */
-    @Override
-    public String view(ActionContext context) {
-        return null;
-    }
 
     /**
      * 
@@ -185,4 +179,29 @@ public class DocumentController extends ActionController {
         }
     }
 
+
+    /*
+     * 
+     */
+    private static final Transactionless<List<DocumentEntity>> RECENTS_EXEC =
+            new Transactionless<List<DocumentEntity>>() {            
+        @Override
+        public List<DocumentEntity> run(Connection conn, Object...params) throws DatabaseException {
+            return query(
+                "SELECT document_id,title,update_date " +
+                "FROM   document " +
+                "ORDER  BY update_date DESC " +
+                "LIMIT  10",
+                DocumentEntity.class);
+        }
+    };
+    
+    /**
+     * 
+     * @return
+     * @throws SQLException
+     */
+    protected List<DocumentEntity> recents() throws DatabaseException {
+        return databaseService.provide(RECENTS_EXEC);
+    }
 }

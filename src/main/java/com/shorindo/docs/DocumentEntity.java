@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Shorindo, Inc.
+ * Copyright 2016-2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,16 @@ package com.shorindo.docs;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Date;
+import java.sql.Timestamp;
 
 import com.shorindo.docs.database.SchemaEntity;
 import com.shorindo.docs.database.SchemaType;
+import com.shorindo.docs.database.Table;
 
 /**
  * 
  */
+@Table("DOCS_DOCUMENT")
 public class DocumentEntity extends SchemaEntity {
     public enum DocumentTypes implements SchemaType {
         DOCUMENT_ID ("varchar",  64, 0, 1, true, true, null),
@@ -155,8 +157,8 @@ public class DocumentEntity extends SchemaEntity {
     private int status;
     private String title;
     private String body;
-    private Date createDate;
-    private Date updateDate;
+    private Timestamp createDate;
+    private Timestamp updateDate;
     private String ownerId;
 
     private String aclId;
@@ -203,16 +205,16 @@ public class DocumentEntity extends SchemaEntity {
     public void setBody(String body) {
         this.body = body;
     }
-    public Date getCreateDate() {
+    public Timestamp getCreateDate() {
         return createDate;
     }
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
     }
-    public Date getUpdateDate() {
+    public Timestamp getUpdateDate() {
         return updateDate;
     }
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
     }
     public String getOwnerId() {

@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
-<schema package="com.shorindo.docs.outlogger">
+<schema namespace="outlogger">
     <table>
-        <name>DOCS_OUTLOGGER</name>
+        <name>DOCS_SPECOUT</name>
         <column>
             <name>DOCUMENT_ID</name>
             <type>varchar</type>
-            <javaType>String</javaType>
             <size>36</size>
             <notNull>true</notNull>
             <primaryKey>1</primaryKey>
@@ -14,51 +13,59 @@
             </references>
         </column>
         <column>
-            <name>LOG_ID</name>
+            <name>SPEC_ID</name>
             <type>varchar</type>
-            <javaType>String</javaType>
             <size>36</size>
             <notNull>true</notNull>
             <primaryKey>2</primaryKey>
         </column>
         <column>
             <name>DISPLAY_ORDER</name>
-            <javaType>int</javaType>
             <type>integer</type>
             <notNull>true</notNull>
         </column>
         <column>
             <name>LEVEL</name>
             <type>smallint</type>
-            <javaType>short</javaType>
             <notNull>true</notNull>
         </column>
         <column>
-            <name>CONTENT</name>
-            <type>text</type>
-            <javaType>String</javaType>
+            <name>SPEC_ID</name>
+            <type>varchar</type>
+            <size>80</size>
             <notNull>true</notNull>
         </column>
         <column>
-            <name>CACHE</name>
+            <name>SPEC_TEXT</name>
             <type>text</type>
-            <javaType>String</javaType>
-            <notNull>false</notNull>
+            <notNull>true</notNull>
+        </column>
+        <column>
+            <name>SPEC_REASON</name>
+            <type>text</type>
+        </column>
+        <column>
+            <name>SOURCE</name>
+            <type>varchar</type>
+            <size>80</size>
+        </column>
+        <column>
+            <name>VERSION</name>
+            <type>varchar</type>
+            <size>16</size>
         </column>
         <column>
             <name>PARENT_ID</name>
             <type>varchar</type>
-            <javaType>String</javaType>
             <size>36</size>
             <notNull>true</notNull>
-            <relations>
-                <relateTo>DOCS_OUTLOGGER.LOG_ID</relateTo>
-            </relations>
+            <references>
+                <referTo>DOCS_SPECOUT.SPEC_ID</referTo>
+            </references>
         </column>
         <column>
             <name>CREATED_USER</name>
             <type>varchar</type>
-            <javaType>String</javaType>
             <size>36</size>
             <notNull>true</notNull>
             <references>
@@ -68,13 +75,11 @@
         <column>
             <name>CREATED_DATE</name>
             <type>datetime</type>
-            <javaType>java.util.Date</javaType>
             <notNull>true</notNull>
         </column>
         <column>
             <name>UPDATED_USER</name>
             <type>varchar</type>
-            <javaType>String</javaType>
             <size>36</size>
             <notNull>true</notNull>
             <references>
@@ -83,14 +88,13 @@
         </column>
         <column>
             <name>UPDATED_DATE</name>
-            <javaType>java.util.Date</javaType>
             <type>datetime</type>
             <notNull>true</notNull>
         </column>
     </table>
-    
+
     <table>
-        <name>DOCS_OUTLOGGER_HIST</name>
+        <name>DOCS_SPECOUT_HISTORY</name>
         <column>
             <name>DOCUMENT_ID</name>
             <type>varchar</type>
@@ -98,49 +102,20 @@
             <notNull>true</notNull>
             <primaryKey>1</primaryKey>
             <references>
-                <referTo>DOCS_OUTLOGGER.DOCUMENT_ID</referTo>
+                <referTo>DOCS_DOCUMENT.DOCUMENT_ID</referTo>
             </references>
         </column>
         <column>
-            <name>LOG_ID</name>
+            <name>HISTORY_ID</name>
             <type>varchar</type>
             <size>36</size>
             <notNull>true</notNull>
-            <primaryKey>2</primaryKey>
-            <references>
-                <referTo>DOCS_OUTLOGGER.LOG_ID</referTo>
-            </references>
+            <primaryKey>1</primaryKey>
         </column>
         <column>
-            <name>HIST_ID</name>
-            <type>varchar</type>
-            <size>36</size>
-            <notNull>true</notNull>
-            <primaryKey>3</primaryKey>
-        </column>
-        <column>
-            <name>DISPLAY_ORDER</name>
-            <type>integer</type>
-            <notNull>true</notNull>
-        </column>
-        <column>
-            <name>LEVEL</name>
-            <type>smallint</type>
-            <notNull>true</notNull>
-        </column>
-        <column>
-            <name>CONTENT</name>
+            <name>DESCRIPTION</name>
             <type>text</type>
             <notNull>true</notNull>
-        </column>
-        <column>
-            <name>PARENT_ID</name>
-            <type>varchar</type>
-            <size>36</size>
-            <notNull>true</notNull>
-            <references>
-                <referTo>DOCS_OUTLOGGER.LOG_ID</referTo>
-            </references>
         </column>
         <column>
             <name>CREATED_USER</name>

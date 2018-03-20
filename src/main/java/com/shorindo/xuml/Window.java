@@ -15,11 +15,14 @@
  */
 package com.shorindo.xuml;
 
+import com.shorindo.docs.ActionLogger;
+
 /**
  * 
  */
 @ComponentReady("window")
 public class Window extends Component {
+    private static final ActionLogger LOG = ActionLogger.getLogger(Window.class);
     private String title;
     private String height = "auto";
     private String width = "auto";
@@ -36,8 +39,8 @@ public class Window extends Component {
         sb.append("<head>\n");
         sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
         sb.append("<title>" + title + "</title>\n");
-        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"${application.contextPath}/css/xuml.css\">\n");
-        sb.append("<script type=\"text/javascript\" src=\"${application.contextPath}/js/xuml.js\"></script>\n");
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"{{application.contextPath}}/css/xuml.css\">\n");
+        sb.append("<script type=\"text/javascript\" src=\"{{application.contextPath}}/js/xuml.js\"></script>\n");
         sb.append("</head>\n");
         sb.append("<body class=\"");
         if ("fill".equals(height)) {
@@ -52,6 +55,7 @@ public class Window extends Component {
         }
         sb.append("\">");
         for (Component c : getChildList()) {
+            //LOG.debug("コンポーネント[" + c.getClass().getSimpleName() + "]を呼び出します。");
             sb.append(c.getHtml());
         }
         sb.append("</body>\n");

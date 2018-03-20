@@ -69,10 +69,16 @@ public abstract class DatabaseExecutor<T> {
      * @throws SQLException
      */
     protected final int exec(String sql, Object...params) throws DatabaseException {
+        LOG.debug("SQL文を実行します : " + sql);
         Connection conn = local.get();
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
-            return stmt.executeUpdate(sql);
+            //FIXME
+            int i = 1;
+            for (Object param : params) {
+                stmt.setObject(i++, param);
+            }
+            return stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
@@ -290,7 +296,6 @@ public abstract class DatabaseExecutor<T> {
         for (int i = 0; i < mappers.length; i++) {
             Method setter = mappers[i].getSetter();
             Method getter = mappers[i].getGetter();
-LOG.debug("setter=" + setter + ", getter=" + getter);
             setter.invoke(bean, getter.invoke(rset, i + 1));
         }
         return bean;
@@ -474,6 +479,7 @@ LOG.debug("setter=" + setter + ", getter=" + getter);
 
     private int applySetMethod(Statement stmt, SchemaEntity entity, ColumnMapping mapping, int index)
             throws DatabaseException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        //LOG.debug("applySetMethod(" + mapping.getStatementSetMethod() + "," + mapping.getField() + ")");
         Method setMethod = mapping.getStatementSetMethod();
         setMethod.invoke(stmt, index, entity.getByName(mapping.getColumnName()));
         return index + 1;
@@ -682,7 +688,7 @@ LOG.debug("setter=" + setter + ", getter=" + getter);
     }
 
     private Method[] getStatementSetMethod(Class<?> clazz) {
-        LOG.trace("getStatementSetMethod(" + clazz + ")");
+        //LOG.debug("getStatementSetMethod(" + clazz + ")");
         try {
             switch (SqlType.assignable(clazz)) {
             case SHORT:
@@ -773,8 +779,8 @@ LOG.debug("setter=" + setter + ", getter=" + getter);
         DOUBLE      (double.class),
         DOUBLE_OBJECT(Double.class),
         STRING      (String.class),
-        DATE        (Date.class),
-        TIMESTAMP   (Timestamp.class)
+        TIMESTAMP   (Timestamp.class),
+        DATE        (Date.class)
         ;
         
         private Class<?> type;

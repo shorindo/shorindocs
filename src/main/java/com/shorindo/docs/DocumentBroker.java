@@ -26,6 +26,7 @@ import com.shorindo.docs.database.Transactionless;
 import com.shorindo.docs.form.FormController;
 import com.shorindo.docs.form.TemplateController;
 import com.shorindo.docs.plaintext.PlainTextController;
+import com.shorindo.docs.specout.SpecoutController;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 
@@ -39,12 +40,15 @@ public final class DocumentBroker extends ActionController {
 
     public static ActionController getController(DocumentEntity model) throws DocumentException {
         try {
+            String contentType = model.getContentType();
             if ("text/plain".equals(model.getContentType())) {
                 return new PlainTextController();
             } else if ("application/x-form".equals(model.getContentType())) {
                 return new FormController();
             } else if ("application/x-form-template".equals(model.getContentType())) {
                 return new TemplateController();
+            } else if ("com.shorindo.docs.specout.SpecoutController".equals(contentType)) {
+                return new SpecoutController();
             } else {
                 throw new DocumentException("controller not found:" + model.getContentType());
             }
@@ -72,8 +76,13 @@ public final class DocumentBroker extends ActionController {
         try {
             String id = context.getRequest().getServletPath().substring(1);
             DocumentEntity model = getDocumentModel(id);
-            context.setAttribute("document", model);
-            return getController(model).action(context);
+            if (model != null) {
+                context.setAttribute("document", model);
+                return getController(model).action(context);
+            } else {
+                LOG.warn(DocsMessages.W_3006, id);
+                return new ErrorView(404);
+            }
         } catch (DocumentException e) {
             LOG.error(DocsMessages.E_5008, e);
             return new ErrorView(500);

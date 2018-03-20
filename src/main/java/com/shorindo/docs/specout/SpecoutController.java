@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.plaintext;
+package com.shorindo.docs.specout;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
+import java.io.StringReader;
+
+import javax.xml.bind.JAXB;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
@@ -27,18 +27,15 @@ import com.shorindo.docs.DocumentEntity;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
 import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.database.Transactionless;
 
 /**
  * 
  */
-@ContentTypeReady("text/plain")
-public class PlainTextController extends DocumentController {
-    private static final ActionLogger LOG = ActionLogger.getLogger(PlainTextController.class);
-    private static final DatabaseService databaseService = DatabaseService.newInstance();
+@ContentTypeReady("com.shorindo.docs.specout.SpecoutController")
+public class SpecoutController extends DocumentController {
+    private static final ActionLogger LOG = ActionLogger.getLogger(SpecoutController.class);
 
-    public PlainTextController() {
+    public SpecoutController() {
     }
 
     /**
@@ -50,34 +47,12 @@ public class PlainTextController extends DocumentController {
         try {
             DocumentEntity model = (DocumentEntity)context.getAttribute("document");
             String body = model.getBody() == null ? "" : model.getBody();
-            context.setAttribute("content", body
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll("\"", "&quot;")
-                .replaceAll("\n", "<br/>"));
+            SpecoutEntity specout = JAXB.unmarshal(new StringReader(body), SpecoutEntity.class);
+            context.setAttribute("specout", specout);
             context.setAttribute("recents", recents());
         } catch (DatabaseException e) {
             LOG.error(DocsMessages.E_9001, e);
         }
-        return ".xuml";
-    }
-
-    /**
-     * 
-     * @param context
-     * @return
-     */
-    @ActionMethod
-    public String edit(ActionContext context) {
-        LOG.trace("edit()");
-        DocumentEntity model = (DocumentEntity)context.getAttribute("document");
-        String body = model.getBody() == null ? "" : model.getBody();
-        context.setAttribute("content", body
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll("\"", "&quot;"));
         return ".xuml";
     }
 

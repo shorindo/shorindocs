@@ -15,11 +15,14 @@
  */
 package com.shorindo.xuml;
 
+import com.shorindo.docs.ActionLogger;
+
 /**
  * 
  */
 @ComponentReady("dialog")
 public class Dialog extends Component {
+    private static final ActionLogger LOG = ActionLogger.getLogger(Dialog.class);
     private String title;
 
     public Dialog(XumlView view) {
@@ -31,8 +34,9 @@ public class Dialog extends Component {
         StringBuilder sb = new StringBuilder();
         sb.append("<div class=\"dialog-pane\">");
         sb.append("<div class=\"dialog\" style=\"" + getStyles() + "\">");
-        sb.append("<div class=\"dialog-head\">${title}</div>");
+        sb.append("<div class=\"dialog-head\">{{status}} - {{title}}</div>");
         for (Component c : getChildList()) {
+            //LOG.debug("コンポーネント[" + c.getClass().getSimpleName() + "]を呼び出します。");
             sb.append(c.getHtml());
         }
         sb.append("</div>");

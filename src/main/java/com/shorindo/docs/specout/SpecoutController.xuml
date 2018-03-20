@@ -1,0 +1,108 @@
+<window title="{{document.title}}">
+  <vbox style="margin-bottom:20px;">
+    <hbox>
+      {{document.title}}
+      <spacer flex="1"/>
+      <link href="?action=edit">edit</link>
+      <link href="?action=create&amp;contentType=text/plain">create</link>
+    </hbox>
+    <hbox>
+      <vbox width="200px">
+        最近の更新
+        <listbox>
+          {{#recents}}
+          <listitem>
+            <link href="{{documentId}}">{{title}}</link>
+          </listitem>
+          {{/recents}}
+        </listbox>
+      </vbox>
+      <vbox flex="1" style="overflow:auto;">
+        <style>
+        <![CDATA[
+        table.specout {
+          table-layout:fixed;
+          border-collapse:collapse;
+          border:2px solid gray;
+          margin-left:5px;
+          margin-right:20px;
+          position:relative;
+        }
+        tr.spec { line-height:1.2em; }
+        tr.spec td div.description { min-height: 40px; }
+        tr.spec td div.level-0 { margin-left:0px; }
+        tr.spec td div.level-1 { margin-left:20px; }
+        tr.spec td div.level-2 { margin-left:40px; }
+        tr.spec td div.level-3 { margin-left:60px; }
+        tr.spec td div.level-4 { margin-left:80px; }
+        tr.spec td div.level-5 { margin-left:100px; }
+        tr.spec td {
+          border-right:1px solid gray;
+          border-bottom:1px dashed gray;
+          padding: 1px 3px 1px 3px;
+          vertical-align:top;
+        }
+        tr.spec:nth-child(odd) {
+          background:#F8F8F8;
+        }
+        ]]>
+        </style>
+        <table class="specout">
+          <col style="width:10%; white-space:nowrap;"/>
+          <col style="width:35%;"/>
+          <col style="width:35%;"/>
+          <col style="width:10%; white-space:nowrap;"/>
+          <col style="width:5%; white-space:nowrap;"/>
+
+          <tbody>
+          <tr style="background:lightgray; text-align:center;">
+            <td style="border-right:1px solid gray; border-bottom:1px solid gray;">仕様ID</td>
+            <td style="border-right:1px solid gray; border-bottom:1px solid gray;">仕様</td>
+            <td style="border-right:1px solid gray; border-bottom:1px solid gray;">目的・理由</td>
+            <td style="border-right:1px solid gray; border-bottom:1px solid gray;">発生元</td>
+            <td style="border-bottom:1px solid gray;">Ver.</td>
+          </tr>
+          {{#specout.specList}}
+          <tr class="spec">
+            <td style="text-align:center;">{{specId}}</td>
+            <td><div class="description level-{{level}}">{{description}}</div></td>
+            <td>{{reason}}</td>
+            <td>{{source}}</td>
+            <td>{{version}}</td>
+          </tr>
+          {{/specout.specList}}
+          <tr style="background:lightgray; border-top:1px solid gray; border-bottom:1px solid gray;">
+            <td colspan="5" style="padding-left:5px;">改訂履歴</td>
+          </tr>
+          <tr>
+            <td colspan="5" style="background:lightgray;">
+              <table style="width:100%; border-collapse:collapse; background:white;">
+                <col style="width:15%; white-space:nowrap;"/>
+                <col style="width:8%; white-space:nowrap;"/>
+                <col style="width:8%; white-space:nowrap;"/>
+                <col style="width:70%;"/>
+                <tbody>
+                  <tr style="background:lightgray; text-align:center;">
+                    <td style="border-right:1px solid gray; border-bottom:1px solid gray;">日付</td>
+                    <td style="border-right:1px solid gray; border-bottom:1px solid gray;">Ver.</td>
+                    <td style="border-right:1px solid gray; border-bottom:1px solid gray;">担当</td>
+                    <td style="border-right:1px solid gray; border-bottom:1px solid gray;">改訂内容</td>
+                  </tr>
+                  {{#specout.changeList}}
+                  <tr>
+                    <td style="border-right:1px solid gray; border-bottom:1px dashed gray; text-align:center;">{{date}}</td>
+                    <td style="border-right:1px solid gray; border-bottom:1px dashed gray; text-align:center;">{{version}}</td>
+                    <td style="border-right:1px solid gray; border-bottom:1px dashed gray; text-align:center;">{{person}}</td>
+                    <td style="border-right:1px solid gray; border-bottom:1px dashed gray;">{{description}}</td>
+                  </tr>
+                  {{/specout.changeList}}
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </vbox>
+    </hbox>
+  </vbox>
+</window>
