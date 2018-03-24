@@ -15,8 +15,11 @@
  */
 package com.shorindo.docs.outlogger;
 
+import static com.shorindo.docs.database.DatabaseMessages.*;
 import java.io.InputStream;
 
+import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseSchema;
 import com.shorindo.docs.database.DatabaseService;
 
@@ -24,6 +27,45 @@ import com.shorindo.docs.database.DatabaseService;
  * 
  */
 public class OutloggerService {
+    private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerService.class);
+    private static final DatabaseService databaseService = DatabaseService.newInstance();
+
+    /*==========================================================================
+     * 初期設定
+     */
+    public void createSchema() throws DatabaseException {
+        try {
+            databaseService.createTableFromSchema(new OutloggerEntity().getTableSchema());
+            LOG.info(DB_5127, OutloggerEntity.class.getName());
+        } catch (DatabaseException e) {
+            LOG.warn(DB_5128, e, OutloggerEntity.class.getName());
+        }
+    }
+
+    /**=========================================================================
+     * ドキュメントの基本情報を操作する。
+     */
+    public void createDocument() {}
+    public void registDocument() {}
+    public void removeDocument() {}
+    public void commitDocument() {}
+    public void rollbackDocument() {}
+
+    /**=========================================================================
+     * ドキュメントのアクセス権を操作する。
+     */
+    public void listAcl() {}
+    public void addAcl() {}
+    public void removeAcl() {}
+
+    /**=========================================================================
+     * アウトラインを操作する。
+     */
+    public void listOutlog() {}
+    public void createOutlog() {}
+    public void registOutlog() {}
+    public void removeOutlog() {}
+    public void commitOutlog() {}
 
     /**
      * 

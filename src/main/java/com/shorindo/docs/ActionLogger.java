@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs;
 
+import static com.shorindo.docs.ApplicationContext.*;
 import java.text.MessageFormat;
 
 import org.apache.log4j.Logger;
@@ -28,15 +29,19 @@ public class ActionLogger {
     public static ActionLogger getLogger(Class<?> clazz) {
         return new ActionLogger(clazz);
     }
+
     private ActionLogger(Class<?> clazz) {
         LOG = Logger.getLogger(clazz);
     }
+
     public void trace(String msg) {
         LOG.trace(msg);
     }
+
     public void debug(String msg) {
         LOG.debug(msg);
     }
+
     public void debug(String message, Object...args) {
         if (args.length > 0) {
             LOG.debug(MessageFormat.format(message, args));
@@ -44,30 +49,39 @@ public class ActionLogger {
             LOG.debug(message);
         }
     }
+
     public void debug(ActionMessages code, Object...args) {
-        LOG.debug(code.getCode() + ":" + code.getMessage(args));
+        LOG.debug(code.getCode() + ":" + code.getMessage(LANG, args));
     }
 
     public void info(ActionMessages code, Object...args) {
-        LOG.info(code.getCode() + ":" + code.getMessage(args));
+        LOG.info(code.getCode() + ":" + code.getMessage(LANG, args));
     }
-    public void info(String message, Object...args) {
-        if (args.length > 0) {
-            LOG.info(MessageFormat.format(message, args));
-        } else {
-            LOG.info(message);
-        }
-    }
+
+//    public void info(String message, Object...args) {
+//        if (args.length > 0) {
+//            LOG.info(MessageFormat.format(message, args));
+//        } else {
+//            LOG.info(message);
+//        }
+//    }
+
     public void warn(ActionMessages code, Object...args) {
-        LOG.warn(code.getCode() + ":" + code.getMessage(args));
+        LOG.warn(code.getCode() + ":" + code.getMessage(LANG, args));
     }
+
+    public void warn(ActionMessages code, Throwable th, Object...args) {
+        LOG.warn(code.getCode() + ":" + code.getMessage(LANG, args), th);
+    }
+
     public String error(ActionMessages code, Object...args) {
-        String msg = code.getCode() + ":" + code.getMessage(args);
+        String msg = code.getCode() + ":" + code.getMessage(LANG, args);
         LOG.error(msg);
         return msg;
     }
+
     public String error(ActionMessages code, Throwable th, Object...args) {
-        String msg = code.getCode() + ":" + code.getMessage(args);
+        String msg = code.getCode() + ":" + code.getMessage(LANG, args);
         LOG.error(msg, th);
         return msg;
     }

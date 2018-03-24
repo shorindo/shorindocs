@@ -68,8 +68,8 @@ public class DatabaseSchema {
 
     public static class Table implements Entity {
         private String name;
-        private List<String> aliasList;
-        private List<Column> columnList;
+        private List<String> aliasList = new ArrayList<String>();
+        private List<Column> columnList = new ArrayList<Column>();
 
         @Override
         public String getName() {

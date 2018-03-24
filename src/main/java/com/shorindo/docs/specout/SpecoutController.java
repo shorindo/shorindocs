@@ -15,13 +15,13 @@
  */
 package com.shorindo.docs.specout;
 
+import static com.shorindo.docs.specout.SpecoutMessages.*;
 import java.io.StringReader;
 
 import javax.xml.bind.JAXB;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocsMessages;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentEntity;
 import com.shorindo.docs.annotation.ActionMethod;
@@ -43,7 +43,6 @@ public class SpecoutController extends DocumentController {
      */
     @Override @ActionMethod
     public String view(ActionContext context) {
-        LOG.trace("view()");
         try {
             DocumentEntity model = (DocumentEntity)context.getAttribute("document");
             String body = model.getBody() == null ? "" : model.getBody();
@@ -51,7 +50,7 @@ public class SpecoutController extends DocumentController {
             context.setAttribute("specout", specout);
             context.setAttribute("recents", recents());
         } catch (DatabaseException e) {
-            LOG.error(DocsMessages.E_9001, e);
+            LOG.error(SPEC_9001, e);
         }
         return ".xuml";
     }

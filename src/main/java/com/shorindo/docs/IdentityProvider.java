@@ -35,13 +35,17 @@ public class IdentityProvider {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
-                LOG.warn(DocsMessages.W_3004, e);
+                LOG.warn(DocsMessages.DOCS_3004, e);
             }
             last = time = getTime();
         } else {
             last = time;
         }
         return time | (seq << 4) | host;
+    }
+
+    public static String hash(String source) {
+        return String.format("%08x", source.hashCode());
     }
 
     private static long bit2long(int bit) {

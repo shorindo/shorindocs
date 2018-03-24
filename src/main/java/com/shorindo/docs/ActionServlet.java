@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs;
 
+import static com.shorindo.docs.DocsMessages.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,7 +45,6 @@ public class ActionServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        LOG.debug("init() start");
         super.init(config);
 
         File root = new File(config.getServletContext().getRealPath("/WEB-INF/classes"));
@@ -52,13 +52,13 @@ public class ActionServlet extends HttpServlet {
             public boolean matches(Class<?> clazz) {
                 ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
                 if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
-                    LOG.info(DocsMessages.I_0001, mapping.value(), clazz);
+                    LOG.info(DOCS_0001, mapping.value(), clazz);
                     try {
                         actionMap.put(mapping.value(), (ActionController)clazz.newInstance());
                     } catch (InstantiationException e) {
-                        LOG.error(DocsMessages.E_9004, e, mapping.value());
+                        LOG.error(DOCS_9004, e, mapping.value());
                     } catch (IllegalAccessException e) {
-                        LOG.error(DocsMessages.E_9004, e, mapping.value());
+                        LOG.error(DOCS_9004, e, mapping.value());
                     }
                     return true;
                 } else {
@@ -66,14 +66,12 @@ public class ActionServlet extends HttpServlet {
                 }
             }
         });
-
-        LOG.debug("init() end");
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        LOG.info("service(" + req.getServletPath() + ") start");
+        LOG.info(DOCS_1105, req.getServletPath());
         long st = System.currentTimeMillis();
         String path = req.getServletPath();
         String id = path.substring(1);
@@ -85,13 +83,13 @@ public class ActionServlet extends HttpServlet {
         }
         File file = new File(req.getSession().getServletContext().getRealPath(id));
         if (id.endsWith(".xuml") && file.exists()) {
-            View view = new XumlView(new FileInputStream(file));
+            View view = new XumlView(file.getName(), new FileInputStream(file));
             output(context, res, view);
         } else if (!dispatch(context)) {
-            LOG.error(DocsMessages.E_5003, path);
+            LOG.error(DOCS_5003, path);
         }
-        LOG.info("service(" + req.getServletPath() + ") end : " +
-                (System.currentTimeMillis() - st) + " ms");
+        LOG.info(DOCS_1106, req.getServletPath(),
+                (System.currentTimeMillis() - st));
     }
 
     protected boolean dispatch(ActionContext context)

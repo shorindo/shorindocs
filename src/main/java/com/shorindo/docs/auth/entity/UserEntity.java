@@ -15,15 +15,11 @@
  */
 package com.shorindo.docs.auth.entity;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Date;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.BeanUtil;
-import com.shorindo.docs.DocsMessages;
+import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.SchemaType;
 
 /**
  * 
@@ -41,19 +37,8 @@ public class UserEntity extends SchemaEntity {
     private Date createdDate;
     private Date updatedDate;
 
-    @Override
-    public String getEntityName() {
-        return ENTITY_NAME;
-    }
-
-    @Override
-    public SchemaType[] getTypes() {
-        return UserTypes.values();
-    }
-
-    @Override
-    public SchemaType getType(String name) {
-        return UserTypes.valueOf(name);
+    public UserEntity() throws DatabaseException {
+        super();
     }
 
     public String getUserId() {
@@ -118,125 +103,6 @@ public class UserEntity extends SchemaEntity {
 
     public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
-    }
-
-    private static enum UserTypes implements SchemaType {
-        USER_ID     ("varchar",  36, 0, 1, true,  true,  null),
-        LOGIN_ID    ("varchar",  80, 0, 0, true,  true,  null),
-        PASSWORD    ("varchar",  80, 0, 0, true,  false, null),
-        DISPLAY_NAME("varchar",  80, 0, 0, true,  true,  null),
-        MAIL        ("varchar",  80, 0, 0, false, false, null),
-        STATUS      ("smallint",  0, 0, 0, true,  false, 1),
-        CREATED_DATE("timestamp", 0, 0, 0, true,  false, null),
-        UPDATED_DATE("timestamp", 0, 0, 0, true,  false, null)
-        ;
-
-        private String jdbcType;
-        private int size;
-        private int precision;
-        private int primary;
-        private boolean notNull;
-        private boolean unique;
-        private Object defaultValue;
-        private Field field;
-        private Method setMethod;
-        private Method getMethod;
-
-        private UserTypes(String jdbcType, int size, int precision,
-                int primary, boolean notNull, boolean unique, Object defaultValue) {
-            this.jdbcType = jdbcType;
-            this.size = size;
-            this.precision = precision;
-            this.precision = primary;
-            this.notNull = notNull;
-            this.unique = unique;
-            this.defaultValue = defaultValue;
-
-            String beanName = BeanUtil.snake2camel(name(), false);
-            try {
-                field = UserEntity.class.getDeclaredField(beanName);
-                field.setAccessible(true); // TODO そのうち除去
-            } catch (NoSuchFieldException e) {
-                LOG.error(DocsMessages.E_5119, e, name(), beanName);
-                return;
-            } catch (SecurityException e) {
-                LOG.error(DocsMessages.E_5119, e, name(), beanName);
-                return;
-            }
-
-            String setterName = "set" + BeanUtil.snake2camel(name(), true);
-            try {
-                setMethod = UserEntity.class.getMethod(setterName, field.getType());
-            } catch (NoSuchMethodException e) {
-                LOG.error(DocsMessages.E_5120, e, name(), setterName);
-            } catch (SecurityException e) {
-                LOG.error(DocsMessages.E_5120, e, name(), setterName);
-            }
-
-            String getterName = "get" + BeanUtil.snake2camel(name(), true);
-            try {
-                getMethod = UserEntity.class.getMethod(getterName);
-            } catch (NoSuchMethodException e) {
-                LOG.error(DocsMessages.E_5120, e, name(), getterName);
-            } catch (SecurityException e) {
-                LOG.error(DocsMessages.E_5120, e, name(), getterName);
-            }
-        }
-
-        @Override
-        public String getColumnName() {
-            return name();
-        }
-
-        @Override
-        public String getType() {
-            return jdbcType;
-        }
-
-        @Override
-        public int getSize() {
-            return size;
-        }
-
-        @Override
-        public int getPrecision() {
-            return precision;
-        }
-
-        @Override
-        public int getPrimary() {
-            return primary;
-        }
-
-        @Override
-        public boolean isNotNull() {
-            return notNull;
-        }
-
-        @Override
-        public boolean isUnique() {
-            return unique;
-        }
-
-        @Override
-        public Object getDefault() {
-            return defaultValue;
-        }
-
-        @Override
-        public Field getField() {
-            return field;
-        }
-
-        @Override
-        public Method getSetMethod() {
-            return setMethod;
-        }
-
-        @Override
-        public Method getGetMethod() {
-            return getMethod;
-        }
     }
 
 }

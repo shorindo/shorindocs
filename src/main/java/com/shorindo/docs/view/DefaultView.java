@@ -72,13 +72,13 @@ public class DefaultView extends View {
                 os.write(b, 0, l);
             }
         } catch (IOException e) {
-            LOG.error(DocsMessages.E_9999, e);
+            LOG.error(DocsMessages.DOCS_9999, e);
         } finally {
             if (is != null)
                 try {
                     is.close();
                 } catch (IOException e) {
-                    LOG.error(DocsMessages.E_9999, e);
+                    LOG.error(DocsMessages.DOCS_9999, e);
                 }
         }
     }

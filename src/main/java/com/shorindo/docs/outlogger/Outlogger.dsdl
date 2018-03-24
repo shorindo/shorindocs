@@ -9,9 +9,9 @@
             <size>36</size>
             <notNull>true</notNull>
             <primaryKey>1</primaryKey>
-            <references>
-                <referTo>DOCS_DOCUMENT.DOCUMENT_ID</referTo>
-            </references>
+            <relation>
+                <relateTo>DOCS_DOCUMENT.DOCUMENT_ID</relateTo>
+            </relations>
         </column>
         <column>
             <name>LOG_ID</name>

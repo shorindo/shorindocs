@@ -29,6 +29,7 @@ import net.arnx.jsonic.JSON;
 @XmlRootElement(name="specout")
 public class SpecoutEntity {
     private List<Spec> specList;
+    private List<Reference> referenceList;
     private List<Change> changeList;
 
     @XmlElementWrapper(name="specs")
@@ -39,6 +40,15 @@ public class SpecoutEntity {
 
     public void setSpecList(List<Spec> specList) {
         this.specList = specList;
+    }
+
+    @XmlElementWrapper(name="references")
+    @XmlElement(name="reference")
+    public List<Reference> getReferenceList() {
+        return referenceList;
+    }
+    public void setReferenceList(List<Reference> referenceList) {
+        this.referenceList = referenceList;
     }
 
     @XmlElementWrapper(name="changes")
@@ -100,6 +110,31 @@ public class SpecoutEntity {
         }
         public void setVersion(String version) {
             this.version = version;
+        }
+    }
+
+    public static class Reference {
+        private String id;
+        private String title;
+        private String link;
+
+        public String getId() {
+            return id;
+        }
+        public void setId(String id) {
+            this.id = id;
+        }
+        public String getTitle() {
+            return title;
+        }
+        public void setTitle(String title) {
+            this.title = title;
+        }
+        public String getLink() {
+            return link;
+        }
+        public void setLink(String link) {
+            this.link = link;
         }
     }
 

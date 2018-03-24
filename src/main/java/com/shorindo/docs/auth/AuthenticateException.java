@@ -19,6 +19,7 @@ package com.shorindo.docs.auth;
  * 
  */
 public class AuthenticateException extends Exception {
+    private static final long serialVersionUID = 1L;
 
     /**
      * 

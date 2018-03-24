@@ -15,14 +15,13 @@
  */
 package com.shorindo.docs.auth;
 
+import static com.shorindo.docs.database.DatabaseMessages.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocsMessages;
 import com.shorindo.docs.auth.entity.GroupEntity;
 import com.shorindo.docs.auth.entity.SessionEntity;
 import com.shorindo.docs.auth.entity.UserEntity;
@@ -30,9 +29,7 @@ import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseExecutor;
 import com.shorindo.docs.database.DatabaseSchema;
 import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.database.DatabaseSchema.Entity;
 import com.shorindo.docs.database.Transactional;
-import com.shorindo.docs.database.Transactionless;
 
 /**
  * 
@@ -55,38 +52,33 @@ public class AuthenticateService {
         try {
             DatabaseSchema schema = databaseService.loadSchema(is);
             databaseService.validateSchema(schema);
-//            for (Entity entity : schema.getEntityList()) {
-//                if (entity instanceof DatabaseSchema.Table) {
-//                    doDDL((DatabaseSchema.Table)entity);
-//                }
-//            }
         } catch (DatabaseException e) {
-            LOG.error(DocsMessages.E_5123);
+            LOG.error(DB_5123);
         } finally {
             try {
                 is.close();
             } catch (IOException e) {
-                LOG.warn(DocsMessages.E_5103, e);
+                LOG.warn(DB_5103, e);
             }
         }
     }
 
-    private void doDDL(DatabaseSchema.Table entity) {
-        String tableName = entity.getName();
-        try {
-            final String ddl = databaseService.generateDDL((DatabaseSchema.Table)entity);
-            LOG.debug("doDDL => " + ddl);
-            databaseService.provide(new Transactionless<Integer>() {
-                @Override
-                public Integer run(Connection conn, Object...params) throws DatabaseException {
-                    return exec(ddl);
-                }
-            
-            }, ddl);
-        } catch (DatabaseException e) {
-            LOG.error(DocsMessages.E_5121, e, tableName);
-        }
-    }
+//    private void doDDL(DatabaseSchema.Table entity) {
+//        String tableName = entity.getName();
+//        try {
+//            final String ddl = databaseService.generateDDL((DatabaseSchema.Table)entity);
+//            LOG.debug("doDDL => " + ddl);
+//            databaseService.provide(new Transactionless<Integer>() {
+//                @Override
+//                public Integer run(Connection conn, Object...params) throws DatabaseException {
+//                    return exec(ddl);
+//                }
+//            
+//            }, ddl);
+//        } catch (DatabaseException e) {
+//            LOG.error(DOCS_5121, e, tableName);
+//        }
+//    }
 
     /*
      * 

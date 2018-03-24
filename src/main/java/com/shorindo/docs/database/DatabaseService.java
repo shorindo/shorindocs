@@ -15,6 +15,8 @@
  */
 package com.shorindo.docs.database;
 
+import static com.shorindo.docs.ApplicationContext.*;
+import static com.shorindo.docs.database.DatabaseMessages.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -44,7 +46,6 @@ import com.github.mustachejava.MustacheFactory;
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.BeanUtil;
-import com.shorindo.docs.DocsMessages;
 
 /**
  * 
@@ -72,7 +73,7 @@ public class DatabaseService {
             props.setProperty("testOnBorrow", ApplicationContext.getProperty("datasource.testOnBorrow"));
             dataSource = BasicDataSourceFactory.createDataSource(props);
         } catch (Exception e) {
-            LOG.error(DocsMessages.E_5100, e);
+            LOG.error(DB_5100, e);
         }
     }
 
@@ -83,7 +84,7 @@ public class DatabaseService {
     public DatabaseSchema loadSchema(InputStream is) {
         DatabaseSchema newSchema = JAXB.unmarshal(is, DatabaseSchema.class);
         for (DatabaseSchema.Entity entity : newSchema.getEntityList()) {
-            LOG.info(DocsMessages.I_1101, newSchema.getPackage(), entity.getName());
+            LOG.info(DB_1101, newSchema.getPackage(), entity.getName());
             Map<String,DatabaseSchema.Column> columnMap =
                 new LinkedHashMap<String,DatabaseSchema.Column>();
             for (DatabaseSchema.Column column : entity.getColumnList()) {
@@ -113,7 +114,7 @@ public class DatabaseService {
                         String entityName = entity.getName();
                         ResultSet trset = meta.getTables(null, null, entityName, null);
                         if (!trset.next()) {
-                            String msg = LOG.error(DocsMessages.E_5108, entityName);
+                            String msg = LOG.error(DB_5108, entityName);
                             resultList.add(msg);
                             trset.close();
                             continue;
@@ -132,7 +133,7 @@ public class DatabaseService {
                             String columnName = crset.getString("COLUMN_NAME");
                             DatabaseSchema.Column c = map.get(columnName);
                             if (c == null) {
-                                String msg = LOG.error(DocsMessages.E_5109, entityName, columnName);
+                                String msg = LOG.error(DB_5109, entityName, columnName);
                                 resultList.add(msg);
                                 valid = false;
                             } else {
@@ -143,12 +144,12 @@ public class DatabaseService {
 
                         // カラム定義あり、実体なしのチェック
                         for (Map.Entry<String,DatabaseSchema.Column> e : map.entrySet()) {
-                            String msg = LOG.error(DocsMessages.E_5110, entityName, e.getKey());
+                            String msg = LOG.error(DB_5110, entityName, e.getKey());
                             resultList.add(msg);
                             valid = false;
                         }
                         crset.close();
-                        LOG.info(DocsMessages.I_1104, entityName);
+                        LOG.info(DB_1104, entityName);
                     }
                     return resultList;
                 } catch (SQLException e) {
@@ -179,7 +180,7 @@ public class DatabaseService {
                 try {
                     executor.rollbackTransaction(conn);
                 } catch (DatabaseException e) {
-                    LOG.error(DocsMessages.E_5105, e);
+                    LOG.error(DB_5105, e);
                 }
             }
             throw new DatabaseException(th);
@@ -189,7 +190,7 @@ public class DatabaseService {
                 try {
                     conn.close();
                 } catch (SQLException e) {
-                    LOG.error(DocsMessages.E_5103, e);
+                    LOG.error(DB_5103, e);
                 }
             }
         }
@@ -204,20 +205,35 @@ public class DatabaseService {
             DatabaseMetaData meta = conn.getMetaData();
             ResultSet tableSet = meta.getTables(null, null, null, null);
             while (tableSet.next()) {
-                LOG.info("TABLE[" + tableSet.getString("TABLE_NAME") + "]");
+                //LOG.info("TABLE[" + tableSet.getString("TABLE_NAME") + "]");
                 ResultSet columnSet = meta.getColumns(
                         tableSet.getString("TABLE_CAT"),
                         tableSet.getString("TABLE_SCHEM"),
                         tableSet.getString("TABLE_NAME"),
                         null);
-                while (columnSet.next()) {
-                    LOG.info("    " +
-                            columnSet.getString("COLUMN_NAME") +
-                            " " +
-                            columnSet.getString("TYPE_NAME"));
-                }
+//                while (columnSet.next()) {
+//                    LOG.info("    " +
+//                            columnSet.getString("COLUMN_NAME") +
+//                            " " +
+//                            columnSet.getString("TYPE_NAME"));
+//                }
             }
         }
+    }
+
+    /**
+     * @throws DatabaseException 
+     * 
+     */
+    public int createTableFromSchema(DatabaseSchema.Table table) throws DatabaseException {
+        return provide(new Transactionless<Integer>() {
+            @Override
+            public Integer run(Connection conn, Object... params)
+                    throws DatabaseException {
+                String ddl = generateDDL(table);
+                return exec(ddl);
+            }
+        });
     }
 
     /**
@@ -226,7 +242,7 @@ public class DatabaseService {
     public String generateDDL(DatabaseSchema.Table table) throws DatabaseException {
         StringBuilder sb = new StringBuilder();
         Map<Integer,String> primaryMap = new TreeMap<Integer,String>();
-        sb.append("CREATE TABLE IF NOT EXISTS " + table.getName() + " (\n");
+        sb.append("CREATE TABLE " + table.getName() + " (\n");
         String sep = "    ";
         for (DatabaseSchema.Column column : table.getColumnList()) {
             sb.append(sep + column.getName() + " " + column.getType());
@@ -241,7 +257,8 @@ public class DatabaseService {
             }
             if (column.getPrimaryKey() > 0) {
                 if (primaryMap.containsKey(column.getPrimaryKey())) {
-                    throw new DatabaseException(DocsMessages.E_5122.getMessage(
+                    throw new DatabaseException(DB_5122.getMessage(
+                            LANG,
                             column.getName(),
                             column.getPrimaryKey()));
                 } else {

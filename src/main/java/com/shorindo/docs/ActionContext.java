@@ -98,7 +98,7 @@ public class ActionContext {
         try {
             return bundle.getString(key);
         } catch (Exception e) {
-            LOG.error(DocsMessages.E_5001, e);
+            LOG.error(DocsMessages.DOCS_5001, e);
             return key;
         }
     }

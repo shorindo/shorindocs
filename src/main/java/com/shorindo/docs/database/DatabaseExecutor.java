@@ -15,6 +15,8 @@
  */
 package com.shorindo.docs.database;
 
+import static com.shorindo.docs.ApplicationContext.*;
+import static com.shorindo.docs.database.DatabaseMessages.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,7 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocsMessages;
+import com.shorindo.docs.IdentityProvider;
 
 /**
  * 
@@ -69,7 +71,9 @@ public abstract class DatabaseExecutor<T> {
      * @throws SQLException
      */
     protected final int exec(String sql, Object...params) throws DatabaseException {
-        LOG.debug("SQL文を実行します : " + sql);
+        long st = System.currentTimeMillis();
+        String hash = IdentityProvider.hash(sql);
+        LOG.debug(DB_0005, hash, sql);
         Connection conn = local.get();
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -78,7 +82,9 @@ public abstract class DatabaseExecutor<T> {
             for (Object param : params) {
                 stmt.setObject(i++, param);
             }
-            return stmt.executeUpdate();
+            int result = stmt.executeUpdate();
+            LOG.debug(DB_0006, hash, (System.currentTimeMillis() - st));
+            return result;
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
@@ -93,7 +99,7 @@ public abstract class DatabaseExecutor<T> {
      * @throws SQLException
      */
     protected final <E> List<E> query(String sql, Class<E> clazz, Object...params) throws DatabaseException {
-        LOG.debug("検索処理開始：" + sql);
+        LOG.debug(DB_0007, sql);
         long st = System.currentTimeMillis();
         List<E> resultList = new ArrayList<E>();
         int index = 1;
@@ -130,7 +136,7 @@ public abstract class DatabaseExecutor<T> {
             dispose(rset);
         }
 
-        LOG.debug("検索処理終了：" + (System.currentTimeMillis() - st) + " ms");
+        LOG.debug(DB_0008, (System.currentTimeMillis() - st) + " ms");
         return resultList;
     }
 
@@ -153,7 +159,7 @@ public abstract class DatabaseExecutor<T> {
     protected final <E extends SchemaEntity> E get(E entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
-        LOG.debug("検索処理開始：" + mapping.getSelectSql());
+        LOG.debug(DB_0007, mapping.getSelectSql());
         long st = System.currentTimeMillis();
         PreparedStatement stmt = null;
         ResultSet rset = null;
@@ -176,7 +182,7 @@ public abstract class DatabaseExecutor<T> {
             } else {
                 entity = null;
             }
-            LOG.debug("検索処理終了：" + (System.currentTimeMillis() - st) + " ms");
+            LOG.debug(DB_0008, (System.currentTimeMillis() - st) + " ms");
             return entity;
         } catch (IllegalAccessException e) {
             throw new DatabaseException(e);
@@ -217,7 +223,7 @@ public abstract class DatabaseExecutor<T> {
     protected final int remove(SchemaEntity entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
-        LOG.debug("削除処理開始：" + mapping.getUpdateSql());
+        LOG.debug(DB_0009, mapping.getUpdateSql());
         PreparedStatement stmt = null;
         int index = 1;
 
@@ -395,7 +401,7 @@ public abstract class DatabaseExecutor<T> {
             try {
                 stmt.close();
             } catch (SQLException e) {
-                LOG.error(DocsMessages.E_5106, e);
+                LOG.error(DB_5106, e);
             }
     }
 
@@ -404,7 +410,7 @@ public abstract class DatabaseExecutor<T> {
             try {
                 rset.close();
             } catch (Exception e) {
-                LOG.error(DocsMessages.E_5107, e);
+                LOG.error(DB_5107, e);
             }
     }
 
@@ -417,7 +423,7 @@ public abstract class DatabaseExecutor<T> {
     protected int insert(SchemaEntity entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
-        LOG.debug("新規登録開始：" + mapping.getInsertSql());
+        LOG.debug(DB_0011, mapping.getInsertSql());
         PreparedStatement stmt = null;
         int index = 1;
         try {
@@ -448,7 +454,7 @@ public abstract class DatabaseExecutor<T> {
     protected int update(SchemaEntity entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
-        LOG.debug("更新処理開始：" + mapping.getUpdateSql());
+        LOG.debug(DB_0013, mapping.getUpdateSql());
         PreparedStatement stmt = null;
         int index = 1;
         try {
@@ -489,6 +495,7 @@ public abstract class DatabaseExecutor<T> {
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Method getMethod = mapping.getResultSetGetMethod();
         Field field = mapping.getField();
+        field.setAccessible(true);
         field.set(entity, getMethod.invoke(rset, index));
     }
 
@@ -540,7 +547,7 @@ public abstract class DatabaseExecutor<T> {
 //                stmtCache.addField(field);
 //            }
 //        } catch (SecurityException e) {
-//            LOG.error(DocsMessages.E_5111, e);
+//            LOG.error(E_5111, e);
 //        } finally {
 //            finalize(columnSet);
 //        }
@@ -610,7 +617,7 @@ public abstract class DatabaseExecutor<T> {
 //                stmtCache.addPrimary(field);
 //            }
 //        } catch (SecurityException e) {
-//            LOG.error(DocsMessages.E_5111, e);
+//            LOG.error(E_5111, e);
 //        } finally {
 //            finalize(primarySet);
 //            finalize(columnSet);
@@ -632,8 +639,11 @@ public abstract class DatabaseExecutor<T> {
             // 対象フィールドの一覧取得
             Map<String,Field> fieldMap = new TreeMap<String,Field>();
 
-            for (SchemaType type : entity.getTypes()) {
-                fieldMap.put(type.getColumnName(), type.getField());
+            for (Field field : entity.getClass().getDeclaredFields()) {
+                Column column = field.getAnnotation(Column.class);
+                if (column != null) {
+                    fieldMap.put(column.name(), field);
+                }
             }
 
             primarySet = meta.getPrimaryKeys(null, null, entity.getEntityName());
@@ -660,7 +670,7 @@ public abstract class DatabaseExecutor<T> {
                 if (field != null) {
                     columnCache.setField(field);
                 } else {
-                    throw new SQLException(DocsMessages.E_5119.getMessage(columnName));
+                    throw new SQLException(DB_5119.getMessage(LANG, columnName));
                 }
 
                 // PreparedStatement/ResultSetのsetter/getter
@@ -669,7 +679,7 @@ public abstract class DatabaseExecutor<T> {
                     columnCache.setStatementSetMethod(setter[0]);
                     columnCache.setResultSetGetMethod(setter[1]);
                 } else {
-                    throw new SQLException(DocsMessages.E_5119.getMessage(field.getName()));
+                    throw new SQLException(DB_5119.getMessage(LANG, field.getName()));
                 }
 
                 entityMapping.putColumn(columnName, columnCache);
@@ -682,8 +692,8 @@ public abstract class DatabaseExecutor<T> {
         }
 
         entityMapping.build();
-        LOG.debug("bind(" + entity.getClass().getSimpleName() + ") : elapsed " +
-                (System.currentTimeMillis() - st) + " ms");
+//        LOG.debug("bind(" + entity.getClass().getSimpleName() + ") : elapsed " +
+//                (System.currentTimeMillis() - st) + " ms");
         return entityMapping;
     }
 

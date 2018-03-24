@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs;
 
+import static com.shorindo.docs.DocsMessages.*;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
@@ -37,21 +38,23 @@ public abstract class ActionController {
     public abstract String view(ActionContext context);
 
     public View action(ActionContext context) {
-        LOG.debug(this.getClass().getSimpleName() + ".action()");
+        long st = System.currentTimeMillis();
+        LOG.debug(DOCS_1107, getClass().getSimpleName() + ".action()");
         try {
             Class<?> clazz = getClass();
             while (clazz != null) {
                 Method method = clazz.getDeclaredMethod(context.getAction(), ActionContext.class);
                 if (method.getAnnotation(ActionMethod.class) != null &&
                         String.class.isAssignableFrom(method.getReturnType())) {
+                    LOG.debug(DOCS_1108, getClass().getSimpleName() + ".action()", (System.currentTimeMillis() - st));
                     return getView((String)method.invoke(this, context), context);
                 }
                 clazz = clazz.getSuperclass();
             }
-            LOG.warn(DocsMessages.W_3003, context.getAction());
+            LOG.warn(DOCS_3003, context.getAction());
             return getView(view(context), context);
         } catch (Exception e) {
-            LOG.error(DocsMessages.W_3003, e, context.getAction());
+            LOG.error(DOCS_3003, e, context.getAction());
             return new ErrorView(500);
         }
     }
@@ -61,7 +64,7 @@ public abstract class ActionController {
             return new ErrorView(404);
         } else if (".xuml".equals(viewName)) {
             InputStream is = getClass().getResourceAsStream(getClass().getSimpleName() + viewName);
-            return new XumlView(is);
+            return new XumlView(getClass().getSimpleName() + viewName, is);
         } else if (viewName.startsWith("/")) {
             return new RedirectView(viewName, context);
         } else {

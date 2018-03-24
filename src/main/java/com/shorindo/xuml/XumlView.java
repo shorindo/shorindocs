@@ -15,20 +15,16 @@
  */
 package com.shorindo.xuml;
 
+import static com.shorindo.xuml.XumlMessages.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -44,7 +40,6 @@ import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.BeanUtil;
 import com.shorindo.docs.DocsMessages;
-import com.shorindo.docs.database.DatabaseSchema;
 import com.shorindo.docs.view.View;
 
 /**
@@ -53,6 +48,7 @@ import com.shorindo.docs.view.View;
 public class XumlView extends View {
     private static final ActionLogger LOG = ActionLogger.getLogger(XumlView.class);
     private static final Map<String,Class<?>> componentMap = new HashMap<String,Class<?>>();
+    private String name;
     private Component component;
 
     public static void init(String path) {
@@ -82,30 +78,34 @@ public class XumlView extends View {
                     Class<?> c = Class.forName(className);
                     if (Component.class.isAssignableFrom(c)) {
                         defineComponent(c);
-                        LOG.info(DocsMessages.I_0002, c.getName());
+                        LOG.info(DocsMessages.DOCS_0002, c.getName());
                     }
                 } catch (ClassNotFoundException e) {
-                    LOG.error(DocsMessages.E_9999, e);
+                    LOG.error(DocsMessages.DOCS_9999, e);
                 }
             }
         }
     }
 
-    public XumlView(InputStream is) {
+    public XumlView(String name, InputStream is) {
         super();
+        long st = System.currentTimeMillis();
+        this.name = name;
+        LOG.debug(DocsMessages.DOCS_1109, name);
         try {
             component = parse(is);
         } catch (SAXException e) {
-            LOG.error(DocsMessages.E_9999, e);
+            LOG.error(DocsMessages.DOCS_9999, e);
         } catch (IOException e) {
-            LOG.error(DocsMessages.E_9999, e);
+            LOG.error(DocsMessages.DOCS_9999, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(DocsMessages.E_9999, e);
+                LOG.error(DocsMessages.DOCS_9999, e);
             }
         }
+        LOG.debug(DocsMessages.DOCS_1110, name, (System.currentTimeMillis() - st));
     }
 
     @Override
@@ -115,11 +115,14 @@ public class XumlView extends View {
 
     @Override
     public void render(ActionContext context, OutputStream os) {
+        long st = System.currentTimeMillis();
+        LOG.debug(DocsMessages.DOCS_1111, name);
         try {
             os.write(evalMustache(context, component.getHtml()).getBytes("UTF-8"));
         } catch (Exception e) {
-            LOG.error(DocsMessages.E_9999, e);
+            LOG.error(DocsMessages.DOCS_9999, e);
         }
+        LOG.debug(DocsMessages.DOCS_1112, name, System.currentTimeMillis() - st);
     }
 
     public Component parse(InputStream input) throws SAXException, IOException {
@@ -145,7 +148,7 @@ public class XumlView extends View {
                     BeanUtil.setValue(component, name, value);
                 }
             } catch (Exception e) {
-                LOG.error(DocsMessages.E_5125, e, componentName);
+                LOG.error(XUML_5125, e, componentName);
                 component = new General(this, componentName, attrs);
             }
         } else {

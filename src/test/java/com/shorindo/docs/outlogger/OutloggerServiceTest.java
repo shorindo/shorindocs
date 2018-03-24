@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth;
+package com.shorindo.docs.outlogger;
 
 import static org.junit.Assert.*;
 
@@ -23,29 +23,25 @@ import java.io.InputStream;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.auth.AuthenticateService;
 
 /**
  * 
  */
-public class AuthenticateServiceTest {
-    private static AuthenticateService authenticateService;
+public class OutloggerServiceTest {
+    private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerServiceTest.class);
+    private static OutloggerService service;
 
     @BeforeClass
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
-        try {
-            ApplicationContext.loadProperties(is);
-            authenticateService = AuthenticateService.getInstance();
-        } finally {
-            is.close();
-        }
+        ApplicationContext.loadProperties(is);
+        service = new OutloggerService();
     }
 
     @Test
-    public void test() {
-        assertTrue(true);
+    public void testCreateSchema() throws Exception {
+        service.createSchema();
     }
-
 }

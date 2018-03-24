@@ -17,12 +17,15 @@ package com.shorindo.docs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
  * 
  */
 public class ApplicationContext {
+    public static final Locale LANG = Locale.JAPANESE;
+
     private static final ActionLogger LOG = ActionLogger.getLogger(ApplicationContext.class);
     private static final Properties props = new Properties();
 
@@ -33,7 +36,7 @@ public class ApplicationContext {
             try {
                 is.close();
             } catch (IOException e1) {
-                LOG.error(DocsMessages.E_9999, e1);
+                LOG.error(DocsMessages.DOCS_9999, e1);
             }
         }
     }

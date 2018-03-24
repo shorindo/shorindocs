@@ -13,19 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.entity;
+package com.shorindo.docs.outlogger;
 
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.Table;
+import java.text.MessageFormat;
+import java.util.Locale;
+
+import com.shorindo.docs.ActionMessages;
 
 /**
  * 
  */
-@Table("AUTH_GROUP")
-public class GroupEntity extends SchemaEntity {
-    public GroupEntity() throws DatabaseException {
-        super();
+public enum OutloggerMessages implements ActionMessages {
+    OLOG_0000("");
+
+    private String message;
+
+    private OutloggerMessages(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public String getCode() {
+        return name().replaceAll("_", "-");
+    }
+
+    @Override
+    public String getMessage(Locale locale, Object... args) {
+        return MessageFormat.format(message, args);
     }
 
 }

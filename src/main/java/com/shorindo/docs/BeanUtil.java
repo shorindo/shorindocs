@@ -15,6 +15,8 @@
  */
 package com.shorindo.docs;
 
+import static com.shorindo.docs.ApplicationContext.*;
+import static com.shorindo.docs.DocsMessages.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -120,7 +122,7 @@ public class BeanUtil {
 
         while (m.find(start)) {
             if (m.start() != start) {
-                throw new BeanNotFoundException(DocsMessages.E_5007.getMessage(name));
+                throw new BeanNotFoundException(DOCS_5007.getMessage(LANG, name));
             }
 
             // 最後の項目はset
@@ -134,12 +136,12 @@ public class BeanUtil {
             } else {
                 bean = getProperty(bean, m.group(1));
                 if (bean == null && end != name.length()) {
-                    throw new BeanNotFoundException(DocsMessages.E_5005.getMessage(name));
+                    throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, name));
                 }
                 if (m.group(3) != null) {
                     bean = getProperty(bean, m.group(3));
                     if (bean == null && end != name.length()) {
-                        throw new BeanNotFoundException(DocsMessages.E_5005.getMessage(name));
+                        throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, name));
                     }
                 }
             }
@@ -147,7 +149,7 @@ public class BeanUtil {
         }
 
         if (start != end) {
-            throw new BeanNotFoundException(DocsMessages.E_5007.getMessage(name));
+            throw new BeanNotFoundException(DOCS_5007.getMessage(LANG, name));
         }
     }
 
@@ -175,24 +177,24 @@ public class BeanUtil {
 
         while (m.find(start)) {
             if (m.start() != start) {
-                throw new BeanNotFoundException(DocsMessages.E_5007.getMessage(name));
+                throw new BeanNotFoundException(DOCS_5007.getMessage(LANG, name));
             }
 
             bean = getProperty(bean, m.group(1));
             if (bean == null && end != name.length()) {
-                throw new BeanNotFoundException(DocsMessages.E_5005.getMessage(m.group(1)));
+                throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, m.group(1)));
             }
             if (m.group(3) != null) {
                 bean = getProperty(bean, m.group(3));
                 if (bean == null && end != name.length()) {
-                    throw new BeanNotFoundException(DocsMessages.E_5005.getMessage(m.group(3)));
+                    throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, m.group(3)));
                 }
             }
             start = end = m.end();
         }
 
         if (start != end) {
-            throw new BeanNotFoundException(DocsMessages.E_5007.getMessage(name));
+            throw new BeanNotFoundException(DOCS_5007.getMessage(LANG, name));
         }
 
         return bean;
@@ -209,7 +211,7 @@ public class BeanUtil {
         try {
             return getValue(bean, name);
         } catch (BeanNotFoundException e) {
-            LOG.info(DocsMessages.I_0004, name, defaultValue);
+            LOG.info(DOCS_0004, name, defaultValue);
             return defaultValue;
         }
     }
@@ -298,7 +300,7 @@ public class BeanUtil {
                     Method method = bean.getClass().getMethod(setterName, targetType);
                     method.invoke(bean, value);
                 } catch (Exception ex) {
-                    throw new BeanNotFoundException(DocsMessages.E_5005.getMessage(name), ex);
+                    throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, name), ex);
                 }
             }
         }
@@ -331,7 +333,7 @@ public class BeanUtil {
                     if (!field.isAccessible()) field.setAccessible(true);
                     return field.get(bean);
                 } catch (Exception ex) {
-                    throw new BeanNotFoundException(DocsMessages.E_5005.getMessage(name), ex);
+                    throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, name), ex);
                 }
             }
         }

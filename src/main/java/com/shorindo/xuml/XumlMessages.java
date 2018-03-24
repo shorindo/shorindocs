@@ -13,19 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.entity;
+package com.shorindo.xuml;
 
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.Table;
+import java.text.MessageFormat;
+import java.util.Locale;
+
+import com.shorindo.docs.ActionMessages;
 
 /**
  * 
  */
-@Table("AUTH_GROUP")
-public class GroupEntity extends SchemaEntity {
-    public GroupEntity() throws DatabaseException {
-        super();
+public enum XumlMessages implements ActionMessages {
+    XUML_5125("[{0}]の生成に失敗したため、Generalコンポーネントを使用します。")
+    ;
+
+    private String message;
+
+    private XumlMessages(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public String getCode() {
+        return name().replaceAll("_", "-");
+    }
+
+    @Override
+    public String getMessage(Locale locale, Object... args) {
+        return MessageFormat.format(message, args);
     }
 
 }

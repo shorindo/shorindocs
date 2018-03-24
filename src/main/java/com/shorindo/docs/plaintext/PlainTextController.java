@@ -58,7 +58,7 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("\n", "<br/>"));
             context.setAttribute("recents", recents());
         } catch (DatabaseException e) {
-            LOG.error(DocsMessages.E_9001, e);
+            LOG.error(DocsMessages.DOCS_9001, e);
         }
         return ".xuml";
     }

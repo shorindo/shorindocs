@@ -46,7 +46,7 @@ public class ErrorView extends View {
         context.setAttribute("message", context.getMessage("error." + getStatus()));
         InputStream is = getClass().getClassLoader().getResourceAsStream("xuml/error.xuml");
         try {
-            new XumlView(is).render(context, os);
+            new XumlView(String.valueOf(getStatus()), is).render(context, os);
         } finally {
             if (is != null)
                 try {

@@ -15,38 +15,19 @@
  */
 package com.shorindo.docs.auth.entity;
 
+import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.SchemaEntity;
 import com.shorindo.docs.database.SchemaType;
+import com.shorindo.docs.database.Table;
 
 /**
  * 
  */
+@Table("AUTH_SESSION")
 public class SessionEntity extends SchemaEntity {
-    private static final String ENTITY_NAME = "AUTH_SESSION";
 
-    /**
-     * 
-     */
-    public SessionEntity() {
-    }
-
-    @Override
-    public String getEntityName() {
-        return ENTITY_NAME;
-    }
-
-    @Override
-    public SchemaType[] getTypes() {
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see com.shorindo.docs.database.SchemaEntity#getType(java.lang.String)
-     */
-    @Override
-    public SchemaType getType(String name) {
-        // TODO Auto-generated method stub
-        return null;
+    public SessionEntity() throws DatabaseException {
+        super();
     }
 
 }

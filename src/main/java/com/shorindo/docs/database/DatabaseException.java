@@ -15,6 +15,9 @@
  */
 package com.shorindo.docs.database;
 
+import static com.shorindo.docs.ApplicationContext.*;
+import com.shorindo.docs.ActionMessages;
+
 /**
  * 
  */
@@ -26,6 +29,10 @@ public class DatabaseException extends Exception {
      */
     public DatabaseException() {
         super();
+    }
+
+    public DatabaseException(ActionMessages messages, Object...args) {
+        super(messages.getCode() + ":" + messages.getMessage(LANG, args));
     }
 
     /**

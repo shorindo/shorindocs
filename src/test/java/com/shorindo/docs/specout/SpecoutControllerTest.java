@@ -82,4 +82,38 @@ public class SpecoutControllerTest {
         });
         assertEquals(1, count);
     }
+
+    @Test
+    public void testPoV() throws Exception {
+        InputStream is = getClass()
+                .getResourceAsStream("testpov.xml");
+        StringBuilder body = new StringBuilder();
+        Reader reader = new InputStreamReader(is, "UTF-8");
+        char[] buff = new char[2048];
+        int len = 0;
+        while ((len = reader.read(buff)) > 0) {
+            body.append(buff, 0, len);
+        }
+       
+        int count = databaseService.provide(new Transactional<Integer>() {
+
+            @Override
+            public Integer run(Connection conn, Object... params)
+                    throws DatabaseException {
+                DocumentEntity entity = new DocumentEntity();
+                entity.setDocumentId("testpov");
+                entity.setContentType(SpecoutController.class.getName());
+                entity.setTitle("テスト観点");
+                entity.setBody(body.toString());
+                entity.setStatus(0);
+                entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
+                entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
+                entity.setOwnerId(getClass().getName());
+                entity.setAclId("aclId");
+                return put(entity);
+            }
+            
+        });
+        assertEquals(1, count);
+    }
 }

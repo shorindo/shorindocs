@@ -15,10 +15,12 @@
  */
 package com.shorindo.docs;
 
+import java.util.Locale;
+
 /**
  * 
  */
 public interface ActionMessages {
     public String getCode();
-    public String getMessage(Object...args);
+    public String getMessage(Locale locale, Object...args);
 }

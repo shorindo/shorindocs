@@ -48,7 +48,7 @@ public class XumlEngine {
             InputStream is = getClass().getResourceAsStream(getClass().getSimpleName() + ".xsl");
             transformer = factory.newTransformer(new StreamSource(is));
         } catch (TransformerConfigurationException e) {
-            LOG.error(DocsMessages.E_5004, e, XumlEngine.class);
+            LOG.error(DocsMessages.DOCS_5004, e, XumlEngine.class);
         }
     }
 
@@ -58,7 +58,7 @@ public class XumlEngine {
             Result outputTarget = new StreamResult(os);
             transformer.transform(domSource, outputTarget);
         } catch (TransformerException e) {
-            LOG.error(DocsMessages.E_9999, e);
+            LOG.error(DocsMessages.DOCS_9999, e);
         }
     }
 }

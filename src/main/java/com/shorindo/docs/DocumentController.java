@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs;
 
+import static com.shorindo.docs.DocsMessages.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -86,7 +87,7 @@ public abstract class DocumentController extends ActionController {
                 return new ErrorView(404);
             }
         } catch (DatabaseException e) {
-            LOG.error(DocsMessages.E_9002, id);
+            LOG.error(DOCS_9002, id);
             return new ErrorView(500);
         }
     }
@@ -123,19 +124,21 @@ public abstract class DocumentController extends ActionController {
     @ActionMethod
     public View create(ActionContext context) throws DocumentException {
         String id = String.valueOf(IdentityProvider.newId());
-        DocumentEntity model = new DocumentEntity();
-        model.setDocumentId(id);
-        model.setContentType(context.getParameter("contentType"));
-        model.setTitle(context.getParameter("title"));
-        model.setBody(context.getParameter("body"));
+
         try {
+            DocumentEntity model = new DocumentEntity();
+            model.setDocumentId(id);
+            model.setContentType(context.getParameter("contentType"));
+            model.setTitle(context.getParameter("title"));
+            model.setBody(context.getParameter("body"));
+
             if (databaseService.provide(CREATE_EXEC, model, context.getUser()) >= 0) {
                 return new RedirectView(id + "?action=edit", context);
             } else {
                 return new ErrorView(404);
             }
         } catch (DatabaseException e) {
-            LOG.error(DocsMessages.E_9002, id);
+            LOG.error(DOCS_9002, id);
             return new ErrorView(500);
         }
     }
@@ -169,11 +172,11 @@ public abstract class DocumentController extends ActionController {
                 if (databaseService.provide(REMOVE_EXEC, model) > 0) {
                     return new RedirectView("/index", context);
                 } else {
-                    LOG.error(DocsMessages.E_9003, id);
+                    LOG.error(DOCS_9003, id);
                     return new ErrorView(500);
                 }
             } catch (DatabaseException e) {
-                LOG.error(DocsMessages.E_9003, e, id);
+                LOG.error(DOCS_9003, e, id);
                 return new ErrorView(500);
             }
         }

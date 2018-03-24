@@ -100,7 +100,7 @@ public class DatabaseServiceTest {
                 return resultList.get(0);
             }
         });
-        LOG.info("elapsed:" + (System.currentTimeMillis() - st) + "ms"); 
+        LOG.debug("elapsed:" + (System.currentTimeMillis() - st) + "ms"); 
         assertEquals("BAR", result.getStringValue());
         assertEquals(123, (int)result.getIntValue());
         assertEquals(123.456, result.getDoubleValue(), 0.001);
@@ -194,7 +194,7 @@ public class DatabaseServiceTest {
         }
     }
 
-    public SampleEntity generateSampleEntity() {
+    public SampleEntity generateSampleEntity() throws DatabaseException {
         SampleEntity entity = new SampleEntity();
         entity.setStringValue("stringValue");
         entity.setByteObject(Byte.valueOf((byte)123));

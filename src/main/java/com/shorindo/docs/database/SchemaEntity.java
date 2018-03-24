@@ -15,8 +15,9 @@
  */
 package com.shorindo.docs.database;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import static com.shorindo.docs.ApplicationContext.*;
+import static com.shorindo.docs.database.DatabaseMessages.*;
+import java.lang.reflect.Field;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.DocsMessages;
@@ -27,43 +28,88 @@ import com.shorindo.docs.DocsMessages;
 public abstract class SchemaEntity {
     private static final ActionLogger LOG = ActionLogger.getLogger(SchemaEntity.class);
 
-    public abstract String getEntityName();
-    public abstract SchemaType[] getTypes();
-    public abstract SchemaType getType(String name);
-
-    public final void setByName(String name, Object value) throws DatabaseException {
-        SchemaType type = getType(name);
-        if (type != null) {
-            try {
-                Method method = type.getSetMethod();
-                method.invoke(this, value);
-            } catch (IllegalAccessException e) {
-                throw new DatabaseException(e);
-            } catch (IllegalArgumentException e) {
-                throw new DatabaseException(e);
-            } catch (InvocationTargetException e) {
-                throw new DatabaseException(e);
+    public SchemaEntity() throws DatabaseException {
+        int count = 0;
+        for (Field field : getClass().getDeclaredFields()) {
+            Column column = field.getAnnotation(Column.class);
+            if (column != null) {
+                count++;
             }
-        } else {
-            throw new DatabaseException(DocsMessages.E_5124.getMessage(name));
+        }
+        if (count == 0) {
+            throw new DatabaseException("カラム指定アノテーションが１つもありません");
         }
     }
 
-    public final Object getByName(String name) throws DatabaseException {
-        SchemaType type = getType(name);
-        if (type != null) {
-            try {
-                Method method = type.getGetMethod();
-                return method.invoke(this);
-            } catch (IllegalAccessException e) {
-                throw new DatabaseException(e);
-            } catch (IllegalArgumentException e) {
-                throw new DatabaseException(e);
-            } catch (InvocationTargetException e) {
-                throw new DatabaseException(e);
-            }
+    public final String getEntityName() throws DatabaseException {
+        Table table = getClass().getAnnotation(Table.class);
+        if (table != null) {
+            return table.value();
         } else {
-            throw new DatabaseException(DocsMessages.E_5124.getMessage(name));
+            throw new DatabaseException(DB_5125);
         }
+    }
+
+//    public final void setByName(String name, Object value) throws DatabaseException {
+//        if (type != null) {
+//            try {
+//                Method method = type.getSetMethod();
+//                method.invoke(this, value);
+//            } catch (IllegalAccessException e) {
+//                throw new DatabaseException(e);
+//            } catch (IllegalArgumentException e) {
+//                throw new DatabaseException(e);
+//            } catch (InvocationTargetException e) {
+//                throw new DatabaseException(e);
+//            }
+//        } else {
+//            throw new DatabaseException(DocsMessages.E_5124.getMessage(name));
+//        }
+//    }
+//
+    public final Object getByName(String name) throws DatabaseException {
+        for (Field field : getClass().getDeclaredFields()) {
+            Column column = field.getAnnotation(Column.class);
+            if (column != null && name.equals(column.name())) {
+                try {
+                    field.setAccessible(true);
+                    return field.get(this);
+                } catch (IllegalArgumentException e) {
+                    throw new DatabaseException(DB_5119.getMessage(LANG, name));
+                } catch (IllegalAccessException e) {
+                    throw new DatabaseException(DB_5119.getMessage(LANG, name));
+                }
+            }
+        }
+        throw new DatabaseException(DB_5124.getMessage(LANG, name));
+    }
+
+    /**
+     * 
+     */
+    public DatabaseSchema.Table getTableSchema() throws DatabaseException {
+        DatabaseSchema.Table tableSchema = new DatabaseSchema.Table();
+        tableSchema.setName(getEntityName());
+
+        for (Field field : getClass().getDeclaredFields()) {
+            Column column = field.getAnnotation(Column.class);
+            if (column != null) {
+                DatabaseSchema.Column columnSchema = new DatabaseSchema.Column();
+                columnSchema.setName(column.name());
+                columnSchema.setType(column.typeName());
+                columnSchema.setJavaType(field.getType().toString());
+                columnSchema.setSize(column.size());
+                columnSchema.setPrecision(column.precision());
+                columnSchema.setPrimaryKey(column.primaryKey());
+                columnSchema.setUnique(column.unique());
+                columnSchema.setNotNull(column.notNull());
+                tableSchema.addColumn(columnSchema);
+            }
+        }
+        if (tableSchema.getColumnList().size() == 0) {
+            throw new DatabaseException(DB_5126.getMessage(LANG));
+        }
+
+        return tableSchema;
     }
 }
