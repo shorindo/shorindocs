@@ -15,11 +15,14 @@
  */
 package com.shorindo.docs;
 
+import java.util.Locale;
+
 /**
  * 
  */
 public class DocumentException extends Exception {
     private static final long serialVersionUID = 1L;
+    private static final Locale LANG = ApplicationContext.getLang();
 
     public DocumentException(String message, Throwable cause) {
         super(message, cause);
@@ -29,4 +32,7 @@ public class DocumentException extends Exception {
         super(message);
     }
 
+    public DocumentException(ActionMessages messages, Throwable cause) {
+        super(messages.getCode() + ":" + messages.getMessage(LANG), cause);
+    }
 }

@@ -15,14 +15,17 @@
  */
 package com.shorindo.docs.database;
 
-import static com.shorindo.docs.ApplicationContext.*;
+import java.util.Locale;
+
 import com.shorindo.docs.ActionMessages;
+import com.shorindo.docs.ApplicationContext;
 
 /**
  * 
  */
 public class DatabaseException extends Exception {
     private static final long serialVersionUID = 1530910919656505688L;
+    private static final Locale LANG = ApplicationContext.getLang();
 
     /**
      * 

@@ -21,7 +21,7 @@ import java.util.List;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocsMessages;
+import com.shorindo.docs.DocumentMessages;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentEntity;
 import com.shorindo.docs.annotation.ActionMethod;
@@ -58,7 +58,7 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("\n", "<br/>"));
             context.setAttribute("recents", recents());
         } catch (DatabaseException e) {
-            LOG.error(DocsMessages.DOCS_9001, e);
+            LOG.error(DocumentMessages.DOCS_9001, e);
         }
         return ".xuml";
     }

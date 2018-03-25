@@ -21,9 +21,8 @@ import java.util.Locale;
 /**
  * 
  */
-public enum DocsMessages implements ActionMessages {
+public enum DocumentMessages implements ActionMessages {
     DOCS_0001("パス[{0}]を[{1}]にマップします。"),
-    DOCS_0002("コンポーネント[{0}]をロードしました。"),
     DOCS_0003("クラス[{0}]をパス[{1}]にマッピングします。"),
     DOCS_0004("bean[{0}]の値がセットされていないため、デフォルト値[{1}]を使用します。"),
     DOCS_1105("サービス開始：{0}"),
@@ -32,8 +31,6 @@ public enum DocsMessages implements ActionMessages {
     DOCS_1108("アクション終了：{0} : {1} ms"),
     DOCS_1109("初期化開始：{0}"),
     DOCS_1110("初期化終了：{0} : {1} ms"),
-    DOCS_1111("レンダリング開始：{0}"),
-    DOCS_1112("レンダリング終了：{0} : {1} ms"),
 
     DOCS_3001("プロパティ[{0}]をセットできません。"),
     DOCS_3002("クラス[{0}]の情報を取得できません。"),
@@ -60,13 +57,13 @@ public enum DocsMessages implements ActionMessages {
 
     private String message;
 
-    private DocsMessages(String message) {
+    private DocumentMessages(String message) {
         this.message = message;
     }
 
     @Override
     public String getCode() {
-        return name().replaceAll("_", "-");
+        return name();
     }
 
     @Override

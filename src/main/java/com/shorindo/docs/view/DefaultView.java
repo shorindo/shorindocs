@@ -27,7 +27,7 @@ import java.util.TimeZone;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocsMessages;
+import com.shorindo.docs.DocumentMessages;
 
 /**
  * 
@@ -39,7 +39,7 @@ public class DefaultView extends View {
     private File file;
 
     public DefaultView(File file, ActionContext context) {
-        super();
+        init();
         this.file = file;
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
         getMeta().put("Last-Modified",
@@ -72,13 +72,13 @@ public class DefaultView extends View {
                 os.write(b, 0, l);
             }
         } catch (IOException e) {
-            LOG.error(DocsMessages.DOCS_9999, e);
+            LOG.error(DocumentMessages.DOCS_9999, e);
         } finally {
             if (is != null)
                 try {
                     is.close();
                 } catch (IOException e) {
-                    LOG.error(DocsMessages.DOCS_9999, e);
+                    LOG.error(DocumentMessages.DOCS_9999, e);
                 }
         }
     }

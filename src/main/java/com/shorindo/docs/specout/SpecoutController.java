@@ -16,6 +16,7 @@
 package com.shorindo.docs.specout;
 
 import static com.shorindo.docs.specout.SpecoutMessages.*;
+
 import java.io.StringReader;
 
 import javax.xml.bind.JAXB;

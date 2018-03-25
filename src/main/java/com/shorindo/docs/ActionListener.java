@@ -44,12 +44,12 @@ public class ActionListener implements ServletContextListener {
             PropertyConfigurator.configure(siteProperties);
             ApplicationContext.init(siteProperties);
         } catch (IOException e) {
-            LOG.error(DocsMessages.DOCS_9000, e);
+            LOG.error(DocumentMessages.DOCS_9000, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(DocsMessages.DOCS_9000, e);
+                LOG.error(DocumentMessages.DOCS_9000, e);
             }
         }
 

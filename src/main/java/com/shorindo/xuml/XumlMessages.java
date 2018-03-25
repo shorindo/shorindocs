@@ -24,6 +24,10 @@ import com.shorindo.docs.ActionMessages;
  * 
  */
 public enum XumlMessages implements ActionMessages {
+    XUML_1000("コンポーネント[{0}]をロードしました。"),
+    XUML_1001("レンダリング開始：{0}"),
+    XUML_1002("レンダリング終了：{0} : {1} ms"),
+    XUML_5001("コンポーネント[{0}]の指定ができませんでした。"),
     XUML_5125("[{0}]の生成に失敗したため、Generalコンポーネントを使用します。")
     ;
 
@@ -35,7 +39,7 @@ public enum XumlMessages implements ActionMessages {
 
     @Override
     public String getCode() {
-        return name().replaceAll("_", "-");
+        return name();
     }
 
     @Override

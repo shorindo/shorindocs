@@ -13,33 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.outlogger;
-
-import java.text.MessageFormat;
-import java.util.Locale;
-
-import com.shorindo.docs.ActionMessages;
+package com.shorindo.docs;
 
 /**
  * 
  */
-public enum OutloggerMessages implements ActionMessages {
-    OLOG_0000("");
+public class LapCounter {
+    private long startTime;
 
-    private String message;
-
-    private OutloggerMessages(String message) {
-        this.message = message;
+    /**
+     * 
+     */
+    public LapCounter() {
+        startTime = System.currentTimeMillis();
     }
 
-    @Override
-    public String getCode() {
-        return name();
+    public long elapsed() {
+        return System.currentTimeMillis() - startTime;
     }
-
-    @Override
-    public String getMessage(Locale locale, Object... args) {
-        return MessageFormat.format(message, args);
-    }
-
 }

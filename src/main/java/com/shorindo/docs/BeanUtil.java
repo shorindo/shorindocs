@@ -15,12 +15,13 @@
  */
 package com.shorindo.docs;
 
-import static com.shorindo.docs.ApplicationContext.*;
-import static com.shorindo.docs.DocsMessages.*;
+import static com.shorindo.docs.DocumentMessages.*;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
  */
 public class BeanUtil {
     private static final ActionLogger LOG = ActionLogger.getLogger(BeanUtil.class);
+    private static final Locale LANG = ApplicationContext.getLang();
     private static final Pattern PROPERTY_PATTERN = Pattern.compile("([a-zA-Z])([a-z0-9]*)");
     private static final Pattern SNAKE_PATTERN = Pattern.compile("_*([^_])([^_]*)");
     private static final Pattern CAMEL_PATTERN = Pattern.compile("(.[^A-Z0-9]*)");

@@ -108,14 +108,14 @@
                     <td style="border-right:1px solid gray; border-bottom:1px solid gray;">日付</td>
                     <td style="border-right:1px solid gray; border-bottom:1px solid gray;">Ver.</td>
                     <td style="border-right:1px solid gray; border-bottom:1px solid gray;">担当</td>
-                    <td style="border-right:1px solid gray; border-bottom:1px solid gray;">改訂内容</td>
+                    <td style="border-bottom:1px solid gray;">改訂内容</td>
                   </tr>
                   {{#specout.changeList}}
                   <tr>
                     <td style="border-right:1px solid gray; border-bottom:1px dashed gray; text-align:center;">{{date}}</td>
                     <td style="border-right:1px solid gray; border-bottom:1px dashed gray; text-align:center;">{{version}}</td>
                     <td style="border-right:1px solid gray; border-bottom:1px dashed gray; text-align:center;">{{person}}</td>
-                    <td style="border-right:1px solid gray; border-bottom:1px dashed gray;">{{description}}</td>
+                    <td style="border-bottom:1px dashed gray;">{{description}}</td>
                   </tr>
                   {{/specout.changeList}}
                 </tbody>

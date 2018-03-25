@@ -35,7 +35,7 @@ public class IdentityProvider {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
-                LOG.warn(DocsMessages.DOCS_3004, e);
+                LOG.warn(DocumentMessages.DOCS_3004, e);
             }
             last = time = getTime();
         } else {

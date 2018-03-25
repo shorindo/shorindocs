@@ -30,7 +30,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.w3c.dom.Node;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocsMessages;
+import com.shorindo.docs.DocumentMessages;
 
 /**
  * 
@@ -48,7 +48,7 @@ public class XumlEngine {
             InputStream is = getClass().getResourceAsStream(getClass().getSimpleName() + ".xsl");
             transformer = factory.newTransformer(new StreamSource(is));
         } catch (TransformerConfigurationException e) {
-            LOG.error(DocsMessages.DOCS_5004, e, XumlEngine.class);
+            LOG.error(DocumentMessages.DOCS_5004, e, XumlEngine.class);
         }
     }
 
@@ -58,7 +58,7 @@ public class XumlEngine {
             Result outputTarget = new StreamResult(os);
             transformer.transform(domSource, outputTarget);
         } catch (TransformerException e) {
-            LOG.error(DocsMessages.DOCS_9999, e);
+            LOG.error(DocumentMessages.DOCS_9999, e);
         }
     }
 }

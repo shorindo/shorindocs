@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs;
 
-import static com.shorindo.docs.DocsMessages.*;
+import static com.shorindo.docs.DocumentMessages.*;
 import java.sql.Connection;
 
 import com.shorindo.docs.annotation.ActionMapping;
@@ -23,10 +23,6 @@ import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseExecutor;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.Transactionless;
-import com.shorindo.docs.form.FormController;
-import com.shorindo.docs.form.TemplateController;
-import com.shorindo.docs.plaintext.PlainTextController;
-import com.shorindo.docs.specout.SpecoutController;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 
@@ -41,19 +37,9 @@ public final class DocumentBroker extends ActionController {
     public static ActionController getController(DocumentEntity model) throws DocumentException {
         try {
             String contentType = model.getContentType();
-            if ("text/plain".equals(model.getContentType())) {
-                return new PlainTextController();
-            } else if ("application/x-form".equals(model.getContentType())) {
-                return new FormController();
-            } else if ("application/x-form-template".equals(model.getContentType())) {
-                return new TemplateController();
-            } else if ("com.shorindo.docs.specout.SpecoutController".equals(contentType)) {
-                return new SpecoutController();
-            } else {
-                throw new DocumentException("controller not found:" + model.getContentType());
-            }
+            return (ActionController)Class.forName(contentType).newInstance();
         } catch (Exception e) {
-            throw new DocumentException(e.getMessage(), e);
+            throw new DocumentException(DOCS_9999, e);
         }
     }
 

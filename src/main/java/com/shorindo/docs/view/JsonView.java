@@ -21,7 +21,7 @@ import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocsMessages;
+import com.shorindo.docs.DocumentMessages;
 
 /**
  * 
@@ -31,7 +31,7 @@ public class JsonView extends View {
     Object bean;
 
     public JsonView(Object bean, ActionContext context) {
-        super();
+        init();
         this.bean = bean;
     }
 
@@ -45,7 +45,7 @@ public class JsonView extends View {
         try {
             os.write(JSON.encode(bean, true).getBytes("UTF-8"));
         } catch (Exception e) {
-            LOG.error(DocsMessages.DOCS_9999, e);
+            LOG.error(DocumentMessages.DOCS_9999, e);
             new ErrorView(500).render(context, os);
         }
     }

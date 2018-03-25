@@ -15,7 +15,9 @@
  */
 package com.shorindo.xuml;
 
+import static com.shorindo.docs.DocumentMessages.*;
 import static com.shorindo.xuml.XumlMessages.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +41,8 @@ import com.github.mustachejava.MustacheFactory;
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.BeanUtil;
-import com.shorindo.docs.DocsMessages;
+import com.shorindo.docs.LapCounter;
+//import com.shorindo.docs.DocsMessages;
 import com.shorindo.docs.view.View;
 
 /**
@@ -78,34 +81,34 @@ public class XumlView extends View {
                     Class<?> c = Class.forName(className);
                     if (Component.class.isAssignableFrom(c)) {
                         defineComponent(c);
-                        LOG.info(DocsMessages.DOCS_0002, c.getName());
+                        LOG.info(XUML_1000, c.getName());
                     }
                 } catch (ClassNotFoundException e) {
-                    LOG.error(DocsMessages.DOCS_9999, e);
+                    LOG.error(XUML_5001, e, className);
                 }
             }
         }
     }
 
     public XumlView(String name, InputStream is) {
-        super();
-        long st = System.currentTimeMillis();
+        LapCounter lap = new LapCounter();
+        init();
         this.name = name;
-        LOG.debug(DocsMessages.DOCS_1109, name);
+        LOG.debug(DOCS_1109, name);
         try {
             component = parse(is);
         } catch (SAXException e) {
-            LOG.error(DocsMessages.DOCS_9999, e);
+            LOG.error(DOCS_9999, e);
         } catch (IOException e) {
-            LOG.error(DocsMessages.DOCS_9999, e);
+            LOG.error(DOCS_9999, e);
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-                LOG.error(DocsMessages.DOCS_9999, e);
+                LOG.error(DOCS_9999, e);
             }
         }
-        LOG.debug(DocsMessages.DOCS_1110, name, (System.currentTimeMillis() - st));
+        LOG.debug(DOCS_1110, name, lap.elapsed());
     }
 
     @Override
@@ -116,13 +119,13 @@ public class XumlView extends View {
     @Override
     public void render(ActionContext context, OutputStream os) {
         long st = System.currentTimeMillis();
-        LOG.debug(DocsMessages.DOCS_1111, name);
+        LOG.debug(XUML_1001, name);
         try {
             os.write(evalMustache(context, component.getHtml()).getBytes("UTF-8"));
         } catch (Exception e) {
-            LOG.error(DocsMessages.DOCS_9999, e);
+            LOG.error(DOCS_9999, e);
         }
-        LOG.debug(DocsMessages.DOCS_1112, name, System.currentTimeMillis() - st);
+        LOG.debug(XUML_1002, name, System.currentTimeMillis() - st);
     }
 
     public Component parse(InputStream input) throws SAXException, IOException {

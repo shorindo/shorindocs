@@ -28,7 +28,7 @@ import com.shorindo.xuml.XumlView;
 public class ErrorView extends View {
 
     public ErrorView(int status) {
-        super();
+        init();
         setStatus(status);
     }
 

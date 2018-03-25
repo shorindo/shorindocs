@@ -35,7 +35,7 @@ import org.junit.runners.MethodSorters;
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.BeanUtil;
-import com.shorindo.docs.DocsMessages;
+import com.shorindo.docs.DocumentMessages;
 import com.shorindo.docs.DocumentEntity;
 import com.shorindo.docs.auth.AuthenticateController;
 import com.shorindo.docs.database.Column;

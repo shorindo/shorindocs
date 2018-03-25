@@ -53,12 +53,12 @@ public class AuthenticateService {
             DatabaseSchema schema = databaseService.loadSchema(is);
             databaseService.validateSchema(schema);
         } catch (DatabaseException e) {
-            LOG.error(DB_5123);
+            LOG.error(DTBS_5123);
         } finally {
             try {
                 is.close();
             } catch (IOException e) {
-                LOG.warn(DB_5103, e);
+                LOG.warn(DTBS_5103, e);
             }
         }
     }

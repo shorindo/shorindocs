@@ -15,8 +15,8 @@
  */
 package com.shorindo.docs.database;
 
-import static com.shorindo.docs.ApplicationContext.*;
 import static com.shorindo.docs.database.DatabaseMessages.*;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -41,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.IdentityProvider;
 
 /**
@@ -48,6 +50,7 @@ import com.shorindo.docs.IdentityProvider;
  */
 public abstract class DatabaseExecutor<T> {
     private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseExecutor.class);
+    private static final Locale LANG = ApplicationContext.getLang();
     private static ThreadLocal<Connection> local = new ThreadLocal<Connection>();
 
     public abstract T run(Connection conn, Object...params) throws DatabaseException;
@@ -73,7 +76,7 @@ public abstract class DatabaseExecutor<T> {
     protected final int exec(String sql, Object...params) throws DatabaseException {
         long st = System.currentTimeMillis();
         String hash = IdentityProvider.hash(sql);
-        LOG.debug(DB_0005, hash, sql);
+        LOG.debug(DTBS_0001, hash, sql);
         Connection conn = local.get();
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -83,7 +86,7 @@ public abstract class DatabaseExecutor<T> {
                 stmt.setObject(i++, param);
             }
             int result = stmt.executeUpdate();
-            LOG.debug(DB_0006, hash, (System.currentTimeMillis() - st));
+            LOG.debug(DTBS_0002, hash, (System.currentTimeMillis() - st));
             return result;
         } catch (SQLException e) {
             throw new DatabaseException(e);
@@ -99,7 +102,7 @@ public abstract class DatabaseExecutor<T> {
      * @throws SQLException
      */
     protected final <E> List<E> query(String sql, Class<E> clazz, Object...params) throws DatabaseException {
-        LOG.debug(DB_0007, sql);
+        LOG.debug(DTBS_0003, sql);
         long st = System.currentTimeMillis();
         List<E> resultList = new ArrayList<E>();
         int index = 1;
@@ -136,7 +139,7 @@ public abstract class DatabaseExecutor<T> {
             dispose(rset);
         }
 
-        LOG.debug(DB_0008, (System.currentTimeMillis() - st) + " ms");
+        LOG.debug(DTBS_0004, (System.currentTimeMillis() - st) + " ms");
         return resultList;
     }
 
@@ -159,7 +162,7 @@ public abstract class DatabaseExecutor<T> {
     protected final <E extends SchemaEntity> E get(E entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
-        LOG.debug(DB_0007, mapping.getSelectSql());
+        LOG.debug(DTBS_0003, mapping.getSelectSql());
         long st = System.currentTimeMillis();
         PreparedStatement stmt = null;
         ResultSet rset = null;
@@ -182,7 +185,7 @@ public abstract class DatabaseExecutor<T> {
             } else {
                 entity = null;
             }
-            LOG.debug(DB_0008, (System.currentTimeMillis() - st) + " ms");
+            LOG.debug(DTBS_0004, (System.currentTimeMillis() - st) + " ms");
             return entity;
         } catch (IllegalAccessException e) {
             throw new DatabaseException(e);
@@ -223,7 +226,7 @@ public abstract class DatabaseExecutor<T> {
     protected final int remove(SchemaEntity entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
-        LOG.debug(DB_0009, mapping.getUpdateSql());
+        LOG.debug(DTBS_0005, mapping.getUpdateSql());
         PreparedStatement stmt = null;
         int index = 1;
 
@@ -401,7 +404,7 @@ public abstract class DatabaseExecutor<T> {
             try {
                 stmt.close();
             } catch (SQLException e) {
-                LOG.error(DB_5106, e);
+                LOG.error(DTBS_5106, e);
             }
     }
 
@@ -410,7 +413,7 @@ public abstract class DatabaseExecutor<T> {
             try {
                 rset.close();
             } catch (Exception e) {
-                LOG.error(DB_5107, e);
+                LOG.error(DTBS_5107, e);
             }
     }
 
@@ -423,7 +426,7 @@ public abstract class DatabaseExecutor<T> {
     protected int insert(SchemaEntity entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
-        LOG.debug(DB_0011, mapping.getInsertSql());
+        LOG.debug(DTBS_0007, mapping.getInsertSql());
         PreparedStatement stmt = null;
         int index = 1;
         try {
@@ -454,7 +457,7 @@ public abstract class DatabaseExecutor<T> {
     protected int update(SchemaEntity entity) throws DatabaseException {
         Connection conn = local.get();
         EntityMapping mapping = bind(conn, entity);
-        LOG.debug(DB_0013, mapping.getUpdateSql());
+        LOG.debug(DTBS_0009, mapping.getUpdateSql());
         PreparedStatement stmt = null;
         int index = 1;
         try {
@@ -670,7 +673,7 @@ public abstract class DatabaseExecutor<T> {
                 if (field != null) {
                     columnCache.setField(field);
                 } else {
-                    throw new SQLException(DB_5119.getMessage(LANG, columnName));
+                    throw new SQLException(DTBS_5119.getMessage(LANG, columnName));
                 }
 
                 // PreparedStatement/ResultSetのsetter/getter
@@ -679,7 +682,7 @@ public abstract class DatabaseExecutor<T> {
                     columnCache.setStatementSetMethod(setter[0]);
                     columnCache.setResultSetGetMethod(setter[1]);
                 } else {
-                    throw new SQLException(DB_5119.getMessage(LANG, field.getName()));
+                    throw new SQLException(DTBS_5119.getMessage(LANG, field.getName()));
                 }
 
                 entityMapping.putColumn(columnName, columnCache);

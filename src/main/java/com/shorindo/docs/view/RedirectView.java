@@ -25,7 +25,7 @@ import com.shorindo.docs.ActionContext;
 public class RedirectView extends View {
 
     public RedirectView(String location, ActionContext context) {
-        super();
+        init();
         setStatus(302);
         if (!location.startsWith("/")) {
             location = "/" + location;

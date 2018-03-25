@@ -36,7 +36,7 @@ public enum SpecoutMessages implements ActionMessages {
 
     @Override
     public String getCode() {
-        return name().replaceAll("_", "-");
+        return name();
     }
 
     @Override

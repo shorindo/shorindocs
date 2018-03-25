@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs;
 
-import static com.shorindo.docs.DocsMessages.*;
+import static com.shorindo.docs.DocumentMessages.*;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
@@ -38,7 +38,7 @@ public abstract class ActionController {
     public abstract String view(ActionContext context);
 
     public View action(ActionContext context) {
-        long st = System.currentTimeMillis();
+        LapCounter lap = new LapCounter();
         LOG.debug(DOCS_1107, getClass().getSimpleName() + ".action()");
         try {
             Class<?> clazz = getClass();
@@ -46,8 +46,9 @@ public abstract class ActionController {
                 Method method = clazz.getDeclaredMethod(context.getAction(), ActionContext.class);
                 if (method.getAnnotation(ActionMethod.class) != null &&
                         String.class.isAssignableFrom(method.getReturnType())) {
-                    LOG.debug(DOCS_1108, getClass().getSimpleName() + ".action()", (System.currentTimeMillis() - st));
-                    return getView((String)method.invoke(this, context), context);
+                    View view = getView((String)method.invoke(this, context), context);
+                    LOG.debug(DOCS_1108, getClass().getSimpleName() + ".action()", lap.elapsed());
+                    return view;
                 }
                 clazz = clazz.getSuperclass();
             }

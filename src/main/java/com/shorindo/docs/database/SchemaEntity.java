@@ -15,18 +15,20 @@
  */
 package com.shorindo.docs.database;
 
-import static com.shorindo.docs.ApplicationContext.*;
 import static com.shorindo.docs.database.DatabaseMessages.*;
+
 import java.lang.reflect.Field;
+import java.util.Locale;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocsMessages;
+import com.shorindo.docs.ApplicationContext;
 
 /**
  * 
  */
 public abstract class SchemaEntity {
     private static final ActionLogger LOG = ActionLogger.getLogger(SchemaEntity.class);
+    private static final Locale LANG = ApplicationContext.getLang();
 
     public SchemaEntity() throws DatabaseException {
         int count = 0;
@@ -46,7 +48,7 @@ public abstract class SchemaEntity {
         if (table != null) {
             return table.value();
         } else {
-            throw new DatabaseException(DB_5125);
+            throw new DatabaseException(DTBS_5125);
         }
     }
 
@@ -75,13 +77,13 @@ public abstract class SchemaEntity {
                     field.setAccessible(true);
                     return field.get(this);
                 } catch (IllegalArgumentException e) {
-                    throw new DatabaseException(DB_5119.getMessage(LANG, name));
+                    throw new DatabaseException(DTBS_5119.getMessage(LANG, name));
                 } catch (IllegalAccessException e) {
-                    throw new DatabaseException(DB_5119.getMessage(LANG, name));
+                    throw new DatabaseException(DTBS_5119.getMessage(LANG, name));
                 }
             }
         }
-        throw new DatabaseException(DB_5124.getMessage(LANG, name));
+        throw new DatabaseException(DTBS_5124.getMessage(LANG, name));
     }
 
     /**
@@ -107,7 +109,7 @@ public abstract class SchemaEntity {
             }
         }
         if (tableSchema.getColumnList().size() == 0) {
-            throw new DatabaseException(DB_5126.getMessage(LANG));
+            throw new DatabaseException(DTBS_5126.getMessage(LANG));
         }
 
         return tableSchema;

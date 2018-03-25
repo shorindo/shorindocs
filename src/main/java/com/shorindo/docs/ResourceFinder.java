@@ -102,14 +102,14 @@ public class ResourceFinder {
                 }
             }
         } catch (FileNotFoundException e) {
-            LOG.error(DocsMessages.DOCS_9999, e);
+            LOG.error(DocumentMessages.DOCS_9999, e);
         } catch (IOException e) {
-            LOG.error(DocsMessages.DOCS_9999, e);
+            LOG.error(DocumentMessages.DOCS_9999, e);
         } finally {
             try {
                 jis.close();
             } catch (IOException e) {
-                LOG.error(DocsMessages.DOCS_9999, e);
+                LOG.error(DocumentMessages.DOCS_9999, e);
             }
         }
         return result;

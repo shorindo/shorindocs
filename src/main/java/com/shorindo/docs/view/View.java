@@ -34,6 +34,9 @@ public abstract class View {
     public abstract void render(ActionContext context, OutputStream os);
 
     public View() {
+    }
+    
+    public void init() {
         metaMap = new TreeMap<String,String>();
     }
 

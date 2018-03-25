@@ -16,7 +16,9 @@
 package com.shorindo.docs;
 
 import static com.shorindo.docs.ApplicationContext.*;
+
 import java.text.MessageFormat;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -25,6 +27,7 @@ import org.apache.log4j.Logger;
  */
 public class ActionLogger {
     private Logger LOG;
+    private Locale lang = ApplicationContext.getLang();
 
     public static ActionLogger getLogger(Class<?> clazz) {
         return new ActionLogger(clazz);
@@ -51,11 +54,11 @@ public class ActionLogger {
     }
 
     public void debug(ActionMessages code, Object...args) {
-        LOG.debug(code.getCode() + ":" + code.getMessage(LANG, args));
+        LOG.debug(code.getCode() + ":" + code.getMessage(lang, args));
     }
 
     public void info(ActionMessages code, Object...args) {
-        LOG.info(code.getCode() + ":" + code.getMessage(LANG, args));
+        LOG.info(code.getCode() + ":" + code.getMessage(lang, args));
     }
 
 //    public void info(String message, Object...args) {
@@ -67,21 +70,21 @@ public class ActionLogger {
 //    }
 
     public void warn(ActionMessages code, Object...args) {
-        LOG.warn(code.getCode() + ":" + code.getMessage(LANG, args));
+        LOG.warn(code.getCode() + ":" + code.getMessage(lang, args));
     }
 
     public void warn(ActionMessages code, Throwable th, Object...args) {
-        LOG.warn(code.getCode() + ":" + code.getMessage(LANG, args), th);
+        LOG.warn(code.getCode() + ":" + code.getMessage(lang, args), th);
     }
 
     public String error(ActionMessages code, Object...args) {
-        String msg = code.getCode() + ":" + code.getMessage(LANG, args);
+        String msg = code.getCode() + ":" + code.getMessage(lang, args);
         LOG.error(msg);
         return msg;
     }
 
     public String error(ActionMessages code, Throwable th, Object...args) {
-        String msg = code.getCode() + ":" + code.getMessage(LANG, args);
+        String msg = code.getCode() + ":" + code.getMessage(lang, args);
         LOG.error(msg, th);
         return msg;
     }

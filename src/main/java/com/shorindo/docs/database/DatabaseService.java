@@ -15,8 +15,8 @@
  */
 package com.shorindo.docs.database;
 
-import static com.shorindo.docs.ApplicationContext.*;
 import static com.shorindo.docs.database.DatabaseMessages.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -52,6 +53,7 @@ import com.shorindo.docs.BeanUtil;
  */
 public class DatabaseService {
     private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseService.class);
+    private static final Locale LANG = ApplicationContext.getLang();
     private static final DatabaseService service = new DatabaseService();
     private DataSource dataSource;
 
@@ -73,7 +75,7 @@ public class DatabaseService {
             props.setProperty("testOnBorrow", ApplicationContext.getProperty("datasource.testOnBorrow"));
             dataSource = BasicDataSourceFactory.createDataSource(props);
         } catch (Exception e) {
-            LOG.error(DB_5100, e);
+            LOG.error(DTBS_5100, e);
         }
     }
 
@@ -84,7 +86,7 @@ public class DatabaseService {
     public DatabaseSchema loadSchema(InputStream is) {
         DatabaseSchema newSchema = JAXB.unmarshal(is, DatabaseSchema.class);
         for (DatabaseSchema.Entity entity : newSchema.getEntityList()) {
-            LOG.info(DB_1101, newSchema.getPackage(), entity.getName());
+            LOG.info(DTBS_1101, newSchema.getPackage(), entity.getName());
             Map<String,DatabaseSchema.Column> columnMap =
                 new LinkedHashMap<String,DatabaseSchema.Column>();
             for (DatabaseSchema.Column column : entity.getColumnList()) {
@@ -106,7 +108,6 @@ public class DatabaseService {
                 try {
                     List<String> resultList = new ArrayList<String>();
                     DatabaseMetaData meta = conn.getMetaData();
-                    boolean valid = true;
 
                     for (DatabaseSchema.Entity entity : schema.getEntityList()) {
                         // エンティティ定義あり、実体なしのチェック
@@ -114,7 +115,7 @@ public class DatabaseService {
                         String entityName = entity.getName();
                         ResultSet trset = meta.getTables(null, null, entityName, null);
                         if (!trset.next()) {
-                            String msg = LOG.error(DB_5108, entityName);
+                            String msg = LOG.error(DTBS_5108, entityName);
                             resultList.add(msg);
                             trset.close();
                             continue;
@@ -133,9 +134,8 @@ public class DatabaseService {
                             String columnName = crset.getString("COLUMN_NAME");
                             DatabaseSchema.Column c = map.get(columnName);
                             if (c == null) {
-                                String msg = LOG.error(DB_5109, entityName, columnName);
+                                String msg = LOG.error(DTBS_5109, entityName, columnName);
                                 resultList.add(msg);
-                                valid = false;
                             } else {
                                 map.remove(columnName);
                                 //TODO attrubute
@@ -144,12 +144,11 @@ public class DatabaseService {
 
                         // カラム定義あり、実体なしのチェック
                         for (Map.Entry<String,DatabaseSchema.Column> e : map.entrySet()) {
-                            String msg = LOG.error(DB_5110, entityName, e.getKey());
+                            String msg = LOG.error(DTBS_5110, entityName, e.getKey());
                             resultList.add(msg);
-                            valid = false;
                         }
                         crset.close();
-                        LOG.info(DB_1104, entityName);
+                        LOG.info(DTBS_1104, entityName);
                     }
                     return resultList;
                 } catch (SQLException e) {
@@ -180,7 +179,7 @@ public class DatabaseService {
                 try {
                     executor.rollbackTransaction(conn);
                 } catch (DatabaseException e) {
-                    LOG.error(DB_5105, e);
+                    LOG.error(DTBS_5105, e);
                 }
             }
             throw new DatabaseException(th);
@@ -190,7 +189,7 @@ public class DatabaseService {
                 try {
                     conn.close();
                 } catch (SQLException e) {
-                    LOG.error(DB_5103, e);
+                    LOG.error(DTBS_5103, e);
                 }
             }
         }
@@ -198,7 +197,6 @@ public class DatabaseService {
 
     /**
      * 
-     * @throws SQLException
      */
     public void loadTables() throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
@@ -222,7 +220,6 @@ public class DatabaseService {
     }
 
     /**
-     * @throws DatabaseException 
      * 
      */
     public int createTableFromSchema(DatabaseSchema.Table table) throws DatabaseException {
@@ -257,7 +254,7 @@ public class DatabaseService {
             }
             if (column.getPrimaryKey() > 0) {
                 if (primaryMap.containsKey(column.getPrimaryKey())) {
-                    throw new DatabaseException(DB_5122.getMessage(
+                    throw new DatabaseException(DTBS_5122.getMessage(
                             LANG,
                             column.getName(),
                             column.getPrimaryKey()));
@@ -279,6 +276,9 @@ public class DatabaseService {
         return sb.toString();
     }
 
+    /*
+     * 
+     */
     public void generateSchemaEntity(DatabaseSchema schema) throws IOException {
         Reader reader = new InputStreamReader(getClass().getResourceAsStream("SchemaEntity.mustache"));
         MustacheFactory mf = new DefaultMustacheFactory();

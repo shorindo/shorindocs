@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs;
 
-import static com.shorindo.docs.DocsMessages.*;
+import static com.shorindo.docs.DocumentMessages.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

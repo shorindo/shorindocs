@@ -36,9 +36,9 @@ public class OutloggerService {
     public void createSchema() throws DatabaseException {
         try {
             databaseService.createTableFromSchema(new OutloggerEntity().getTableSchema());
-            LOG.info(DB_5127, OutloggerEntity.class.getName());
+            LOG.info(DTBS_5127, OutloggerEntity.class.getName());
         } catch (DatabaseException e) {
-            LOG.warn(DB_5128, e, OutloggerEntity.class.getName());
+            LOG.warn(DTBS_5128, e, OutloggerEntity.class.getName());
         }
     }
 

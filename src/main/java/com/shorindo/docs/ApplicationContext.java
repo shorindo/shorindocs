@@ -24,10 +24,9 @@ import java.util.Properties;
  * 
  */
 public class ApplicationContext {
-    public static final Locale LANG = Locale.JAPANESE;
-
     private static final ActionLogger LOG = ActionLogger.getLogger(ApplicationContext.class);
     private static final Properties props = new Properties();
+    private static final Locale DEFAULT_LANG = Locale.JAPANESE;
 
     public static void loadProperties(InputStream is) {
         try {
@@ -36,7 +35,7 @@ public class ApplicationContext {
             try {
                 is.close();
             } catch (IOException e1) {
-                LOG.error(DocsMessages.DOCS_9999, e1);
+                LOG.error(DocumentMessages.DOCS_9999, e1);
             }
         }
     }
@@ -47,5 +46,9 @@ public class ApplicationContext {
 
     public static String getProperty(String key) {
         return props.getProperty(key);
+    }
+
+    public static Locale getLang() {
+        return DEFAULT_LANG;
     }
 }
