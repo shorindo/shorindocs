@@ -36,8 +36,8 @@ public final class DocumentBroker extends ActionController {
 
     public static ActionController getController(DocumentEntity model) throws DocumentException {
         try {
-            String contentType = model.getContentType();
-            return (ActionController)Class.forName(contentType).newInstance();
+            String controller = model.getController();
+            return (ActionController)Class.forName(controller).newInstance();
         } catch (Exception e) {
             throw new DocumentException(DOCS_9999, e);
         }

@@ -49,8 +49,8 @@ public class PlainTextController extends DocumentController {
         LOG.trace("view()");
         try {
             DocumentEntity model = (DocumentEntity)context.getAttribute("document");
-            String body = model.getBody() == null ? "" : model.getBody();
-            context.setAttribute("content", body
+            String content = model.getContent() == null ? "" : model.getContent();
+            context.setAttribute("content", content
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
@@ -72,7 +72,7 @@ public class PlainTextController extends DocumentController {
     public String edit(ActionContext context) {
         LOG.trace("edit()");
         DocumentEntity model = (DocumentEntity)context.getAttribute("document");
-        String body = model.getBody() == null ? "" : model.getBody();
+        String body = model.getContent() == null ? "" : model.getContent();
         context.setAttribute("content", body
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")

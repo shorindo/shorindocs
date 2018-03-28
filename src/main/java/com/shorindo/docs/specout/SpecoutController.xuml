@@ -50,8 +50,8 @@
         </style>
         <table class="specout">
           <col style="width:10%; white-space:nowrap;"/>
-          <col style="width:35%;"/>
-          <col style="width:35%;"/>
+          <col style="width:40%;"/>
+          <col style="width:30%;"/>
           <col style="width:10%; white-space:nowrap;"/>
           <col style="width:5%; white-space:nowrap;"/>
 

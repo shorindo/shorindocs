@@ -16,7 +16,14 @@
 package com.shorindo.docs.outlogger;
 
 import static com.shorindo.docs.database.DatabaseMessages.*;
+
 import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+
+import javax.xml.bind.JAXB;
+
+import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.database.DatabaseException;
@@ -35,21 +42,38 @@ public class OutloggerService {
      */
     public void createSchema() throws DatabaseException {
         try {
-            databaseService.createTableFromSchema(new OutloggerEntity().getTableSchema());
-            LOG.info(DTBS_5127, OutloggerEntity.class.getName());
+            OutloggerEntity entity = new OutloggerEntity();
+            databaseService.createTableFromSchema(entity.getTableSchema());
+            LOG.info(DTBS_5127, entity.getClass().getName());
         } catch (DatabaseException e) {
             LOG.warn(DTBS_5128, e, OutloggerEntity.class.getName());
         }
     }
 
-    /**=========================================================================
+    /*==========================================================================
      * ドキュメントの基本情報を操作する。
      */
-    public void createDocument() {}
-    public void registDocument() {}
-    public void removeDocument() {}
-    public void commitDocument() {}
-    public void rollbackDocument() {}
+    /**
+     * メタデータを生成する
+     * @return　メタデータ(XML)
+     */
+    public String createMetaData() {
+        StringWriter writer = new StringWriter();
+        JAXB.marshal(new OutloggerMetaData(), writer);
+        return writer.toString();
+    }
+
+    public void registMetaData() {
+    }
+
+    public void removeMetaData() {
+    }
+
+    public void commitMetaData() {
+    }
+
+    public void rollbackMetaData() {
+    }
 
     /**=========================================================================
      * ドキュメントのアクセス権を操作する。

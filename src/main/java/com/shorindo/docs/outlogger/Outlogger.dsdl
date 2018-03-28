@@ -14,7 +14,7 @@
             </relations>
         </column>
         <column>
-            <name>LOG_ID</name>
+            <name>LOGGER_ID</name>
             <type>varchar</type>
             <javaType>String</javaType>
             <size>36</size>
@@ -40,7 +40,7 @@
             <notNull>true</notNull>
         </column>
         <column>
-            <name>CACHE</name>
+            <name>CONTENT_CACHE</name>
             <type>text</type>
             <javaType>String</javaType>
             <notNull>false</notNull>
@@ -56,7 +56,7 @@
             </relations>
         </column>
         <column>
-            <name>CREATED_USER</name>
+            <name>CREATE_USER</name>
             <type>varchar</type>
             <javaType>String</javaType>
             <size>36</size>
@@ -66,13 +66,13 @@
             </references>
         </column>
         <column>
-            <name>CREATED_DATE</name>
+            <name>CREATE_DATE</name>
             <type>datetime</type>
             <javaType>java.util.Date</javaType>
             <notNull>true</notNull>
         </column>
         <column>
-            <name>UPDATED_USER</name>
+            <name>UPDATE_USER</name>
             <type>varchar</type>
             <javaType>String</javaType>
             <size>36</size>
@@ -82,7 +82,7 @@
             </references>
         </column>
         <column>
-            <name>UPDATED_DATE</name>
+            <name>UPDATE_DATE</name>
             <javaType>java.util.Date</javaType>
             <type>datetime</type>
             <notNull>true</notNull>

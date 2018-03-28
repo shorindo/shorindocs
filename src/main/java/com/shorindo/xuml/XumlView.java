@@ -54,6 +54,12 @@ public class XumlView extends View {
     private String name;
     private Component component;
 
+    public static XumlView create(Class<?> clazz) {
+        String xumlName = clazz.getSimpleName() + ".xuml";
+        InputStream is = clazz.getResourceAsStream(xumlName);
+        return new XumlView(xumlName, is);
+    }
+
     public static void init(String path) {
         find(new File(path), new File(path));
     }

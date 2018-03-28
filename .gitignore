@@ -1,0 +1,7 @@
+/target/
+.*
+
+/build.properties
+/work/
+/scrap/
+/shorindocs/

@@ -50,37 +50,38 @@ public class SpecoutControllerTest {
     }
 
     @Test
-    public void testSample() throws Exception {
-        InputStream is = getClass()
-                .getResourceAsStream("specsample.xml");
-        StringBuilder body = new StringBuilder();
-        Reader reader = new InputStreamReader(is, "UTF-8");
-        char[] buff = new char[2048];
-        int len = 0;
-        while ((len = reader.read(buff)) > 0) {
-            body.append(buff, 0, len);
-        }
-       
-        int count = databaseService.provide(new Transactional<Integer>() {
-
-            @Override
-            public Integer run(Connection conn, Object... params)
-                    throws DatabaseException {
-                DocumentEntity entity = new DocumentEntity();
-                entity.setDocumentId("specout");
-                entity.setContentType(SpecoutController.class.getName());
-                entity.setTitle("specout");
-                entity.setBody(body.toString());
-                entity.setStatus(0);
-                entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
-                entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
-                entity.setOwnerId(getClass().getName());
-                entity.setAclId("aclId");
-                return put(entity);
-            }
-            
-        });
-        assertEquals(1, count);
+    public void testSpecout() throws Exception {
+        createData("specout.xml", "specout");
+//        InputStream is = getClass()
+//                .getResourceAsStream("specsample.xml");
+//        StringBuilder body = new StringBuilder();
+//        Reader reader = new InputStreamReader(is, "UTF-8");
+//        char[] buff = new char[2048];
+//        int len = 0;
+//        while ((len = reader.read(buff)) > 0) {
+//            body.append(buff, 0, len);
+//        }
+//       
+//        int count = databaseService.provide(new Transactional<Integer>() {
+//
+//            @Override
+//            public Integer run(Connection conn, Object... params)
+//                    throws DatabaseException {
+//                DocumentEntity entity = new DocumentEntity();
+//                entity.setDocumentId("specout");
+//                entity.setContentType(SpecoutController.class.getName());
+//                entity.setTitle("specout");
+//                entity.setBody(body.toString());
+//                entity.setStatus(0);
+//                entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
+//                entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
+//                entity.setOwnerId(getClass().getName());
+//                entity.setAclId("aclId");
+//                return put(entity);
+//            }
+//            
+//        });
+//        assertEquals(1, count);
     }
 
     @Test
@@ -115,5 +116,41 @@ public class SpecoutControllerTest {
             
         });
         assertEquals(1, count);
+    }
+
+    @Test
+    public void testOutlogger() throws Exception {
+        createData("outloggerspec.xml", "Outlogger仕様書");
+    }
+
+    private void createData(String fileName, String title) throws Exception {
+        InputStream is = getClass().getResourceAsStream(fileName);
+        StringBuilder body = new StringBuilder();
+        Reader reader = new InputStreamReader(is, "UTF-8");
+        char[] buff = new char[2048];
+        int len = 0;
+        while ((len = reader.read(buff)) > 0) {
+            body.append(buff, 0, len);
+        }
+       
+        databaseService.provide(new Transactional<Integer>() {
+            @Override
+            public Integer run(Connection conn, Object... params)
+                    throws DatabaseException {
+                String path = fileName.replaceAll("\\..*$", "");
+                DocumentEntity entity = new DocumentEntity();
+                entity.setDocumentId(path);
+                entity.setContentType(SpecoutController.class.getName());
+                entity.setTitle(title);
+                entity.setBody(body.toString());
+                entity.setStatus(0);
+                entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
+                entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
+                entity.setOwnerId(getClass().getName());
+                entity.setAclId("aclId");
+                return put(entity);
+            }
+            
+        });
     }
 }

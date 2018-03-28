@@ -167,7 +167,7 @@
       <specId>SPEC-0019</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
-      <description>「他システムの何々と同じ」という表現は用いてはならない。</description>
+      <description>「他システムの何々みたいに」という表現は用いてはならない。</description>
       <reason>最低でも何が同じで何が違うのかを列挙して明確にすべきで、それなら「実現すべきこと・しないこと」のみを記述すればよく、他システムを引き合いに出す必要はない。</reason>
       <source>開発</source>
       <version>1.2</version>

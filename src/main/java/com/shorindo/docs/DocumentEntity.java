@@ -25,7 +25,7 @@ import com.shorindo.docs.database.Table;
 /**
  * 
  */
-@Table("DOCUMENT")
+@Table("DOCS_DOCUMENT")
 public class DocumentEntity extends SchemaEntity {
 
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentEntity.class);
@@ -33,29 +33,32 @@ public class DocumentEntity extends SchemaEntity {
     @Column(name="DOCUMENT_ID", typeName="varchar", size=36)
     private String documentId;
 
-    @Column(name="CONTENT_TYPE", typeName="varchar", size=255)
-    private String contentType;
+    @Column(name="CONTROLLER", typeName="varchar", size=256)
+    private String controller;
 
-    @Column(name="STATUS", typeName="smallint")
-    private int status;
-
-    @Column(name="TITLE", typeName="varchar", size=80)
+    @Column(name="TITLE", typeName="varchar", size=256)
     private String title;
 
-    @Column(name="BODY", typeName="text")
-    private String body;
+    @Column(name="CONTENT", typeName="text")
+    private String content;
 
-    @Column(name="CREATE_DATE", typeName="timestamp")
-    private Timestamp createDate;
-
-    @Column(name="UPDATE_DATE", typeName="timestamp")
-    private Timestamp updateDate;
+    @Column(name="CONTENT_CACHE", typeName="text", notNull=false)
+    private String contentCache;
 
     @Column(name="OWNER_ID", typeName="varchar", size=36)
     private String ownerId;
 
-    @Column(name="ACL_ID", typeName="varchar", size=36)
-    private String aclId;
+    @Column(name="CREATE_USER", typeName="varchar", size=36)
+    private String createUser;
+
+    @Column(name="CREATE_DATE", typeName="timestamp")
+    private Timestamp createDate;
+
+    @Column(name="UPDATE_USER", typeName="varchar", size=36)
+    private String updateUser;
+
+    @Column(name="UPDATE_DATE", typeName="timestamp")
+    private Timestamp updateDate;
 
     public DocumentEntity() throws DatabaseException {
         super();
@@ -66,17 +69,11 @@ public class DocumentEntity extends SchemaEntity {
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
-    public String getContentType() {
-        return contentType;
+    public String getController() {
+        return controller;
     }
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-    public int getStatus() {
-        return status;
-    }
-    public void setStatus(int status) {
-        this.status = status;
+    public void setController(String controller) {
+        this.controller = controller;
     }
     public String getTitle() {
         return title;
@@ -84,17 +81,35 @@ public class DocumentEntity extends SchemaEntity {
     public void setTitle(String title) {
         this.title = title;
     }
-    public String getBody() {
-        return body;
+    public String getContent() {
+        return content;
     }
-    public void setBody(String body) {
-        this.body = body;
+    public void setContent(String content) {
+        this.content = content;
+    }
+    public String getContentCache() {
+        return contentCache;
+    }
+    public void setContentCache(String contentCache) {
+        this.contentCache = contentCache;
+    }
+    public String getCreateUser() {
+        return createUser;
+    }
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
     }
     public Timestamp getCreateDate() {
         return createDate;
     }
     public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
+    }
+    public String getUpdateUser() {
+        return updateUser;
+    }
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
     }
     public Timestamp getUpdateDate() {
         return updateDate;
@@ -107,11 +122,5 @@ public class DocumentEntity extends SchemaEntity {
     }
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
-    }
-    public String getAclId() {
-        return aclId;
-    }
-    public void setAclId(String aclId) {
-        this.aclId = aclId;
     }
 }

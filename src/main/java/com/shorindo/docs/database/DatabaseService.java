@@ -86,7 +86,7 @@ public class DatabaseService {
     public DatabaseSchema loadSchema(InputStream is) {
         DatabaseSchema newSchema = JAXB.unmarshal(is, DatabaseSchema.class);
         for (DatabaseSchema.Entity entity : newSchema.getEntityList()) {
-            LOG.info(DTBS_1101, newSchema.getPackage(), entity.getName());
+            LOG.info(DTBS_1101, newSchema.getNamespace(), entity.getName());
             Map<String,DatabaseSchema.Column> columnMap =
                 new LinkedHashMap<String,DatabaseSchema.Column>();
             for (DatabaseSchema.Column column : entity.getColumnList()) {
@@ -286,7 +286,7 @@ public class DatabaseService {
         for (DatabaseSchema.Entity entity : schema.getEntityList()) {
             if (entity instanceof DatabaseSchema.Table) {
                 Map<String,Object> entityMap = new HashMap<String,Object>();
-                entityMap.put("packageName", schema.getPackage());
+                entityMap.put("packageName", schema.getNamespace());
                 entityMap.put("className", BeanUtil.snake2camel(entity.getName(), true));
                 entityMap.put("entityName", entity.getName());
                 List<Map<String,Object>> columnList = new ArrayList<Map<String,Object>>();

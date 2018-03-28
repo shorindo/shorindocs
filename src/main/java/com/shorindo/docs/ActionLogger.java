@@ -61,13 +61,9 @@ public class ActionLogger {
         LOG.info(code.getCode() + ":" + code.getMessage(lang, args));
     }
 
-//    public void info(String message, Object...args) {
-//        if (args.length > 0) {
-//            LOG.info(MessageFormat.format(message, args));
-//        } else {
-//            LOG.info(message);
-//        }
-//    }
+    public void info(String message, Object...args) {
+        LOG.info(MessageFormat.format(message, args));
+    }
 
     public void warn(ActionMessages code, Object...args) {
         LOG.warn(code.getCode() + ":" + code.getMessage(lang, args));

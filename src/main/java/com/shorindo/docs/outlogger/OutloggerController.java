@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.specout;
+package com.shorindo.docs.outlogger;
 
 import static com.shorindo.docs.specout.SpecoutMessages.*;
 
@@ -32,11 +32,11 @@ import com.shorindo.docs.database.DatabaseException;
 /**
  * 
  */
-@ContentTypeReady("com.shorindo.docs.specout.SpecoutController")
-public class SpecoutController extends DocumentController {
-    private static final ActionLogger LOG = ActionLogger.getLogger(SpecoutController.class);
+@ContentTypeReady("com.shorindo.docs.outlogger.OutloggerController")
+public class OutloggerController extends DocumentController {
+    private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerController.class);
 
-    public SpecoutController() {
+    public OutloggerController() {
     }
 
     /**
@@ -47,8 +47,8 @@ public class SpecoutController extends DocumentController {
         try {
             DocumentEntity model = (DocumentEntity)context.getAttribute("document");
             String content = model.getContent() == null ? "" : model.getContent();
-            SpecoutEntity specout = JAXB.unmarshal(new StringReader(content), SpecoutEntity.class);
-            context.setAttribute("specout", specout);
+            OutloggerMetaData metaData = JAXB.unmarshal(new StringReader(content), OutloggerMetaData.class);
+            context.setAttribute("outlogger", metaData);
             context.setAttribute("recents", recents());
         } catch (DatabaseException e) {
             LOG.error(SPEC_9001, e);

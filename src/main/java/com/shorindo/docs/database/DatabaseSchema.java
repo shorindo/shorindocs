@@ -26,16 +26,16 @@ import javax.xml.bind.annotation.XmlElements;
  * 
  */
 public class DatabaseSchema {
-    private String packageName;
+    private String namespace;
     private List<Entity> entityList = new ArrayList<Entity>();
     private List<Relation> relationList = new ArrayList<Relation>();
     
-    @XmlAttribute(name="package")
-    public String getPackage() {
-        return packageName;
+    @XmlAttribute(name="namespace")
+    public String getNamespace() {
+        return namespace;
     }
-    public void setPackage(String namespace) {
-        this.packageName = namespace;
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
     @XmlElements({
         @XmlElement(name="table", type=Table.class),

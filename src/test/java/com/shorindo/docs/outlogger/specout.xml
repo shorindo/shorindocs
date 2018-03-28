@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<outlogger>
+  <columns>
+    <column title="仕様ID"     data="specId"      width=""  border=""/>
+    <column title="仕様"       data="descriptoin" width=""  border=""/>
+    <column title="理由・目的" data="reason"      width=""  border=""/>
+    <column title="発生元"     data="source"      width=""  border=""/>
+    <column title="バージョン" data="version"     width=""  border=""/>
+  </columns>                                                    
+  <records>
+    <record>
+      <specId>SPEC-0001</specId>
+      <level>0</level>
+      <parent>SPEC-0001</parent>
+      <description>ソフトウェアの仕様のまとめ方を定義する。</description>
+      <reason>いちいち説明してもらわなくても理解できるように、仕様は明文化しておかねばならない。</reason>
+      <source>開発</source>
+      <version>1.0</version>
+    </record>
+  </records>
+  <extras>
+    <extra>
+      <title>関連資料</title>
+      <columns>
+        <column/>
+      </columns>
+      <records>
+        <reocrd>
+        </reocrd>
+      </records>
+    </extra>
+  </extras>
+  <references>
+    <reference>
+      <id>1</id>
+      <title>要求仕様記述手法「USDM」ってどんなの？</title>
+      <link>http://swquality.jp/temp/nagasakiqdg15_usdm.pdf</link>
+    </reference>
+  </references>
+  <changes>
+    <change>
+      <date>2018/02/25</date>
+      <version>1.0</version>
+      <person>kazm</person>
+      <description>初版作成</description>
+    </change>
+    <change>
+      <date>2018/03/10</date>
+      <version>1.1</version>
+      <person>kazm</person>
+      <description>用語の定義の項を追加</description>
+    </change>
+    <change>
+      <date>2018/03/21</date>
+      <version>1.2</version>
+      <person>kazm</person>
+      <description>「同じ」表現の項を追加し、リナンバー。</description>
+    </change>
+  </changes>                                                                                                                                                      
+</outlogger>
