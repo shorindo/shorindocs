@@ -35,7 +35,7 @@ import com.shorindo.docs.database.DatabaseService;
  */
 public class OutloggerService {
     private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerService.class);
-    private static final DatabaseService databaseService = DatabaseService.newInstance();
+    private static final DatabaseService databaseService = DatabaseService.getInstance();
 
     /*==========================================================================
      * 初期設定
@@ -44,9 +44,9 @@ public class OutloggerService {
         try {
             OutloggerEntity entity = new OutloggerEntity();
             databaseService.createTableFromSchema(entity.getTableSchema());
-            LOG.info(DTBS_5127, entity.getClass().getName());
+            LOG.info(DBMS_5127, entity.getClass().getName());
         } catch (DatabaseException e) {
-            LOG.warn(DTBS_5128, e, OutloggerEntity.class.getName());
+            LOG.warn(DBMS_5128, e, OutloggerEntity.class.getName());
         }
     }
 
@@ -91,32 +91,32 @@ public class OutloggerService {
     public void removeOutlog() {}
     public void commitOutlog() {}
 
-    /**
-     * 
-     */
-    public void generateSchemaEntity() throws Exception {
-        InputStream is = getClass().getResourceAsStream("Outlogger.dsdl");
-        try {
-            DatabaseService service = DatabaseService.newInstance();
-            DatabaseSchema schema = service.loadSchema(is);
-            service.generateSchemaEntity(schema);
+//    /**
+//     * 
+//     */
+//    public void generateSchemaEntity() throws Exception {
+//        InputStream is = getClass().getResourceAsStream("Outlogger.dsdl");
+//        try {
+//            DatabaseService service = DatabaseService.getInstance();
+//            DatabaseSchema schema = service.loadSchema(is);
+//            service.generateSchemaEntity(schema);
+//
+//            String ddl = service.generateDDL((DatabaseSchema.Table)schema.getEntiry("DOCS_OUTLOGGER"));
+//            System.out.println(ddl);
+//        } finally {
+//            is.close();
+//        }
+//    }
 
-            String ddl = service.generateDDL((DatabaseSchema.Table)schema.getEntiry("DOCS_OUTLOGGER"));
-            System.out.println(ddl);
-        } finally {
-            is.close();
-        }
-    }
-
-    /**
-     * 
-     */
-    public static void main(String[] args) {
-        try {
-            OutloggerService service = new OutloggerService();
-            service.generateSchemaEntity();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    /**
+//     * 
+//     */
+//    public static void main(String[] args) {
+//        try {
+//            OutloggerService service = new OutloggerService();
+//            service.generateSchemaEntity();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

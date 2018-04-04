@@ -60,7 +60,7 @@ public class DatabaseServiceTest {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
         ApplicationContext.loadProperties(is);
         
-        service = DatabaseService.newInstance();
+        service = DatabaseService.getInstance();
         service.provide(new Transactionless<Integer>() {
             @Override
             public Integer run(Connection conn, Object...params) throws DatabaseException {
@@ -183,16 +183,16 @@ public class DatabaseServiceTest {
         }
     }
 
-    @Test
-    public void testGenerateSchemaEntity() throws Exception {
-        InputStream is = getClass().getResourceAsStream("Sample.dsdl");
-        try {
-            DatabaseSchema schema = service.loadSchema(is);
-            service.generateSchemaEntity(schema);
-        } finally {
-            is.close();
-        }
-    }
+//    @Test
+//    public void testGenerateSchemaEntity() throws Exception {
+//        InputStream is = getClass().getResourceAsStream("Sample.dsdl");
+//        try {
+//            DatabaseSchema schema = service.loadSchema(is);
+//            service.generateSchemaEntity(schema);
+//        } finally {
+//            is.close();
+//        }
+//    }
 
     public SampleEntity generateSampleEntity() throws DatabaseException {
         SampleEntity entity = new SampleEntity();

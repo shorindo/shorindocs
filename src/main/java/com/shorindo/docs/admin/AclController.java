@@ -17,6 +17,7 @@ package com.shorindo.docs.admin;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
+import com.shorindo.docs.view.View;
 
 /**
  * 
@@ -30,8 +31,8 @@ public class AclController extends ActionController {
     }
 
     @Override
-    public String view(ActionContext context) {
-        return ".xuml";
+    public View view(ActionContext context) {
+        return null;
     }
     
 }

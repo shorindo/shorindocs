@@ -17,6 +17,7 @@ package com.shorindo.docs.auth;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
+import com.shorindo.docs.view.View;
 
 /**
  * 
@@ -31,12 +32,8 @@ public class AuthenticateController extends ActionController {
         // TODO Auto-generated constructor stub
     }
 
-    /* (non-Javadoc)
-     * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
-     */
     @Override
-    public String view(ActionContext context) {
-        // TODO Auto-generated method stub
+    public View view(ActionContext context) {
         return null;
     }
 

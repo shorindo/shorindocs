@@ -18,17 +18,18 @@ package com.shorindo.docs.auth.entity;
 import java.util.Date;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.SchemaEntity;
+import com.shorindo.docs.database.Table;
 
 /**
  * 
  */
+@Table("AUTH_USER")
 public class UserEntity extends SchemaEntity {
+    @SuppressWarnings("unused")
     private static final ActionLogger LOG = ActionLogger.getLogger(UserEntity.class);
-    private static final String ENTITY_NAME = "AUTH_USER";
 
-    private String userId;
+    private String userId = "anonymous";
     private String loginId;
     private String displayName;
     private String password;
@@ -37,8 +38,7 @@ public class UserEntity extends SchemaEntity {
     private Date createdDate;
     private Date updatedDate;
 
-    public UserEntity() throws DatabaseException {
-        super();
+    public UserEntity() {
     }
 
     public String getUserId() {

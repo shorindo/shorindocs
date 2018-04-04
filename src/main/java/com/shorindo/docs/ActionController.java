@@ -16,14 +16,11 @@
 package com.shorindo.docs;
 
 import static com.shorindo.docs.DocumentMessages.*;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.view.ErrorView;
-import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -35,7 +32,7 @@ public abstract class ActionController {
     }
 
     @ActionMethod
-    public abstract String view(ActionContext context);
+    public abstract View view(ActionContext context);
 
     public View action(ActionContext context) {
         LapCounter lap = new LapCounter();
@@ -43,35 +40,36 @@ public abstract class ActionController {
         try {
             Class<?> clazz = getClass();
             while (clazz != null) {
-                Method method = clazz.getDeclaredMethod(context.getAction(), ActionContext.class);
+                LOG.debug(clazz.getSimpleName());
+                Method method = clazz.getMethod(context.getAction(), ActionContext.class);
                 if (method.getAnnotation(ActionMethod.class) != null &&
-                        String.class.isAssignableFrom(method.getReturnType())) {
-                    View view = getView((String)method.invoke(this, context), context);
+                        View.class.isAssignableFrom(method.getReturnType())) {
+                    View view = (View)method.invoke(this, context);
                     LOG.debug(DOCS_1108, getClass().getSimpleName() + ".action()", lap.elapsed());
                     return view;
                 }
                 clazz = clazz.getSuperclass();
             }
             LOG.warn(DOCS_3003, context.getAction());
-            return getView(view(context), context);
+            return view(context);
         } catch (Exception e) {
             LOG.error(DOCS_3003, e, context.getAction());
             return new ErrorView(500);
         }
     }
 
-    protected View getView(String viewName, ActionContext context) {
-        if (viewName == null) {
-            return new ErrorView(404);
-        } else if (".xuml".equals(viewName)) {
-            InputStream is = getClass().getResourceAsStream(getClass().getSimpleName() + viewName);
-            return new XumlView(getClass().getSimpleName() + viewName, is);
-        } else if (viewName.startsWith("/")) {
-            return new RedirectView(viewName, context);
-        } else {
-            return new ErrorView(404);
-        }
-    }
+//    protected View getView(String viewName, ActionContext context) {
+//        if (viewName == null) {
+//            return new ErrorView(404);
+//        } else if (".xuml".equals(viewName)) {
+//            InputStream is = getClass().getResourceAsStream(getClass().getSimpleName() + viewName);
+//            return new XumlView(getClass().getSimpleName() + viewName, is);
+//        } else if (viewName.startsWith("/")) {
+//            return new RedirectView(viewName, context);
+//        } else {
+//            return new ErrorView(404);
+//        }
+//    }
 
     protected String createClassPath(String path) {
         StringBuffer result = new StringBuffer();

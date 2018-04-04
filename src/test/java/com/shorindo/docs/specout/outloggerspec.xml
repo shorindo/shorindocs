@@ -208,6 +208,15 @@
       <source>開発</source>
       <version>1.0</version>
     </spec>
+    <spec>
+      <specId>OLOG-0024</specId>
+      <level>1</level>
+      <parent>OLOG-0001</parent>
+      <description>検証・サニタイズ</description>
+      <reason></reason>
+      <source>開発</source>
+      <version>1.0</version>
+    </spec>
   </specs>
   <references>
     <reference>

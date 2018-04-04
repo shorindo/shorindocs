@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Shorindo, Inc.
+ * Copyright 2016-2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,14 @@ import com.shorindo.docs.view.View;
  */
 public abstract class DocumentController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentController.class);
-    private static final DatabaseService databaseService = DatabaseService.newInstance();
+    private static final DatabaseService databaseService = DatabaseService.getInstance();
     private DocumentEntity model;
+
+    public static void setup(List<Class<?>> clazzList) {
+        for (Class<?> clazz : clazzList) {
+            LOG.info(DOCS_1120, clazz.getName());
+        }
+    }
 
     /**
      * 
@@ -45,27 +51,6 @@ public abstract class DocumentController extends ActionController {
     protected DocumentEntity getModel() {
         return model;
     }
-
-    /*
-     * 
-     */
-    private static final DatabaseExecutor<Integer> UPDATE_EXEC = new Transactional<Integer>() {
-        @Override
-        public Integer run(Connection conn, Object... params)
-                throws DatabaseException {
-            DocumentEntity document = (DocumentEntity)params[0];
-            UserEntity user = (UserEntity)params[1];
-            return exec(
-                "UPDATE DOCUMENT " +
-                "SET TITLE=?, BODY=?, UPDATE_DATE=NOW() " +
-                "WHERE DOCUMENT_ID=? AND OWNER_ID=?",
-                document.getTitle(),
-                document.getBody(),
-                document.getDocumentId(),
-                user.getUserId()
-                );
-        }
-    };
 
     /**
      * 
@@ -77,7 +62,7 @@ public abstract class DocumentController extends ActionController {
     public View save(ActionContext context) throws DocumentException {
         DocumentEntity model = getModel();
         model.setTitle(context.getParameter("title"));
-        model.setBody(context.getParameter("body"));
+        model.setContent(context.getParameter("body"));
         String id = model.getDocumentId();
         try {
             int result = databaseService.provide(UPDATE_EXEC, model, context.getUser());
@@ -95,21 +80,19 @@ public abstract class DocumentController extends ActionController {
     /*
      * 
      */
-    private static final DatabaseExecutor<Integer> CREATE_EXEC = new Transactional<Integer>() {
+    private static final DatabaseExecutor<Integer> UPDATE_EXEC = new Transactional<Integer>() {
         @Override
         public Integer run(Connection conn, Object... params)
                 throws DatabaseException {
             DocumentEntity document = (DocumentEntity)params[0];
             UserEntity user = (UserEntity)params[1];
             return exec(
-                "INSERT INTO DOCUMENT " +
-                "(DOCUMENT_ID,CONTENT_TYPE,STATUS,TITLE,BODY,CREATE_DATE,UPDATE_DATE,OWNER_ID) VALUES " +
-                "VALUES (?,?,?,?,?,NOW(),NOW(),?)",
-                document.getDocumentId(),
-                document.getContentType(),
-                document.getStatus(),
+                "UPDATE DOCS_DOCUMENT " +
+                "SET TITLE=?, CONTENT=?, UPDATE_DATE=NOW() " +
+                "WHERE DOCUMENT_ID=? AND OWNER_ID=?",
                 document.getTitle(),
-                document.getBody(),
+                document.getContent(),
+                document.getDocumentId(),
                 user.getUserId()
                 );
         }
@@ -128,9 +111,9 @@ public abstract class DocumentController extends ActionController {
         try {
             DocumentEntity model = new DocumentEntity();
             model.setDocumentId(id);
-            model.setContentType(context.getParameter("contentType"));
+            model.setController(getClass().getName());
             model.setTitle(context.getParameter("title"));
-            model.setBody(context.getParameter("body"));
+            model.setContent(context.getParameter("body"));
 
             if (databaseService.provide(CREATE_EXEC, model, context.getUser()) >= 0) {
                 return new RedirectView(id + "?action=edit", context);
@@ -138,7 +121,7 @@ public abstract class DocumentController extends ActionController {
                 return new ErrorView(404);
             }
         } catch (DatabaseException e) {
-            LOG.error(DOCS_9002, id);
+            LOG.error(DOCS_9002, e, id);
             return new ErrorView(500);
         }
     }
@@ -146,12 +129,24 @@ public abstract class DocumentController extends ActionController {
     /*
      * 
      */
-    private static final DatabaseExecutor<Integer> REMOVE_EXEC = new Transactional<Integer>() {
+    private static final DatabaseExecutor<Integer> CREATE_EXEC = new Transactional<Integer>() {
         @Override
         public Integer run(Connection conn, Object... params)
                 throws DatabaseException {
             DocumentEntity document = (DocumentEntity)params[0];
-            return remove(document);
+            UserEntity user = (UserEntity)params[1];
+            return exec(
+                "INSERT INTO DOCS_DOCUMENT " +
+                "(DOCUMENT_ID,CONTROLLER,TITLE,CONTENT,OWNER_ID,CREATE_USER,CREATE_DATE,UPDATE_USER,UPDATE_DATE) " +
+                "VALUES (?,?,?,?,?,?,NOW(),?,NOW())",
+                document.getDocumentId(),
+                document.getController(),
+                document.getTitle(),
+                document.getContent(),
+                user.getUserId(),
+                user.getUserId(),
+                user.getUserId()
+                );
         }
     };
 
@@ -182,6 +177,26 @@ public abstract class DocumentController extends ActionController {
         }
     }
 
+    /*
+     * 
+     */
+    private static final DatabaseExecutor<Integer> REMOVE_EXEC = new Transactional<Integer>() {
+        @Override
+        public Integer run(Connection conn, Object... params)
+                throws DatabaseException {
+            DocumentEntity document = (DocumentEntity)params[0];
+            return remove(document);
+        }
+    };
+
+    /**
+     * 
+     * @return
+     * @throws SQLException
+     */
+    protected List<DocumentEntity> recents() throws DatabaseException {
+        return databaseService.provide(RECENTS_EXEC);
+    }
 
     /*
      * 
@@ -192,19 +207,11 @@ public abstract class DocumentController extends ActionController {
         public List<DocumentEntity> run(Connection conn, Object...params) throws DatabaseException {
             return query(
                 "SELECT document_id,title,update_date " +
-                "FROM   document " +
+                "FROM   docs_document " +
                 "ORDER  BY update_date DESC " +
                 "LIMIT  10",
                 DocumentEntity.class);
         }
     };
     
-    /**
-     * 
-     * @return
-     * @throws SQLException
-     */
-    protected List<DocumentEntity> recents() throws DatabaseException {
-        return databaseService.provide(RECENTS_EXEC);
-    }
 }

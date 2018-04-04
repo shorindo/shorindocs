@@ -31,6 +31,7 @@ public enum DocumentMessages implements ActionMessages {
     DOCS_1108("アクション終了：{0} : {1} ms"),
     DOCS_1109("初期化開始：{0}"),
     DOCS_1110("初期化終了：{0} : {1} ms"),
+    DOCS_1120("コントローラ[{0}]を使用します。"),
 
     DOCS_3001("プロパティ[{0}]をセットできません。"),
     DOCS_3002("クラス[{0}]の情報を取得できません。"),

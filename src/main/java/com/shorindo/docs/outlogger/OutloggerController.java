@@ -27,7 +27,9 @@ import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentEntity;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
-import com.shorindo.docs.database.DatabaseException;
+import com.shorindo.docs.view.ErrorView;
+import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -43,17 +45,18 @@ public class OutloggerController extends DocumentController {
      * 
      */
     @Override @ActionMethod
-    public String view(ActionContext context) {
+    public View view(ActionContext context) {
         try {
             DocumentEntity model = (DocumentEntity)context.getAttribute("document");
             String content = model.getContent() == null ? "" : model.getContent();
             OutloggerMetaData metaData = JAXB.unmarshal(new StringReader(content), OutloggerMetaData.class);
             context.setAttribute("outlogger", metaData);
             context.setAttribute("recents", recents());
-        } catch (DatabaseException e) {
+            return XumlView.create(getClass());
+        } catch (Exception e) {
             LOG.error(SPEC_9001, e);
+            return new ErrorView(500);
         }
-        return ".xuml";
     }
 
 }

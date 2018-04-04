@@ -49,11 +49,14 @@ public class ActionContext {
         this.setAttribute("request", request);
         this.setAttribute("response", response);
         this.setAttribute("session", request.getSession());
-        this.setAttribute("application", servletContext);
+        Map<String,String> application = new HashMap<String,String>();
+        application.put("contextPath", servletContext.getContextPath());
+        application.put("info", servletContext.getServerInfo());
+        this.setAttribute("application", application);
     }
 
     public UserEntity getUser() {
-        return null;
+        return new UserEntity();
     }
 
     public ViewModel getViewModel() {

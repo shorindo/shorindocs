@@ -1,4 +1,4 @@
-<window title="{{document.title}}">
+<xuml title="{{document.title}}" xmlns:html="'http://www.w3.org/1999/xhtml">
   <vbox>
     <hbox>
       {{document.title}}
@@ -18,8 +18,8 @@
         </listbox>
       </vbox>
       <vbox flex="1">
-        {{document.body}}
+        {{document.content}}
       </vbox>
     </hbox>
   </vbox>
-</window>
+</xuml>

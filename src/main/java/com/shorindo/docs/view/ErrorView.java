@@ -15,17 +15,21 @@
  */
 package com.shorindo.docs.view;
 
+import static com.shorindo.docs.DocumentMessages.DOCS_9999;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.ActionLogger;
 import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
 public class ErrorView extends View {
+    private static final ActionLogger LOG = ActionLogger.getLogger(ErrorView.class);
 
     public ErrorView(int status) {
         init();
@@ -47,6 +51,8 @@ public class ErrorView extends View {
         InputStream is = getClass().getClassLoader().getResourceAsStream("xuml/error.xuml");
         try {
             new XumlView(String.valueOf(getStatus()), is).render(context, os);
+        } catch (Exception e) {
+            LOG.error(DOCS_9999, e);
         } finally {
             if (is != null)
                 try {

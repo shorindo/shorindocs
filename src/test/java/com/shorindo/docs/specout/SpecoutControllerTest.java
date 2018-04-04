@@ -46,42 +46,12 @@ public class SpecoutControllerTest {
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
         ApplicationContext.loadProperties(is);
-        databaseService = DatabaseService.newInstance();
+        databaseService = DatabaseService.getInstance();
     }
 
     @Test
     public void testSpecout() throws Exception {
         createData("specout.xml", "specout");
-//        InputStream is = getClass()
-//                .getResourceAsStream("specsample.xml");
-//        StringBuilder body = new StringBuilder();
-//        Reader reader = new InputStreamReader(is, "UTF-8");
-//        char[] buff = new char[2048];
-//        int len = 0;
-//        while ((len = reader.read(buff)) > 0) {
-//            body.append(buff, 0, len);
-//        }
-//       
-//        int count = databaseService.provide(new Transactional<Integer>() {
-//
-//            @Override
-//            public Integer run(Connection conn, Object... params)
-//                    throws DatabaseException {
-//                DocumentEntity entity = new DocumentEntity();
-//                entity.setDocumentId("specout");
-//                entity.setContentType(SpecoutController.class.getName());
-//                entity.setTitle("specout");
-//                entity.setBody(body.toString());
-//                entity.setStatus(0);
-//                entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
-//                entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
-//                entity.setOwnerId(getClass().getName());
-//                entity.setAclId("aclId");
-//                return put(entity);
-//            }
-//            
-//        });
-//        assertEquals(1, count);
     }
 
     @Test
@@ -103,14 +73,14 @@ public class SpecoutControllerTest {
                     throws DatabaseException {
                 DocumentEntity entity = new DocumentEntity();
                 entity.setDocumentId("testpov");
-                entity.setContentType(SpecoutController.class.getName());
+                entity.setController(SpecoutController.class.getName());
                 entity.setTitle("テスト観点");
-                entity.setBody(body.toString());
-                entity.setStatus(0);
+                entity.setContent(body.toString());
+                entity.setCreateUser(getClass().getSimpleName());
                 entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
+                entity.setUpdateUser(getClass().getSimpleName());
                 entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
                 entity.setOwnerId(getClass().getName());
-                entity.setAclId("aclId");
                 return put(entity);
             }
             
@@ -140,14 +110,14 @@ public class SpecoutControllerTest {
                 String path = fileName.replaceAll("\\..*$", "");
                 DocumentEntity entity = new DocumentEntity();
                 entity.setDocumentId(path);
-                entity.setContentType(SpecoutController.class.getName());
+                entity.setController(SpecoutController.class.getName());
                 entity.setTitle(title);
-                entity.setBody(body.toString());
-                entity.setStatus(0);
+                entity.setContent(body.toString());
+                entity.setCreateUser(getClass().getSimpleName());
                 entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
+                entity.setUpdateUser(getClass().getSimpleName());
                 entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
-                entity.setOwnerId(getClass().getName());
-                entity.setAclId("aclId");
+                entity.setOwnerId(getClass().getSimpleName());
                 return put(entity);
             }
             

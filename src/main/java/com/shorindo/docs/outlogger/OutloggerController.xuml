@@ -1,4 +1,4 @@
-<window title="{{document.title}}">
+<xuml title="{{document.title}}" xmlns:html="http://www.w3.org/1999/xhtml">
   <vbox style="margin-bottom:20px;">
     <hbox>
       {{document.title}}
@@ -18,7 +18,7 @@
         </listbox>
       </vbox>
       <vbox flex="1" style="overflow:auto;">
-        <style>
+        <html:style>
         <![CDATA[
         table.specout {
           table-layout:fixed;
@@ -47,34 +47,31 @@
           background:#F8F8F8;
         }
         ]]>
-        </style>
-        <table class="specout">
-          <col style="width:10%; white-space:nowrap;"/>
-          <col style="width:35%;"/>
-          <col style="width:35%;"/>
-          <col style="width:10%; white-space:nowrap;"/>
-          <col style="width:5%; white-space:nowrap;"/>
+        </html:style>
+        <html:table class="specout">
+          {{#columns}}
+          <html:col style="width:{{width}}; white-space:nowrap;"/>
+          {{/columns}}
 
-          <tbody>
-            <tr style="background:lightgray; text-align:center;">
-              <td style="border-right:1px solid gray; border-bottom:1px solid gray;">仕様ID</td>
-              <td style="border-right:1px solid gray; border-bottom:1px solid gray;">仕様</td>
-              <td style="border-right:1px solid gray; border-bottom:1px solid gray;">目的・理由</td>
-              <td style="border-right:1px solid gray; border-bottom:1px solid gray;">発生元</td>
-              <td style="border-bottom:1px solid gray;">Ver.</td>
-            </tr>
-            {{#specout.specList}}
-            <tr class="spec">
-              <td style="text-align:center;">{{specId}}</td>
-              <td><div class="description level-{{level}}">{{description}}</div></td>
-              <td>{{reason}}</td>
-              <td>{{source}}</td>
-              <td>{{version}}</td>
-            </tr>
-            {{/specout.specList}}
-          </tbody>
-        </table>
+          <html:tbody>
+            <html:tr style="background:lightgray; text-align:center;">
+              {{#columns}}
+              <html:td style="{{border}}">{{title}}</html:td>
+              {{/columns}}
+            </html:tr>
+            {{#rows}}
+            <html:tr>
+              {{#content}}
+              <html:td style="{{style}}"><html:div class="level-{{level}}">{{data}}</html:div></html:td>
+              {{/content}}
+              {{^content}}
+              <html:td style="{{style}}">{{data}}</html:td>
+              {{/content}}
+            </html:tr>
+            {{/rows}}
+          </html:tbody>
+        </html:table>
       </vbox>
     </hbox>
   </vbox>
-</window>
+</xuml>

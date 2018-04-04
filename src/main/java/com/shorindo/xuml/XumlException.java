@@ -15,11 +15,16 @@
  */
 package com.shorindo.xuml;
 
+import java.util.Locale;
+
+import com.shorindo.docs.ActionMessages;
+
 /**
  * 
  */
 public class XumlException extends Exception {
     private static final long serialVersionUID = 1L;
+    private static final Locale LANG = Locale.JAPANESE;
 
     /**
      * 
@@ -50,4 +55,7 @@ public class XumlException extends Exception {
         super(message, cause);
     }
 
+    public XumlException(ActionMessages messages) {
+        super(messages.getCode() + ":" + messages.getMessage(LANG));
+    }
 }

@@ -29,6 +29,9 @@ import com.shorindo.docs.annotation.ContentTypeReady;
 import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.Transactionless;
+import com.shorindo.docs.view.ErrorView;
+import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -36,7 +39,7 @@ import com.shorindo.docs.database.Transactionless;
 @ContentTypeReady("text/plain")
 public class PlainTextController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(PlainTextController.class);
-    private static final DatabaseService databaseService = DatabaseService.newInstance();
+    private static final DatabaseService databaseService = DatabaseService.getInstance();
 
     public PlainTextController() {
     }
@@ -45,7 +48,7 @@ public class PlainTextController extends DocumentController {
      * 
      */
     @Override @ActionMethod
-    public String view(ActionContext context) {
+    public View view(ActionContext context) {
         LOG.trace("view()");
         try {
             DocumentEntity model = (DocumentEntity)context.getAttribute("document");
@@ -57,10 +60,11 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("\"", "&quot;")
                 .replaceAll("\n", "<br/>"));
             context.setAttribute("recents", recents());
-        } catch (DatabaseException e) {
+            return XumlView.create(getClass());
+        } catch (Exception e) {
             LOG.error(DocumentMessages.DOCS_9001, e);
+            return new ErrorView(500);
         }
-        return ".xuml";
     }
 
     /**

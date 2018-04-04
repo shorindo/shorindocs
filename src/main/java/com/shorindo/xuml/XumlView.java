@@ -52,12 +52,20 @@ public class XumlView extends View {
     private static final ActionLogger LOG = ActionLogger.getLogger(XumlView.class);
     private static final Map<String,Class<?>> componentMap = new HashMap<String,Class<?>>();
     private String name;
-    private Component component;
+    private XumlEngine engine;
 
-    public static XumlView create(Class<?> clazz) {
+    public static XumlView create(Class<?> clazz) throws XumlException {
         String xumlName = clazz.getSimpleName() + ".xuml";
         InputStream is = clazz.getResourceAsStream(xumlName);
-        return new XumlView(xumlName, is);
+        try {
+            return new XumlView(xumlName, is);
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException e) {
+                LOG.error(DOCS_9999, e);
+            }
+        }
     }
 
     public static void init(String path) {
@@ -96,24 +104,16 @@ public class XumlView extends View {
         }
     }
 
-    public XumlView(String name, InputStream is) {
+    /**
+     * @throws XumlException 
+     * 
+     */
+    public XumlView(String name, InputStream is) throws XumlException {
         LapCounter lap = new LapCounter();
         init();
         this.name = name;
         LOG.debug(DOCS_1109, name);
-        try {
-            component = parse(is);
-        } catch (SAXException e) {
-            LOG.error(DOCS_9999, e);
-        } catch (IOException e) {
-            LOG.error(DOCS_9999, e);
-        } finally {
-            try {
-                if (is != null) is.close();
-            } catch (IOException e) {
-                LOG.error(DOCS_9999, e);
-            }
-        }
+        engine = new XumlEngine(is);
         LOG.debug(DOCS_1110, name, lap.elapsed());
     }
 
@@ -127,8 +127,8 @@ public class XumlView extends View {
         long st = System.currentTimeMillis();
         LOG.debug(XUML_1001, name);
         try {
-            os.write(evalMustache(context, component.getHtml()).getBytes("UTF-8"));
-        } catch (Exception e) {
+            engine.render(context.getAttributes(), os);
+        } catch (IOException e) {
             LOG.error(DOCS_9999, e);
         }
         LOG.debug(XUML_1002, name, System.currentTimeMillis() - st);

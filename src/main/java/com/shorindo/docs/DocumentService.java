@@ -43,7 +43,7 @@ public class DocumentService {
      * 
      */
     private DocumentService() {
-        databaseService = DatabaseService.newInstance();
+        databaseService = DatabaseService.getInstance();
     }
 
     public void setUp() throws IOException {

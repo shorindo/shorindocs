@@ -16,6 +16,7 @@
 package com.shorindo.docs;
 
 import static com.shorindo.docs.DocumentMessages.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.ResourceFinder.ResourceMatcher;
+import com.shorindo.docs.ResourceFinder.ClassMatcher;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.DefaultView;
 import com.shorindo.docs.view.RedirectView;
@@ -48,7 +49,20 @@ public class ActionServlet extends HttpServlet {
         super.init(config);
 
         File root = new File(config.getServletContext().getRealPath("/WEB-INF/classes"));
-        ResourceFinder.find(root, new ResourceMatcher() {
+        ResourceFinder finder = new ResourceFinder(root);
+        DocumentController.setup(finder.find(new ClassMatcher() {
+            @Override
+            public boolean matches(Class<?> clazz) {
+                if (DocumentController.class.isAssignableFrom(clazz) &&
+                        !DocumentController.class.equals(clazz)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }));
+
+        finder.find(new ClassMatcher() {
             public boolean matches(Class<?> clazz) {
                 ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
                 if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
@@ -71,25 +85,29 @@ public class ActionServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        LOG.info(DOCS_1105, req.getServletPath());
-        long st = System.currentTimeMillis();
-        String path = req.getServletPath();
-        String id = path.substring(1);
-        ActionContext context = new ActionContext(req, res, getServletContext());
+        try {
+            LOG.info(DOCS_1105, req.getServletPath());
+            long st = System.currentTimeMillis();
+            String path = req.getServletPath();
+            String id = path.substring(1);
+            ActionContext context = new ActionContext(req, res, getServletContext());
 
-        if (id == null || "".equals(id)) {
-            output(context, res, new RedirectView("/index", context));
-            return;
+            if (id == null || "".equals(id)) {
+                output(context, res, new RedirectView("/index", context));
+                return;
+            }
+            File file = new File(req.getSession().getServletContext().getRealPath(id));
+            if (id.endsWith(".xuml") && file.exists()) {
+                View view = new XumlView(file.getName(), new FileInputStream(file));
+                output(context, res, view);
+            } else if (!dispatch(context)) {
+                LOG.error(DOCS_5003, path);
+            }
+            LOG.info(DOCS_1106, req.getServletPath(),
+                    (System.currentTimeMillis() - st));
+        } catch (Exception e) {
+            LOG.error(DOCS_9999, e);
         }
-        File file = new File(req.getSession().getServletContext().getRealPath(id));
-        if (id.endsWith(".xuml") && file.exists()) {
-            View view = new XumlView(file.getName(), new FileInputStream(file));
-            output(context, res, view);
-        } else if (!dispatch(context)) {
-            LOG.error(DOCS_5003, path);
-        }
-        LOG.info(DOCS_1106, req.getServletPath(),
-                (System.currentTimeMillis() - st));
     }
 
     protected boolean dispatch(ActionContext context)

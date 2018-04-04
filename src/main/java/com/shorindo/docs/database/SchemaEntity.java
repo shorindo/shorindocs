@@ -27,20 +27,11 @@ import com.shorindo.docs.ApplicationContext;
  * 
  */
 public abstract class SchemaEntity {
+    @SuppressWarnings("unused")
     private static final ActionLogger LOG = ActionLogger.getLogger(SchemaEntity.class);
     private static final Locale LANG = ApplicationContext.getLang();
 
-    public SchemaEntity() throws DatabaseException {
-        int count = 0;
-        for (Field field : getClass().getDeclaredFields()) {
-            Column column = field.getAnnotation(Column.class);
-            if (column != null) {
-                count++;
-            }
-        }
-        if (count == 0) {
-            throw new DatabaseException("カラム指定アノテーションが１つもありません");
-        }
+    public SchemaEntity() {
     }
 
     public final String getEntityName() throws DatabaseException {
@@ -48,7 +39,7 @@ public abstract class SchemaEntity {
         if (table != null) {
             return table.value();
         } else {
-            throw new DatabaseException(DTBS_5125);
+            throw new DatabaseException(DBMS_5125);
         }
     }
 
@@ -68,7 +59,20 @@ public abstract class SchemaEntity {
 //            throw new DatabaseException(DocsMessages.E_5124.getMessage(name));
 //        }
 //    }
-//
+
+    public final void validate() throws DatabaseException {
+        int count = 0;
+        for (Field field : getClass().getDeclaredFields()) {
+            Column column = field.getAnnotation(Column.class);
+            if (column != null) {
+                count++;
+            }
+        }
+        if (count == 0) {
+            throw new DatabaseException("カラム指定アノテーションが１つもありません");
+        }
+    }
+
     public final Object getByName(String name) throws DatabaseException {
         for (Field field : getClass().getDeclaredFields()) {
             Column column = field.getAnnotation(Column.class);
@@ -77,13 +81,13 @@ public abstract class SchemaEntity {
                     field.setAccessible(true);
                     return field.get(this);
                 } catch (IllegalArgumentException e) {
-                    throw new DatabaseException(DTBS_5119.getMessage(LANG, name));
+                    throw new DatabaseException(DBMS_5119.getMessage(LANG, name));
                 } catch (IllegalAccessException e) {
-                    throw new DatabaseException(DTBS_5119.getMessage(LANG, name));
+                    throw new DatabaseException(DBMS_5119.getMessage(LANG, name));
                 }
             }
         }
-        throw new DatabaseException(DTBS_5124.getMessage(LANG, name));
+        throw new DatabaseException(DBMS_5124.getMessage(LANG, name));
     }
 
     /**
@@ -109,7 +113,7 @@ public abstract class SchemaEntity {
             }
         }
         if (tableSchema.getColumnList().size() == 0) {
-            throw new DatabaseException(DTBS_5126.getMessage(LANG));
+            throw new DatabaseException(DBMS_5126.getMessage(LANG));
         }
 
         return tableSchema;

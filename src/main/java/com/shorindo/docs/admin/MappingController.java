@@ -15,22 +15,35 @@
  */
 package com.shorindo.docs.admin;
 
+import static com.shorindo.docs.DocumentMessages.DOCS_9999;
+
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
+import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.annotation.ActionMapping;
+import com.shorindo.docs.view.ErrorView;
+import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlException;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
 @ActionMapping("/admin/mapping")
 public class MappingController extends ActionController {
+    private static final ActionLogger LOG = ActionLogger.getLogger(MappingController.class);
 
     /**
      *
      */
     @Override
-    public String view(ActionContext context) {
-        return ".xuml";
+    public View view(ActionContext context) {
+        try {
+            return XumlView.create(getClass());
+        } catch (XumlException e) {
+            LOG.error(DOCS_9999, e);
+            return new ErrorView(500);
+        }
     }
 
 }

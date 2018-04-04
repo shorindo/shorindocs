@@ -57,7 +57,7 @@ public class DatabaseService {
     private static final DatabaseService service = new DatabaseService();
     private DataSource dataSource;
 
-    public static synchronized DatabaseService newInstance() {
+    public static synchronized DatabaseService getInstance() {
         return service;
     }
 
@@ -75,7 +75,7 @@ public class DatabaseService {
             props.setProperty("testOnBorrow", ApplicationContext.getProperty("datasource.testOnBorrow"));
             dataSource = BasicDataSourceFactory.createDataSource(props);
         } catch (Exception e) {
-            LOG.error(DTBS_5100, e);
+            LOG.error(DBMS_5100, e);
         }
     }
 
@@ -86,7 +86,7 @@ public class DatabaseService {
     public DatabaseSchema loadSchema(InputStream is) {
         DatabaseSchema newSchema = JAXB.unmarshal(is, DatabaseSchema.class);
         for (DatabaseSchema.Entity entity : newSchema.getEntityList()) {
-            LOG.info(DTBS_1101, newSchema.getNamespace(), entity.getName());
+            LOG.info(DBMS_1101, newSchema.getNamespace(), entity.getName());
             Map<String,DatabaseSchema.Column> columnMap =
                 new LinkedHashMap<String,DatabaseSchema.Column>();
             for (DatabaseSchema.Column column : entity.getColumnList()) {
@@ -115,7 +115,7 @@ public class DatabaseService {
                         String entityName = entity.getName();
                         ResultSet trset = meta.getTables(null, null, entityName, null);
                         if (!trset.next()) {
-                            String msg = LOG.error(DTBS_5108, entityName);
+                            String msg = LOG.error(DBMS_5108, entityName);
                             resultList.add(msg);
                             trset.close();
                             continue;
@@ -134,7 +134,7 @@ public class DatabaseService {
                             String columnName = crset.getString("COLUMN_NAME");
                             DatabaseSchema.Column c = map.get(columnName);
                             if (c == null) {
-                                String msg = LOG.error(DTBS_5109, entityName, columnName);
+                                String msg = LOG.error(DBMS_5109, entityName, columnName);
                                 resultList.add(msg);
                             } else {
                                 map.remove(columnName);
@@ -144,11 +144,11 @@ public class DatabaseService {
 
                         // カラム定義あり、実体なしのチェック
                         for (Map.Entry<String,DatabaseSchema.Column> e : map.entrySet()) {
-                            String msg = LOG.error(DTBS_5110, entityName, e.getKey());
+                            String msg = LOG.error(DBMS_5110, entityName, e.getKey());
                             resultList.add(msg);
                         }
                         crset.close();
-                        LOG.info(DTBS_1104, entityName);
+                        LOG.info(DBMS_1104, entityName);
                     }
                     return resultList;
                 } catch (SQLException e) {
@@ -179,7 +179,7 @@ public class DatabaseService {
                 try {
                     executor.rollbackTransaction(conn);
                 } catch (DatabaseException e) {
-                    LOG.error(DTBS_5105, e);
+                    LOG.error(DBMS_5105, e);
                 }
             }
             throw new DatabaseException(th);
@@ -189,7 +189,7 @@ public class DatabaseService {
                 try {
                     conn.close();
                 } catch (SQLException e) {
-                    LOG.error(DTBS_5103, e);
+                    LOG.error(DBMS_5103, e);
                 }
             }
         }
@@ -254,7 +254,7 @@ public class DatabaseService {
             }
             if (column.getPrimaryKey() > 0) {
                 if (primaryMap.containsKey(column.getPrimaryKey())) {
-                    throw new DatabaseException(DTBS_5122.getMessage(
+                    throw new DatabaseException(DBMS_5122.getMessage(
                             LANG,
                             column.getName(),
                             column.getPrimaryKey()));
@@ -276,38 +276,38 @@ public class DatabaseService {
         return sb.toString();
     }
 
-    /*
-     * 
-     */
-    public void generateSchemaEntity(DatabaseSchema schema) throws IOException {
-        Reader reader = new InputStreamReader(getClass().getResourceAsStream("SchemaEntity.mustache"));
-        MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile(reader, "SchemaEntity.mustache");
-        for (DatabaseSchema.Entity entity : schema.getEntityList()) {
-            if (entity instanceof DatabaseSchema.Table) {
-                Map<String,Object> entityMap = new HashMap<String,Object>();
-                entityMap.put("packageName", schema.getNamespace());
-                entityMap.put("className", BeanUtil.snake2camel(entity.getName(), true));
-                entityMap.put("entityName", entity.getName());
-                List<Map<String,Object>> columnList = new ArrayList<Map<String,Object>>();
-                for (DatabaseSchema.Column column : entity.getColumnList()) {
-                    Map<String,Object> columnMap = new HashMap<String,Object>();
-                    columnMap.put("columnName", column.getName());
-                    columnMap.put("fieldName", BeanUtil.snake2camel(column.getName(), false));
-                    columnMap.put("FieldName", BeanUtil.snake2camel(column.getName(), true));
-                    columnMap.put("type", column.getType());
-                    columnMap.put("javaType", column.getJavaType());
-                    columnMap.put("size", column.getSize());
-                    columnMap.put("precision", column.getPrecision());
-                    columnMap.put("primaryKey", column.getPrimaryKey());
-                    columnMap.put("notNull", column.isNotNull());
-                    columnMap.put("unique", column.isUnique());
-                    columnMap.put("defaultValue", "null");
-                    columnList.add(columnMap);
-                }
-                entityMap.put("columnList", columnList);
-                mustache.execute(new PrintWriter(System.out), entityMap).flush();
-            }
-        }
-    }
+//    /*
+//     * 
+//     */
+//    public void generateSchemaEntity(DatabaseSchema schema) throws IOException {
+//        Reader reader = new InputStreamReader(getClass().getResourceAsStream("SchemaEntity.mustache"));
+//        MustacheFactory mf = new DefaultMustacheFactory();
+//        Mustache mustache = mf.compile(reader, "SchemaEntity.mustache");
+//        for (DatabaseSchema.Entity entity : schema.getEntityList()) {
+//            if (entity instanceof DatabaseSchema.Table) {
+//                Map<String,Object> entityMap = new HashMap<String,Object>();
+//                entityMap.put("packageName", schema.getNamespace());
+//                entityMap.put("className", BeanUtil.snake2camel(entity.getName(), true));
+//                entityMap.put("entityName", entity.getName());
+//                List<Map<String,Object>> columnList = new ArrayList<Map<String,Object>>();
+//                for (DatabaseSchema.Column column : entity.getColumnList()) {
+//                    Map<String,Object> columnMap = new HashMap<String,Object>();
+//                    columnMap.put("columnName", column.getName());
+//                    columnMap.put("fieldName", BeanUtil.snake2camel(column.getName(), false));
+//                    columnMap.put("FieldName", BeanUtil.snake2camel(column.getName(), true));
+//                    columnMap.put("type", column.getType());
+//                    columnMap.put("javaType", column.getJavaType());
+//                    columnMap.put("size", column.getSize());
+//                    columnMap.put("precision", column.getPrecision());
+//                    columnMap.put("primaryKey", column.getPrimaryKey());
+//                    columnMap.put("notNull", column.isNotNull());
+//                    columnMap.put("unique", column.isUnique());
+//                    columnMap.put("defaultValue", "null");
+//                    columnList.add(columnMap);
+//                }
+//                entityMap.put("columnList", columnList);
+//                mustache.execute(new PrintWriter(System.out), entityMap).flush();
+//            }
+//        }
+//    }
 }

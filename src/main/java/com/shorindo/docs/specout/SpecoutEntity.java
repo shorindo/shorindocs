@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import net.arnx.jsonic.JSON;
+import net.arnx.jsonic.JSONHint;
 
 /**
  * 
@@ -32,6 +33,7 @@ public class SpecoutEntity {
     private List<Reference> referenceList;
     private List<Change> changeList;
 
+    @JSONHint(name="specs")
     @XmlElementWrapper(name="specs")
     @XmlElement(name="spec")
     public List<Spec> getSpecList() {
@@ -42,6 +44,7 @@ public class SpecoutEntity {
         this.specList = specList;
     }
 
+    @JSONHint(name="references")
     @XmlElementWrapper(name="references")
     @XmlElement(name="reference")
     public List<Reference> getReferenceList() {
@@ -51,6 +54,7 @@ public class SpecoutEntity {
         this.referenceList = referenceList;
     }
 
+    @JSONHint(name="changes")
     @XmlElementWrapper(name="changes")
     @XmlElement(name="change")
     public List<Change> getChangeList() {

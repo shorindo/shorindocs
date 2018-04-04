@@ -29,28 +29,28 @@ textarea.text-editor {
 .xuml-height-fill {
   height:100%;
 }
-.vbox,
-.hbox,
-.box {
+.xuml-vbox,
+.xuml-hbox,
+.xuml-box {
   padding:0;
   margin:0;
   border-collapse:collapse;
   width:100%;
 }
-.vbox {
+.xuml-vbox {
   display:flex;
   flex-direction:column;
 }
-.hbox {
+.xuml-hbox {
   display:flex;
   flex-direction:row;
 }
-.spacer {
+.xuml-spacer {
   width:0;
   height:0;
   flex:1;
 }
-.listbox {
+.xuml-listbox {
   margin:0;
   padding:0;
 }
@@ -65,7 +65,7 @@ textarea.text-editor {
   align-items:center;
   background:rgba(128, 128, 128, 0.5);
 }
-.dialog {
+.xuml-dialog {
   width:400px;
   height:300px;
   border:1px solid gray;

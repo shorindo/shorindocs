@@ -1,11 +1,19 @@
+# 構成
+# コントローラ
+# ビュー
+## XUMLテンプレートエンジン
+## mustacheテンプレートエンジン
+# データベース
+# メッセージ・ログ・例外
+# プラグイン
 # XUML
-
 ## 制御
 
-* xuml      - costume, title 
+* xuml      - wrapper, title 
 * include   - source
 * script    - source
 * style     - source
+* wrapped
 
 ## レイアウト
 
@@ -23,6 +31,7 @@
   * menu    -
     * menuitem  -
 * spacer
+* tabbox
 
 ## フォーマット
 

@@ -2,7 +2,7 @@
 <specout>
   <specs>
     <spec>
-      <specId>SPEC-0001</specId>
+      <specId>SPEC-0010</specId>
       <level>0</level>
       <parent>SPEC-0001</parent>
       <description>ソフトウェアの仕様のまとめ方を定義する。</description>
@@ -11,7 +11,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0002</specId>
+      <specId>SPEC-0020</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様は客観的で検証可能なシステムのふるまいを定義する。</description>
@@ -20,7 +20,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0003</specId>
+      <specId>SPEC-0030</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>この文書はソフトウェア仕様書のテンプレートであり、サンプルでもある。</description>
@@ -29,7 +29,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0004</specId>
+      <specId>SPEC-0040</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様書はリリース毎に作成する。その際、前のバージョンの仕様書をコピーしたものに追加・変更・削除を加える。</description>
@@ -38,7 +38,25 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0005</specId>
+      <specId>SPEC-0050</specId>
+      <level>1</level>
+      <parent>SPEC-0001</parent>
+      <description>仕様書には、タイトル・作成日・作成者を記載しなければならない。</description>
+      <reason>一般的な文書の作法として。</reason>
+      <source>開発</source>
+      <version>1.2</version>
+    </spec>
+    <spec>
+      <specId>SPEC-0060</specId>
+      <level>1</level>
+      <parent>SPEC-0001</parent>
+      <description>仕様書には、冒頭に記載内容の要旨を記載しなければならない。</description>
+      <reason>すべてを読まなくても読むべきものかどうかの判断ができる。</reason>
+      <source>開発</source>
+      <version>1.2</version>
+    </spec>
+    <spec>
+      <specId>SPEC-0070</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様には仕様書内でユニークな仕様IDを振る。</description>
@@ -47,7 +65,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0006</specId>
+      <specId>SPEC-0080</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様IDは後工程開始後には変更してはならない。</description>
@@ -56,7 +74,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0007</specId>
+      <specId>SPEC-0090</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様にはその目的または理由を記述する。</description>
@@ -65,7 +83,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0008</specId>
+      <specId>SPEC-0100</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様には顧客要求やシステム要求などの発生元を記述する。</description>
@@ -74,7 +92,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0009</specId>
+      <specId>SPEC-0110</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様にはそれが初めて実現されるシステムのバージョンを記述する。</description>
@@ -83,7 +101,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0010</specId>
+      <specId>SPEC-0120</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様の順序や親子関係を変えても良い。その際にも仕様IDは変更してはならない。</description>
@@ -92,7 +110,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0011</specId>
+      <specId>SPEC-0130</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>外部資料は必要なら補助として参照しても良いが、図を正規の仕様としてはならない。</description>
@@ -101,7 +119,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0012</specId>
+      <specId>SPEC-0140</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様の分類はせず、仕様の親子関係で表現する。</description>
@@ -110,7 +128,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0013</specId>
+      <specId>SPEC-0150</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>一旦対象システムがリリースされた仕様は、誤りがない限り変更してはならない。</description>
@@ -119,7 +137,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0014</specId>
+      <specId>SPEC-0160</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>バージョンアップにより仕様に変更がある場合は、赤字で変更箇所がわかるようにしておく。文言や仕様の削除も取り消し線で行い、赤字にしておく。さらに次のバージョンでは赤字を黒字にし、取り消し線の箇所は削除する。</description>
@@ -128,7 +146,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0015</specId>
+      <specId>SPEC-0170</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様にはハッシュタグのようなものをつけてもよい。</description>
@@ -137,7 +155,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0016</specId>
+      <specId>SPEC-0180</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>仕様書にはバージョンアップごとに改訂履歴を記述する。</description>
@@ -146,7 +164,7 @@
       <version>1.0</version>
     </spec>
     <spec>
-      <specId>SPEC-0017</specId>
+      <specId>SPEC-0190</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>特殊な用語は、用語の定義を行う。お客様の業界用語、開発用語など。</description>
@@ -155,7 +173,7 @@
       <version>1.1</version>
     </spec>
     <spec>
-      <specId>SPEC-0018</specId>
+      <specId>SPEC-0200</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>用語や表現に揺らぎがないこと。同じ意味に対して異なる表現を用いないこと。</description>
@@ -164,7 +182,7 @@
       <version>1.1</version>
     </spec>
     <spec>
-      <specId>SPEC-0019</specId>
+      <specId>SPEC-0210</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>「他システムの何々みたいに」という表現は用いてはならない。</description>
@@ -173,11 +191,29 @@
       <version>1.2</version>
     </spec>
     <spec>
-      <specId>SPEC-0020</specId>
+      <specId>SPEC-0220</specId>
       <level>1</level>
       <parent>SPEC-0001</parent>
       <description>外部資料などは関連資料として資料番号をつけて一覧に記載し、文中では資料番号で参照する。</description>
       <reason>顧客からの受領資料、規格、コーディングガイドラインやセキュリティポリシーなど、参照すべき資料は多々あるはず。</reason>
+      <source>開発</source>
+      <version>1.2</version>
+    </spec>
+    <spec>
+      <specId>SPEC-0230</specId>
+      <level>1</level>
+      <parent>SPEC-0001</parent>
+      <description>対象読者</description>
+      <reason></reason>
+      <source>開発</source>
+      <version>1.2</version>
+    </spec>
+    <spec>
+      <specId>SPEC-0240</specId>
+      <level>1</level>
+      <parent>SPEC-0001</parent>
+      <description>前提知識</description>
+      <reason></reason>
       <source>開発</source>
       <version>1.2</version>
     </spec>

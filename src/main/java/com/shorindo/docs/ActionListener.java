@@ -35,13 +35,14 @@ public class ActionListener implements ServletContextListener {
 
     public void contextInitialized(ServletContextEvent event) {
         LOG.trace("contextInitialized()");
-        Properties siteProperties = new Properties();
-        String path = event.getServletContext().getRealPath("/WEB-INF/site.properties");
         InputStream is = null;
         try {
+            Properties siteProperties = new Properties();
+            String path = event.getServletContext().getRealPath("/WEB-INF/site.properties");
             is = new FileInputStream(path);
             siteProperties.load(is);
             PropertyConfigurator.configure(siteProperties);
+
             ApplicationContext.init(siteProperties);
         } catch (IOException e) {
             LOG.error(DocumentMessages.DOCS_9000, e);

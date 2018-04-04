@@ -18,6 +18,7 @@ package com.shorindo.docs.form;
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionController;
 import com.shorindo.docs.annotation.ContentTypeReady;
+import com.shorindo.docs.view.View;
 
 /**
  * 
@@ -35,7 +36,7 @@ public class FormController extends ActionController {
      * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
      */
     @Override
-    public String view(ActionContext context) {
+    public View view(ActionContext context) {
         // TODO Auto-generated method stub
         return null;
     }

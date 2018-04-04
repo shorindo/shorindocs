@@ -32,7 +32,7 @@ import com.shorindo.docs.view.View;
 @ActionMapping("/*")
 public final class DocumentBroker extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentBroker.class);
-    private static final DatabaseService databaseService = DatabaseService.newInstance();
+    private static final DatabaseService databaseService = DatabaseService.getInstance();
 
     public static ActionController getController(DocumentEntity model) throws DocumentException {
         try {
@@ -82,7 +82,7 @@ public final class DocumentBroker extends ActionController {
      *
      */
     @Override
-    public String view(ActionContext context) {
+    public View view(ActionContext context) {
         return null;
     }
 

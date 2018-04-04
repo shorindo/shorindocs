@@ -38,7 +38,7 @@ public abstract class Transactional<T> extends DatabaseExecutor<T> {
 
     @Override
     public void commitTransaction(Connection conn) throws DatabaseException {
-        LOG.debug(DTBS_1102);
+        LOG.debug(DBMS_1102);
         try {
             conn.commit();
         } catch (SQLException e) {
@@ -48,7 +48,7 @@ public abstract class Transactional<T> extends DatabaseExecutor<T> {
 
     @Override
     public void rollbackTransaction(Connection conn) throws DatabaseException {
-        LOG.info(DTBS_1103);
+        LOG.info(DBMS_1103);
         try {
             conn.rollback();
         } catch (SQLException e) {
