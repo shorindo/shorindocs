@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/xuml.css">
+<script type="text/javascript" src="../js/xuml.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    var window = new xuml.Window(document.body)
+        .add(new xuml.Dialog("タイトル")
+            .add(new xuml.Label("ラベル"))
+            .addButton(new xuml.Button("OK").style("width", "100px"))
+            .addButton(new xuml.Button("CANCEL").style("width", "100px")));
+    document.body.focus();
+}, false);
+</script>
+</head>
+<body>
+Hello World.
+</body>
+</html>

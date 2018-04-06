@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/xuml.css">
+<script type="text/javascript" src="../js/xuml.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    var window = new xuml.Window(document.body)
+        .add(new xuml.VBox()
+            .style("background", "#EEEEEE")
+            .style("height", "100%")
+            .style("display", "flex")
+            .style("flex-direction", "column")
+            .add(new xuml.Box()
+                .style("background", "#FFEEEE")
+                .style("height", "50px"))
+            .add(new xuml.HBox()
+                .style("background", "#EEFFEE")
+                .style("flex", "1")
+                .add(new xuml.VBox()
+                    .style("width", "300px")
+                    .style("background", "#EEEEFF"))
+                .add(new xuml.VBox()
+                    .style("background", "#EEFFEE"))
+                .add(new xuml.VBox()
+                    .style("background", "#FFEEFF")
+                    .style("width", "300px")))
+             .add(new xuml.Box()
+                .style("height", "50px")));
+}, false);
+</script>
+</head>
+<body></body>
+</html>

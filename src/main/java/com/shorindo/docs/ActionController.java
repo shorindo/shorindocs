@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Shorindo, Inc.
+ * Copyright 2016-2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ public abstract class ActionController {
         try {
             Class<?> clazz = getClass();
             while (clazz != null) {
-                LOG.debug(clazz.getSimpleName());
                 Method method = clazz.getMethod(context.getAction(), ActionContext.class);
                 if (method.getAnnotation(ActionMethod.class) != null &&
                         View.class.isAssignableFrom(method.getReturnType())) {

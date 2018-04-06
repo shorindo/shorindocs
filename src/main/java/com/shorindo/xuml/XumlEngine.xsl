@@ -134,6 +134,12 @@
     </a>
   </xsl:template>
 
+  <xsl:template match="script">
+    <script type="text/javascript">
+      <xsl:apply-templates/>
+    </script>
+  </xsl:template>
+
   <xsl:template match="spacer">
     <div class="xuml-spacer"></div>
   </xsl:template>

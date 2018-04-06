@@ -9,11 +9,12 @@
 # XUML
 ## 制御
 
-* xuml      - wrapper, title 
+* xuml      - outer, title 
 * include   - source
 * script    - source
 * style     - source
-* wrapped
+* inner
+* progress
 
 ## レイアウト
 
@@ -24,7 +25,7 @@
 * box       -
 * hbox      -
 * vbox      -
-* grid      -
+* grid      - datasource
 * groupbox  -
   * caption -
 * menubar   -
@@ -36,7 +37,7 @@
 ## フォーマット
 
 * link      - href
-* list      -
+* list      - datasource
   * listitem
 * desc      -
 * image     - source

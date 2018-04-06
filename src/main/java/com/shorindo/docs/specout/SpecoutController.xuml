@@ -1,4 +1,12 @@
 <xuml title="{{document.title}}" xmlns:html="http://www.w3.org/1999/xhtml">
+  <script>
+  /*
+  document.addEventListener("DOMContentLoaded", function(evt) {
+    new xuml.Window(document.body)
+      .add(new xuml.Dialog("title"));
+  }, false);
+  */
+  </script>
   <vbox style="margin-bottom:20px;">
     <hbox>
       {{document.title}}
