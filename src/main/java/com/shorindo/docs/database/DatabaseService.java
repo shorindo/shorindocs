@@ -17,11 +17,7 @@ package com.shorindo.docs.database;
 
 import static com.shorindo.docs.database.DatabaseMessages.*;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -41,12 +37,8 @@ import javax.xml.bind.JAXB;
 
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.BeanUtil;
 
 /**
  * 

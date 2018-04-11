@@ -73,7 +73,7 @@
             <html:td style="border-bottom:1px solid gray;">Ver.</html:td>
           </html:tr>
           {{#specout.specList}}
-          <html:tr class="spec">
+          <html:tr class="spec" iterate="specout.specList">
             <html:td style="text-align:center;">{{specId}}</html:td>
             <html:td><html:div class="description level-{{level}}">{{description}}</html:div></html:td>
             <html:td>{{reason}}</html:td>

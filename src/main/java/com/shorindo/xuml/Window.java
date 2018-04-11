@@ -21,7 +21,7 @@ import com.shorindo.docs.ActionLogger;
  * 
  */
 @ComponentReady("window")
-public class Window extends Component {
+public class Window extends Container {
     private static final ActionLogger LOG = ActionLogger.getLogger(Window.class);
     private String title;
     private String height = "auto";

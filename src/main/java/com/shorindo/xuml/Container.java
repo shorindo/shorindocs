@@ -15,15 +15,40 @@
  */
 package com.shorindo.xuml;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 
  */
 public abstract class Container extends Component {
+    private List<Component> childList;
     private String width;
     private String height;
 
     public Container(XumlView view) {
         super(view);
+        childList = new ArrayList<Component>();
+    }
+
+//    public Component add(Component child) {
+//        if (childList.size() > 0) {
+//            Component last = childList.get(childList.size() - 1);
+//            if (last instanceof CDATA && child instanceof CDATA) {
+//                CDATA text = (CDATA)last;
+//                text.setText(text.getText() + ((CDATA)child).getText());
+//                //LOG.debug("コンポーネント[CDATA]を追加します。");
+//                return text;
+//            }
+//        }
+//        //LOG.debug("コンポーネント[" + child + "]を追加します。");
+//        childList.add(child);
+//        child.setParent(this);
+//        return child;
+//    }
+
+    public List<Component> getChildList() {
+        return childList;
     }
 
     public String getWidth() {

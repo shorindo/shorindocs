@@ -27,6 +27,8 @@ public class ApplicationContext {
     private static final ActionLogger LOG = ActionLogger.getLogger(ApplicationContext.class);
     private static final Properties props = new Properties();
     private static final Locale DEFAULT_LANG = Locale.JAPANESE;
+    public static final String WEB_INF_CLASSES = "/WEB-INF/classes";
+    public static final String WEB_INF_LIB = "/WEB-INF/lib";
 
     public static void loadProperties(InputStream is) {
         try {

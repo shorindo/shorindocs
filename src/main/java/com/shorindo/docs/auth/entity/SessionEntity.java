@@ -17,7 +17,6 @@ package com.shorindo.docs.auth.entity;
 
 import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.SchemaType;
 import com.shorindo.docs.database.Table;
 
 /**

@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/xuml.css">
+<script type="text/javascript" src="../js/xuml.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    var window = new xuml.Window(document.body)
+        .add(new xuml.Html("table")
+            .attr("border", "1")
+            .style("width", "100%")
+            .add(new xuml.Html("tr")
+                .add(new xuml.Html("td").add(new xuml.Text("1")))
+                .add(new xuml.Html("td").add(new xuml.Text("John"))))
+            .add(new xuml.Html("tr")
+                .add(new xuml.Html("td").add(new xuml.Text("2")))
+                .add(new xuml.Html("td").add(new xuml.Text("Lisa"))))
+            .add(new xuml.Html("tr")
+                .add(new xuml.Html("td").add(new xuml.Text("3")))
+                .add(new xuml.Html("td").add(new xuml.Text("Mike")))));
+}, false);
+</script>
+</head>
+<body>
+Hello World.
+</body>
+</html>

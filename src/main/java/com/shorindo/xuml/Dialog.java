@@ -21,7 +21,7 @@ import com.shorindo.docs.ActionLogger;
  * 
  */
 @ComponentReady("dialog")
-public class Dialog extends Component {
+public class Dialog extends Container {
     private static final ActionLogger LOG = ActionLogger.getLogger(Dialog.class);
     private String title;
 

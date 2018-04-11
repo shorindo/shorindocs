@@ -19,7 +19,7 @@ package com.shorindo.xuml;
  * 
  */
 @ComponentReady("hbox")
-public class HBox extends Component {
+public class HBox extends Container {
 
     public HBox(XumlView view) {
         super(view);

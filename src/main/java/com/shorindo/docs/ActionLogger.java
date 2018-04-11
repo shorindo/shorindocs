@@ -15,8 +15,6 @@
  */
 package com.shorindo.docs;
 
-import static com.shorindo.docs.ApplicationContext.*;
-
 import java.text.MessageFormat;
 import java.util.Locale;
 

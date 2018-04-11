@@ -28,6 +28,7 @@ import com.shorindo.docs.database.Table;
 @Table("DOCS_DOCUMENT")
 public class DocumentEntity extends SchemaEntity {
 
+    @SuppressWarnings("unused")
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentEntity.class);
 
     @Column(name="DOCUMENT_ID", typeName="varchar", size=36)

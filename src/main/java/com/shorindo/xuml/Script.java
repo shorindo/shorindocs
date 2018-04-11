@@ -19,7 +19,7 @@ package com.shorindo.xuml;
  * 
  */
 @ComponentReady("script")
-public class Script extends Component {
+public class Script extends Container {
 
     public Script(XumlView view) {
         super(view);

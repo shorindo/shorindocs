@@ -15,6 +15,8 @@
  */
 package com.shorindo.xuml;
 
+import static com.shorindo.xuml.XumlMessages.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,21 +33,53 @@ import com.shorindo.docs.ActionLogger;
 public abstract class Component {
     private static ActionLogger LOG = ActionLogger.getLogger(Component.class);
     private List<Component> childList;
+    private Map<String,String> attrMap;
     private XumlView view;
     private Component parent;
     private Node context;
-    private String id;
-    private String className;
-    private String width;
-    private String height;
-    private String flex;
     private Map<String,String> styles = new HashMap<String,String>();
 
     public abstract String getHtml();
 
     public Component(XumlView view) {
-        childList = new ArrayList<Component>();
         this.view = view;
+        this.childList = new ArrayList<Component>();
+        this.attrMap = new HashMap<String,String>();
+    }
+
+    public Component add(Component child) {
+        if (childList.size() > 0) {
+            Component last = childList.get(childList.size() - 1);
+            if (last instanceof CDATA && child instanceof CDATA) {
+                CDATA text = (CDATA)last;
+                text.setText(text.getText() + ((CDATA)child).getText());
+                //LOG.debug("コンポーネント[CDATA]を追加します。");
+                return text;
+            }
+        }
+        //LOG.debug("コンポーネント[" + child + "]を追加します。");
+        childList.add(child);
+        child.setParent(this);
+        return child;
+    }
+
+    public Component attr(String name, String value) {
+        switch (name) {
+        case "id":
+        case "class":
+        case "width":
+        case "height":
+        case "font":
+        case "color":
+        case "background":
+        case "if":
+        case "iterate":
+            attrMap.put(name, value);
+            break;
+        default:
+            LOG.warn(XUML_3002, name);
+        }
+        return this;
     }
 
     public final String escape(String in) {
@@ -70,68 +104,6 @@ public abstract class Component {
 
     protected void setParent(Component parent) {
         this.parent = parent;
-    }
-
-    public Component add(Component child) {
-        if (childList.size() > 0) {
-            Component last = childList.get(childList.size() - 1);
-            if (last instanceof CDATA && child instanceof CDATA) {
-                CDATA text = (CDATA)last;
-                text.setText(text.getText() + ((CDATA)child).getText());
-                //LOG.debug("コンポーネント[CDATA]を追加します。");
-                return text;
-            }
-        }
-        //LOG.debug("コンポーネント[" + child + "]を追加します。");
-        childList.add(child);
-        child.setParent(this);
-        return child;
-    }
-
-    public List<Component> getChildList() {
-        return childList;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public String getWidth() {
-        return width;
-    }
-
-    public void setWidth(String width) {
-        this.width = width;
-        this.styles.put("width", width);
-    }
-
-    public String getHeight() {
-        return height;
-    }
-
-    public void setHeight(String height) {
-        this.height = height;
-        this.styles.put("height", width);
-    }
-
-    public String getFlex() {
-        return flex;
-    }
-
-    public void setFlex(String flex) {
-        this.flex = flex;
     }
 
     public Node getContext() {
@@ -165,11 +137,7 @@ public abstract class Component {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<" + getClass().getSimpleName() + ">");
-        for (Component child : getChildList()) {
-            sb.append(child.toString());
-        }
-        sb.append("</" + getClass().getSimpleName() + ">");
+        sb.append("<" + getClass().getSimpleName() + "/>");
         return sb.toString();
     }
 }

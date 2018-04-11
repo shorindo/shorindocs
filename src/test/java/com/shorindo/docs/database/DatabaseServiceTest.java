@@ -19,11 +19,7 @@ import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -34,16 +30,10 @@ import org.junit.runners.MethodSorters;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.BeanUtil;
-import com.shorindo.docs.DocumentMessages;
-import com.shorindo.docs.DocumentEntity;
 import com.shorindo.docs.auth.AuthenticateController;
-import com.shorindo.docs.database.Column;
 import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseSchema;
 import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.SchemaType;
 import com.shorindo.docs.database.Transactional;
 import com.shorindo.docs.database.Transactionless;
 

@@ -21,7 +21,7 @@ import com.shorindo.docs.ActionLogger;
  * 
  */
 @ComponentReady("vbox")
-public class VBox extends Component {
+public class VBox extends Container {
     private static final ActionLogger LOG = ActionLogger.getLogger(VBox.class);
 
     public VBox(XumlView view) {

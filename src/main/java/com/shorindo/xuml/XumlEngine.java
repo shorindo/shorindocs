@@ -56,6 +56,30 @@ public class XumlEngine {
     private static ActionLogger LOG = ActionLogger.getLogger(XumlEngine.class);
     private Mustache mustache;
     private String template;
+    public static final String POSTFIX = ".xuml";
+
+    public static XumlExecutor compile(Class<?> clazz) throws XumlException {
+        String name = clazz.getName().replaceAll("\\.", "/") + POSTFIX;
+        InputStream is = clazz.getClassLoader().getResourceAsStream(name);
+        try {
+            return compile(name, is);
+        } finally {
+            close(name, is);
+        }
+    }
+
+    public static XumlExecutor compile(String name, InputStream is) throws XumlException {
+        return null;
+    }
+
+    private static void close(String name, InputStream is) {
+        if (is != null)
+            try {
+                is.close();
+            } catch (IOException e) {
+                LOG.warn(XUML_3001, name);
+            }
+    }
 
     /**
      * 1. XSLTをセットアップ

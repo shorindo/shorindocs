@@ -19,7 +19,7 @@ package com.shorindo.xuml;
  * 
  */
 @ComponentReady("link")
-public class Link extends Component {
+public class Link extends Container {
     private String href;
 
     public Link(XumlView view) {

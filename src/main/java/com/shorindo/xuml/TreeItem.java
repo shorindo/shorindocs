@@ -19,7 +19,7 @@ package com.shorindo.xuml;
  * 
  */
 @ComponentReady("treeitem")
-public class TreeItem extends Component {
+public class TreeItem extends Container {
     private String label;
 
     public TreeItem(XumlView view) {

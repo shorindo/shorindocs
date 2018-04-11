@@ -15,11 +15,7 @@
  */
 package com.shorindo.docs.database;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocumentMessages;
 import com.shorindo.docs.database.SchemaEntity;
 
 /**

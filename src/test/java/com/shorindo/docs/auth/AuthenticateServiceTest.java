@@ -30,6 +30,7 @@ import com.shorindo.docs.auth.AuthenticateService;
  * 
  */
 public class AuthenticateServiceTest {
+    @SuppressWarnings("unused")
     private static AuthenticateService authenticateService;
 
     @BeforeClass

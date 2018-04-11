@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/xuml.css">
+<script type="text/javascript" src="../js/xuml.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    var text = "";
+    for (var i = 1; i <= 100; i++) {
+        text += i + ". " + i + "行目\n";
+    }
+    var window = new xuml.Window(document.body);
+    var textEdit = new xuml.TextEdit();
+    window.add(textEdit);
+    textEdit.value = text;
+}, false);
+</script>
+</head>
+<body>
+</body>
+</html>

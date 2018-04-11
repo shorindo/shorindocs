@@ -15,10 +15,6 @@
  */
 package com.shorindo.docs.plaintext;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.DocumentMessages;
@@ -26,9 +22,7 @@ import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.DocumentEntity;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
-import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.database.Transactionless;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;

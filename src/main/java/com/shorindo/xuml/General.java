@@ -24,7 +24,7 @@ import org.xml.sax.Attributes;
 /**
  * 
  */
-public class General extends Component {
+public class General extends Container {
     private String tagName;
     private Map<String,String> attrMap;
 

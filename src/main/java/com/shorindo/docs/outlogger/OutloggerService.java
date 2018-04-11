@@ -17,17 +17,12 @@ package com.shorindo.docs.outlogger;
 
 import static com.shorindo.docs.database.DatabaseMessages.*;
 
-import java.io.InputStream;
-import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXB;
 
-import net.arnx.jsonic.JSON;
-
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.DatabaseSchema;
 import com.shorindo.docs.database.DatabaseService;
 
 /**
