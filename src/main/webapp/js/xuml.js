@@ -234,15 +234,9 @@ var xuml = (function() {
         Object.defineProperty(this, "col", {
             get: function() {
                 return self.edit.col;
-//                return _col;
             },
             set: function(c) {
                 self.edit.col = c;
-//                var line = _lines[_row];
-//                line.col = c;
-//                if (c < 0) _col = line_text.length - 1;
-//                else if (c >= line.text.length) _col = line_text.length - 1;
-//                else _col = c;
             }
         });
 
@@ -298,12 +292,32 @@ var xuml = (function() {
         }
         return this;
     };
+    scope.TextEdit.prototype.bind = function(line) {
+        this.edit.bind(line);
+    };
 
     scope.TextEdit.prototype.forwardChar = function() {
-        this.col = this.col + 1;
+        var last = this.lines[this.lines.length - 1];
+        if (this.row == this.lines.length && this.col == last.text.length) {
+            return;
+        } else if (this.col >= this.edit.text.length) {
+            this.edit.fix();
+            this.nextLine();
+            this.col = 0;
+        } else {
+            this.col = this.col + 1;
+        }
     };
     scope.TextEdit.prototype.backwardChar = function() {
-        this.col = this.col + 1;
+        if (this.row == 0 && this.col == 0) {
+            return;
+        } else if (this.col <= 0) {
+            this.edit.fix();
+            this.previousLine();
+            this.col = -1;
+        } else {
+            this.col = this.col - 1;
+        }
     };
     scope.TextEdit.prototype.previousLine = function() {
         var c = this.col;
@@ -316,10 +330,10 @@ var xuml = (function() {
         this.col = c;
     };
     scope.TextEdit.prototype.beginningOfLine = function() {
-        this.edit.col = 0;
+        this.col = 0;
     };
     scope.TextEdit.prototype.endOfLine = function() {
-        this.edit.col = this.edit.text.length;
+        this.col = -1;
     };
     scope.TextEdit.prototype.openLine = function() {
         var text = this.edit.text;
@@ -330,6 +344,54 @@ var xuml = (function() {
         this.add(nextLine, this.edit.target);
         nextLine.edit();
         return this;
+    };
+    scope.TextEdit.prototype.killLine = function() {
+        var c = this.col;
+        this.edit.text = this.edit.text.substr(0, c);
+        this.col = c;
+        return this;
+    };
+    scope.TextEdit.prototype.deleteBackwardChar = function() {
+        //console.log("deleteBackwardChar");
+        var text = this.edit.text;
+        var c = this.col;
+        if (c == 0) {
+            if (this.row == 0) {
+                return;
+            }
+            var currLine = this.lines[this.row];
+            var prevLine = this.lines[this.row - 1];
+            this.lines.splice(this.row, 1);
+            currLine.dom.parentNode.removeChild(currLine.dom);
+            c = prevLine.text.length;
+            prevLine.text = prevLine.text + currLine.text;
+            this.row = this.row - 1;
+            this.col = c;
+        } else {
+            var prev = text.substring(0, c - 1);
+            var next = text.substring(c);
+            this.edit.text = prev + next;
+            this.col = c - 1;
+        }
+    };
+    scope.TextEdit.prototype.deleteChar = function() {
+        //console.log("deleteChar");
+        var text = this.edit.text;
+        var c = this.col;
+        if (c == text.length) {
+            if (this.row == this.lines.length - 1) {
+                return;
+            }
+            var nextLine = this.lines[this.row + 1];
+            this.lines.splice(this.row + 1, 1);
+            nextLine.dom.parentNode.removeChild(nextLine.dom);
+            this.edit.text = text + nextLine.text;
+        } else {
+            var prev = text.substring(0, c);
+            var next = text.substring(c + 1);
+            this.edit.text = prev + next;
+        }
+        this.col = c;
     };
 
     /*
@@ -362,38 +424,47 @@ var xuml = (function() {
                 return range.startOffset;
             },
             set: function(c) {
-                if (c < 0) _col = _text.length - 1;
-                else if (c > _text.length) _col = _text.length - 1;
+                if (c < 0) _col = _text.length;
+                else if (c > _text.length) _col = _text.length;
                 else _col = c;
-                var range = document.createRange();
-                range.setStart(self.dom.firstChild, _col);
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
+                if (window.getSelection().rangeCount > 1) {
+                    var range = window.getSelection().getRangeAt(0);
+                    range.setStart(this.edit.dom, _col);
+                    range.setEnd(this.edit.dom, _col);
+                } else {
+                    var range = document.createRange();
+                    if (self.dom.firstChild) {
+                        range.setStart(self.dom.firstChild, _col);
+                    } else {
+                        range.setStart(self.dom, _col);
+                    }
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                }
             }
         });
-
-//        _dom.addEventListener("blur", function() {
-//            self.unedit();
-//        }, false);
 
         _dom.addEventListener("keydown", function(evt) {
             //console.log(evt);
             if (evt.ctrlKey) {
+                evt.preventDefault();
+                evt.stopPropagation();
                 switch (evt.keyCode) {
                 case 37: // left arrow
-                    evt.preventDefault();
-                    evt.stopPropagation();
                     self.editor.beginningOfLine();
                     break;
                 case 39: // right arrow
-                    evt.preventDefault();
-                    evt.stopPropagation();
                     self.editor.endOfLine();
                     break;
+                case 75: // k
+                    self.editor.killLine();
                 }
             } else {
                 switch (evt.keyCode) {
                 case 8: // backspace
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    self.editor.deleteBackwardChar();
                     break;
                 case 9: // tab
                     evt.preventDefault();
@@ -405,17 +476,32 @@ var xuml = (function() {
                     self.fix();
                     self.editor.openLine();
                     break;
+                case 37: // left arrow
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    self.editor.backwardChar();
+                    break;
                 case 38: // up arrow
                     evt.preventDefault();
                     evt.stopPropagation();
                     self.fix();
                     self.editor.previousLine();
                     break;
+                case 39: // right arrow
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    self.editor.forwardChar();
+                    break;
                 case 40: // down arrow
                     evt.preventDefault();
                     evt.stopPropagation();
                     self.fix();
                     self.editor.nextLine();
+                    break;
+                case 46: // delete
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    self.editor.deleteChar();
                     break;
                 default:
                     //console.log(evt.keyCode);
@@ -424,6 +510,9 @@ var xuml = (function() {
         }, false);
     }
     EditLine.prototype.bind = function(line) {
+//        if (this.target) {
+//            this.target.text = this.text;
+//        }
         var geo = geometry(line.dom);
         this.target = line;
         this.text = line.text;
@@ -457,80 +546,23 @@ var xuml = (function() {
         });
         this.text = text;
 
-//        var _col = 0;
-//        Object.defineProperty(this, "col", {
-//            get: function() {
-//                var range = window.getSelection().getRangeAt(0);
-//                return range.startOffset;
-//            },
-//            set: function(c) {
-//                if (c < 0) _col = _text.length - 1;
-//                else if (c >= _text.length) _col = _text.length - 1;
-//                else _col = c;
-//                var range = document.createRange();
-//                range.setStart(self.dom.firstChild, _col);
-//                window.getSelection().removeAllRanges();
-//                window.getSelection().addRange(range);
-//            }
-//        });
-
-        this.on("click", function() {
-            self.edit();
+        this.on("click", function(evt) {
+            // FIXME
+            var lines = self.editor.lines;
+            for (var r = 0; r < lines.length; r++) {
+                if (self == lines[r]) {
+                    var range = window.getSelection().getRangeAt(0);
+                    var c = range.startOffset;
+                    self.edit();
+                    self.editor.row = r;
+                    self.editor.col = c;
+                    break;
+                }
+            }
         });
-//        this.on("blur", function() {
-//            self.unedit();
-//        });
-//        this.on("keypress", function(evt) {
-//            //console.log(evt);
-//            if (evt.ctrlKey) {
-//                switch (evt.keyCode) {
-//                case 37: // left arrow
-//                    evt.preventDefault();
-//                    evt.stopPropagation();
-//                    self.editor.gotoLine(self, 0);
-//                    break;
-//                case 39: // right arrow
-//                    evt.preventDefault();
-//                    evt.stopPropagation();
-//                    console.log(self.text.length);
-//                    self.editor.gotoLine(self, 1);
-//                    break;
-//                }
-//            } else {
-//                switch (evt.keyCode) {
-//                case 8: // backspace
-//                    break;
-//                case 9: // tab
-//                    evt.preventDefault();
-//                    evt.stopPropagation();
-//                    break;
-//                case 13: // enter
-//                    evt.preventDefault();
-//                    evt.stopPropagation();
-//                    self.split();
-//                    break;
-//                case 38: // up arrow
-//                    evt.preventDefault();
-//                    evt.stopPropagation();
-//                    self.editor.previousLine();
-//                    break;
-//                case 40: // down arrow
-//                    evt.preventDefault();
-//                    evt.stopPropagation();
-//                    self.editor.nextLine();
-//                    break;
-//                default:
-//                    //console.log(evt.keyCode);
-//                }
-//            }
-//        });
     };
     TextLine.prototype.edit = function() {
-//        addClass(this.dom, "edit");
-//        this.dom.textContent = this.text;
-//        this.dom.contentEditable = true;
-//        this.dom.focus();
-        this.editor.edit.bind(this);
+        this.editor.bind(this);
         return this;
     };
     TextLine.prototype.unedit = function() {
@@ -544,20 +576,6 @@ var xuml = (function() {
         this.dom.addEventListener(evt, callback, false);
         return this;
     };
-    TextLine.prototype.split = function() {
-        var range = window.getSelection().getRangeAt(0);
-        var curr = this.dom.textContent.substr(0, range.startOffset);
-        var next = this.dom.textContent.substr(range.startOffset);
-        this.dom.innerHTML = curr;
-        var nextLine = new TextLine(next);
-        this.editor.add(nextLine, this);
-        nextLine.edit();
-        return this;
-    };
-    TextLine.prototype.joinWithBefore = function() {
-    };
-    TextLine.prototype.joinWithAfter = function() {
-    }
     TextLine.prototype.render = function() {
         this.dom.innerHTML = this.text;
     };
