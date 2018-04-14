@@ -14,8 +14,12 @@ document.addEventListener("DOMContentLoaded", function() {
     var window = new xuml.Window(document.body);
     var textEdit = new xuml.TextEdit();
     window.add(textEdit);
+    /**/
+    textEdit.addHook("RENDER", function(target, text) {
+        target.dom.innerHTML = xuml.markdown.parse(text);
+    });
+    /**/
     textEdit.value = text;
-    editor = textEdit;
 }, false);
 </script>
 </head>

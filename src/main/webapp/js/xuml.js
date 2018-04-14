@@ -97,7 +97,7 @@ var xuml = (function() {
         this.dom.addEventListener(evt, function(event) {
             callback.apply(self, event);
         });
-    }
+    };
 
     /**
      * Container
@@ -202,6 +202,7 @@ var xuml = (function() {
      */
     scope.TextEdit = Component.extend(function(text) {
         var self = this;
+        this.hook = {};
 
         var _dom = element("div", "xuml-textedit");
         Object.defineProperty(this, "dom", {
@@ -265,7 +266,7 @@ var xuml = (function() {
         }
     });
     scope.TextEdit.prototype.newLine = function(text) {
-        var line = new TextLine(text);
+        var line = new TextLine(this, text);
         line.editor = this;
         this.lines.push(line);
         this.dom.appendChild(line.dom);
@@ -291,6 +292,28 @@ var xuml = (function() {
             this.row = this.lines.length - 1;
         }
         return this;
+    };
+    scope.TextEdit.prototype.addHook = function(name, f) {
+        if (this.hook[name]) {
+            this.hook[name].push(f);
+        } else {
+            this.hook[name] = [ f ];
+        }
+    };
+    scope.TextEdit.prototype.doHook = function(name, target) {
+        if (this.hook[name]) {
+            var args = [];
+            for (var i = 1; i < arguments.length; i++) {
+                args.push(arguments[i]);
+            }
+            var hooks = this.hook[name];
+            for (var i = 0; i < hooks.length; i++) {
+                hooks[i].apply(target, args);
+            }
+            return true;
+        } else {
+            return false;
+        }
     };
     scope.TextEdit.prototype.bind = function(line) {
         this.edit.bind(line);
@@ -340,7 +363,7 @@ var xuml = (function() {
         var curr = text.substr(0, this.col);
         var next = text.substr(this.col);
         this.edit.target.text = curr;
-        var nextLine = new TextLine(next);
+        var nextLine = new TextLine(this, next);
         this.add(nextLine, this.edit.target);
         nextLine.edit();
         return this;
@@ -401,19 +424,20 @@ var xuml = (function() {
         var self = this;
         var _dom = element("div", "xuml-textline edit");
         _dom.contentEditable = true;
-        _dom.style.position = "absolute";
+        _dom.style.position = "relative";
+        _dom.style.top = "-1000px";
         Object.defineProperty(this, "dom", {
             get: function() { return _dom; }
         });
 
-        //var _text;
         Object.defineProperty(this, "text", {
             get: function() {
                 return _dom.textContent;
-                //return _text;
+                //return _dom.innerHTML;
             },
             set: function(s) {
-                _text = _dom.innerHTML = s;
+                _dom.textContent = s;
+                //_dom.innerHTML = s;
             }
         });
 
@@ -424,8 +448,8 @@ var xuml = (function() {
                 return range.startOffset;
             },
             set: function(c) {
-                if (c < 0) _col = _text.length;
-                else if (c > _text.length) _col = _text.length;
+                if (c < 0) _col = self.text.length;
+                else if (c > self.text.length) _col = self.text.length;
                 else _col = c;
                 if (window.getSelection().rangeCount > 1) {
                     var range = window.getSelection().getRangeAt(0);
@@ -510,9 +534,15 @@ var xuml = (function() {
         }, false);
     }
     EditLine.prototype.bind = function(line) {
-//        if (this.target) {
-//            this.target.text = this.text;
-//        }
+        var parent = line.dom.parentNode;
+        var parentTop = parent.scrollTop;
+        var parentHeight = parent.clientHeight;
+        var parentBottom = parentTop + parentHeight;
+        if (line.dom.offsetTop < parentTop) {
+            line.dom.parentNode.scrollTop = line.dom.offsetTop;
+        } else if (line.dom.offsetTop + line.dom.offsetHeight > parentBottom) {
+            line.dom.parentNode.scrollTop = line.dom.offsetTop - parentHeight + line.dom.offsetHeight + 1;
+        }
         var geo = geometry(line.dom);
         this.target = line;
         this.text = line.text;
@@ -529,8 +559,9 @@ var xuml = (function() {
     /*
      * textline
      */
-    TextLine = function(text) {
+    TextLine = function(parent, text) {
         var self = this;
+        this.editor = parent;
         this.dom = document.createElement("div");
         addClass(this.dom, "xuml-textline");
 
@@ -546,7 +577,11 @@ var xuml = (function() {
         });
         this.text = text;
 
-        this.on("click", function(evt) {
+        this.on("mousedown", function(evt) {
+            self.editor.edit.dom.style.top = "-10000px";
+        });
+
+        this.on("mouseup", function(evt) {
             // FIXME
             var lines = self.editor.lines;
             for (var r = 0; r < lines.length; r++) {
@@ -567,8 +602,9 @@ var xuml = (function() {
     };
     TextLine.prototype.unedit = function() {
         removeClass(this.dom, "edit");
-        this.dom.contentEditable = false;
+        //this.dom.contentEditable = false;
         this.text = this.dom.textContent;
+        //this.text = this.dom.innerHTML;
         this.render();
         return this;
     };
@@ -577,8 +613,114 @@ var xuml = (function() {
         return this;
     };
     TextLine.prototype.render = function() {
-        this.dom.innerHTML = this.text;
+        if (!this.editor.doHook("RENDER", this, this.text)) {
+            this.dom.innerHTML = this.text;
+        }
     };
+
+    function Markdown() {}
+    Markdown.prototype.parse = function(text, prevText) {
+        var result = this.escape(text, prevText);
+        result = this.header(result, prevText);
+        result = this.ul(result, prevText);
+        result = this.ol(result, prevText);
+        result = this.pre(result, prevText);
+        return result;
+    };
+    Markdown.prototype.escape = function(text) {
+        return text
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    };
+    Markdown.prototype.header = function(text) {
+        var self = this;
+        return this.inline(text.replace(/^(#{1,6})\s+(.*?)#*$/g, function(str, p1, p2, offset, s) {
+            switch(p1) {
+            case "#":
+                return '<h1>' + self.inline(p2) + '</h1>';
+            case "##":
+                return '<h2>' + self.inline(p2) + '</h2>';
+            case "###":
+                return '<h3>' + self.inline(p2) + '</h3>';
+            case "####":
+                return '<h4>' + self.inline(p2) + '</h4>';
+            case "#####":
+                return '<h5>' + self.inline(p2) + '</h5>';
+            case "######":
+                return '<h6>' + self.inline(p2) + '</h6>';
+            }
+            return str;
+        }));
+    };
+
+    var UL_PATTERN = /^(\s*)([\*\-\+])\s+(.*)$/;
+    Markdown.prototype.ul = function(text, prevText) {
+        if (UL_PATTERN.test(text)) {
+            var indent = 0;
+            if (prevText && prevText.match(UL_PATTERN)) {
+                indent = RegExp.$1.length;
+            }
+            return text.replace(UL_PATTERN, function(str, p1, p2, p3) {
+                var depth = p1.length - indent;
+                var result = "";
+                result += '<ul style="margin-top:0;margin-bottom:0;">';
+                if (depth >= 2) {
+                    result += '<ul style="margin-top:0;margin-bottom:0;">';
+                }
+                result += '<li>' + p3 + '</li>';
+                result += '</ul>';
+                if (depth >= 2) {
+                    result += '</ul>';
+                }
+                return result;
+            });
+        } else {
+            return text;
+        }
+    };
+
+    Markdown.prototype.ol = function(text) {
+        var expr = /^\s{0,3}\d+\.\s+(.*)$/;
+        if (expr.test(text)) {
+            return text.replace(expr, '<ol style="margin-top:0;margin-bottom:0;"><li value="1">' + RegExp.$1 + "</li></ol>");
+        } else {
+            return text;
+        }
+    };
+
+    Markdown.prototype.pre = function(text) {
+        var expr = /^\s{4}(.*)$/;
+        if (expr.test(text)) {
+            return text.replace(expr, '<pre style="margin-top:0;margin-bottom:0;">' + RegExp.$1 + "</pre>");
+        } else {
+            return text;
+        }
+    };
+
+    Markdown.prototype.inline = function(text) {
+        return text.replace(/&([#:a-zA-Z0-9]+){(.+?)}/g, function(str, p1, p2, offset, s) {
+            var op = p1.split(/:/);
+            var result = p2;
+            for (var i = 0; i < op.length; i++) {
+                switch (op[i]) {
+                case "em":
+                    result = '<b>' + result + '</b>';
+                    break;
+                case "it":
+                    result = '<i>' + result + '</i>';
+                    break;
+                case "del":
+                    result = '<del>' + result + '</del>';
+                    break;
+                default:
+                    result = '<span style="color:' + op[i] + ';">' + result + '</span>';
+                }
+            }
+            return result;
+        });
+    };
+
+    scope.markdown = new Markdown();
 
     return scope;
 })();

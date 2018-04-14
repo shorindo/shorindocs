@@ -95,9 +95,14 @@ textarea.text-editor {
 }
 .xuml-textedit {
   font-family: monospace;
+  height: calc(20em + 1px);
+  overflow: scroll;
 }
 .xuml-textline {
   min-height: 1em;
+}
+.xuml-textline * {
+  margin: 0;
 }
 .xuml-textline.edit {
   border-bottom: 0.5px solid white;
