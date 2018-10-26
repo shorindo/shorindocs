@@ -16,6 +16,172 @@
 var xuml = (function() {
     var scope = {};
 
+    function dom(target) {
+        function fn(target) {
+            var _target = target;
+            if (typeof _target == 'string') {
+                if (_target.match(/^<(.+)>$/)) {
+                    var tagName = RegExp.$1;
+                    _target = document.createElement(tagName);
+                } else {
+                    _target = document.querySelector(_target);
+                }
+            }
+            Object.defineProperty(this, "target", {
+                get: function() {
+                    return _target;
+                }
+            });
+            Object.defineProperty(this, "parent", {
+                get: function() {
+                    return _target.parentNode ? dom(_target.parentNode) : null;
+                }
+            });
+            Object.defineProperty(this, "text", {
+                get: function() {
+                    return _target.textContent;
+                },
+                set: function(t) {
+                    _target.textContent = t;
+                }
+            });
+            Object.defineProperty(this, "html", {
+                get: function() {
+                    return _target.innerHTML;
+                },
+                set: function(h) {
+                    _target.innerHTML = h;
+                }
+            });
+            Object.defineProperty(this, "offsetTop", {
+                get: function() {
+                    return _target.offsetTop;
+                },
+                set: function(value) {
+                    _target.offsetTop = value;
+                }
+            });
+            Object.defineProperty(this, "offsetLeft", {
+                get: function() {
+                    return _target.offsetLeft;
+                },
+                set: function(value) {
+                    _target.offsetLeft = value;
+                }
+            });
+            Object.defineProperty(this, "offsetWidth", {
+                get: function() {
+                    return _target.offsetWidth;
+                },
+                set: function(value) {
+                    _target.offsetWidth = value;
+                }
+            });
+            Object.defineProperty(this, "offsetHeight", {
+                get: function() {
+                    return _target.offsetHeight;
+                },
+                set: function(value) {
+                    _target.offsetHeight = value;
+                }
+            });
+            Object.defineProperty(this, "scrollTop", {
+                get: function() {
+                    return _target.scrollTop;
+                },
+                set: function(value) {
+                    _target.scrollTop = value;
+                }
+            });
+            Object.defineProperty(this, "clientWidth", {
+                get: function() {
+                    return _target.clientWidth;
+                },
+                set: function(value) {
+                    _target.clientWidth = value;
+                }
+            });
+            Object.defineProperty(this, "clientHeight", {
+                get: function() {
+                    return _target.clientHeight;
+                },
+                set: function(value) {
+                    _target.clientHeight = value;
+                }
+            });
+        }
+        fn.prototype.add = function(child) {
+            this.target.appendChild(child.target);
+        };
+        fn.prototype.remove = function(child) {
+            this.target.removeChild(child.target);
+        };
+        fn.prototype.insert = function(child, before) {
+            this.target.insertBefore(child.target, before.target);
+        };
+        fn.prototype.next = function() {
+            return dom(this.target.nextSibling);
+        };
+        fn.prototype.prev = function() {
+            return dom(this.target.previousSibling);
+        };
+        fn.prototype.attr = function(name, value) {
+            if (arguments.length > 1) {
+                this.target.setAttribute(name, value);
+                return this;
+            } else {
+                return this.target.getAttribute(name);
+            }
+        };
+        fn.prototype.style = function(name, value) {
+            if (arguments.length > 1) {
+                this.target.style[name] = value;
+                return this;
+            } else {
+                return this.target.style[name];
+            }
+        };
+        fn.prototype.focus = function() {
+            this.target.focus();
+        };
+        fn.prototype.addClass = function(clazz) {
+            var dom = this.target;
+            var clazzes = (dom.className ? dom.className : "").trim().split(/\s+/);
+            var idx = clazzes.indexOf(clazz);
+            if (idx < 0) {
+                clazzes.push(clazz);
+                dom.className = clazzes.join(" ");
+            }
+            return this;
+        };
+        fn.prototype.removeClass = function(clazz) {
+            var dom = this.target;
+            var clazzes = (dom.className ? dom.className : "").trim().split(/\s+/);
+            var idx = clazzes.indexOf(clazz);
+            if (idx >= 0) {
+                clazzes.splice(idx, 1);
+                dom.className = clazzes.join(" ");
+            }
+            return this;
+        };
+        fn.prototype.on = function(evt, callback) {
+            this.target.addEventListener(evt, callback, false);
+            return this;
+        };
+        fn.prototype.geometry = function() {
+            var parent = this.target;
+            var g = { left:0, top:0, width:parent.offsetWidth, height:parent.offsetHeight };
+            while (parent) {
+                g.left += parent.offsetLeft;
+                g.top += parent.offsetTop;
+                parent = parent.offsetParent;
+            }
+            return g;
+        };
+        
+        return new fn(target);
+    }
+
     function element(name, clazz) {
         var el = document.createElement(name);
         if (clazz) {
@@ -28,43 +194,6 @@ var xuml = (function() {
         return document.createTextNode(value);
     }
 
-    function addClass(dom, clazz) {
-        var clazzes = (dom.className ? dom.className : "").split(/\s+/);
-        var idx = clazzes.indexOf(clazz);
-        if (idx < 0) {
-            clazzes.push(clazz);
-            dom.className = clazzes.join(" ");
-        }
-    }
-
-    function removeClass(dom, clazz) {
-        var clazzes = (dom.className ? dom.className : "").split(/\s+/);
-        var idx = clazzes.indexOf(clazz);
-        if (idx >= 0) {
-            clazzes.splice(idx, 1);
-            dom.className = clazzes.join(" ");
-        }
-    }
-
-    function geometry(dom) {
-        var g = { left:0, top:0, width:dom.offsetWidth, height:dom.offsetHeight };
-        var parent = dom;
-        while (parent) {
-            g.left += parent.offsetLeft;
-            g.top += parent.offsetTop;
-            parent = parent.offsetParent;
-        }
-        return g;
-    }
-
-    function getPosition() {
-        var range = window.getSelection().getRangeAt(0);
-        return range.startOffset;
-    }
-
-    scope.load = function(xuml) {
-    };
-
     /**
      * 基本コンポーネント
      */
@@ -76,75 +205,86 @@ var xuml = (function() {
         return f;
     };
     Component.prototype.attr = function(name, value) {
-        this.dom.setAttribute(name, value);
+        this.dom.attr(name, value);
         return this;
     };
     Component.prototype.style = function(name, value) {
-        var style = this.dom.getAttribute("style");
-        if (!style) {
-            style = "";
-        }
-        style += name + ":" + value + ";";
-        this.dom.setAttribute("style", style);
+        this.dom.style(name, value);
         return this;
     };
     Component.prototype.add = function(child) {
-        this.dom.appendChild(child.dom);
+        this.dom.add(child.dom);
+        child.doHook("ADD:AFTER", this);
         return this;
     };
     Component.prototype.on = function(evt, callback) {
         var self = this;
-        this.dom.addEventListener(evt, function(event) {
+        this.dom.on(evt, function(event) {
             callback.apply(self, event);
         });
     };
-
-    /**
-     * Container
-     */
-    /*
-    Container = Component.extend(function(){});
-    Container.extend = function(f) {
-        for (var key in Container.prototype) {
-            f.prototype[key] = Container.prototype[key];
+    Component.prototype.addHook = function(name, f) {
+        if (!('hook' in this)) {
+            this.hook = [];
         }
-        return f;
+        if (name in this.hook) {
+            this.hook[name].push(f);
+        } else {
+            this.hook[name] = [ f ];
+        }
     };
-    */
+    Component.prototype.doHook = function(name, target) {
+        if (!('hook' in this)) {
+            return false;
+        }
+        if (name in this.hook) {
+            var args = [];
+            for (var i = 1; i < arguments.length; i++) {
+                args.push(arguments[i]);
+            }
+            var hooks = this.hook[name];
+            for (var i = 0; i < hooks.length; i++) {
+                hooks[i].apply(target, args);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    };
 
     /**
      * windowコンポーネント
      */
     scope.Window = Component.extend(function(parent) {
-        this.dom = parent;
+        this.dom = dom(parent);
     });
 
     /**
      * boxコンポーネント
      */
     scope.Box = Component.extend(function() {
-        this.dom = element("div", "xuml-box");
+        this.dom = dom("<div>").addClass("xuml-box");
     });
 
     /**
      * hboxコンポーネント
      */
     scope.HBox = Component.extend(function() {
-        this.dom = element("div", "xuml-hbox");
+        this.dom = dom("<div>").addClass("xuml-hbox");
     });
 
     /**
      * vboxコンポーネント
      */
     scope.VBox = Component.extend(function() {
-        this.dom = element("div", "xuml-vbox");
+        this.dom = dom("<div>").addClass("xuml-vbox");
     });
 
     /**
      * gridコンポーネント
      */
     scope.Grid = Component.extend(function() {
-        this.dom = element("table");
+        this.dom = dom("<table>");
     });
 
     /**
@@ -152,7 +292,7 @@ var xuml = (function() {
      */
     scope.Dialog = Component.extend(function(title) {
         var screen = this.screen = document.body.appendChild(element("div", "xuml-dialog-pane"));
-        var dialog = this.dom = element("div", "xuml-dialog");
+        var dialog = this.dom = dom("div").addClass("xuml-dialog");
         this.head = dialog.appendChild(element("div", "xuml-dialog-head"));
         this.head.appendChild(text(title));
         this.body = dialog.appendChild(element("div", "xuml-dialog-body"));
@@ -175,8 +315,8 @@ var xuml = (function() {
         return this;
     };
     scope.Dialog.prototype.close = function() {
-        var parent = this.dom.parentNode;
-        parent.removeChild(this.dom);
+        var parent = this.dom.parent;
+        parent.remove(this.dom);
         document.body.removeChild(this.screen);
         return this;
     };
@@ -185,7 +325,7 @@ var xuml = (function() {
      * label
      */
     scope.Label = Component.extend(function(value) {
-        var label = this.dom = element("label", "xuml-label");
+        var label = this.dom = dom("<label>").addClass("xuml-label");
         label.appendChild(text(value));
     });
 
@@ -193,7 +333,7 @@ var xuml = (function() {
      * button
      */
     scope.Button = Component.extend(function(value) {
-        var button = this.dom = element("button", "xuml-button");
+        var button = this.dom = dom("<button>").addClass("xuml-button");
         button.appendChild(text(value));
     });
 
@@ -202,9 +342,8 @@ var xuml = (function() {
      */
     scope.TextEdit = Component.extend(function(text) {
         var self = this;
-        this.hook = {};
 
-        var _dom = element("div", "xuml-textedit");
+        var _dom = dom("<div>").addClass("xuml-textedit");
         Object.defineProperty(this, "dom", {
             get: function() {
                 return _dom;
@@ -259,7 +398,7 @@ var xuml = (function() {
 
         this.edit = new EditLine();
         this.edit.editor = this;
-        this.dom.appendChild(this.edit.dom);
+        this.dom.add(this.edit.dom);
 
         if (text) {
             this.value = text;
@@ -269,17 +408,18 @@ var xuml = (function() {
         var line = new TextLine(this, text);
         line.editor = this;
         this.lines.push(line);
-        this.dom.appendChild(line.dom);
+        this.dom.insert(line.dom, this.edit.dom);
         return this;
     };
     scope.TextEdit.prototype.add = function(line, prev) {
+        //console.log("add(" + line + "," + prev + ")");
         line.editor = this;
         if (prev && prev != this.lines[this.lines.length - 1]) {
             // FIXME
             for (var i = 0; i < this.lines.length - 1; i++) {
                 if (this.lines[i] == prev) {
-                    var parent = prev.dom.parentNode;
-                    parent.insertBefore(line.dom, prev.dom.nextSibling);
+this.dom.insert(line.dom, dom(prev.dom.target.nextSibling));
+//                    this.dom.insert(line.dom, prev.dom);
                     this.lines.splice(i + 1, 0, line);
                     this.row = i + 1;
                     break;
@@ -288,32 +428,12 @@ var xuml = (function() {
         } else {
             var last = this.lines[this.lines.length - 1];
             this.lines.push(line);
-            this.dom.appendChild(line.dom);
+            this.dom.add(line.dom);
+            //var parent = this.dom.parentNode;
+            //parent.insertBefore(line.dom, last);
             this.row = this.lines.length - 1;
         }
         return this;
-    };
-    scope.TextEdit.prototype.addHook = function(name, f) {
-        if (this.hook[name]) {
-            this.hook[name].push(f);
-        } else {
-            this.hook[name] = [ f ];
-        }
-    };
-    scope.TextEdit.prototype.doHook = function(name, target) {
-        if (this.hook[name]) {
-            var args = [];
-            for (var i = 1; i < arguments.length; i++) {
-                args.push(arguments[i]);
-            }
-            var hooks = this.hook[name];
-            for (var i = 0; i < hooks.length; i++) {
-                hooks[i].apply(target, args);
-            }
-            return true;
-        } else {
-            return false;
-        }
     };
     scope.TextEdit.prototype.bind = function(line) {
         this.edit.bind(line);
@@ -360,11 +480,12 @@ var xuml = (function() {
     };
     scope.TextEdit.prototype.openLine = function() {
         var text = this.edit.text;
-        var curr = text.substr(0, this.col);
-        var next = text.substr(this.col);
-        this.edit.target.text = curr;
-        var nextLine = new TextLine(this, next);
-        this.add(nextLine, this.edit.target);
+        var first = text.substr(0, this.col);
+        var second = text.substr(this.col);
+        this.lines[this.row].text = first;
+        this.edit.text = first;
+        var nextLine = new TextLine(this, second);
+        this.add(nextLine, this.lines[this.row + 1]);
         nextLine.edit();
         return this;
     };
@@ -385,7 +506,7 @@ var xuml = (function() {
             var currLine = this.lines[this.row];
             var prevLine = this.lines[this.row - 1];
             this.lines.splice(this.row, 1);
-            currLine.dom.parentNode.removeChild(currLine.dom);
+            currLine.dom.parent.remove(currLine.dom);
             c = prevLine.text.length;
             prevLine.text = prevLine.text + currLine.text;
             this.row = this.row - 1;
@@ -407,7 +528,7 @@ var xuml = (function() {
             }
             var nextLine = this.lines[this.row + 1];
             this.lines.splice(this.row + 1, 1);
-            nextLine.dom.parentNode.removeChild(nextLine.dom);
+            nextLine.dom.parent.remove(nextLine.dom);
             this.edit.text = text + nextLine.text;
         } else {
             var prev = text.substring(0, c);
@@ -422,22 +543,21 @@ var xuml = (function() {
      */
     function EditLine() {
         var self = this;
-        var _dom = element("div", "xuml-textline edit");
-        _dom.contentEditable = true;
-        _dom.style.position = "relative";
-        _dom.style.top = "-1000px";
+        var _dom = dom("<div>").addClass("xuml-textline edit");
+        _dom.attr("contentEditable", true);
+        _dom.style("position", "absolute");
+        _dom.style("top", "-1000px");
+
         Object.defineProperty(this, "dom", {
             get: function() { return _dom; }
         });
 
         Object.defineProperty(this, "text", {
             get: function() {
-                return _dom.textContent;
-                //return _dom.innerHTML;
+                return _dom.text;
             },
             set: function(s) {
-                _dom.textContent = s;
-                //_dom.innerHTML = s;
+                _dom.text = s;
             }
         });
 
@@ -453,14 +573,14 @@ var xuml = (function() {
                 else _col = c;
                 if (window.getSelection().rangeCount > 1) {
                     var range = window.getSelection().getRangeAt(0);
-                    range.setStart(this.edit.dom, _col);
-                    range.setEnd(this.edit.dom, _col);
+                    range.setStart(this.edit.dom.target, _col);
+                    range.setEnd(this.edit.dom.target, _col);
                 } else {
                     var range = document.createRange();
-                    if (self.dom.firstChild) {
-                        range.setStart(self.dom.firstChild, _col);
+                    if (self.dom.target.firstChild) {
+                        range.setStart(self.dom.target.firstChild, _col);
                     } else {
-                        range.setStart(self.dom, _col);
+                        range.setStart(self.dom.target, _col);
                     }
                     window.getSelection().removeAllRanges();
                     window.getSelection().addRange(range);
@@ -468,7 +588,11 @@ var xuml = (function() {
             }
         });
 
-        _dom.addEventListener("keydown", function(evt) {
+        _dom.on("blur", function(evt) {
+            _dom.style("top", "-1000px");
+        });
+
+        _dom.on("keydown", function(evt) {
             //console.log(evt);
             if (evt.ctrlKey) {
                 evt.preventDefault();
@@ -531,29 +655,29 @@ var xuml = (function() {
                     //console.log(evt.keyCode);
                 }
             }
-        }, false);
+        });
     }
     EditLine.prototype.bind = function(line) {
-        var parent = line.dom.parentNode;
+        var parent = line.dom.parent;
         var parentTop = parent.scrollTop;
         var parentHeight = parent.clientHeight;
         var parentBottom = parentTop + parentHeight;
         if (line.dom.offsetTop < parentTop) {
-            line.dom.parentNode.scrollTop = line.dom.offsetTop;
+            line.dom.parent.scrollTop = line.dom.offsetTop;
         } else if (line.dom.offsetTop + line.dom.offsetHeight > parentBottom) {
-            line.dom.parentNode.scrollTop = line.dom.offsetTop - parentHeight + line.dom.offsetHeight + 1;
+            line.dom.parent.scrollTop = line.dom.offsetTop - parentHeight + line.dom.offsetHeight + 1;
         }
-        var geo = geometry(line.dom);
+        var geo = line.dom.geometry();
         this.target = line;
         this.text = line.text;
-        this.dom.style.left = geo.left + "px";
-        this.dom.style.top = geo.top + "px";
-        this.dom.style.width = geo.width + "px";
-        this.dom.style.height = geo.height + "px";
+        this.dom.style("left", geo.left + "px");
+        this.dom.style("top", (geo.top - parent.scrollTop) + "px");
+        this.dom.style("width", geo.width + "px");
+        this.dom.style("height", geo.height + "px");
         this.dom.focus();
     };
     EditLine.prototype.fix = function() {
-        this.target.text = this.dom.textContent;
+        this.target.text = this.dom.text;
     };
 
     /*
@@ -562,8 +686,7 @@ var xuml = (function() {
     TextLine = function(parent, text) {
         var self = this;
         this.editor = parent;
-        this.dom = document.createElement("div");
-        addClass(this.dom, "xuml-textline");
+        this.dom = dom("<div>").addClass("xuml-textline");
 
         var _text;
         Object.defineProperty(this, "text", {
@@ -578,7 +701,7 @@ var xuml = (function() {
         this.text = text;
 
         this.on("mousedown", function(evt) {
-            self.editor.edit.dom.style.top = "-10000px";
+            self.editor.edit.dom.style("top", "-10000px");
         });
 
         this.on("mouseup", function(evt) {
@@ -601,20 +724,18 @@ var xuml = (function() {
         return this;
     };
     TextLine.prototype.unedit = function() {
-        removeClass(this.dom, "edit");
-        //this.dom.contentEditable = false;
+        this.dom.removeClss("edit");
         this.text = this.dom.textContent;
-        //this.text = this.dom.innerHTML;
         this.render();
         return this;
     };
     TextLine.prototype.on = function(evt, callback) {
-        this.dom.addEventListener(evt, callback, false);
+        this.dom.on(evt, callback);
         return this;
     };
     TextLine.prototype.render = function() {
         if (!this.editor.doHook("RENDER", this, this.text)) {
-            this.dom.innerHTML = this.text;
+            this.dom.html = this.text;
         }
     };
 
@@ -721,6 +842,13 @@ var xuml = (function() {
     };
 
     scope.markdown = new Markdown();
+
+    scope.Html = Component.extend(function(tagName) {
+        this.dom = dom(tagName);
+    });
+    scope.Text = Component.extend(function(t) {
+        this.dom = text(t);
+    });
 
     return scope;
 })();

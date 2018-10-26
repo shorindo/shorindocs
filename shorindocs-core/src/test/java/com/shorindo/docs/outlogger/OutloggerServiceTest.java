@@ -15,8 +15,6 @@
  */
 package com.shorindo.docs.outlogger;
 
-import static org.junit.Assert.*;
-
 import java.io.FileInputStream;
 import java.io.InputStream;
 

@@ -1,0 +1,30 @@
+<xuml>
+  <template name="window">
+    <!doctype html>
+    <html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>{{title}}</title>
+        <link rel="stylesheet" type="text/css" href="{{application.contextPath}}/css/xuml.css">
+        <script type="text/javascript" src="{{application.contextPath}}/js/xuml.js"></script>
+      </head>
+      <body>
+        <attr name="style">
+          <attr-value name="width" value="@width"/>
+          <attr-value name="height" value="@height"/>
+        </attr>
+        <apply-templates/>
+      </body>
+    </html>
+  </define>
+
+  <temlate name="grid">
+  </template>
+
+  <template name="dialog"/>
+  <template name="box"/>
+  <template name="hbox"/>
+  <template name="vbox"/>
+  <template name="textedit"/>
+  <template name="button"/>
+</xuml>
