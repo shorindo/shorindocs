@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.entity;
+package com.shorindo.docs.entity;
 
 import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.SchemaEntity;
@@ -22,10 +22,9 @@ import com.shorindo.docs.database.Table;
 /**
  * 
  */
-@Table("AUTH_GROUP_MEMBER")
-public class GroupMemberEntity extends SchemaEntity {
-
-    public GroupMemberEntity() throws DatabaseException {
+@Table("AUTH_GROUP")
+public class GroupEntity extends SchemaEntity {
+    public GroupEntity() throws DatabaseException {
         super();
     }
 

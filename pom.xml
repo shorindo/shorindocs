@@ -12,6 +12,8 @@
   </properties>
   <modules>
     <module>shorindocs-core</module>
+    <module>shorindocs-auth</module>
+    <module>shorindocs-web</module>
   </modules>
   <name>shorindocs</name>
 </project>

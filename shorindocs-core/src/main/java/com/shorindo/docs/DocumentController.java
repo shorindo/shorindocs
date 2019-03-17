@@ -16,12 +16,13 @@
 package com.shorindo.docs;
 
 import static com.shorindo.docs.DocumentMessages.*;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.auth.entity.UserEntity;
+import com.shorindo.docs.entity.UserEntity;
 import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseExecutor;
 import com.shorindo.docs.database.DatabaseService;

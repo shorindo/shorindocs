@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2019 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.entity;
+package com.shorindo.docs;
 
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.Table;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * 
  */
-@Table("AUTH_ACL")
-public class AclEntity extends SchemaEntity {
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class DocsServiceTest {
 
-    public AclEntity() throws DatabaseException {
-        super();
+    @Autowired
+    private DocsService docsService;
+
+    @Test
+    public void sampleTest() throws Exception {
+        assertEquals("docs", docsService.get("aaa"));
     }
 }

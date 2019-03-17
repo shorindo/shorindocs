@@ -18,7 +18,8 @@ package com.shorindo.docs;
 import java.text.MessageFormat;
 import java.util.Locale;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -32,7 +33,8 @@ public class ActionLogger {
     }
 
     private ActionLogger(Class<?> clazz) {
-        LOG = Logger.getLogger(clazz);
+        LoggerFactory.getILoggerFactory()
+            .getLogger(clazz.getName());
     }
 
     public void trace(String msg) {
@@ -81,5 +83,10 @@ public class ActionLogger {
         String msg = code.getCode() + ":" + code.getMessage(lang, args);
         LOG.error(msg, th);
         return msg;
+    }
+
+    public String error(String message, Throwable th, Object...args) {
+        LOG.error(message, th);
+        return message;
     }
 }

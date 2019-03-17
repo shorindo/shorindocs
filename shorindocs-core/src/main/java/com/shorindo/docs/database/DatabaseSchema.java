@@ -21,10 +21,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * 
  */
+@XmlRootElement(name="schema")
 public class DatabaseSchema {
     private String namespace;
     private List<Entity> entityList = new ArrayList<Entity>();
@@ -37,6 +39,7 @@ public class DatabaseSchema {
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
+
     @XmlElements({
         @XmlElement(name="table", type=Table.class),
         @XmlElement(name="view",  type=View.class)

@@ -16,20 +16,21 @@
 package com.shorindo.docs.auth;
 
 import static com.shorindo.docs.database.DatabaseMessages.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.util.List;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.auth.entity.GroupEntity;
 import com.shorindo.docs.auth.entity.SessionEntity;
-import com.shorindo.docs.auth.entity.UserEntity;
 import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseExecutor;
 import com.shorindo.docs.database.DatabaseSchema;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.Transactional;
+import com.shorindo.docs.entity.GroupEntity;
+import com.shorindo.docs.entity.UserEntity;
 
 /**
  * 

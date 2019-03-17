@@ -30,7 +30,7 @@ import org.junit.runners.MethodSorters;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.auth.AuthenticateController;
+//import com.shorindo.docs.auth.AuthenticateController;
 import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseSchema;
 import com.shorindo.docs.database.DatabaseService;
@@ -155,23 +155,23 @@ public class DatabaseServiceTest {
         service.loadTables();
     }
 
-    @Test
-    public void testLoadSchema() throws Exception {
-        InputStream is = AuthenticateController.class.getResourceAsStream("AuthenticateService.dsdl");
-        service.loadSchema(is);
-        is.close();
-    }
-
-    @Test
-    public void testValidateSchema() throws Exception {
-        InputStream is = AuthenticateController.class.getResourceAsStream("AuthenticateService.dsdl");
-        try {
-            DatabaseSchema schema = service.loadSchema(is);
-            service.validateSchema(schema);
-        } finally {
-            is.close();
-        }
-    }
+//    @Test
+//    public void testLoadSchema() throws Exception {
+//        InputStream is = AuthenticateController.class.getResourceAsStream("AuthenticateService.dsdl");
+//        service.loadSchema(is);
+//        is.close();
+//    }
+//
+//    @Test
+//    public void testValidateSchema() throws Exception {
+//        InputStream is = AuthenticateController.class.getResourceAsStream("AuthenticateService.dsdl");
+//        try {
+//            DatabaseSchema schema = service.loadSchema(is);
+//            service.validateSchema(schema);
+//        } finally {
+//            is.close();
+//        }
+//    }
 
 //    @Test
 //    public void testGenerateSchemaEntity() throws Exception {

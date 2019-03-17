@@ -18,19 +18,19 @@ package com.shorindo.docs;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
-
 import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseSchema;
 import com.shorindo.docs.database.DatabaseService;
+import com.shorindo.docs.repository.Repository;
 
 /**
  * 
  */
 public class DocumentService {
-    private static Logger LOG = Logger.getLogger(DocumentService.class);
+    private static ActionLogger LOG = ActionLogger.getLogger(DocumentService.class);
     private static DocumentService service = new DocumentService();
     private DatabaseService databaseService;
+    private Repository repository = BeanProvider.inject(Repository.class);
 
     /**
      * 

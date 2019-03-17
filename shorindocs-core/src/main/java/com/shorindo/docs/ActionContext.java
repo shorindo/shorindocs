@@ -25,7 +25,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.shorindo.docs.auth.entity.UserEntity;
+import com.shorindo.docs.entity.UserEntity;
 
 /**
  * 

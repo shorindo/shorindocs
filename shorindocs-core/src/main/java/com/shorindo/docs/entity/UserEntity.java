@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.entity;
+package com.shorindo.docs.entity;
 
 import java.util.Date;
 

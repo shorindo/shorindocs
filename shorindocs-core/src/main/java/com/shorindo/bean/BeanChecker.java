@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2019 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.entity;
+package com.shorindo.bean;
 
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.Table;
+import org.springframework.context.annotation.Import;
 
 /**
  * 
  */
-@Table("AUTH_ACL_MEMBER")
-public class AclMemberEntity extends SchemaEntity {
+public class BeanChecker {
 
-    public AclMemberEntity() throws DatabaseException {
-        super();
+    /**
+     * 
+     */
+    public BeanChecker() {
+        // TODO Auto-generated constructor stub
+        
     }
 
 }

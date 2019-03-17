@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.entity;
+package com.shorindo.docs.repository;
 
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.Table;
+import java.util.List;
+
+import com.shorindo.docs.annotation.ImplementedBy;
 
 /**
  * 
  */
-@Table("AUTH_GROUP")
-public class GroupEntity extends SchemaEntity {
-    public GroupEntity() throws DatabaseException {
-        super();
-    }
-
+@ImplementedBy(Repository.class)
+public interface Repository {
+    public <T> T put(T data) throws RepositoryException;
+    public <T> T get(T key);
+    public <T> T remove(T key);
+    public <T> List<T> find(Class<T> clazz);
 }

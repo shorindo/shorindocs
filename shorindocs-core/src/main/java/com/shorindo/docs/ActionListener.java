@@ -23,8 +23,6 @@ import java.util.Properties;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import com.shorindo.xuml.XumlView;
 
 /**
@@ -41,7 +39,7 @@ public class ActionListener implements ServletContextListener {
             String path = event.getServletContext().getRealPath("/WEB-INF/site.properties");
             is = new FileInputStream(path);
             siteProperties.load(is);
-            PropertyConfigurator.configure(siteProperties);
+//            PropertyConfigurator.configure(siteProperties);
 
             ApplicationContext.init(siteProperties);
         } catch (IOException e) {
