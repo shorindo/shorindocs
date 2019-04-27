@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.shorindo.docs.annotation.ActionMethod;
+import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.entity.UserEntity;
 import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseExecutor;

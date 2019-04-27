@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>githubのmarkdown APIのテスト</title>
+</head>
+<body>
+ <h1>GitHubのmarkdown APIのテスト(JavaScriptのみ)</h1>
+ 
+ <div id="view"></div>
+ 
+ <form name="inputs" style="float:left;">
+  <textarea name="markdown" style="width:25em;height:10em;">
+タイトル
+================
+ 
+markdownはお手軽に書けるフォーマットで素晴らしいですな
+ 
+```javascript
+function object(o) {
+    function f(){}
+    f.prototype = o;
+    return new f;
+}
+```
+  </textarea>
+  <button name="commit">変換</button>
+ </form>
+ 
+ <textarea id="response" style="width:25em;height:10em; float:left"></textarea>
+   
+ <script>
+void function(document, global){
+    var form = document.forms['inputs'],
+        resBox = document.getElementById('response')
+        viewBox = document.getElementById('view');
+ 
+    form.commit.addEventListener('click', commit);
+ 
+    function commit(ev) {
+        ev.preventDefault();
+        resBox.value = "";
+ 
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://api.github.com/markdown/raw');
+        xhr.setRequestHeader('Content-Type', 'text/plain');
+        xhr.onload = function(ev){
+            resBox.value = xhr.responseText;
+            viewBox.innerHTML = xhr.responseText;
+         };
+        xhr.onerror = function(ev){
+            alert('エラーおきた');
+        };
+        xhr.send(form.markdown.value);
+    }
+ 
+ 
+}(document, this);
+</script>
+ 
+</body>
+</html>

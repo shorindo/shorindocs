@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>outlogger</title>
+<style type="text/css">
+@font-face {
+    font-family: ionicons;
+    src: url(ionicons.ttf) format("truetype");
+}
+#controller {
+    font-family: ionicons;
+    position: fixed;
+    bottom: 0px;
+    cursor: pointer;
+}
+.outlogger-item {
+    min-height: 1em;
+    font-size: 12pt;
+    /*margin-left:20px;*/
+    margin-right:20px;
+    clear: both;
+}
+.outlogger-item.selected {
+    background-color: #EEEEEE;
+}
+/*
+.outlogger-item:after {
+    content: "\f13e";
+    float: right;
+    margin-right: -20px;
+    font-family: ionicons;
+    font-size: 12pt;
+}
+*/
+.outlogger-item textarea {
+    width: 100%;
+    height: 1em;
+    font-size: 12pt;
+    border: none;
+}
+.outlogger-item.level-0 {
+}
+.outlogger-item.level-1 {
+    margin-left: 20px;
+}
+.outlogger-item.level-2 {
+    margin-left: 40px;
+}
+.outlogger-item.level-3 {
+    margin-left: 60px;
+}
+.outlogger-item.level-4 {
+    margin-left: 80px;
+}
+.outlogger-item .icon {
+    font-family: ionicons;
+    float: left;
+}
+.outlogger-item .text {
+    padding-left: 10px;
+}
+</style>
+<script type="text/javascript">
+<!--
+window.addEventListener('load', function() {
+    var outlogger = new OutLogger('outlogger');
+    var controller = document.getElementById('controller');
+    controller.addEventListener('click', function() {
+        var item = new OutLoggerItem();
+        outlogger.addItem(item);
+        item.edit();
+    });
+
+    function OutLogger(id) {
+        var self = this;
+        this.dom = document.getElementById(id);
+        this.items = [];
+        this.selected = [];
+        document.addEventListener('blur', function() {
+            self.select();
+        });
+        document.addEventListener('keydown', function(evt) {
+            console.log(evt.target + ":" + evt.keyCode);
+            if (evt.ctrlKey && evt.keyCode == 83) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                self.save();
+                return false;
+            }
+            if (evt.ctrlKey && evt.keyCode == 37) {
+                for (var i = 0; i < self.selected.length; i++) {
+                    self.selected[i].indent(false);
+                }
+            }
+            if (evt.ctrlKey && evt.keyCode == 39) {
+                for (var i = 0; i < self.selected.length; i++) {
+                    self.selected[i].indent(true);
+                }
+            }
+            if (evt.keyCode == 38) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                self.selectPrev();
+                return false;
+            }
+            if (evt.keyCode == 40) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                self.selectNext();
+                return false;
+            }
+        });
+    }
+    OutLogger.prototype.addItem = function(item) {
+        this.dom.appendChild(item.dom);
+        this.items.push(item);
+    };
+    OutLogger.prototype.load = function() {
+        var items = JSON.parse(localStorage.getItem("outlogger"));
+        if (items) {
+            for (var i = 0; i < items.length; i++) {
+                this.addItem(new OutLoggerItem(items[i]));
+            }
+        }
+    };
+    OutLogger.prototype.save = function() {
+        localStorage.setItem("outlogger", JSON.stringify(this.items));
+    };
+    OutLogger.prototype.select = function(item) {
+        if (this.selected) {
+            for (var i = 0; i < this.selected.length; i++) {
+                this.selected[i].select(false);
+            }
+            this.selected = [];
+        }
+        if (item) {
+            this.selected.push(item);
+            item.select(true);
+        }
+    };
+    OutLogger.prototype.selectPrev = function() {
+        if (this.selected) {
+            var item = this.selected[this.selected.length - 1];
+            for (var i = 0; i < this.items.length; i++) {
+                if (item == this.items[i] && this.items[i - 1]) {
+                    this.select(this.items[i - 1]);
+                }
+            }
+        }
+    };
+    OutLogger.prototype.selectNext = function() {
+        if (this.selected) {
+            var item = this.selected[this.selected.length - 1];
+            for (var i = 0; i < this.items.length; i++) {
+                if (item == this.items[i] && this.items[i + 1]) {
+                    this.select(this.items[i + 1]);
+                }
+            }
+        }
+    };
+    function OutLoggerItem(item) {
+        var self = this;
+        this.state = 0;
+        this.dom = document.createElement('div');
+        this.dom.className = "outlogger-item";
+        this.dom.addEventListener('click', function(evt) {
+            switch(self.state) {
+            case 0:
+                //self.select(true);
+                outlogger.select(self);
+                break;
+            case 1:
+                self.edit();
+                break;
+            case 2:
+            }
+        });
+        if (item) {
+            this.id = item.id;
+            this.level = item.level ? item.level : 0;
+            this.value = item.value;
+            this.update_time = item.update_time;
+        } else {
+            this.id = new Date().getTime();
+            this.level = 0;
+            this.value = "";
+            this.update_time = new Date().getTime();
+        }
+        var icon = document.createElement("span");
+        icon.className = "icon";
+        icon.innerHTML = "&#xf10a;";
+        this.dom.appendChild(icon);
+        this.icon = icon;
+        var text = document.createElement("div");
+        text.className = "text";
+        text.innerHTML = this.value ? this.value.replace(/\n/g, "<br>") : "";
+        this.dom.appendChild(text);
+        this.text = text;
+    };
+    OutLoggerItem.prototype = {
+    set level(l) {
+        removeClass(this.dom, "level-" + this._level);
+        this._level = l;
+        addClass(this.dom, "level-" + l);
+    },
+    get level() {
+        return this._level;
+    },
+    edit: function() {
+        var self = this;
+        this.state = 2;
+        this.text.contentEditable = true;
+        this.text.focus();
+        this.text.addEventListener('blur', function(evt) {
+            self.unedit();
+        });
+        this.text.addEventListener('keydown', function(evt) {
+            if (evt.keyCode == 13) {
+                var item = new OutLoggerItem();
+                outlogger.addItem(item);
+                item.edit();
+            }
+        });
+    },
+    unedit: function() {
+        this.text.contentEditable = false;
+        this.value = this.text.textContent;
+        this.state = 0;
+        outlogger.save();
+    },
+    select: function(b) {
+        if (b) {
+            addClass(this.dom, "selected");
+            this.state = 1;
+        } else {
+            removeClass(this.dom, "selected");
+            this.state = 0;
+        }
+    },
+    indent: function(b) {
+        if (b) {
+            this.level++;
+        } else {
+            this.level--;
+        }
+    },
+    toJSON: function() {
+        return {
+            "id": this.id,
+            "level": this.level,
+            "value": this.value,
+            "update_time": this.update_time
+        };
+    }
+    };
+    function addClass(dom, clazz) {
+        var clazzes = (dom.className ? dom.className : "").split(/\s+/);
+        var idx = clazzes.indexOf(clazz);
+        if (idx < 0) {
+            clazzes.push(clazz);
+            dom.className = clazzes.join(" ");
+        }
+    }
+    function removeClass(dom, clazz) {
+        var clazzes = (dom.className ? dom.className : "").split(/\s+/);
+        var idx = clazzes.indexOf(clazz);
+        if (idx >= 0) {
+            clazzes.splice(idx, 1);
+            dom.className = clazzes.join(" ");
+        }
+    }
+
+    outlogger.load();
+});
+//-->
+</script>
+</head>
+  <body>
+    <div id="outlogger"></div>
+    <div id="controller">&#xf216;</div>
+  </body>
+</html>

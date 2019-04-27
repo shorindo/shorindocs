@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+<title>API test</title>
+<script type="text/javascript" src="dojo/dojo.js" djConfig="parseOnLoad: true"></script>
+<script language="JavaScript">
+<!--
+//dojo.require("dojo.widget.ModalFloatingPane");
+//dojo.require("dijit.Dialog");
+//require(["dojo/domReady!"], function(){
+//	dojo.byId("loginDialog").show();
+//});
+
+function authenticate() {
+	dojo.xhrPost({
+		url : "../mailapi",
+		contentType : "application/xml",
+		postData :
+			'<?xml version="1.0" encoding="UTF-8"?>' +
+			'<methodCall>' +
+			'    <methodName>webmail.authenticate</methodName>' +
+			'</methodCall>',
+		handleAs : "text",
+		handle : function (response, ioArgs) {
+			var textarea = document.getElementById('textarea');
+			textarea.value = response;
+		}
+	});
+}
+
+function login(form) {
+	dojo.xhrPost({
+		url : "../mailapi",
+		contentType : "application/xml",
+		postData :
+			'<?xml version="1.0" encoding="UTF-8"?>' +
+			'<methodCall>' +
+			'    <methodName>webmail.login</methodName>' +
+			'    <params>' +
+			'        <param><value><string>' + form.userId.value + '</string></value></param>' +
+			'        <param><value><string>' + form.password.value + '</string></value></param>' +
+			'    </params>' +
+			'</methodCall>',
+		handleAs : "text",
+		handle : function (response, ioArgs) {
+			var textarea = document.getElementById('textarea');
+			textarea.value = response;
+		}
+	});
+}
+
+function logout() {
+	dojo.xhrPost({
+		url : "../mailapi",
+		contentType : "application/xml",
+		postData :
+			'<?xml version="1.0" encoding="UTF-8"?>' +
+			'<methodCall>' +
+			'    <methodName>webmail.logout</methodName>' +
+			'</methodCall>',
+		handleAs : "text",
+		handle : function (response, ioArgs) {
+			var textarea = document.getElementById('textarea');
+			textarea.value = response;
+		}
+	});
+}
+
+function listFolder() {
+	var folderName = document.getElementById("listFolderName").value;
+	dojo.xhrPost({
+		url : "../mailapi",
+		contentType : "application/xml",
+		postData :
+			'<?xml version="1.0" encoding="UTF-8"?>' +
+			'<methodCall>' +
+			'    <methodName>webmail.listFolder</methodName>' +
+			(folderName ? '    <params><param><value><string>' + folderName + '</string></value></param></params>' : '') +
+			'</methodCall>',
+		handleAs : "text",
+		handle : function (response, ioArgs) {
+			var textarea = document.getElementById('textarea');
+			textarea.value = response;
+		}
+	});
+}
+
+function listMessage() {
+	var params = [];
+	var folderName = document.getElementById("listMessageName").value;
+	if (folderName) params.push('<param><value><string>' + folderName + '</string></value></param>');
+	var start = document.getElementById("start").value;
+	if (start) params.push('<param><value><int>' + start + '</int></value></param>');
+	var end = document.getElementById("end").value;
+	if (end) params.push('<param><value><int>' + end + '</int></value></param>');
+	
+	dojo.xhrPost({
+		url : "../mailapi",
+		contentType : "application/xml",
+		postData :
+			'<?xml version="1.0" encoding="UTF-8"?>' +
+			'<methodCall>' +
+			'    <methodName>webmail.listMessage</methodName>' +
+			'    <params>' + params.join('') + '</params>' +
+			'</methodCall>',
+		handleAs : "text",
+		handle : function (response, ioArgs) {
+			var textarea = document.getElementById('textarea');
+			textarea.value = response;
+		}
+	});
+}
+
+function getMessage() {
+	var params = [];
+	var folderName = document.getElementById("getMessageName").value;
+	if (folderName) params.push('<param><value><string>' + folderName + '</string></value></param>');
+	var msgNo = document.getElementById("msgNo").value;
+	if (msgNo) params.push('<param><value><int>' + msgNo + '</int></value></param>');
+	
+	dojo.xhrPost({
+		url : "../mailapi",
+		contentType : "application/xml",
+		postData :
+			'<?xml version="1.0" encoding="UTF-8"?>' +
+			'<methodCall>' +
+			'    <methodName>webmail.getMessage</methodName>' +
+			'    <params>' + params.join('') + '</params>' +
+			'</methodCall>',
+		handleAs : "text",
+		handle : function (response, ioArgs) {
+			var textarea = document.getElementById('textarea');
+			textarea.value = response;
+		}
+	});
+}
+//-->
+</script>
+</head>
+<body>
+<textarea id="textarea" cols="80" rows="20"></textarea>
+
+<div dojoType="dijit.Dialog" id="loginDialog" title="ログインしてください"
+  style="width: 400px; height: 200px;" closeNode="hider" closeonbackgroundclick="true"
+  bgColor="white" bgOpacity="1" toggle="fade" toggleDuration="250">
+  <h3>Login Dialog</h3>
+  <form onsubmit="return false;">
+    <table>
+      <tr>
+        <td>ユーザID</td><td><input type="text" name="userId"></td>
+      </tr>
+      <tr>
+        <td>パスワード</td><td><input type="password" name="password"></td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center"><input type="button" id="hider" value="ログイン" onclick="login(this.form);"></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<ol>
+<li><a href="javascript:logout();void(0);">logout</a>
+<li><a href="javascript:authenticate();void(0);">authenticate</a>
+<li><a href="javascript:listFolder();void(0);">listFolder</a><INPUT ID="listFolderName" TYPE="TEXT" NAME="folderName">
+<li><a href="javascript:listMessage();void(0);">listMessage</a>
+  <ul>
+  <li>folderName=<INPUT ID="listMessageName" TYPE="TEXT" NAME="folderName">
+  <li>start=<INPUT ID="start" TYPE="TEXT" NAME="start">
+  <li>end=<INPUT ID="end" TYPE="TEXT" NAME="end">
+  </ul>
+<li><a href="javascript:getMessage();void(0);">getMessage</a>
+  <ul>
+  <li>folderName=<INPUT ID="getMessageName" TYPE="TEXT" NAME="folderName">
+  <li>start=<INPUT ID="msgNo" TYPE="TEXT" NAME="msgNo">
+  </ul>
+</ol>
+</body>
+</html>
+
+

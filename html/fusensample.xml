@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snapboard xmlns="http://shorindo.com/schema/snapboard"
+		   xmlns:html="http://www.w3.org/1999/xhtml">
+	<note id="12345" left="50" top="50" width="200" height="150" fgcolor="black" bgcolor="#CCFFCC">
+		<html:ol style="padding-left:20px;">
+	    <html:li> ブラウザの履歴、ブックマーク、パスワード、cookie等を削除する。</html:li>
+	    <html:li> 必要なファイルを<html:span style="color:red;">リポジトリ</html:span>にpushする。</html:li>
+	    <html:li> ローカルファイルの不要なものを削除する。</html:li>
+	    <html:li> Eclipseのgit remote関連の設定を削除する。</html:li>
+	    <html:li> 持ってかえるものをまとめる。</html:li>
+	    <html:li> ごみを捨てる。</html:li>
+	    </html:ol>
+	</note>
+	
+	<note id="23456" left="150" top="250" width="200" height="150" fgcolor="black" bgcolor="#FFCCCC">
+ユーザ管理<html:br/>
+・ユーザ新規登録<html:br/>
+・ユーザ更新<html:br/>
+・ユーザ情報表示<html:br/>
+・ユーザ削除<html:br/>
+・ユーザ検索<html:br/>
+・ユーザ認証
+・ユーザ認可
+
+グループ管理
+アクセス管理
+	</note>
+</snapboard>

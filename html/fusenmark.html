@@ -1,0 +1,399 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>fusenmark</title>
+<style type="text/css">
+body {
+	background: url(3.gif);
+	overflow: hidden;
+	user-select: none;
+	-moz-user-select: none;
+}
+</style>
+<script type="text/javascript">
+window.onload = function() {
+	//COLORS
+	var colors = [
+		'#CCCCCC', '#FFCCCC', '#CCFFCC', '#CCCCFF',
+		'#FFCCFF', '#CCFFFF', '#FFFFCC'
+	];
+	
+	//CSS
+	(function(csstext) {
+	    if (document.createStyleSheet) { //IEの場合
+	        var sheet = document.createStyleSheet();
+	        sheet.cssText = csstext;
+	        sheet.owningElement.id = 'outercss';
+	        return sheet.owningElement;
+	    } else { //その他
+	       var sheet = document.body.appendChild(document.createElement("style"));
+	       sheet.type="text/css";
+	       sheet.textContent = csstext;
+	       sheet.id = 'outercss';
+	       return sheet;
+	    }
+	})(
+		'div.rotate90 {-moz-transform:matrix(0, -1, 1, 0, 30, 40)}' +
+		'div.fusen {' +
+		'    box-shadow: 5px 5px 5px 5px rgba(0,0,0,0.4);' +
+		'}' +
+		'body { user-select: none; }'
+	);
+	
+	//fixEvent
+	var fixEvent = function(evt) {
+		var event = evt ? evt : window.event;
+		if (!event.target) event.target = event.srcElement;
+		return event;
+	};
+	
+	//createXmlHttpRequest
+	var createXmlHttpRequest = function() {
+		if(window.XMLHttpRequest){return new XMLHttpRequest()}
+        if(window.ActiveXObject){
+                try{return new ActiveXObject("Msxml2.XMLHTTP.6.0")}catch(e){}
+                try{return new ActiveXObject("Msxml2.XMLHTTP.3.0")}catch(e){}
+                try{return new ActiveXObject("Microsoft.XMLHTTP")}catch(e){}
+ 
+        }
+        return false;
+	};
+	
+	//createFusen
+	var createFusen = function() {
+		var fusen = document.body.appendChild(document.createElement('div'));
+		var cidx = Math.floor(Math.random() * colors.length);
+		var color = colors[cidx];
+		fusen.controller = controller;
+		fusen.className = fusen.styleClass = "fusen";
+		fusen.style.position = "absolute";
+		fusen.style.width    = "200px";
+		fusen.style.height   = "150px";
+		fusen.style.left     = "100px";
+		fusen.style.top      = "50px";
+		fusen.style.padding  = "3px";
+		fusen.style.backgroundColor = color;
+		fusen.style.fontSize = "9pt";
+		fusen.style.overflow = "hidden";
+		fusen.style.zIndex   = ++controller.maxIndex;
+		
+		fusen.edit = function() {
+			this.contentEditable = true;
+			this.focus();
+
+			var toolbar = this.toolbar = this.parentNode.appendChild(document.createElement("div"));
+			toolbar.style.position = "absolute";
+			toolbar.style.top = (this.offsetTop - 20) + "px";
+			toolbar.style.left = this.offsetLeft + "px";
+			toolbar.style.zIndex = 9999999;
+			
+			var fgbtn = toolbar.appendChild(document.createElement("div"));
+			fgbtn.style.width = "17px";
+			fgbtn.style.height = "17px";
+			fgbtn.style.cssFloat = "left";
+			fgbtn.style.border = "3px solid white";
+			fgbtn.style.backgroundColor = "black";
+			
+			var bgbtn = toolbar.appendChild(document.createElement("div"));
+			bgbtn.style.width = "17px";
+			bgbtn.style.height = "17px";
+			bgbtn.style.cssFloat = "left";
+			bgbtn.style.border = "3px solid white";
+			bgbtn.style.backgroundColor = color;
+			
+			this.onkeypress = function(evt) {
+				var evt = evt ? evt : window.event;
+				var target = evt.target ? evt.target : evt.srcElement;
+				if (target.contentEditable && evt.keyCode == 27) {
+					target.unedit();
+				}
+			};
+			this.ondblclick = function(evt) {
+				var event = fixEvent(evt);
+				var target = event.target;
+				
+				if (target.contentEditable != 'true') {
+					target.edit();
+					/*
+					target.contentEditable = true;
+					target.focus();
+					*/
+					evt.cancelBubble = true;
+					evt.stopPropagation();
+					return false;
+				}
+			};
+			this.onmousedown = function(evt) {
+				var evt = evt ? evt : window.event;
+				var target = evt.target ? evt.target : evt.srcElement;
+				
+				//don't move if target is editable.
+				if (target.contentEditable == 'true') {
+					return;
+				}
+				
+				target.style.zIndex = ++controller.maxIndex;
+				target.offX = evt.layerX;
+				target.offY = evt.layerY;
+				window.grabbed = target;
+				window.onmousemove = function(evt) {
+					if (window.grabbed) {
+						var f = window.grabbed;
+						f.style.left = (evt.pageX - f.offX) + "px";
+						f.style.top = (evt.pageY - f.offY) + "px";
+						return false;
+					}
+				};
+				window.onmouseup = function(evt) {
+					window.grabbed = null;
+					window.onmousemove = null;
+					window.onmouseup = null;
+				};
+			};
+			this.onblur = function(evt) {
+				var evt = evt ? evt : window.event;
+				var target = evt.target ? evt.target : evt.srcElement;
+				target.unedit();
+			};
+		};
+		
+		fusen.onselectstart = function(evt) {
+		  return true;
+		};
+		
+		fusen.unedit = function() {
+			if (this.contentEditable == 'true') {
+				this.contentEditable = false;
+				this.blur();
+				
+				if (this.scrollHeight > this.offsetHeight) {
+					this.style.height = this.scrollHeight + "px";
+				}
+				
+				if (this.toolbar) {
+					this.toolbar.parentNode.removeChild(this.toolbar);
+					this.toolbar = null;
+				}
+			}
+		};
+		
+		fusen.move = function(x, y) {
+			this.style.left = (this.offsetLeft + x) + "px";
+			this.style.top = (this.offsetTop + y) + "px";
+		};
+		
+		//DnD
+		if (!fusen.addEventListener) {
+			fusen.addEventListener = function(type, func, b) {
+				this.attachEvent('on' + type, func);
+			};
+		}
+		fusen.addEventListener('dragover', function(evt) {
+			var event = fixEvent(evt);
+			event.stopPropagation();
+    		event.preventDefault();
+    		event.dataTransfer.dropEffect = 'copy'; 
+		}, false);
+		fusen.addEventListener('drop', function(evt) {
+			var event = fixEvent(evt);
+			event.preventDefault();
+			event.stopPropagation();
+			console.log(event);
+			
+			var files = event.dataTransfer.files;
+			console.log(files);
+		}, false);
+		
+		fusen.edit();
+		controller.fusenList.push(fusen);
+		
+		return fusen;
+	};
+
+	var controller = document.body.appendChild(document.createElement('div'));
+	controller.className = controller.styleClass = "rotate90";
+	controller.style.position = "fixed";
+	controller.style.top = "10px";
+	controller.style.right = "0px"; 
+	controller.style.backgroundColor = "white";
+	controller.style.padding = "1px 5px";
+	controller.maxIndex = 0;
+	controller.innerHTML = "fusenmark";
+	controller.fusenList = [];
+	controller.onclick = createFusen;
+	
+	var scroll = function(x, y) {
+		for (var i = 0; i < controller.fusenList.length; i++) {
+			var f = controller.fusenList[i];
+			f.move(x, y);
+		}
+		
+		if (document.body.style.backgroundPosition != "") {
+			var xy = document.body.style.backgroundPosition.split(/ /);
+			var xoffset = (x + parseInt(xy[0])) + "px";
+			var yoffset = (y + parseInt(xy[1])) + "px";
+			document.body.style.backgroundPosition = xoffset + " " + yoffset;
+		} else {
+			document.body.style.backgroundPosition = x + "px" + " " + y + "px";
+		}
+	};
+	
+	var dump = function(node) {
+		if (node.nodeName == '#text') {
+			return node.nodeValue;
+		}
+		
+		var result = "<" + node.localName;
+		if (node.hasAttributes) {
+			for (var i = 0; node.attributes && i < node.attributes.length; i++) {
+				var attr = node.attributes.item(i);
+				result += " " + attr.localName + "=\"" + attr.nodeValue + "\"";
+			}
+		}
+		
+		if (node.hasChildNodes) {
+			result += ">";
+			for (var i = 0; i < node.childNodes.length; i++) {
+				result += dump(node.childNodes.item(i));
+			}
+			result += "</" + node.localName + ">";
+		} else {
+			result += "/>";
+		}
+		
+		return result;
+	};
+	
+	var loadFusen = function(data) {
+		var doc = data;
+
+		if (typeof(data) == 'string') {
+			
+			if (window.DOMParser) {
+				var parser = new DOMParser();
+				doc = parser.parseFromString(data, "text/xml");
+	  		} else { // Internet Explorer
+				doc = new ActiveXObject("Microsoft.XMLDOM");
+				doc.async = "false";
+				doc.loadXML(data);
+	  		}
+  		}
+  		
+  		var notes = doc.getElementsByTagName("note");
+  		for (var i = 0; i < notes.length; i++) {
+  			var note = notes.item(i);
+  			var fusen = createFusen();
+  			fusen.style.left   = note.getAttribute("left") + "px";
+  			fusen.style.top    = note.getAttribute("top") + "px";
+  			fusen.style.width  = note.getAttribute("width") + "px";
+  			fusen.style.height = note.getAttribute("height") + "px";
+  			fusen.style.color  = note.getAttribute("fgcolor");
+  			fusen.style.backgroundColor = note.getAttribute("bgcolor");
+  			fusen.innerHTML = dump(note);
+  			fusen.unedit();
+  		}
+	}
+		
+	/*
+	window.onkeypress = function(evt) {
+		var event = fixEvent(evt);
+		switch(event.keyCode) {
+		case 37: //arrow left
+			scroll(10, 0); break;
+		case 38: //arrow up
+			scroll(0, 10); break;
+		case 39: //arrow right
+			scroll(-10, 0); break;
+		case 40: //arrow down
+			scroll(0, -10); break;
+		}
+		
+		event.cancelBubble = true;
+		return false;
+	};
+	/**/
+	
+	if (!window.addEventListener) {
+		window.addEventListener = function(type, func, b) {
+			this.attachEvent('on' + type, func);
+		};
+	}
+	
+	window.addEventListener('dragover', function(evt) {
+		var event = fixEvent(evt);
+		event.stopPropagation();
+    	event.preventDefault();
+    	event.dataTransfer.dropEffect = 'copy';
+	}, false);
+	
+	window.addEventListener("drop", function(evt) {
+		var event = fixEvent(evt);
+		event.preventDefault();
+		event.stopPropagation();
+		var files = event.dataTransfer.files;
+		
+		for (var i = 0; i < files.length; i++) {
+			if (files[i].type == "image/gif" ||
+			        files[i].type == "image/jpeg" ||
+			        files[i].type == "image/png") {
+				var img = document.body.appendChild(document.createElement("img"));
+				img.style.position = "absolute";
+				img.style.left = event.clientX + "px";
+				img.style.top = event.clientY + "px";
+				var reader = new FileReader();
+				reader.onload = (function(node) {
+					return function(evt) {
+						node.src = event.target.result;
+					};
+				})(img);
+				reader.readAsDataURL(files[i]);
+			}
+			else if (files[i].type == "text/xml") {
+				var reader = new FileReader();
+				reader.onload = function(evt) {
+					loadFusen(evt.target.result);
+				};
+				reader.readAsText(files[i], 'UTF-8');
+			}
+			console.log(files[i]);
+		}
+	}, false);
+	
+	//load initial document
+	var xhr = createXmlHttpRequest();
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4) { // DONE
+		    loadFusen(xhr.responseXML);
+		/*
+			if (xhr.status == 200) { // OK
+				alert(xhr.responseText);
+    		} else { //local
+      			//alert("status = " + xhr.status);
+      			loadFusen(xhr.responseXML);
+    		}
+		*/
+  		}
+	};
+	//xhr.open("GET", "file://localhost/C|/Documents%20and%20Settings/kitaoosaka/git/WebMailAPI/html/fusensample.xml");
+	xhr.open("GET", "fusensample.xml");
+	xhr.setRequestHeader("Content-Type" , "text/xml; charset=UTF-8");
+	xhr.send(null);
+	/*
+	xhr.send(
+		'<?xml version="1.0"?>' +
+		'<methodCall>' +
+		'  <methodName>examples.getStateName</methodName>' +
+		'  <params>' +
+		'    <param>' +
+		'        <value><i4>40</i4></value>' +
+		'    </param>' +
+		'  </params>' +
+		'</methodCall>'
+		);
+	*/
+};
+</script>
+</head>
+<body onSelectStart="return false;" onMouseDown="return false;" style="-moz-user-select: none; -khtml-user-select: none; user-select: none;">
+</body>

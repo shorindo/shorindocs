@@ -53,7 +53,7 @@ public class Application extends SpringBootServletInitializer {
 
     @RequestMapping("/")
     String index() {
-        return "index";
+        return docs("index");
     }
 
     @RequestMapping("/{docId}")

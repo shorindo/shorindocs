@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>linemark</title>
+<style type="text/css">
+div.line.edit {
+  border-bottom: 0.5px solid gray;
+}
+div.line {
+  line-height: 1.5em;
+  min-height: 1em;
+  border-bottom: 0.5px solid white;
+}
+</style>
+<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" src="linemark.js"></script>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    var editor = new linemark.Editor(document.body)
+        .add(new linemark.Line("# 見出し１"))
+        .add(new linemark.Line("## &orange{見出し２}"))
+        .add(new linemark.Line("* &red{番号なし}リスト１"))
+        .add(new linemark.Line("  - &em{番号なし}リスト２"))
+        .add(new linemark.Line("    + &#88AAcc{番号なし}リスト３"))
+        .add(new linemark.Line("1. &del{番号付きリスト１}"))
+        .add(new linemark.Line("  1. &red:it:em{番号付きリスト２}"));
+}, false);
+</script>
+</head>
+<body>
+</body>
+</html>

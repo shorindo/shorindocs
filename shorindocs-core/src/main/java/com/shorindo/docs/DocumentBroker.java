@@ -16,6 +16,7 @@
 package com.shorindo.docs;
 
 import static com.shorindo.docs.DocumentMessages.*;
+
 import java.sql.Connection;
 
 import com.shorindo.docs.annotation.ActionMapping;
@@ -23,6 +24,7 @@ import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseExecutor;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.Transactionless;
+import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 
