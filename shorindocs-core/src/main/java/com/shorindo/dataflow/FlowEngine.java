@@ -15,9 +15,12 @@
  */
 package com.shorindo.dataflow;
 
+import java.io.InputStream;
+
 /**
  * 
  */
-public class DataFlowException extends Exception {
-
+public interface FlowEngine {
+    public void load(InputStream is) throws FlowException;
+    public Object start(String processId, Object data) throws FlowException;
 }

@@ -20,31 +20,24 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.shorindo.dataflow.DataFlowEngine;
+import com.shorindo.dataflow.FlowEngine;
 
 /**
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@EnableAutoConfiguration
-@ComponentScan("com.shorindo.dataflow")
-public class DataFlowEngineTest {
+public class FlowEngineTest {
     @Autowired
     private ApplicationContext ctx;
 
     @Autowired
-    private DataFlowEngine engine;
+    private FlowEngine engine;
 
     @Test
-    public void test() throws DataFlowException {
+    public void test() throws FlowException {
         engine.load(null);
         assertTrue("done.", true);
         

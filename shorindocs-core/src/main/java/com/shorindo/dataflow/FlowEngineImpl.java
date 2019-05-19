@@ -22,7 +22,18 @@ import org.springframework.stereotype.Component;
 /**
  * 
  */
-public interface DataFlowEngine {
-    public void load(InputStream is) throws DataFlowException;
-    public Object input(String processId, Object data) throws DataFlowException;
+@Component
+public class FlowEngineImpl implements FlowEngine {
+
+    @Override
+    public void load(InputStream is) throws FlowException {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public Object start(String processId, Object data) throws FlowException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

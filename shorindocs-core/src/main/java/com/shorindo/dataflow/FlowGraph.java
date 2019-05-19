@@ -15,32 +15,43 @@
  */
 package com.shorindo.dataflow;
 
-import java.io.InputStream;
-
-import org.springframework.stereotype.Component;
-
 /**
  * 
  */
-@Component
-public class DataFlowEngineImpl implements DataFlowEngine {
-
-    /* (non-Javadoc)
-     * @see com.shorindo.dataflow.DataFlowEngine#load(java.io.InputStream)
+public class FlowGraph {
+    /**
+     * 
      */
-    @Override
-    public void load(InputStream is) throws DataFlowException {
-        // TODO Auto-generated method stub
+    public static class Node {
+        private FlowProcess<?,?> process;
 
+        public Node(FlowProcess<?,?> process) {
+            this.process = process;
+        }
+
+        public FlowProcess<?,?> getProcess() {
+            return process;
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.shorindo.dataflow.DataFlowEngine#input(java.lang.String, java.lang.Object)
+    /**
+     * 
      */
-    @Override
-    public Object input(String processId, Object data) throws DataFlowException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    public static class Edge {
+        private Node from;
+        private Node to;
 
+        public Edge(Node from, Node to) {
+            this.from = from;
+            this.to = to;
+        }
+
+        public Node getFrom() {
+            return from;
+        }
+
+        public Node getTo() {
+            return to;
+        }
+    }
 }
