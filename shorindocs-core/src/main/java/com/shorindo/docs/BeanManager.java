@@ -18,13 +18,13 @@ package com.shorindo.docs;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.shorindo.docs.annotation.ImplementedBy;
+import com.shorindo.docs.annotation.Implementation;
 
 /**
  * 
  */
 @SuppressWarnings("unchecked")
-public abstract class BeanProvider {
+public abstract class BeanManager {
     private static Map<Class<?>,Class<?>> injectMap = new ConcurrentHashMap<Class<?>,Class<?>>();
     private static Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<Class<?>,Object>();
 
@@ -42,8 +42,8 @@ public abstract class BeanProvider {
                 T instance = (T)injectMap.get(itfc).newInstance();
                 instanceMap.put(itfc, instance);
                 return instance;
-            } else if (itfc.getAnnotation(ImplementedBy.class) != null) {
-                return (T)itfc.getAnnotation(ImplementedBy.class).value().newInstance();
+            } else if (itfc.getAnnotation(Implementation.class) != null) {
+                return (T)itfc.getAnnotation(Implementation.class).value().newInstance();
             } else {
                 throw new InstantiationException("No bean defined for '" + itfc + "'.");
             }

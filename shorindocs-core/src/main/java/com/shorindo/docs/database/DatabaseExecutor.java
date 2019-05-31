@@ -219,13 +219,13 @@ public abstract class DatabaseExecutor<T> {
 
     /**
      * 
-     * @param entity
+     * @param document
      * @return
      * @throws SQLException
      */
-    protected final int remove(SchemaEntity entity) throws DatabaseException {
+    protected final int remove(SchemaEntity document) throws DatabaseException {
         Connection conn = local.get();
-        EntityMapping mapping = bind(conn, entity);
+        EntityMapping mapping = bind(conn, document);
         LOG.debug(DBMS_0005, mapping.getUpdateSql());
         PreparedStatement stmt = null;
         int index = 1;
@@ -234,7 +234,7 @@ public abstract class DatabaseExecutor<T> {
             stmt = conn.prepareStatement(mapping.getDeleteSql());
             for (ColumnMapping columnMapping : mapping.getColumns()) {
                 if (columnMapping.getPrimaryKey() > 0) {
-                    index = applySetMethod(stmt, entity, columnMapping, index);
+                    index = applySetMethod(stmt, document, columnMapping, index);
                 }
             }
             return stmt.executeUpdate();

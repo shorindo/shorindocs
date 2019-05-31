@@ -29,10 +29,10 @@ import org.junit.Test;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.DocumentEntity;
 import com.shorindo.docs.database.DatabaseException;
 import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.database.Transactional;
+import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.specout.SpecoutController;
 
 /**

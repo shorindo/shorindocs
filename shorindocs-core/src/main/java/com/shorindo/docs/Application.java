@@ -19,7 +19,6 @@ import java.sql.SQLException;
 
 import com.shorindo.docs.service.DocumentServiceImpl;
 
-import org.h2.tools.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -42,12 +41,12 @@ public class Application extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        startH2Server();
+//        startH2Server();
         return application.sources(Application.class);
     }
 
     public static void main(String[] args) {
-        startH2Server();
+//        startH2Server();
         SpringApplication.run(Application.class, args);
     }
 
@@ -61,16 +60,16 @@ public class Application extends SpringBootServletInitializer {
         return "Hello " + docId + "!";
     }
 
-    private static void startH2Server() {
-        try {
-            Server h2server = Server.createTcpServer("-tcpAllowOthers", "-tcpPort", "9092").start();
-            if (h2server.isRunning(true)) {
-                System.out.println("H2 server is running.");
-            } else {
-                throw new RuntimeException("could'nt start H2.");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("failed to start H2.");
-        }
-    }
+//    private static void startH2Server() {
+//        try {
+//            Server h2server = Server.createTcpServer("-tcpAllowOthers", "-tcpPort", "9092").start();
+//            if (h2server.isRunning(true)) {
+//                System.out.println("H2 server is running.");
+//            } else {
+//                throw new RuntimeException("could'nt start H2.");
+//            }
+//        } catch (SQLException e) {
+//            throw new RuntimeException("failed to start H2.");
+//        }
+//    }
 }

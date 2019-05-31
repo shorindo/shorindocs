@@ -44,9 +44,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
 import com.shorindo.docs.ActionLogger;
 
 /**
@@ -54,7 +51,6 @@ import com.shorindo.docs.ActionLogger;
  */
 public class XumlEngine {
     private static ActionLogger LOG = ActionLogger.getLogger(XumlEngine.class);
-    private Mustache mustache;
     private String template;
     public static final String POSTFIX = ".xuml";
 
@@ -113,10 +109,10 @@ public class XumlEngine {
             baos.close();
             template = baos.toString("UTF-8");
 
-            StringReader reader = new StringReader(template);
-            MustacheFactory mf = new DefaultMustacheFactory();
-            mustache = mf.compile(reader, "xuml-template");
-            reader.close();
+//            StringReader reader = new StringReader(template);
+//            MustacheFactory mf = new DefaultMustacheFactory();
+//            mustache = mf.compile(reader, "xuml-template");
+//            reader.close();
         } catch (TransformerException e) {
             LOG.error(XUML_5010, e);
         } catch (UnsupportedEncodingException e) {
@@ -145,7 +141,7 @@ public class XumlEngine {
 
     public void render(Object scope, OutputStream os) throws IOException {
         Writer writer = new OutputStreamWriter(os);
-        mustache.execute(writer, scope).flush();
+//        mustache.execute(writer, scope).flush();
     }
 
     /**

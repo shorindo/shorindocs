@@ -28,22 +28,13 @@ import com.shorindo.docs.repository.Repository;
  */
 public class DocumentService {
     private static ActionLogger LOG = ActionLogger.getLogger(DocumentService.class);
-    private static DocumentService service = new DocumentService();
-    private DatabaseService databaseService;
-    private Repository repository = BeanProvider.inject(Repository.class);
+    private DatabaseService databaseService = BeanManager.inject(DatabaseService.class);
+    private Repository repository = BeanManager.inject(Repository.class);
 
     /**
      * 
      */
-    public static DocumentService getInstance() {
-        return service;
-    }
-
-    /**
-     * 
-     */
-    private DocumentService() {
-        databaseService = DatabaseService.getInstance();
+    protected DocumentService() {
     }
 
     public void setUp() throws IOException {

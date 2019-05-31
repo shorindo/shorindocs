@@ -22,12 +22,14 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.shorindo.docs.database.SchemaEntity;
+
 /**
  * 
  */
 @Entity
 @Table(name = "docs_document")
-public class DocumentEntity {
+public class DocumentEntity extends SchemaEntity {
 
     @Id
     @Column(name="DOCUMENT_ID")

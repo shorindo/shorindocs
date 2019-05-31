@@ -31,10 +31,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class DocsServiceTest {
 
     @Autowired
-    private DocsService docsService;
+    private DocumentService docService;
 
     @Test
     public void sampleTest() throws Exception {
-        assertEquals("docs", docsService.get("aaa"));
+        assertEquals("docs", docService.get("aaa"));
     }
 }

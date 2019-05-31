@@ -35,9 +35,6 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.BeanUtil;
@@ -169,9 +166,9 @@ public class XumlView extends View {
         //LOG.debug("evalMustache(" + template + ")");
         StringReader reader = new StringReader(template);
         StringWriter writer = new StringWriter();
-        MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile(reader, "xuml-template");
-        mustache.execute(writer, context.getAttributes());
+//        MustacheFactory mf = new DefaultMustacheFactory();
+//        Mustache mustache = mf.compile(reader, "xuml-template");
+//        mustache.execute(writer, context.getAttributes());
         return writer.toString();
     }
 

@@ -17,12 +17,12 @@ package com.shorindo.docs.repository;
 
 import java.util.List;
 
-import com.shorindo.docs.annotation.ImplementedBy;
+import com.shorindo.docs.annotation.Implementation;
 
 /**
  * 
  */
-@ImplementedBy(Repository.class)
+@Implementation(Repository.class)
 public interface Repository {
     public <T> T put(T data) throws RepositoryException;
     public <T> T get(T key);

@@ -56,7 +56,7 @@ public class DatabaseService {
     /**
      * 
      */
-    private DatabaseService() {
+    protected DatabaseService() {
         try {
             Properties props = new Properties();
             props.setProperty("driverClassName", ApplicationContext.getProperty("datasource.driverClassName"));
