@@ -17,49 +17,44 @@ package com.shorindo.docs.entity;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import com.shorindo.docs.database.SchemaEntity;
+import com.shorindo.docs.repository.Column;
+import com.shorindo.docs.repository.SchemaEntity;
+import com.shorindo.docs.repository.Table;
 
 /**
  * 
  */
-@Entity
-@Table(name = "docs_document")
+@Table("docs_document")
 public class DocumentEntity extends SchemaEntity {
 
-    @Id
-    @Column(name="DOCUMENT_ID")
+    @Column(name="DOCUMENT_ID", typeName="VARCHAR")
     private String documentId;
 
-    @Column(name="CONTROLLER")
+    @Column(name="CONTROLLER", typeName="VARCHAR")
     private String controller;
 
-    @Column(name="TITLE")
+    @Column(name="TITLE", typeName="VARCHAR")
     private String title;
 
-    @Column(name="CONTENT")
+    @Column(name="CONTENT", typeName="TEXT")
     private String content;
 
-    @Column(name="CONTENT_CACHE")
+    @Column(name="CONTENT_CACHE", typeName="TEXT")
     private String contentCache;
 
-    @Column(name="OWNER_ID")
+    @Column(name="OWNER_ID", typeName="VARCHAR")
     private String ownerId;
 
-    @Column(name="CREATE_USER")
+    @Column(name="CREATE_USER", typeName="VARCHAR")
     private String createUser;
 
-    @Column(name="CREATE_DATE")
+    @Column(name="CREATE_DATE", typeName="TIMESTAMP")
     private Timestamp createDate;
 
-    @Column(name="UPDATE_USER")
+    @Column(name="UPDATE_USER", typeName="VARCHAR")
     private String updateUser;
 
-    @Column(name="UPDATE_DATE")
+    @Column(name="UPDATE_DATE", typeName="TIMESTAMP")
     private Timestamp updateDate;
 
     public String getDocumentId() {

@@ -18,33 +18,19 @@ package com.shorindo.dataflow;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.shorindo.dataflow.FlowEngine;
 
 /**
  * 
  */
-@RunWith(SpringJUnit4ClassRunner.class)
 public class FlowEngineTest {
-    @Autowired
-    private ApplicationContext ctx;
-
-    @Autowired
-    private FlowEngine engine;
+    private FlowEngine engine = FlowServiceFactory.flowEngine();
 
     @Test
     public void test() throws FlowException {
         engine.load(null);
         assertTrue("done.", true);
-        
-        for (String string : ctx.getBeanDefinitionNames()) {
-            if (string.indexOf("spring") == -1)
-                System.err.println("BEAN DEFINITION:" + string);
-        }
     }
 
 }

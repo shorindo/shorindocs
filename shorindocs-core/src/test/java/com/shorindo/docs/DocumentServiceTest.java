@@ -35,7 +35,7 @@ public class DocumentServiceTest {
 
     @Test
     public void testSetUp() throws Exception {
-        DocumentService service = DocumentService.getInstance();
+        DocumentService service = DocumentServiceFactory.documentService();
         service.setUp();
     }
 

@@ -15,8 +15,6 @@
  */
 package com.shorindo.bean;
 
-import org.springframework.context.annotation.Import;
-
 /**
  * 
  */

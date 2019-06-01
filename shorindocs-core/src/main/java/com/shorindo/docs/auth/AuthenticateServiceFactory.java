@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
-
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+package com.shorindo.docs.auth;
 
 /**
  * 
  */
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public abstract class AuthenticateServiceFactory {
+    private static AuthenticateService authenticateService;
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-            .antMatchers("/**");
+    public static synchronized AuthenticateService authenticateService() {
+        if (authenticateService == null) {
+            authenticateService = new AuthenticateService();
+        }
+        return authenticateService;
     }
-
 }

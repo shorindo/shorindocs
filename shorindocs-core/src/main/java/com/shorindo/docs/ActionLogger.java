@@ -18,14 +18,14 @@ package com.shorindo.docs;
 import java.text.MessageFormat;
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * 
  */
 public class ActionLogger {
-    private Logger LOG;
+    private Logger logger;
     private Locale lang = ApplicationContext.getLang();
 
     public static ActionLogger getLogger(Class<?> clazz) {
@@ -33,60 +33,59 @@ public class ActionLogger {
     }
 
     private ActionLogger(Class<?> clazz) {
-        LoggerFactory.getILoggerFactory()
-            .getLogger(clazz.getName());
+        logger = LogManager.getLogger(clazz);
     }
 
     public void trace(String msg) {
-        LOG.trace(msg);
+        logger.trace(msg);
     }
 
     public void debug(String msg) {
-        LOG.debug(msg);
+        logger.debug(msg);
     }
 
     public void debug(String message, Object...args) {
         if (args.length > 0) {
-            LOG.debug(MessageFormat.format(message, args));
+            logger.debug(MessageFormat.format(message, args));
         } else {
-            LOG.debug(message);
+            logger.debug(message);
         }
     }
 
     public void debug(ActionMessages code, Object...args) {
-        LOG.debug(code.getCode() + ":" + code.getMessage(lang, args));
+        logger.debug(code.getCode() + ":" + code.getMessage(lang, args));
     }
 
     public void info(ActionMessages code, Object...args) {
-        LOG.info(code.getCode() + ":" + code.getMessage(lang, args));
+        logger.info(code.getCode() + ":" + code.getMessage(lang, args));
     }
 
     public void info(String message, Object...args) {
-        LOG.info(MessageFormat.format(message, args));
+        logger.info(MessageFormat.format(message, args));
     }
 
     public void warn(ActionMessages code, Object...args) {
-        LOG.warn(code.getCode() + ":" + code.getMessage(lang, args));
+        logger.warn(code.getCode() + ":" + code.getMessage(lang, args));
     }
 
     public void warn(ActionMessages code, Throwable th, Object...args) {
-        LOG.warn(code.getCode() + ":" + code.getMessage(lang, args), th);
+        logger.warn(code.getCode() + ":" + code.getMessage(lang, args), th);
     }
 
     public String error(ActionMessages code, Object...args) {
         String msg = code.getCode() + ":" + code.getMessage(lang, args);
-        LOG.error(msg);
+        logger.error(msg);
         return msg;
     }
 
     public String error(ActionMessages code, Throwable th, Object...args) {
         String msg = code.getCode() + ":" + code.getMessage(lang, args);
-        LOG.error(msg, th);
+        logger.error(msg, th);
         return msg;
     }
 
     public String error(String message, Throwable th, Object...args) {
-        LOG.error(message, th);
+        logger.error(message, th);
         return message;
     }
 }

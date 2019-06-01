@@ -15,22 +15,21 @@
  */
 package com.shorindo.docs.outlogger;
 
-import static com.shorindo.docs.database.DatabaseMessages.*;
+import static com.shorindo.docs.repository.DatabaseMessages.*;
 
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXB;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.DatabaseService;
+import com.shorindo.docs.DocumentService;
+import com.shorindo.docs.repository.DatabaseException;
 
 /**
  * 
  */
-public class OutloggerService {
+public class OutloggerService extends DocumentService {
     private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerService.class);
-    private static final DatabaseService databaseService = DatabaseService.getInstance();
 
     /*==========================================================================
      * 初期設定
@@ -38,7 +37,7 @@ public class OutloggerService {
     public void createSchema() throws DatabaseException {
         try {
             OutloggerEntity entity = new OutloggerEntity();
-            databaseService.createTableFromSchema(entity.getTableSchema());
+            repositoryService.createTableFromSchema(entity.getTableSchema());
             LOG.info(DBMS_5127, entity.getClass().getName());
         } catch (DatabaseException e) {
             LOG.warn(DBMS_5128, e, OutloggerEntity.class.getName());

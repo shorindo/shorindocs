@@ -21,7 +21,6 @@ import com.shorindo.docs.DocumentMessages;
 import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
-import com.shorindo.docs.database.DatabaseService;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
@@ -33,7 +32,6 @@ import com.shorindo.xuml.XumlView;
 @ContentTypeReady("text/plain")
 public class PlainTextController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(PlainTextController.class);
-    private static final DatabaseService databaseService = DatabaseService.getInstance();
 
     public PlainTextController() {
     }

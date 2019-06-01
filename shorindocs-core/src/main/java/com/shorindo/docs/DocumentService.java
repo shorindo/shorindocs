@@ -18,18 +18,17 @@ package com.shorindo.docs;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.DatabaseSchema;
-import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.repository.Repository;
+import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.DatabaseSchema;
+import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceFactory;
 
 /**
  * 
  */
 public class DocumentService {
     private static ActionLogger LOG = ActionLogger.getLogger(DocumentService.class);
-    private DatabaseService databaseService = BeanManager.inject(DatabaseService.class);
-    private Repository repository = BeanManager.inject(Repository.class);
+    protected RepositoryService repositoryService = RepositoryServiceFactory.repositoryService();
 
     /**
      * 
@@ -42,9 +41,9 @@ public class DocumentService {
         LOG.debug(dsdlName);
         InputStream is = getClass().getResourceAsStream(dsdlName);
         try {
-            DatabaseSchema schema = databaseService.loadSchema(is);
+            DatabaseSchema schema = repositoryService.loadSchema(is);
             for (DatabaseSchema.Entity e : schema.getEntityList()) {
-                String ddl = databaseService.generateDDL((DatabaseSchema.Table)e);
+                String ddl = repositoryService.generateDDL((DatabaseSchema.Table)e);
                 LOG.info(ddl);
             }
         } catch (DatabaseException e) {

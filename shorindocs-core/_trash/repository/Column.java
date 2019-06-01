@@ -13,30 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
+package com.shorindo.docs.repository;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 
  */
-public abstract class Transactionless<T> extends DatabaseExecutor<T> {
-
-    @Override
-    public void beginTransaction(Connection conn) throws DatabaseException {
-        try {
-            conn.setAutoCommit(true);
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
-    }
-
-    @Override
-    public void commitTransaction(Connection conn) throws DatabaseException {
-    }
-
-    @Override
-    public void rollbackTransaction(Connection conn) throws DatabaseException {
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Column {
+    String value() default "";
+    String name();
+    String typeName();
+    int size() default 0;
+    int precision() default 0;
+    boolean unique() default false;
+    boolean notNull() default true;
+    int primaryKey() default 0;
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
+package com.shorindo.docs.repository;
 
 import java.text.MessageFormat;
 import java.util.Locale;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Shorindo, Inc.
+ * Copyright 2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.repository;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * 
  */
-public class DocsServiceTest {
-
-    private DocumentService docService = DocumentServiceFactory.documentService();
-
-    @Test
-    public void sampleTest() throws Exception {
-        assertEquals("docs", docService.get("aaa"));
-    }
+public interface SchemaType {
+    public String getColumnName();
+    public String getType();
+    public int getSize();
+    public int getPrecision();
+    public int getPrimary();
+    public boolean isNotNull();
+    public boolean isUnique();
+    public Object getDefault();
+    public Field getField();
+    public Method getSetMethod();
+    public Method getGetMethod();
 }

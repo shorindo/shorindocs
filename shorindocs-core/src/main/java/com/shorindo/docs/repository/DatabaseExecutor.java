@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
+package com.shorindo.docs.repository;
 
-import static com.shorindo.docs.database.DatabaseMessages.*;
+import static com.shorindo.docs.repository.DatabaseMessages.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

@@ -17,12 +17,9 @@ package com.shorindo.dataflow;
 
 import java.io.InputStream;
 
-import org.springframework.stereotype.Component;
-
 /**
  * 
  */
-@Component
 public class FlowEngineImpl implements FlowEngine {
 
     @Override

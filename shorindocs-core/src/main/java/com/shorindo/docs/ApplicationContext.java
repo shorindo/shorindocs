@@ -30,6 +30,9 @@ public class ApplicationContext {
     public static final String WEB_INF_CLASSES = "/WEB-INF/classes";
     public static final String WEB_INF_LIB = "/WEB-INF/lib";
 
+    protected ApplicationContext() {
+    }
+
     public static void loadProperties(InputStream is) {
         try {
             props.load(is);

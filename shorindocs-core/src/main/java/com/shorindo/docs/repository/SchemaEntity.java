@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
+package com.shorindo.docs.repository;
 
-import static com.shorindo.docs.database.DatabaseMessages.*;
+import static com.shorindo.docs.repository.DatabaseMessages.*;
 
 import java.lang.reflect.Field;
 import java.util.Locale;
@@ -42,23 +42,6 @@ public abstract class SchemaEntity {
             throw new DatabaseException(DBMS_5125);
         }
     }
-
-//    public final void setByName(String name, Object value) throws DatabaseException {
-//        if (type != null) {
-//            try {
-//                Method method = type.getSetMethod();
-//                method.invoke(this, value);
-//            } catch (IllegalAccessException e) {
-//                throw new DatabaseException(e);
-//            } catch (IllegalArgumentException e) {
-//                throw new DatabaseException(e);
-//            } catch (InvocationTargetException e) {
-//                throw new DatabaseException(e);
-//            }
-//        } else {
-//            throw new DatabaseException(DocsMessages.E_5124.getMessage(name));
-//        }
-//    }
 
     public final void validate() throws DatabaseException {
         int count = 0;

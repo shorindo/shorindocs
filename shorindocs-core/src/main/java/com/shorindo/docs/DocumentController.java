@@ -24,11 +24,12 @@ import java.util.List;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.entity.UserEntity;
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.DatabaseExecutor;
-import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.database.Transactional;
-import com.shorindo.docs.database.Transactionless;
+import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.DatabaseExecutor;
+import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceFactory;
+import com.shorindo.docs.repository.Transactional;
+import com.shorindo.docs.repository.Transactionless;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
@@ -38,7 +39,7 @@ import com.shorindo.docs.view.View;
  */
 public abstract class DocumentController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentController.class);
-    private static final DatabaseService databaseService = DatabaseService.getInstance();
+    private static final RepositoryService repositoryService = RepositoryServiceFactory.repositoryService();
     private DocumentEntity model;
 
     public static void setup(List<Class<?>> clazzList) {
@@ -67,7 +68,7 @@ public abstract class DocumentController extends ActionController {
         model.setContent(context.getParameter("body"));
         String id = model.getDocumentId();
         try {
-            int result = databaseService.provide(UPDATE_EXEC, model, context.getUser());
+            int result = repositoryService.provide(UPDATE_EXEC, model, context.getUser());
             if (result > 0) {
                 return new RedirectView(id + "?action=view", context);
             } else {
@@ -117,7 +118,7 @@ public abstract class DocumentController extends ActionController {
             model.setTitle(context.getParameter("title"));
             model.setContent(context.getParameter("body"));
 
-            if (databaseService.provide(CREATE_EXEC, model, context.getUser()) >= 0) {
+            if (repositoryService.provide(CREATE_EXEC, model, context.getUser()) >= 0) {
                 return new RedirectView(id + "?action=edit", context);
             } else {
                 return new ErrorView(404);
@@ -166,7 +167,7 @@ public abstract class DocumentController extends ActionController {
             return new RedirectView("/index", context);
         } else {
             try {
-                if (databaseService.provide(REMOVE_EXEC, model) > 0) {
+                if (repositoryService.provide(REMOVE_EXEC, model) > 0) {
                     return new RedirectView("/index", context);
                 } else {
                     LOG.error(DOCS_9003, id);
@@ -197,7 +198,7 @@ public abstract class DocumentController extends ActionController {
      * @throws SQLException
      */
     protected List<DocumentEntity> recents() throws DatabaseException {
-        return databaseService.provide(RECENTS_EXEC);
+        return repositoryService.provide(RECENTS_EXEC);
     }
 
     /*

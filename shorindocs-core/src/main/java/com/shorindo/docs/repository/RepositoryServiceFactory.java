@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2019 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.shorindo.docs.repository;
 
 /**
  * 
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Column {
-    String value() default "";
-    String name();
-    String typeName();
-    int size() default 0;
-    int precision() default 0;
-    boolean unique() default false;
-    boolean notNull() default true;
-    int primaryKey() default 0;
+public class RepositoryServiceFactory {
+    private static RepositoryService repositoryService;
+
+    public static synchronized RepositoryService repositoryService() {
+        if (repositoryService == null) {
+            repositoryService = new RepositoryService();
+        }
+        return repositoryService;
+    }
 }

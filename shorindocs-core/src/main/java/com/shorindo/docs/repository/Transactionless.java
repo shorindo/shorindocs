@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
+package com.shorindo.docs.repository;
 
-import static com.shorindo.docs.database.DatabaseMessages.*;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import com.shorindo.docs.ActionLogger;
 
 /**
  * 
  */
-public abstract class Transactional<T> extends DatabaseExecutor<T> {
-    private static final ActionLogger LOG = ActionLogger.getLogger(Transactional.class);
+public abstract class Transactionless<T> extends DatabaseExecutor<T> {
 
     @Override
     public void beginTransaction(Connection conn) throws DatabaseException {
         try {
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(true);
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
@@ -38,21 +34,9 @@ public abstract class Transactional<T> extends DatabaseExecutor<T> {
 
     @Override
     public void commitTransaction(Connection conn) throws DatabaseException {
-        LOG.debug(DBMS_1102);
-        try {
-            conn.commit();
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
     }
 
     @Override
     public void rollbackTransaction(Connection conn) throws DatabaseException {
-        LOG.info(DBMS_1103);
-        try {
-            conn.rollback();
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
     }
 }

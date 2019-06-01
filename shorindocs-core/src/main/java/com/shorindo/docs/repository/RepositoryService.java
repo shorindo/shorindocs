@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
+package com.shorindo.docs.repository;
 
-import static com.shorindo.docs.database.DatabaseMessages.*;
+import static com.shorindo.docs.repository.DatabaseMessages.*;
 
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -39,24 +41,21 @@ import org.apache.commons.dbcp2.BasicDataSourceFactory;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.repository.DatabaseExecutor.ColumnMapping;
+import com.shorindo.docs.repository.DatabaseExecutor.EntityMapping;
 
 /**
  * 
  */
-public class DatabaseService {
-    private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseService.class);
+public class RepositoryService {
+    private static final ActionLogger LOG = ActionLogger.getLogger(RepositoryService.class);
     private static final Locale LANG = ApplicationContext.getLang();
-    private static final DatabaseService service = new DatabaseService();
     private DataSource dataSource;
-
-    public static synchronized DatabaseService getInstance() {
-        return service;
-    }
 
     /**
      * 
      */
-    protected DatabaseService() {
+    protected RepositoryService() {
         try {
             Properties props = new Properties();
             props.setProperty("driverClassName", ApplicationContext.getProperty("datasource.driverClassName"));
@@ -302,4 +301,83 @@ public class DatabaseService {
 //            }
 //        }
 //    }
+
+    public int put(SchemaEntity entity) {
+        int result = 0;
+        result = update(entity);
+        if (result > 0) {
+            return result;
+        } else {
+            return insert(entity);
+        }
+    }
+
+    private int insert(SchemaEntity entity) throws DatabaseException {
+        Connection conn;
+        EntityMapping mapping = bind(conn, entity);
+        LOG.debug(DBMS_0007, mapping.getInsertSql());
+        PreparedStatement stmt = null;
+        int index = 1;
+        try {
+            stmt = conn.prepareStatement(mapping.getInsertSql());
+            for (ColumnMapping columnMapping : mapping.getColumns()) {
+                index = applySetMethod(stmt, entity, columnMapping, index);
+            }
+            return stmt.executeUpdate();
+        } catch (IllegalAccessException e) {
+            throw new DatabaseException(e);
+        } catch (IllegalArgumentException e) {
+            throw new DatabaseException(e);
+        } catch (InvocationTargetException e) {
+            throw new DatabaseException(e);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        } finally {
+            dispose(stmt);
+        }
+    }
+
+    private int update(SchemaEntity entity) throws DatabaseException {
+        Connection conn;
+        EntityMapping mapping = bind(conn, entity);
+        LOG.debug(DBMS_0009, mapping.getUpdateSql());
+        PreparedStatement stmt = null;
+        int index = 1;
+        try {
+            stmt = conn.prepareStatement(mapping.getUpdateSql());
+            for (ColumnMapping columnMapping : mapping.getColumns()) {
+                if (columnMapping.getPrimaryKey() <= 0) {
+                    index = applySetMethod(stmt, entity, columnMapping, index);
+                }
+            }
+            for (ColumnMapping columnMapping : mapping.getColumns()) {
+                if (columnMapping.getPrimaryKey() > 0) {
+                    index = applySetMethod(stmt, entity, columnMapping, index);
+                }
+            }
+            return stmt.executeUpdate();
+        } catch (IllegalAccessException e) {
+            throw new DatabaseException(e);
+        } catch (IllegalArgumentException e) {
+            throw new DatabaseException(e);
+        } catch (InvocationTargetException e) {
+            throw new DatabaseException(e);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        } finally {
+            dispose(stmt);
+        }
+    }
+
+    public <T extends SchemaEntity> T get(T key) {
+        return null;
+    }
+
+    public <T extends SchemaEntity> T remove(T key) {
+        return null;
+    }
+
+    public <T extends SchemaEntity> List<T> search(Class<T> clazz) {
+        return null;
+    }
 }

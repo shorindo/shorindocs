@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.database;
+package com.shorindo.docs.repository;
 
 import static org.junit.Assert.*;
 
@@ -30,27 +30,26 @@ import org.junit.runners.MethodSorters;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
-//import com.shorindo.docs.auth.AuthenticateController;
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.DatabaseSchema;
-import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.database.Transactional;
-import com.shorindo.docs.database.Transactionless;
+import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceFactory;
+import com.shorindo.docs.repository.Transactional;
+import com.shorindo.docs.repository.Transactionless;
 
 /**
  * 
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class DatabaseServiceTest {
-    private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseServiceTest.class);
-    private static DatabaseService service;
+public class RepositoryServiceTest {
+    private static final ActionLogger LOG = ActionLogger.getLogger(RepositoryServiceTest.class);
+    private static RepositoryService service;
     
     @BeforeClass
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
         ApplicationContext.loadProperties(is);
         
-        service = DatabaseService.getInstance();
+        service = RepositoryServiceFactory.repositoryService();
         service.provide(new Transactionless<Integer>() {
             @Override
             public Integer run(Connection conn, Object...params) throws DatabaseException {
@@ -115,10 +114,13 @@ public class DatabaseServiceTest {
             @Override
             public Integer run(Connection conn, Object...params) throws DatabaseException {
                 SampleEntity e = generateSampleEntity();
-                return put(e); 
+                return put(e);
             }
         });
         assertEquals(1, result);
+
+        SampleEntity entity = new SampleEntity();
+        entity = service.put(entity);
     }
 
     @Test

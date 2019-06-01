@@ -18,8 +18,8 @@ package com.shorindo.docs.entity;
 import java.util.Date;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.Table;
+import com.shorindo.docs.repository.SchemaEntity;
+import com.shorindo.docs.repository.Table;
 
 /**
  * 

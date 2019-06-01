@@ -38,7 +38,7 @@ public class AuthenticateServiceTest {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
         try {
             ApplicationContext.loadProperties(is);
-            authenticateService = AuthenticateService.getInstance();
+            authenticateService = AuthenticateServiceFactory.authenticateService();
         } finally {
             is.close();
         }

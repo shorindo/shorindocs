@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs.auth;
 
-import static com.shorindo.docs.database.DatabaseMessages.*;
+import static com.shorindo.docs.repository.DatabaseMessages.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,36 +23,30 @@ import java.sql.Connection;
 import java.util.List;
 
 import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.DocumentService;
 import com.shorindo.docs.auth.entity.SessionEntity;
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.DatabaseExecutor;
-import com.shorindo.docs.database.DatabaseSchema;
-import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.database.Transactional;
 import com.shorindo.docs.entity.GroupEntity;
 import com.shorindo.docs.entity.UserEntity;
+import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.DatabaseExecutor;
+import com.shorindo.docs.repository.DatabaseSchema;
+import com.shorindo.docs.repository.Transactional;
 
 /**
  * 
  */
-public class AuthenticateService {
+public class AuthenticateService extends DocumentService {
     private static final ActionLogger LOG = ActionLogger.getLogger(AuthenticateService.class);
-    private static final DatabaseService databaseService = DatabaseService.getInstance();
-    private static final AuthenticateService authenticateService = new AuthenticateService();
 
-    public static AuthenticateService getInstance() {
-        return authenticateService;
-    }
-
-    private AuthenticateService() {
+    protected AuthenticateService() {
         validate();
     }
 
     public void validate() {
         InputStream is = getClass().getResourceAsStream("AuthenticateService.dsdl");
         try {
-            DatabaseSchema schema = databaseService.loadSchema(is);
-            databaseService.validateSchema(schema);
+            DatabaseSchema schema = repositoryService.loadSchema(is);
+            repositoryService.validateSchema(schema);
         } catch (DatabaseException e) {
             LOG.error(DBMS_5123);
         } finally {
@@ -63,23 +57,6 @@ public class AuthenticateService {
             }
         }
     }
-
-//    private void doDDL(DatabaseSchema.Table entity) {
-//        String tableName = entity.getName();
-//        try {
-//            final String ddl = databaseService.generateDDL((DatabaseSchema.Table)entity);
-//            LOG.debug("doDDL => " + ddl);
-//            databaseService.provide(new Transactionless<Integer>() {
-//                @Override
-//                public Integer run(Connection conn, Object...params) throws DatabaseException {
-//                    return exec(ddl);
-//                }
-//            
-//            }, ddl);
-//        } catch (DatabaseException e) {
-//            LOG.error(DOCS_5121, e, tableName);
-//        }
-//    }
 
     /*
      * 
@@ -114,7 +91,7 @@ public class AuthenticateService {
      */
     public SessionEntity login(String userId, String password) throws AuthenticateException {
         try {
-            return databaseService.provide(LOGIN_EXEC, userId, password);
+            return repositoryService.provide(LOGIN_EXEC, userId, password);
         } catch (DatabaseException e) {
             throw new AuthenticateException(e);
         }
@@ -147,7 +124,4 @@ public class AuthenticateService {
         return null;
     }
 
-    private String hashHash(String seed, String text) {
-        return null;
-    }
 }

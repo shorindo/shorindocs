@@ -24,7 +24,7 @@ import com.shorindo.docs.view.View;
  */
 public class AuthenticateController extends ActionController {
     @SuppressWarnings("unused")
-    private static AuthenticateService service = AuthenticateService.getInstance();
+    private static AuthenticateService service = AuthenticateServiceFactory.authenticateService();
 
     /**
      * 

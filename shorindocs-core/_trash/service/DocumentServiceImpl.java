@@ -17,11 +17,6 @@ package com.shorindo.docs.service;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.entity.UserEntity;
 import com.shorindo.docs.repository.DocumentRepository;
@@ -29,34 +24,29 @@ import com.shorindo.docs.repository.DocumentRepository;
 /**
  * 
  */
-@Service
-@Transactional
 public class DocumentServiceImpl implements DocumentService {
 
-    @Autowired
     DocumentRepository repository;
 
     @Override
     public void put(UserEntity context, DocumentEntity entity) {
-        // TODO Auto-generated method stub
-        repository.save(entity);
+        //repository.save(entity);
     }
 
     @Override
     public DocumentEntity get(UserEntity user, String docId) {
-        // TODO Auto-generated method stub
-        return repository.getOne(docId);
+        //return repository.getOne(docId);
+        return null;
     }
 
     @Override
     public void remove(UserEntity user, String docId) {
-        // TODO Auto-generated method stub
-        repository.deleteById(docId);
+        //repository.deleteById(docId);
     }
 
     @Override
     public List<DocumentEntity> search(UserEntity user) {
-        // TODO Auto-generated method stub
-        return repository.findAll();
+        //return repository.findAll();
+        return null;
     }
 }

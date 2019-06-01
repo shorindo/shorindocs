@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.repository;
-
-
-import com.shorindo.docs.entity.DocumentEntity;
-
-import org.springframework.data.jpa.repository.JpaRepository;
+package com.shorindo.dataflow;
 
 /**
  * 
  */
-public interface DocumentRepository extends JpaRepository<DocumentEntity,String> {
+public abstract class FlowServiceFactory {
+    private static FlowEngine flowEngine;
 
+    public static synchronized FlowEngine flowEngine() {
+        return flowEngine;
+    }
 }

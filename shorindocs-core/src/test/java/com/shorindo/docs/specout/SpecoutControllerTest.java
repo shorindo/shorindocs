@@ -29,10 +29,11 @@ import org.junit.Test;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.database.Transactional;
 import com.shorindo.docs.entity.DocumentEntity;
+import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceFactory;
+import com.shorindo.docs.repository.Transactional;
 import com.shorindo.docs.specout.SpecoutController;
 
 /**
@@ -40,13 +41,12 @@ import com.shorindo.docs.specout.SpecoutController;
  */
 public class SpecoutControllerTest {
     private static final ActionLogger LOG = ActionLogger.getLogger(SpecoutControllerTest.class);
-    private static DatabaseService databaseService;
+    private static RepositoryService databaseService = RepositoryServiceFactory.repositoryService();
     
     @BeforeClass
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
         ApplicationContext.loadProperties(is);
-        databaseService = DatabaseService.getInstance();
     }
 
     @Test

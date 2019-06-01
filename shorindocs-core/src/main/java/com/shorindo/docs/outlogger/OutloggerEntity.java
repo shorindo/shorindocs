@@ -15,10 +15,10 @@
  */
 package com.shorindo.docs.outlogger;
 
-import com.shorindo.docs.database.Column;
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.SchemaEntity;
-import com.shorindo.docs.database.Table;
+import com.shorindo.docs.repository.Column;
+import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.SchemaEntity;
+import com.shorindo.docs.repository.Table;
 
 /**
  * 

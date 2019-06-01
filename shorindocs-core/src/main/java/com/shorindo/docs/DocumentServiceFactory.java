@@ -15,29 +15,24 @@
  */
 package com.shorindo.docs;
 
-import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.repository.Repository;
-
 /**
  * 
  */
 public abstract class DocumentServiceFactory {
-    private DocumentService documentService;
-    private DatabaseService databaseService;
-    private Repository repository;
+    private static DocumentService documentService;
+    private static ApplicationContext applicationContext;
 
-
-    public synchronized DocumentService getDocumentService() {
+    public static synchronized DocumentService documentService() {
         if (documentService == null) {
             documentService = new DocumentService();
         }
         return documentService;
     }
-    
-    public synchronized DatabaseService getDatabaseService() {
-        if (databaseService == null) {
-            databaseService = new DatabaseService();
+
+    public static synchronized ApplicationContext applicationContext() {
+        if (applicationContext == null) {
+            applicationContext = new ApplicationContext();
         }
-        return databaseService;
+        return applicationContext;
     }
 }

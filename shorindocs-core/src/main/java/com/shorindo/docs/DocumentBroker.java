@@ -20,11 +20,12 @@ import static com.shorindo.docs.DocumentMessages.*;
 import java.sql.Connection;
 
 import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.database.DatabaseException;
-import com.shorindo.docs.database.DatabaseExecutor;
-import com.shorindo.docs.database.DatabaseService;
-import com.shorindo.docs.database.Transactionless;
 import com.shorindo.docs.entity.DocumentEntity;
+import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.DatabaseExecutor;
+import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceFactory;
+import com.shorindo.docs.repository.Transactionless;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 
@@ -34,7 +35,7 @@ import com.shorindo.docs.view.View;
 @ActionMapping("/*")
 public final class DocumentBroker extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentBroker.class);
-    private static final DatabaseService databaseService = DatabaseService.getInstance();
+    private static final RepositoryService repositoryService = RepositoryServiceFactory.repositoryService();
 
     public static ActionController getController(DocumentEntity model) throws DocumentException {
         try {
@@ -46,7 +47,7 @@ public final class DocumentBroker extends ActionController {
     }
 
     public static DocumentEntity getDocumentModel(String id) throws DatabaseException {
-        return databaseService.provide(GET_DOCUMENT_EXEC, id);
+        return repositoryService.provide(GET_DOCUMENT_EXEC, id);
     }
 
     private static DatabaseExecutor<DocumentEntity> GET_DOCUMENT_EXEC =
