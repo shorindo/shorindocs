@@ -28,7 +28,6 @@ import com.shorindo.docs.auth.entity.SessionEntity;
 import com.shorindo.docs.entity.GroupEntity;
 import com.shorindo.docs.entity.UserEntity;
 import com.shorindo.docs.repository.DatabaseException;
-import com.shorindo.docs.repository.DatabaseExecutor;
 import com.shorindo.docs.repository.DatabaseSchema;
 import com.shorindo.docs.repository.Transactional;
 
@@ -58,30 +57,6 @@ public class AuthenticateService extends DocumentService {
         }
     }
 
-    /*
-     * 
-     */
-    private static final DatabaseExecutor<SessionEntity> LOGIN_EXEC = new Transactional<SessionEntity>() {
-        @Override
-        public SessionEntity run(Connection conn, Object... params)
-                throws DatabaseException {
-            String userId = (String)params[0];
-            String password = (String)params[1];
-
-            UserEntity user = new UserEntity();
-            user.setUserId(userId);
-            user = get(user);
-            if (user == null) {
-                throw new DatabaseException();
-            }
-
-            List<GroupEntity> groupList = query("SELECT * FROM AUTH_GROUP WHERE USER_ID=?",
-                    GroupEntity.class,
-                    user.getUserId());
-            return null;
-        }
-    };
-
     /**
      * 
      * @param userId
@@ -91,7 +66,18 @@ public class AuthenticateService extends DocumentService {
      */
     public SessionEntity login(String userId, String password) throws AuthenticateException {
         try {
-            return repositoryService.provide(LOGIN_EXEC, userId, password);
+            UserEntity user = new UserEntity();
+            user.setUserId(userId);
+            user = repositoryService.get(user);
+            if (user == null) {
+                throw new DatabaseException();
+            }
+
+            List<GroupEntity> groupList = repositoryService.query(
+                    "SELECT * FROM AUTH_GROUP WHERE USER_ID=?",
+                    GroupEntity.class,
+                    user.getUserId());
+            return null; // FIXME
         } catch (DatabaseException e) {
             throw new AuthenticateException(e);
         }

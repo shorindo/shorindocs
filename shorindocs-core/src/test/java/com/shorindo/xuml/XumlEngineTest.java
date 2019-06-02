@@ -38,7 +38,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import nu.validator.htmlparser.dom.HtmlDocumentBuilder;
+//import nu.validator.htmlparser.dom.HtmlDocumentBuilder;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -125,13 +125,14 @@ public class XumlEngineTest {
     }
 
     private Document parseHtml(String html) throws SAXException, IOException {
-        HtmlDocumentBuilder builder = new HtmlDocumentBuilder();
-        Reader reader = new StringReader(html);
-        try {
-            return builder.parse(new InputSource(reader));
-        } finally {
-            reader.close();
-        }
+//        HtmlDocumentBuilder builder = new HtmlDocumentBuilder();
+//        Reader reader = new StringReader(html);
+//        try {
+//            return builder.parse(new InputSource(reader));
+//        } finally {
+//            reader.close();
+//        }
+        return null;
     }
 
     private String getMethodName() {

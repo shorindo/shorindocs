@@ -42,15 +42,15 @@ import com.shorindo.docs.repository.Transactionless;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RepositoryServiceTest {
     private static final ActionLogger LOG = ActionLogger.getLogger(RepositoryServiceTest.class);
-    private static RepositoryService service;
+    private static RepositoryService repositoryService;
     
     @BeforeClass
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
         ApplicationContext.loadProperties(is);
         
-        service = RepositoryServiceFactory.repositoryService();
-        service.provide(new Transactionless<Integer>() {
+        repositoryService = RepositoryServiceFactory.repositoryService();
+        repositoryService.provide(new Transactionless<Integer>() {
             @Override
             public Integer run(Connection conn, Object...params) throws DatabaseException {
                 exec("DROP TABLE IF EXISTS SAMPLE");
@@ -69,7 +69,7 @@ public class RepositoryServiceTest {
 
     @AfterClass
     public static void tearDownAfter() throws Exception {
-                service.provide(new Transactionless<Integer>() {
+                repositoryService.provide(new Transactionless<Integer>() {
             @Override
             public Integer run(Connection conn, Object...params) throws DatabaseException {
                 exec("DROP TABLE SAMPLE");
@@ -81,7 +81,7 @@ public class RepositoryServiceTest {
     @Test
     public void testTransactional() throws Exception {
         long st = System.currentTimeMillis();
-        SampleEntity result = service.provide(new Transactional<SampleEntity>() {
+        SampleEntity result = repositoryService.provide(new Transactional<SampleEntity>() {
             @Override
             public SampleEntity run(Connection conn, Object...params) throws DatabaseException {
                 exec("INSERT INTO SAMPLE VALUES('BAR', 123, 123.456, '1970/01/01 12:34:56')");
@@ -105,56 +105,38 @@ public class RepositoryServiceTest {
 
     @Test
     public void testTransactionless() throws Exception {
-        assertEquals(123, (int)service.provide(TL));
+        assertEquals(123, (int)repositoryService.provide(TL));
     }
 
     @Test
     public void testPut() throws Exception {
-        int result = service.provide(new Transactional<Integer>() {
-            @Override
-            public Integer run(Connection conn, Object...params) throws DatabaseException {
-                SampleEntity e = generateSampleEntity();
-                return put(e);
-            }
-        });
+        SampleEntity e = generateSampleEntity();
+        int result = repositoryService.put(e);
         assertEquals(1, result);
-
-        SampleEntity entity = new SampleEntity();
-        entity = service.put(entity);
     }
 
     @Test
     public void testGet() throws Exception {
-        SampleEntity e = service.provide(new Transactional<SampleEntity>() {
-            @Override
-            public SampleEntity run(Connection conn, Object...params) throws DatabaseException {
-                SampleEntity e = generateSampleEntity();
-                put(e);
-                return get(e);
-            }
-        });
-        assertEquals("stringValue", e.getStringValue());
-        assertEquals(123, (int)e.getIntValue());
+        SampleEntity expect = generateSampleEntity();
+        repositoryService.put(expect);
+        SampleEntity actual = repositoryService.get(expect);
+        assertEquals("stringValue", actual.getStringValue());
+        assertEquals(123, (int)actual.getIntValue());
     }
 
     @Test
     public void testRemove() throws Exception {
-        SampleEntity e = service.provide(new Transactional<SampleEntity>() {
-            @Override
-            public SampleEntity run(Connection conn, Object...params) throws DatabaseException {
-                SampleEntity e = generateSampleEntity();
-                put(e);
-                assertNotNull(get(e));
-                remove(e);
-                return get(e);
-            }
-        });
-        assertNull(e);
+        SampleEntity expect = generateSampleEntity();
+        repositoryService.put(expect);
+        int result = repositoryService.remove(expect);
+        assertEquals(1, result);
+        SampleEntity actual = repositoryService.get(expect);
+        assertNull(actual);
     }
 
     @Test
     public void testLoadTables() throws Exception {
-        service.loadTables();
+        repositoryService.loadTables();
     }
 
 //    @Test

@@ -46,7 +46,7 @@ import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.IdentityProvider;
 
 /**
- * 
+ * @deprecated RespositoryServiceに移管する
  */
 public abstract class DatabaseExecutor<T> {
     private static final ActionLogger LOG = ActionLogger.getLogger(DatabaseExecutor.class);
@@ -142,16 +142,6 @@ public abstract class DatabaseExecutor<T> {
         LOG.debug(DBMS_0004, (System.currentTimeMillis() - st) + " ms");
         return resultList;
     }
-
-//    private void setParam(PreparedStatement stmt, int index, Object param) throws SQLException {
-//        if (param == null) {
-//            stmt.setObject(index, null);
-//        }
-//    }
-//    private void getResult(ResultSet rset, int index, Class<?> paramClass) throws SQLException {
-//        rset.getObject(index);
-//        rset.wasNull();
-//    }
 
     /**
      * 
@@ -501,133 +491,6 @@ public abstract class DatabaseExecutor<T> {
         field.setAccessible(true);
         field.set(entity, getMethod.invoke(rset, index));
     }
-
-//    protected StatementCache getInsertCache(Connection conn, SchemaEntity entity) throws SQLException {
-//        StatementCache stmtCache = new StatementCache();
-//        StringBuilder sb = new StringBuilder("INSERT INTO " + entity.getEntityName() + "(");
-//
-//        DatabaseMetaData meta = conn.getMetaData();
-//        ResultSet columnSet = null;
-//        try {
-//            columnSet = meta.getColumns(null, null, entity.getEntityName(), null);
-//            List<String> columnList = new ArrayList<String>();
-//            List<String> holderList = new ArrayList<String>();
-//            String sep = "";
-//            while (columnSet.next()) {
-//                String columnName = columnSet.getString("COLUMN_NAME");
-//                sb.append(sep);
-//                sb.append(columnName);
-//                columnList.add(columnName);
-//                holderList.add("?");
-//                sep = ",";
-//            }
-//            sb.append(") VALUES (");
-//            sep = "";
-//            for (String holder : holderList) {
-//                sb.append(sep);
-//                sb.append(holder);
-//                sep = ",";
-//            }
-//            sb.append(")");
-//            stmtCache.setSQL(sb.toString());
-//            //LOG.debug("INSERT_STATEMENT=" + sb.toString());
-//
-//            // フィールドの一覧取得
-//            Map<String,Field> fieldMap = new TreeMap<String,Field>();
-//            for (Field field : entity.getClass().getDeclaredFields()) {
-//                Column column = field.getAnnotation(Column.class);
-//                if (column != null) {
-//                    //LOG.debug(field + "=" + column);
-//                    fieldMap.put(column.value(), field);
-//                    field.setAccessible(true);
-//                }
-//            }
-//
-//            // Columnアノテーションがセットされてければnull
-//            for (String column : columnList) {
-//                //LOG.debug("column=" + column);
-//                Field field = fieldMap.get(column);
-//                stmtCache.addField(field);
-//            }
-//        } catch (SecurityException e) {
-//            LOG.error(E_5111, e);
-//        } finally {
-//            finalize(columnSet);
-//        }
-//
-//        return stmtCache;
-//    }
-
-//    protected StatementCache getUpdateCache(Connection conn, SchemaEntity entity) throws SQLException {
-//        StatementCache stmtCache = new StatementCache();
-//        StringBuilder sb = new StringBuilder("UPDATE " + entity.getEntityName() + " SET ");
-//
-//        DatabaseMetaData meta = conn.getMetaData();
-//        ResultSet primarySet = null;
-//        ResultSet columnSet = null;
-//        try {
-//            primarySet = meta.getPrimaryKeys(null, null, entity.getEntityName());
-//            Map<Integer,String> primaryList = new TreeMap<Integer,String>();
-//            while (primarySet.next()) {
-//                String columnName = primarySet.getString("COLUMN_NAME");
-//                int seq = primarySet.getInt("KEY_SEQ");
-//                primaryList.put(seq, columnName);
-//            }
-//
-//            String sep = "";
-//            StringBuilder whereClause = new StringBuilder(" WHERE ");
-//            for (Entry<Integer,String> entry : primaryList.entrySet()) {
-//                whereClause.append(sep + entry.getValue() + "=?");
-//                sep = " AND ";
-//            }
-//
-//            columnSet = meta.getColumns(null, null, entity.getEntityName(), null);
-//            List<String> columnList = new ArrayList<String>();
-//            sep = "";
-//            StringBuilder setClause = new StringBuilder();
-//            while (columnSet.next()) {
-//                String columnName = columnSet.getString("COLUMN_NAME");
-//                if (!primaryList.containsValue(columnName)) {
-//                    sb.append(sep + columnName + "=?");
-//                    columnList.add(columnName);
-//                    sep = ", ";
-//                }
-//            }
-//            sb.append(setClause.toString());
-//            sb.append(whereClause.toString());
-//            stmtCache.setSQL(sb.toString());
-//            //LOG.debug("UPDATE_STATEMENT=" + sb.toString());
-//
-//            // フィールドの一覧取得
-//            Map<String,Field> fieldMap = new TreeMap<String,Field>();
-//            for (Field field : entity.getClass().getDeclaredFields()) {
-//                Column column = field.getAnnotation(Column.class);
-//                if (column != null) {
-//                    //LOG.debug(field + "=" + column);
-//                    fieldMap.put(column.value(), field);
-//                    field.setAccessible(true);
-//                }
-//            }
-//
-//            // Columnアノテーションがセットされてければnull
-//            for (String column : columnList) {
-//                //LOG.debug("column=" + column);
-//                Field field = fieldMap.get(column);
-//                stmtCache.addField(field);
-//            }
-//            for (int key : primaryList.keySet()) {
-//                Field field = fieldMap.get(primaryList.get(key));
-//                stmtCache.addPrimary(field);
-//            }
-//        } catch (SecurityException e) {
-//            LOG.error(E_5111, e);
-//        } finally {
-//            finalize(primarySet);
-//            finalize(columnSet);
-//        }
-//
-//        return stmtCache;
-//    }
 
     @SuppressWarnings("resource")
     private EntityMapping bind(Connection conn, SchemaEntity entity) throws DatabaseException {

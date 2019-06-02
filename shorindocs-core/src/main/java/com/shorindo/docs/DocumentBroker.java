@@ -22,7 +22,6 @@ import java.sql.Connection;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;
-import com.shorindo.docs.repository.DatabaseExecutor;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceFactory;
 import com.shorindo.docs.repository.Transactionless;
@@ -47,18 +46,20 @@ public final class DocumentBroker extends ActionController {
     }
 
     public static DocumentEntity getDocumentModel(String id) throws DatabaseException {
-        return repositoryService.provide(GET_DOCUMENT_EXEC, id);
+        DocumentEntity entity = new DocumentEntity();
+        entity.setDocumentId(id);
+        return repositoryService.get(entity);
     }
 
-    private static DatabaseExecutor<DocumentEntity> GET_DOCUMENT_EXEC =
-            new Transactionless<DocumentEntity>() {
-        @Override
-        public DocumentEntity run(Connection conn, Object...params) throws DatabaseException {
-            DocumentEntity model = new DocumentEntity();
-            model.setDocumentId((String)params[0]);
-            return get(model);
-        }
-    };
+//    private static DatabaseExecutor<DocumentEntity> GET_DOCUMENT_EXEC =
+//            new Transactionless<DocumentEntity>() {
+//        @Override
+//        public DocumentEntity run(Connection conn, Object...params) throws DatabaseException {
+//            DocumentEntity model = new DocumentEntity();
+//            model.setDocumentId((String)params[0]);
+//            return get(model);
+//        }
+//    };
 
     @Override
     public View action(ActionContext context) {
