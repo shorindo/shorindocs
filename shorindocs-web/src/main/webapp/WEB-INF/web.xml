@@ -9,7 +9,7 @@
 
   <filter>
     <filter-name>authenticateFilter</filter-name>
-    <filter-class>com.shorindo.docs.auth.AuthenticateFilter</filter-class>
+    <filter-class>com.shorindo.docs.AuthenticateFilter</filter-class>
     <init-param>
       <param-name>SESSION_KEY</param-name>
       <param-value>DOCSID</param-value>

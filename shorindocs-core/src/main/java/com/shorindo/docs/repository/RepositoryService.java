@@ -17,6 +17,7 @@ package com.shorindo.docs.repository;
 
 import static com.shorindo.docs.repository.DatabaseMessages.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -67,12 +68,13 @@ public class RepositoryService {
     protected RepositoryService() {
         try {
             Properties props = new Properties();
-            props.setProperty("driverClassName", ApplicationContext.getProperty("datasource.driverClassName"));
-            props.setProperty("url", ApplicationContext.getProperty("datasource.url"));
-            props.setProperty("username", ApplicationContext.getProperty("datasource.username"));
-            props.setProperty("password", ApplicationContext.getProperty("datasource.password"));
-            props.setProperty("validationQuery", ApplicationContext.getProperty("datasource.validationQuery"));
-            props.setProperty("testOnBorrow", ApplicationContext.getProperty("datasource.testOnBorrow"));
+            for (Entry<Object,Object> e : ApplicationContext.getProperties().entrySet()) {
+                String key = (String)e.getKey();
+                String val = (String)e.getValue();
+                if (key.startsWith("datasource.") && val != null) {
+                    props.setProperty(key.substring(11), val);
+                }
+            }
             dataSource = BasicDataSourceFactory.createDataSource(props);
         } catch (Exception e) {
             LOG.error(DBMS_5100, e);
@@ -84,16 +86,24 @@ public class RepositoryService {
      * @param is
      */
     public DatabaseSchema loadSchema(InputStream is) {
-        DatabaseSchema newSchema = JAXB.unmarshal(is, DatabaseSchema.class);
-        for (DatabaseSchema.Entity entity : newSchema.getEntityList()) {
-            LOG.info(DBMS_1101, newSchema.getNamespace(), entity.getName());
-            Map<String,DatabaseSchema.Column> columnMap =
-                new LinkedHashMap<String,DatabaseSchema.Column>();
-            for (DatabaseSchema.Column column : entity.getColumnList()) {
-                columnMap.put(column.getName(), column);
+        try {
+            DatabaseSchema newSchema = JAXB.unmarshal(is, DatabaseSchema.class);
+            for (DatabaseSchema.Entity entity : newSchema.getEntityList()) {
+                LOG.info(DBMS_1101, newSchema.getNamespace(), entity.getName());
+                Map<String,DatabaseSchema.Column> columnMap =
+                        new LinkedHashMap<String,DatabaseSchema.Column>();
+                for (DatabaseSchema.Column column : entity.getColumnList()) {
+                    columnMap.put(column.getName(), column);
+                }
+            }
+            return newSchema;
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                LOG.error(DBMS_5103, e);
             }
         }
-        return newSchema;
     }
 
     /**
@@ -102,136 +112,69 @@ public class RepositoryService {
      * @throws SQLException
      */
     public List<String> validateSchema(DatabaseSchema schema) throws DatabaseException {
-//        return provide(new Transactionless<List<String>>() {
-//            @Override
-//            public List<String> run(Connection conn, Object...params) throws DatabaseException {
-                try {
-                    Connection conn = getConnection();
-                    List<String> resultList = new ArrayList<String>();
-                    DatabaseMetaData meta = conn.getMetaData();
-
-                    for (DatabaseSchema.Entity entity : schema.getEntityList()) {
-                        // エンティティ定義あり、実体なしのチェック
-                        // (逆のエンティティ定義なし、実体ありのチェックはしない)
-                        String entityName = entity.getName();
-                        ResultSet trset = meta.getTables(null, null, entityName, null);
-                        if (!trset.next()) {
-                            String msg = LOG.error(DBMS_5108, entityName);
-                            resultList.add(msg);
-                            trset.close();
-                            continue;
-                        }
-                        trset.close();
-
-                        ResultSet crset = meta.getColumns(null, null, entityName, null);
-                        Map<String,DatabaseSchema.Column> map
-                            = new HashMap<String,DatabaseSchema.Column>();
-                        for (DatabaseSchema.Column column : entity.getColumnList()) {
-                            map.put(column.getName(), column);
-                        }
-
-                        // カラム定義なし、実体ありのチェック
-                        while (crset.next()) {
-                            String columnName = crset.getString("COLUMN_NAME");
-                            DatabaseSchema.Column c = map.get(columnName);
-                            if (c == null) {
-                                String msg = LOG.error(DBMS_5109, entityName, columnName);
-                                resultList.add(msg);
-                            } else {
-                                map.remove(columnName);
-                                //TODO attrubute
-                            }
-                        }
-
-                        // カラム定義あり、実体なしのチェック
-                        for (Map.Entry<String,DatabaseSchema.Column> e : map.entrySet()) {
-                            String msg = LOG.error(DBMS_5110, entityName, e.getKey());
-                            resultList.add(msg);
-                        }
-                        crset.close();
-                        LOG.info(DBMS_1104, entityName);
-                    }
-                    return resultList;
-                } catch (SQLException e) {
-                    throw new DatabaseException(e);
-                }
-//            }
-//        });
-    }
-
-    /**
-     * 
-     * @param executor
-     * @param params
-     * @return
-     * @throws SQLException
-     */
-//    public <T>T provide(DatabaseExecutor<T> executor, Object...params) throws DatabaseException {
-//        Connection conn = null;
-//        try {
-//            conn = dataSource.getConnection();
-//            executor.setConnection(conn);
-//            executor.beginTransaction(conn);
-//            T result = executor.run(conn, params);
-//            executor.commitTransaction(conn);
-//            return result;
-//        } catch (Throwable th) {
-//            if (conn != null) {
-//                try {
-//                    executor.rollbackTransaction(conn);
-//                } catch (DatabaseException e) {
-//                    LOG.error(DBMS_5105, e);
-//                }
-//            }
-//            throw new DatabaseException(th);
-//        } finally {
-//            executor.removeConnection();
-//            if (conn != null) {
-//                try {
-//                    conn.close();
-//                } catch (SQLException e) {
-//                    LOG.error(DBMS_5103, e);
-//                }
-//            }
-//        }
-//    }
-
-    /**
-     * 
-     */
-    public void loadTables() throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
+        Connection conn = null;
+        try {
+            conn = dataSource.getConnection();
+            LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+            List<String> resultList = new ArrayList<String>();
             DatabaseMetaData meta = conn.getMetaData();
-            ResultSet tableSet = meta.getTables(null, null, null, null);
-            while (tableSet.next()) {
-                //LOG.info("TABLE[" + tableSet.getString("TABLE_NAME") + "]");
-                ResultSet columnSet = meta.getColumns(
-                        tableSet.getString("TABLE_CAT"),
-                        tableSet.getString("TABLE_SCHEM"),
-                        tableSet.getString("TABLE_NAME"),
-                        null);
-//                while (columnSet.next()) {
-//                    LOG.info("    " +
-//                            columnSet.getString("COLUMN_NAME") +
-//                            " " +
-//                            columnSet.getString("TYPE_NAME"));
-//                }
+
+            for (DatabaseSchema.Entity entity : schema.getEntityList()) {
+                // エンティティ定義あり、実体なしのチェック
+                // (逆のエンティティ定義なし、実体ありのチェックはしない)
+                String entityName = entity.getName();
+                ResultSet trset = meta.getTables(null, null, entityName, null);
+                if (!trset.next()) {
+                    String msg = LOG.error(DBMS_5108, entityName);
+                    resultList.add(msg);
+                    trset.close();
+                    continue;
+                }
+                trset.close();
+
+                ResultSet crset = meta.getColumns(null, null, entityName, null);
+                Map<String,DatabaseSchema.Column> map
+                = new HashMap<String,DatabaseSchema.Column>();
+                for (DatabaseSchema.Column column : entity.getColumnList()) {
+                    map.put(column.getName(), column);
+                }
+
+                // カラム定義なし、実体ありのチェック
+                while (crset.next()) {
+                    String columnName = crset.getString("COLUMN_NAME");
+                    DatabaseSchema.Column c = map.get(columnName);
+                    if (c == null) {
+                        String msg = LOG.error(DBMS_5109, entityName, columnName);
+                        resultList.add(msg);
+                    } else {
+                        map.remove(columnName);
+                        //TODO attrubute
+                    }
+                }
+
+                // カラム定義あり、実体なしのチェック
+                for (Map.Entry<String,DatabaseSchema.Column> e : map.entrySet()) {
+                    String msg = LOG.error(DBMS_5110, entityName, e.getKey());
+                    resultList.add(msg);
+                }
+                crset.close();
+                LOG.info(DBMS_1104, entityName);
             }
+            return resultList;
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        } finally {
+            dispose(conn);
         }
     }
+
 
     /**
      * 
      */
     public int createTableFromSchema(DatabaseSchema.Table table) throws DatabaseException {
-//        return provide(new Transactionless<Integer>() {
-//            @Override
-//            public Integer run(Connection conn, Object... params)
-//                    throws DatabaseException {
-                String ddl = generateDDL(table);
-                return execute(ddl);
-//            }
-//        });
+        String ddl = generateDDL(table);
+        return execute(ddl);
     }
 
     /**
@@ -279,19 +222,21 @@ public class RepositoryService {
 
     /**
      * トランザクションを実行する。
-     * @param r
+     * @param t
      * @throws SQLException 
      */
-    public void transaction(Runnable runnable) throws DatabaseException {
+    public <T> T transaction(Transactionable<T> t) throws DatabaseException {
+        T result;
         try {
             Connection conn = threadConnection.get();
             if (conn == null) {
                 conn = dataSource.getConnection();
+                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
                 conn.setAutoCommit(false);
                 threadConnection.set(conn);
 
                 try {
-                    runnable.run();
+                    result = t.run();
                     conn.commit();
                 } catch (Throwable th) {
                     conn.rollback();
@@ -299,32 +244,36 @@ public class RepositoryService {
                 } finally {
                     threadConnection.remove();
                     conn.setAutoCommit(true);
+                    LOG.debug(DBMS_1106,Integer.toHexString(conn.hashCode()));
                     conn.close();
                 }
             } else {
-                runnable.run();
+                result = t.run();
             }
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
+        return result;
     }
 
-    /*
-     * TODO クローズ処理
+    /**
+     * 
+     * @param conn
      */
-    private synchronized Connection getConnection() throws DatabaseException {
-        try {
-            Connection conn = threadConnection.get();
-            if (conn == null) {
-                conn = dataSource.getConnection();
-                threadConnection.set(conn);
+    private void dispose(Connection conn) {
+        if (conn != null)
+            try {
+                LOG.debug(DBMS_1106,Integer.toHexString(conn.hashCode()));
+                conn.close();
+            } catch (SQLException e) {
+                LOG.error(DBMS_5103, e);
             }
-            return conn;
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
     }
 
+    /**
+     * 
+     * @param stmt
+     */
     private void dispose(Statement stmt) {
         if (stmt != null)
             try {
@@ -334,6 +283,10 @@ public class RepositoryService {
             }
     }
 
+    /**
+     * 
+     * @param rset
+     */
     private void dispose(ResultSet rset) {
         if (rset != null)
             try {
@@ -351,16 +304,38 @@ public class RepositoryService {
      * @throws SQLException
      */
     public final int execute(String sql, Object...params) throws DatabaseException {
+        Connection conn = threadConnection.get();
+        if (conn != null) {
+            return execute(conn, sql, params);
+        } else {
+            try {
+                conn = dataSource.getConnection();
+                LOG.debug(DBMS_1106,Integer.toHexString(conn.hashCode()));
+                return execute(conn, sql, params);
+            } catch (SQLException e) {
+                throw new DatabaseException(e);
+            } finally {
+                dispose(conn);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param conn
+     * @param sql
+     * @param params
+     * @return
+     * @throws DatabaseException
+     */
+    private final int execute(Connection conn, String sql, Object...params) throws DatabaseException {
         long st = System.currentTimeMillis();
         String hash = IdentityProvider.hash(sql);
         LOG.debug(DBMS_0001, hash, sql);
-        Connection conn = getConnection();
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
-            //FIXME
-            int i = 1;
-            for (Object param : params) {
-                stmt.setObject(i++, param);
+            for (int i = 0; params != null && i < params.length; i++) {
+                stmt.setObject(i + 1, params[i]); // FIXME
             }
             int result = stmt.executeUpdate();
             LOG.debug(DBMS_0002, hash, (System.currentTimeMillis() - st));
@@ -379,11 +354,36 @@ public class RepositoryService {
      * @throws SQLException
      */
     public final <E> List<E> query(String sql, Class<E> clazz, Object...params) throws DatabaseException {
+        Connection conn = threadConnection.get();
+        if (conn != null) {
+            return query(conn, sql, clazz, params);
+        } else {
+            try {
+                conn = dataSource.getConnection();
+                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                return query(conn, sql, clazz, params);
+            } catch (SQLException e) {
+                throw new DatabaseException(e);
+            } finally {
+                dispose(conn);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param conn
+     * @param sql
+     * @param clazz
+     * @param params
+     * @return
+     * @throws DatabaseException
+     */
+    private final <E> List<E> query(Connection conn, String sql, Class<E> clazz, Object...params) throws DatabaseException {
         LOG.debug(DBMS_0003, sql);
         long st = System.currentTimeMillis();
         List<E> resultList = new ArrayList<E>();
         int index = 1;
-        Connection conn = getConnection();
         PreparedStatement stmt = null;
         ResultSet rset = null;
 
@@ -421,13 +421,35 @@ public class RepositoryService {
     }
 
     /**
-     * DatabaseExecutorからコピー
      * @param entity
      * @return
      * @throws SQLException
      */
     public final <E extends SchemaEntity> E get(E entity) throws DatabaseException {
-        Connection conn = getConnection();
+        Connection conn = threadConnection.get();
+        if (conn != null) {
+            return get(conn, entity);
+        } else {
+            try {
+                conn = dataSource.getConnection();
+                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                return get(conn, entity);
+            } catch (SQLException e) {
+                throw new DatabaseException(e);
+            } finally {
+                dispose(conn);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param conn
+     * @param entity
+     * @return
+     * @throws DatabaseException
+     */
+    private final <E extends SchemaEntity> E get(Connection conn, E entity) throws DatabaseException {
         EntityMapping mapping = bind(conn, entity);
         LOG.debug(DBMS_0003, mapping.getSelectSql());
         long st = System.currentTimeMillis();
@@ -469,7 +491,6 @@ public class RepositoryService {
     }
 
     /**
-     * DatabaseExecutorからコピー
      * @param entity
      * @return
      * @throws SQLException
@@ -485,14 +506,36 @@ public class RepositoryService {
     }
 
     /**
-     * DatabaseExecutorからコピー
      * @param document
      * @return
      * @throws SQLException
      */
-    public final int remove(SchemaEntity document) throws DatabaseException {
-        Connection conn = getConnection();
-        EntityMapping mapping = bind(conn, document);
+    public final int remove(SchemaEntity entity) throws DatabaseException {
+        Connection conn = threadConnection.get();
+        if (conn != null) {
+            return remove(conn, entity);
+        } else {
+            try {
+                conn = dataSource.getConnection();
+                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                return remove(conn, entity);
+            } catch (SQLException e) {
+                throw new DatabaseException(e);
+            } finally {
+                dispose(conn);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param conn
+     * @param entity
+     * @return
+     * @throws DatabaseException
+     */
+    private final int remove(Connection conn, SchemaEntity entity) throws DatabaseException {
+        EntityMapping mapping = bind(conn, entity);
         LOG.debug(DBMS_0005, mapping.getUpdateSql());
         PreparedStatement stmt = null;
         int index = 1;
@@ -501,7 +544,7 @@ public class RepositoryService {
             stmt = conn.prepareStatement(mapping.getDeleteSql());
             for (ColumnMapping columnMapping : mapping.getColumns()) {
                 if (columnMapping.getPrimaryKey() > 0) {
-                    index = applySetMethod(stmt, document, columnMapping, index);
+                    index = applySetMethod(stmt, entity, columnMapping, index);
                 }
             }
             return stmt.executeUpdate();
@@ -524,8 +567,31 @@ public class RepositoryService {
      * @return
      * @throws SQLException
      */
-    protected int insert(SchemaEntity entity) throws DatabaseException {
-        Connection conn = getConnection();
+    public int insert(SchemaEntity entity) throws DatabaseException {
+        Connection conn = threadConnection.get();
+        if (conn != null) {
+            return insert(conn, entity);
+        } else {
+            try {
+                conn = dataSource.getConnection();
+                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                return insert(conn, entity);
+            } catch (SQLException e) {
+                throw new DatabaseException(e);
+            } finally {
+                dispose(conn);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param conn
+     * @param entity
+     * @return
+     * @throws DatabaseException
+     */
+    private int insert(Connection conn, SchemaEntity entity) throws DatabaseException {
         EntityMapping mapping = bind(conn, entity);
         LOG.debug(DBMS_0007, mapping.getInsertSql());
         PreparedStatement stmt = null;
@@ -555,8 +621,31 @@ public class RepositoryService {
      * @return
      * @throws SQLException
      */
-    protected int update(SchemaEntity entity) throws DatabaseException {
-        Connection conn = getConnection();
+    public int update(SchemaEntity entity) throws DatabaseException {
+        Connection conn = threadConnection.get();
+        if (conn != null) {
+            return update(conn, entity);
+        } else {
+            try {
+                conn = dataSource.getConnection();
+                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                return update(conn, entity);
+            } catch (SQLException e) {
+                throw new DatabaseException(e);
+            } finally {
+                dispose(conn);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param conn
+     * @param entity
+     * @return
+     * @throws DatabaseException
+     */
+    private int update(Connection conn, SchemaEntity entity) throws DatabaseException {
         EntityMapping mapping = bind(conn, entity);
         LOG.debug(DBMS_0009, mapping.getUpdateSql());
         PreparedStatement stmt = null;
@@ -587,6 +676,13 @@ public class RepositoryService {
         }
     }
 
+    /**
+     * 
+     * @param stmt
+     * @param index
+     * @param value
+     * @throws SQLException
+     */
     private void setColumnByClass(PreparedStatement stmt, int index, Object value) throws SQLException {
         if (value == null) {
             stmt.setObject(index, value);
@@ -622,6 +718,14 @@ public class RepositoryService {
             stmt.setObject(index, value);
         }
     }
+
+    /**
+     * 
+     * @param returnType
+     * @return
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     */
     private Method getResultSetGetter(Class<?> returnType) throws NoSuchMethodException, SecurityException {
         if (String.class.isAssignableFrom(returnType)) {
             return ResultSet.class.getMethod("getString", int.class);
@@ -648,7 +752,11 @@ public class RepositoryService {
         
     }
 
-
+    /**
+     * 
+     * @param target
+     * @return
+     */
     private boolean isPrimitive(Class<?> target) {
         return target.isPrimitive() ||
                 target.isAssignableFrom(Short.class) ||
@@ -659,7 +767,10 @@ public class RepositoryService {
                 target.isAssignableFrom(Date.class) ||
                 target.isAssignableFrom(String.class);
     }
-    
+
+    /**
+     * 
+     */
     private static Pattern SNAKE_PATTERN = Pattern.compile("_*([^_])([^_]*)");
     private static String snake2camel(String prefix, String name) {
         Matcher m = SNAKE_PATTERN.matcher(name);
@@ -676,6 +787,14 @@ public class RepositoryService {
         return sb.toString();
     }
 
+    /**
+     * 
+     * @param mappers
+     * @param meta
+     * @param target
+     * @return
+     * @throws SQLException
+     */
     private ResultSetMapper[] generateMappers(ResultSetMapper[] mappers, ResultSetMetaData meta, Class<?> target) throws SQLException {
         if (mappers != null) {
             return mappers;
@@ -720,6 +839,18 @@ public class RepositoryService {
         return mappers;
     }
 
+    /**
+     * 
+     * @param mappers
+     * @param rset
+     * @param beanClass
+     * @return
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws SQLException
+     */
     @SuppressWarnings("unchecked")
     protected <E> E applyMappers(ResultSetMapper[] mappers, ResultSet rset, Class<E> beanClass)
             throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
@@ -736,6 +867,18 @@ public class RepositoryService {
         return bean;
     }
 
+    /**
+     * 
+     * @param stmt
+     * @param entity
+     * @param mapping
+     * @param index
+     * @return
+     * @throws DatabaseException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
     private int applySetMethod(Statement stmt, SchemaEntity entity, ColumnMapping mapping, int index)
             throws DatabaseException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         //LOG.debug("applySetMethod(" + mapping.getStatementSetMethod() + "," + mapping.getField() + ")");
@@ -744,6 +887,16 @@ public class RepositoryService {
         return index + 1;
     }
 
+    /**
+     * 
+     * @param rset
+     * @param entity
+     * @param mapping
+     * @param index
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
     private void applyGetMethod(ResultSet rset, SchemaEntity entity, ColumnMapping mapping, int index)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Method getMethod = mapping.getResultSetGetMethod();
@@ -752,6 +905,13 @@ public class RepositoryService {
         field.set(entity, getMethod.invoke(rset, index));
     }
 
+    /**
+     * 
+     * @param conn
+     * @param entity
+     * @return
+     * @throws DatabaseException
+     */
     @SuppressWarnings("resource")
     private EntityMapping bind(Connection conn, SchemaEntity entity) throws DatabaseException {
         EntityMapping entityMapping = new EntityMapping(entity.getEntityName());
@@ -822,6 +982,11 @@ public class RepositoryService {
         return entityMapping;
     }
 
+    /**
+     * 
+     * @param clazz
+     * @return
+     */
     private Method[] getStatementSetMethod(Class<?> clazz) {
         //LOG.debug("getStatementSetMethod(" + clazz + ")");
         try {
@@ -884,6 +1049,9 @@ public class RepositoryService {
         }
     }
 
+    /**
+     * 
+     */
     protected enum SqlType {
         SHORT       (short.class),
         SHORT_OBJECT(Short.class),
@@ -1100,6 +1268,9 @@ public class RepositoryService {
         }
     }
 
+    /**
+     * 
+     */
     private static class ResultSetMapper {
         private Method getter;
         private Method setter;

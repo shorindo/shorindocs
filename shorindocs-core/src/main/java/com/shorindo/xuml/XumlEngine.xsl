@@ -19,8 +19,8 @@
         <html>
           <head>
             <title><xsl:value-of select="@title"/></title>
-            <link rel="stylesheet" type="text/css" href="{{{{application.contextPath}}}}/css/xuml.css"/>
-            <script type="text/javascript" src="{{{{application.contextPath}}}}/js/xuml.js"></script>
+            <link rel="stylesheet" type="text/css" href="{{{{contextPath}}}}/css/xuml.css"/>
+            <script type="text/javascript" src="{{{{contextPath}}}}/js/xuml.js"></script>
           </head>
           <body>
             <xsl:attribute name="class">

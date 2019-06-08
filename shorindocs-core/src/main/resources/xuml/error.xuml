@@ -1,6 +1,9 @@
-<window title="{{status}} - {{message}}">
-  <dialog width="400" height="300" title="{{status}} - {{title}}">
-    <description value="{{message}}"/>
-  </dialog>
-</window>
+<xuml>
+  <window title="{{status}} - {{message}}">
+    <dialog width="400" height="300" title="{{status}} - {{title}}">
+      <description value="{{message}}"/>
+    </dialog>
+  </window>
+</xuml>
+
 

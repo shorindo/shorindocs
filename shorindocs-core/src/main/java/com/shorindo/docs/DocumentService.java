@@ -34,9 +34,10 @@ public class DocumentService {
      * 
      */
     protected DocumentService() {
+        //validate();
     }
 
-    public void setUp() throws IOException {
+    public void validate() {
         String dsdlName = getClass().getSimpleName() + ".dsdl";
         LOG.debug(dsdlName);
         InputStream is = getClass().getResourceAsStream(dsdlName);
@@ -49,7 +50,12 @@ public class DocumentService {
         } catch (DatabaseException e) {
             LOG.error(e.getMessage(), e);
         } finally {
-            if (is != null) is.close();
+            if (is != null)
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    LOG.error(e.getMessage(), e);
+                }
         }
     }
 }

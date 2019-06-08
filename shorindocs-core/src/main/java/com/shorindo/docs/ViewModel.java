@@ -18,7 +18,7 @@ package com.shorindo.docs;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+//import javax.servlet.http.HttpServletRequest;
 
 /**
  * 
@@ -29,7 +29,7 @@ public class ViewModel {
     /**
      * 
      */
-    protected ViewModel(HttpServletRequest request) {
+    protected ViewModel(/*HttpServletRequest request*/) {
         model = new HashMap<String,Object>();
     }
 

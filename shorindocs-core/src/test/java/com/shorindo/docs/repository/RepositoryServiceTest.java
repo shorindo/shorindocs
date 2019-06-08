@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.sql.Connection;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -33,8 +32,7 @@ import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceFactory;
-import com.shorindo.docs.repository.Transactional;
-import com.shorindo.docs.repository.Transactionless;
+import com.shorindo.docs.repository.Transactionable;
 
 /**
  * 
@@ -50,42 +48,30 @@ public class RepositoryServiceTest {
         ApplicationContext.loadProperties(is);
         
         repositoryService = RepositoryServiceFactory.repositoryService();
-        repositoryService.provide(new Transactionless<Integer>() {
-            @Override
-            public Integer run(Connection conn, Object...params) throws DatabaseException {
-                exec("DROP TABLE IF EXISTS SAMPLE");
-                exec("CREATE TABLE IF NOT EXISTS SAMPLE (" +
+        repositoryService.execute("DROP TABLE IF EXISTS SAMPLE");
+        repositoryService.execute("CREATE TABLE IF NOT EXISTS SAMPLE (" +
                      "    STRING_VALUE VARCHAR(100) UNIQUE," +
                      "    INT_VALUE INT," +
                      "    DOUBLE_VALUE DOUBLE," +
                      "    DATE_VALUE DATETIME," +
                      "    CONSTRAINT PRIMARY KEY (STRING_VALUE, INT_VALUE)" +
                      ")"
-                        );
-                return 0;
-            }
-        });
+                );
     }
 
     @AfterClass
     public static void tearDownAfter() throws Exception {
-                repositoryService.provide(new Transactionless<Integer>() {
-            @Override
-            public Integer run(Connection conn, Object...params) throws DatabaseException {
-                exec("DROP TABLE SAMPLE");
-                return 0;
-            }
-        });
+        repositoryService.execute("DROP TABLE SAMPLE");
     }
 
     @Test
     public void testTransactional() throws Exception {
         long st = System.currentTimeMillis();
-        SampleEntity result = repositoryService.provide(new Transactional<SampleEntity>() {
+        SampleEntity result = repositoryService.transaction(new Transactionable<SampleEntity>() {
             @Override
-            public SampleEntity run(Connection conn, Object...params) throws DatabaseException {
-                exec("INSERT INTO SAMPLE VALUES('BAR', 123, 123.456, '1970/01/01 12:34:56')");
-                List<SampleEntity> resultList = query("SELECT * FROM SAMPLE", SampleEntity.class);
+            public SampleEntity run(Object...params) throws DatabaseException {
+                repositoryService.execute("INSERT INTO SAMPLE VALUES('BAR', 123, 123.456, '1970/01/01 12:34:56')");
+                List<SampleEntity> resultList = repositoryService.query("SELECT * FROM SAMPLE", SampleEntity.class);
                 return resultList.get(0);
             }
         });
@@ -96,16 +82,15 @@ public class RepositoryServiceTest {
         LOG.debug(result.getDateValue().getClass() + "=" + result.getDateValue());
     }
 
-    private static Transactionless<Integer> TL = new Transactionless<Integer>() {
-        @Override
-        public Integer run(Connection conn, Object...params) throws DatabaseException {
-            return query("SELECT 123", int.class).get(0);
+    private static Transactionable<Integer> TL = new Transactionable<Integer>() {
+        public Integer run(Object...params) throws DatabaseException {
+            return repositoryService.query("SELECT 123", int.class).get(0);
         }
     };
 
     @Test
     public void testTransactionless() throws Exception {
-        assertEquals(123, (int)repositoryService.provide(TL));
+        assertEquals(123, (int)repositoryService.transaction(TL));
     }
 
     @Test
@@ -134,10 +119,10 @@ public class RepositoryServiceTest {
         assertNull(actual);
     }
 
-    @Test
-    public void testLoadTables() throws Exception {
-        repositoryService.loadTables();
-    }
+//    @Test
+//    public void testLoadTables() throws Exception {
+//        repositoryService.loadTables();
+//    }
 
 //    @Test
 //    public void testLoadSchema() throws Exception {

@@ -20,7 +20,7 @@
         <listbox>
           {{#recents}}
           <listitem>
-            <link href="{{documentId}}">{{title}}</link>
+            <link href="{{contextPath}}/{{documentId}}">{{title}}</link>
           </listitem>
           {{/recents}}
         </listbox>

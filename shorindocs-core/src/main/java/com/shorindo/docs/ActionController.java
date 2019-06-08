@@ -57,19 +57,6 @@ public abstract class ActionController {
         }
     }
 
-//    protected View getView(String viewName, ActionContext context) {
-//        if (viewName == null) {
-//            return new ErrorView(404);
-//        } else if (".xuml".equals(viewName)) {
-//            InputStream is = getClass().getResourceAsStream(getClass().getSimpleName() + viewName);
-//            return new XumlView(getClass().getSimpleName() + viewName, is);
-//        } else if (viewName.startsWith("/")) {
-//            return new RedirectView(viewName, context);
-//        } else {
-//            return new ErrorView(404);
-//        }
-//    }
-
     protected String createClassPath(String path) {
         StringBuffer result = new StringBuffer();
         result.append(getClass().getPackage().getName().replaceAll("\\.", "/"));

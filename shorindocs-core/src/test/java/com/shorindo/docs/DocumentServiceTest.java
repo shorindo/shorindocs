@@ -34,9 +34,9 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void testSetUp() throws Exception {
+    public void testValidate() throws Exception {
         DocumentService service = DocumentServiceFactory.documentService();
-        service.setUp();
+        service.validate();
     }
 
 }

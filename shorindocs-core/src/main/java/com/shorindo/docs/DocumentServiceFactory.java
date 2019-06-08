@@ -29,6 +29,9 @@ public abstract class DocumentServiceFactory {
         return documentService;
     }
 
+    /*
+     * 
+     */
     public static synchronized ApplicationContext applicationContext() {
         if (applicationContext == null) {
             applicationContext = new ApplicationContext();

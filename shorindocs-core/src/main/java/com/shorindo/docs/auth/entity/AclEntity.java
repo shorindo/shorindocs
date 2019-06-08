@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.entity;
+package com.shorindo.docs.auth.entity;
 
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.SchemaEntity;
@@ -22,11 +22,10 @@ import com.shorindo.docs.repository.Table;
 /**
  * 
  */
-@Table("AUTH_ACL_MEMBER")
-public class AclMemberEntity extends SchemaEntity {
+@Table("AUTH_ACL")
+public class AclEntity extends SchemaEntity {
 
-    public AclMemberEntity() throws DatabaseException {
+    public AclEntity() throws DatabaseException {
         super();
     }
-
 }

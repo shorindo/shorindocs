@@ -39,8 +39,8 @@ public class Window extends Container {
         sb.append("<head>\n");
         sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
         sb.append("<title>" + title + "</title>\n");
-        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"{{application.contextPath}}/css/xuml.css\">\n");
-        sb.append("<script type=\"text/javascript\" src=\"{{application.contextPath}}/js/xuml.js\"></script>\n");
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"{{contextPath}}/css/xuml.css\">\n");
+        sb.append("<script type=\"text/javascript\" src=\"{{contextPath}}/js/xuml.js\"></script>\n");
         sb.append("</head>\n");
         sb.append("<body class=\"");
         if ("fill".equals(height)) {

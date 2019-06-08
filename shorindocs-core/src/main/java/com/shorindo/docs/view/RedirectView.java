@@ -30,7 +30,8 @@ public class RedirectView extends View {
         if (!location.startsWith("/")) {
             location = "/" + location;
         }
-        location = context.getRequest().getContextPath() + location;
+//        location = context.getRequest().getContextPath() + location;
+        location = context.getAttribute("contextPath") + location;
         getMeta().put("Location", location);
     }
 

@@ -21,11 +21,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+//import javax.servlet.ServletContext;
+//import javax.servlet.http.HttpServletRequest;
+//import javax.servlet.http.HttpServletResponse;
 
-import com.shorindo.docs.entity.UserEntity;
+import com.shorindo.docs.auth.entity.UserEntity;
 
 /**
  * 
@@ -33,25 +33,26 @@ import com.shorindo.docs.entity.UserEntity;
 public class ActionContext {
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionContext.class);
     private ViewModel viewModel;
-    private HttpServletRequest request;
-    private HttpServletResponse response;
-    private ServletContext servletContext;
+//    private HttpServletRequest request;
+//    private HttpServletResponse response;
+//    private ServletContext servletContext;
     private Locale locale;
     private ResourceBundle bundle;
 
-    public ActionContext(HttpServletRequest req, HttpServletResponse res, ServletContext ctx) {
-        viewModel = new ViewModel(req);
-        request = req;
-        response = res;
-        servletContext = ctx;
-        locale = req.getLocale();
-        bundle = ResourceBundle.getBundle("messages", req.getLocale());
-        this.setAttribute("request", request);
-        this.setAttribute("response", response);
-        this.setAttribute("session", request.getSession());
+//    public ActionContext(HttpServletRequest req, HttpServletResponse res, ServletContext ctx) {
+    public ActionContext() {        
+//        viewModel = new ViewModel(req);
+//        request = req;
+//        response = res;
+//        servletContext = ctx;
+//        locale = req.getLocale();
+//        bundle = ResourceBundle.getBundle("messages", req.getLocale());
+//        this.setAttribute("request", request);
+//        this.setAttribute("response", response);
+//        this.setAttribute("session", request.getSession());
         Map<String,String> application = new HashMap<String,String>();
-        application.put("contextPath", servletContext.getContextPath());
-        application.put("info", servletContext.getServerInfo());
+//        application.put("contextPath", servletContext.getContextPath());
+//        application.put("info", servletContext.getServerInfo());
         this.setAttribute("application", application);
     }
 
@@ -63,17 +64,26 @@ public class ActionContext {
         return viewModel;
     }
 
-    public HttpServletRequest getRequest() {
-        return request;
-    }
+//    private String path;
+//    public void setPath(String path) {
+//        this.path = path;
+//    }
+//
+//    public String getPath() {
+//        return this.path;
+//    }
 
-    public HttpServletResponse getResponse() {
-        return response;
-    }
-
-    public ServletContext getApplication() {
-        return servletContext;
-    }
+//    public HttpServletRequest getRequest() {
+//        return request;
+//    }
+//
+//    public HttpServletResponse getResponse() {
+//        return response;
+//    }
+//
+//    public ServletContext getApplication() {
+//        return servletContext;
+//    }
 
     public String getAction() {
         String action = getParameter("action");
@@ -106,22 +116,26 @@ public class ActionContext {
         }
     }
 
+    private Map<String,Object> attributes = new HashMap<String,Object>();
     public Map<String,Object> getAttributes() {
-        Map<String,Object> resultMap = new HashMap<String,Object>();
-        for (Enumeration<?> e = request.getAttributeNames(); e.hasMoreElements();) {
-            String name = (String)e.nextElement();
-            resultMap.put(name, request.getAttribute(name));
-        }
-        return resultMap;
+//        Map<String,Object> resultMap = new HashMap<String,Object>();
+//        for (Enumeration<?> e = request.getAttributeNames(); e.hasMoreElements();) {
+//            String name = (String)e.nextElement();
+//            resultMap.put(name, request.getAttribute(name));
+//        }
+        return attributes;
     }
     public void setAttribute(String key, Object value) {
-        request.setAttribute(key, value);
+//        request.setAttribute(key, value);
+        attributes.put(key, value);
     }
     public Object getAttribute(String key) {
-        return request.getAttribute(key);
+//        return request.getAttribute(key);
+        return attributes.get(key);
     }
     public String getParameter(String key) {
         //LOG.debug("getParameter(" + key + ")=>" + request.getParameter(key));
-        return request.getParameter(key);
+//        return request.getParameter(key);
+        return null;
     }
 }

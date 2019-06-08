@@ -49,6 +49,10 @@ public class ApplicationContext {
         props.putAll(p);
     }
 
+    public static Properties getProperties() {
+        return props;
+    }
+
     public static String getProperty(String key) {
         return props.getProperty(key);
     }

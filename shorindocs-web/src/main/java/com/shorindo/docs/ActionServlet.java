@@ -30,8 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ResourceFinder.ClassMatcher;
+import com.shorindo.docs.admin.AdminSettings;
 import com.shorindo.docs.annotation.ActionMapping;
+import com.shorindo.docs.auth.AuthenticateSettings;
 import com.shorindo.docs.view.DefaultView;
+import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
@@ -48,49 +51,76 @@ public class ActionServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
-        File root = new File(config.getServletContext().getRealPath("/WEB-INF/classes"));
-        ResourceFinder finder = new ResourceFinder(root);
-        DocumentController.setup(finder.find(new ClassMatcher() {
-            @Override
-            public boolean matches(Class<?> clazz) {
-                if (DocumentController.class.isAssignableFrom(clazz) &&
-                        !DocumentController.class.equals(clazz)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }));
+//        File root = new File(config.getServletContext().getRealPath("/WEB-INF/classes"));
+//        ResourceFinder finder = new ResourceFinder(root);
+//        DocumentController.setup(finder.find(new ClassMatcher() {
+//            @Override
+//            public boolean matches(Class<?> clazz) {
+//                if (DocumentController.class.isAssignableFrom(clazz) &&
+//                        !DocumentController.class.equals(clazz)) {
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            }
+//        }));
+//
+//        finder.find(new ClassMatcher() {
+//            public boolean matches(Class<?> clazz) {
+//                ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
+//                if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
+//                    LOG.info(DOCS_0001, mapping.value(), clazz);
+//                    try {
+//                        actionMap.put(mapping.value(), (ActionController)clazz.newInstance());
+//                    } catch (InstantiationException e) {
+//                        LOG.error(DOCS_9004, e, mapping.value());
+//                    } catch (IllegalAccessException e) {
+//                        LOG.error(DOCS_9004, e, mapping.value());
+//                    }
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            }
+//        });
 
-        finder.find(new ClassMatcher() {
-            public boolean matches(Class<?> clazz) {
+        addSettings(AuthenticateSettings.class);
+        addSettings(AdminSettings.class);
+        addSettings(DocumentSettings.class);
+    }
+
+    public static void addSettings(Class<? extends PluginSettings> settings) {
+        try {
+            for (ActionController controller : settings.newInstance().getControllers()) {
+                Class<?> clazz = controller.getClass();
                 ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
                 if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
                     LOG.info(DOCS_0001, mapping.value(), clazz);
-                    try {
-                        actionMap.put(mapping.value(), (ActionController)clazz.newInstance());
-                    } catch (InstantiationException e) {
-                        LOG.error(DOCS_9004, e, mapping.value());
-                    } catch (IllegalAccessException e) {
-                        LOG.error(DOCS_9004, e, mapping.value());
-                    }
-                    return true;
-                } else {
-                    return false;
+                    actionMap.put(mapping.value(), controller);
                 }
             }
-        });
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
+        LOG.info(DOCS_1105, req.getServletPath());
+        long st = System.currentTimeMillis();
+        String path = req.getServletPath();
+        String id = path.substring(1);
+        ActionContext context = new ActionContext();
+        context.setAttribute("requestPath", req.getServletPath());
+        context.setAttribute("contextPath", req.getServletContext().getContextPath());
+
         try {
-            LOG.info(DOCS_1105, req.getServletPath());
-            long st = System.currentTimeMillis();
-            String path = req.getServletPath();
-            String id = path.substring(1);
-            ActionContext context = new ActionContext(req, res, getServletContext());
 
             if (id == null || "".equals(id)) {
                 output(context, res, new RedirectView("/index", context));
@@ -100,22 +130,21 @@ public class ActionServlet extends HttpServlet {
             if (id.endsWith(".xuml") && file.exists()) {
                 View view = new XumlView(file.getName(), new FileInputStream(file));
                 output(context, res, view);
-            } else if (!dispatch(context)) {
+            } else if (!dispatch(context, res)) {
                 LOG.error(DOCS_5003, path);
             }
             LOG.info(DOCS_1106, req.getServletPath(),
                     (System.currentTimeMillis() - st));
         } catch (Exception e) {
             LOG.error(DOCS_9999, e);
+            output(context, res, new ErrorView(500));
         }
     }
 
-    protected boolean dispatch(ActionContext context)
+    protected boolean dispatch(ActionContext context, HttpServletResponse res)
             throws ServletException, IOException {
-        HttpServletRequest req = context.getRequest();
-        HttpServletResponse res = context.getResponse();
-        File file = new File(getServletContext().getRealPath(req.getServletPath()));
-        ActionController controller = actionMap.get(req.getServletPath());
+        File file = new File(getServletContext().getRealPath((String)context.getAttribute("requestPath")));
+        ActionController controller = actionMap.get((String)context.getAttribute("requestPath"));
 
         if (file.exists()) {
             output(context, res, new DefaultView(file, context));

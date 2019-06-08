@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.entity;
-
-import com.shorindo.docs.repository.DatabaseException;
-import com.shorindo.docs.repository.SchemaEntity;
-import com.shorindo.docs.repository.Table;
+package com.shorindo.docs.repository;
 
 /**
  * 
  */
-@Table("AUTH_ACL")
-public class AclEntity extends SchemaEntity {
+public interface Transactionable<T> {
 
-    public AclEntity() throws DatabaseException {
-        super();
-    }
+    public abstract T run(Object...params) throws DatabaseException;
+
 }

@@ -13,30 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.repository;
+package com.shorindo.docs.auth.entity;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.SchemaEntity;
+import com.shorindo.docs.repository.Table;
 
 /**
  * 
  */
-public abstract class Transactionless<T> extends DatabaseExecutor<T> {
+@Table("AUTH_ACL_MEMBER")
+public class AclMemberEntity extends SchemaEntity {
 
-    @Override
-    public void beginTransaction(Connection conn) throws DatabaseException {
-        try {
-            conn.setAutoCommit(true);
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
+    public AclMemberEntity() throws DatabaseException {
+        super();
     }
 
-    @Override
-    public void commitTransaction(Connection conn) throws DatabaseException {
-    }
-
-    @Override
-    public void rollbackTransaction(Connection conn) throws DatabaseException {
-    }
 }

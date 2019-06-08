@@ -19,17 +19,16 @@ import static com.shorindo.docs.repository.DatabaseMessages.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
 import java.util.List;
 
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.DocumentService;
+import com.shorindo.docs.auth.entity.GroupEntity;
 import com.shorindo.docs.auth.entity.SessionEntity;
-import com.shorindo.docs.entity.GroupEntity;
-import com.shorindo.docs.entity.UserEntity;
+import com.shorindo.docs.auth.entity.UserEntity;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.DatabaseSchema;
-import com.shorindo.docs.repository.Transactional;
+import com.shorindo.docs.repository.Transactionable;
 
 /**
  * 
@@ -66,18 +65,24 @@ public class AuthenticateService extends DocumentService {
      */
     public SessionEntity login(String userId, String password) throws AuthenticateException {
         try {
-            UserEntity user = new UserEntity();
-            user.setUserId(userId);
-            user = repositoryService.get(user);
-            if (user == null) {
-                throw new DatabaseException();
-            }
+            return repositoryService.transaction(
+                    new Transactionable<SessionEntity>() {
+                        @Override
+                        public SessionEntity run(Object... params) throws DatabaseException {
+                            UserEntity user = new UserEntity();
+                            user.setUserId(userId);
+                            user = repositoryService.get(user);
+                            if (user == null) {
+                                throw new DatabaseException();
+                            }
 
-            List<GroupEntity> groupList = repositoryService.query(
-                    "SELECT * FROM AUTH_GROUP WHERE USER_ID=?",
-                    GroupEntity.class,
-                    user.getUserId());
-            return null; // FIXME
+                            List<GroupEntity> groupList = repositoryService.query(
+                                    "SELECT * FROM AUTH_GROUP WHERE USER_ID=?",
+                                    GroupEntity.class,
+                                    user.getUserId());
+                            return null; // FIXME
+                        }
+                    });
         } catch (DatabaseException e) {
             throw new AuthenticateException(e);
         }

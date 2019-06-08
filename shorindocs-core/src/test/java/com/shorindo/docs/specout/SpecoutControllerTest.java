@@ -33,7 +33,7 @@ import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceFactory;
-import com.shorindo.docs.repository.Transactional;
+import com.shorindo.docs.repository.Transactionable;
 import com.shorindo.docs.specout.SpecoutController;
 
 /**
@@ -41,17 +41,13 @@ import com.shorindo.docs.specout.SpecoutController;
  */
 public class SpecoutControllerTest {
     private static final ActionLogger LOG = ActionLogger.getLogger(SpecoutControllerTest.class);
-    private static RepositoryService databaseService = RepositoryServiceFactory.repositoryService();
+    private static RepositoryService repositoryService;
     
     @BeforeClass
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
         ApplicationContext.loadProperties(is);
-    }
-
-    @Test
-    public void testSpecout() throws Exception {
-        createData("specout.xml", "specout");
+        repositoryService = RepositoryServiceFactory.repositoryService();
     }
 
     @Test
@@ -66,26 +62,23 @@ public class SpecoutControllerTest {
             body.append(buff, 0, len);
         }
        
-        int count = databaseService.provide(new Transactional<Integer>() {
-
-            @Override
-            public Integer run(Connection conn, Object... params)
-                    throws DatabaseException {
-                DocumentEntity entity = new DocumentEntity();
-                entity.setDocumentId("testpov");
-                entity.setController(SpecoutController.class.getName());
-                entity.setTitle("テスト観点");
-                entity.setContent(body.toString());
-                entity.setCreateUser(getClass().getSimpleName());
-                entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
-                entity.setUpdateUser(getClass().getSimpleName());
-                entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
-                entity.setOwnerId(getClass().getName());
-                return put(entity);
-            }
-            
-        });
+        DocumentEntity entity = new DocumentEntity();
+        entity.setDocumentId("testpov");
+        entity.setController(SpecoutController.class.getName());
+        entity.setTitle("テスト観点");
+        entity.setContent(body.toString());
+        entity.setCreateUser(getClass().getSimpleName());
+        entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
+        entity.setUpdateUser(getClass().getSimpleName());
+        entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
+        entity.setOwnerId(getClass().getSimpleName());
+        int count = repositoryService.put(entity);
         assertEquals(1, count);
+    }
+
+    @Test
+    public void testSpecout() throws Exception {
+        createData("specout.xml", "specout");
     }
 
     @Test
@@ -103,24 +96,17 @@ public class SpecoutControllerTest {
             body.append(buff, 0, len);
         }
        
-        databaseService.provide(new Transactional<Integer>() {
-            @Override
-            public Integer run(Connection conn, Object... params)
-                    throws DatabaseException {
-                String path = fileName.replaceAll("\\..*$", "");
-                DocumentEntity entity = new DocumentEntity();
-                entity.setDocumentId(path);
-                entity.setController(SpecoutController.class.getName());
-                entity.setTitle(title);
-                entity.setContent(body.toString());
-                entity.setCreateUser(getClass().getSimpleName());
-                entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
-                entity.setUpdateUser(getClass().getSimpleName());
-                entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
-                entity.setOwnerId(getClass().getSimpleName());
-                return put(entity);
-            }
-            
-        });
+        String path = fileName.replaceAll("\\..*$", "");
+        DocumentEntity entity = new DocumentEntity();
+        entity.setDocumentId(path);
+        entity.setController(SpecoutController.class.getName());
+        entity.setTitle(title);
+        entity.setContent(body.toString());
+        entity.setCreateUser(getClass().getSimpleName());
+        entity.setCreateDate(new Timestamp(System.currentTimeMillis()));
+        entity.setUpdateUser(getClass().getSimpleName());
+        entity.setUpdateDate(new Timestamp(System.currentTimeMillis()));
+        entity.setOwnerId(getClass().getSimpleName());
+        repositoryService.put(entity);
     }
 }

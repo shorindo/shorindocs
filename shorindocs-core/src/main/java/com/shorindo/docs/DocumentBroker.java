@@ -17,14 +17,11 @@ package com.shorindo.docs;
 
 import static com.shorindo.docs.DocumentMessages.*;
 
-import java.sql.Connection;
-
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceFactory;
-import com.shorindo.docs.repository.Transactionless;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 
@@ -51,20 +48,10 @@ public final class DocumentBroker extends ActionController {
         return repositoryService.get(entity);
     }
 
-//    private static DatabaseExecutor<DocumentEntity> GET_DOCUMENT_EXEC =
-//            new Transactionless<DocumentEntity>() {
-//        @Override
-//        public DocumentEntity run(Connection conn, Object...params) throws DatabaseException {
-//            DocumentEntity model = new DocumentEntity();
-//            model.setDocumentId((String)params[0]);
-//            return get(model);
-//        }
-//    };
-
     @Override
     public View action(ActionContext context) {
         try {
-            String id = context.getRequest().getServletPath().substring(1);
+            String id = ((String)context.getAttribute("requestPath")).substring(1);
             DocumentEntity model = getDocumentModel(id);
             if (model != null) {
                 context.setAttribute("document", model);
