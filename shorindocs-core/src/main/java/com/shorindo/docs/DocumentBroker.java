@@ -22,7 +22,6 @@ import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceFactory;
-import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 
 /**
@@ -49,7 +48,7 @@ public final class DocumentBroker extends ActionController {
     }
 
     @Override
-    public View action(ActionContext context) {
+    public Object action(ActionContext context) {
         try {
             String id = ((String)context.getAttribute("requestPath")).substring(1);
             DocumentEntity model = getDocumentModel(id);
@@ -58,14 +57,14 @@ public final class DocumentBroker extends ActionController {
                 return getController(model).action(context);
             } else {
                 LOG.warn(DOCS_3006, id);
-                return new ErrorView(404);
+                return null;
             }
         } catch (DocumentException e) {
             LOG.error(DOCS_5008, e);
-            return new ErrorView(500);
+            return null;
         } catch (DatabaseException e) {
             LOG.error(DOCS_5008, e);
-            return new ErrorView(500);
+            return null;
         }
     }
 
@@ -74,7 +73,8 @@ public final class DocumentBroker extends ActionController {
      */
     @Override
     public View view(ActionContext context) {
-        return null;
+        context.setAction("view");
+        return (View)action(context);
     }
 
 }

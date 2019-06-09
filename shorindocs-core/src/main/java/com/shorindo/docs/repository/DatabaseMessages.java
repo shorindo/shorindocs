@@ -39,6 +39,7 @@ public enum DatabaseMessages implements ActionMessages {
     DBMS_1102("トランザクションをコミットします。"),
     DBMS_1103("トランザクションをロールバックします。"),
     DBMS_1104("エンティティ[{0}]の定義は正常です。"),
+    DBMS_1107("エンティティ[{0}]の定義に異常があります。"),
     DBMS_1105("DB接続：{0}"),
     DBMS_1106("DB切断：{0}"),
 

@@ -21,22 +21,29 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.junit.Test;
+
 import net.arnx.jsonic.JSON;
 
 /**
  * 
  */
-public class JsonRPC {
-    public Object execute(String method, Object o) {
+public class DocumentControllerTest {
+    private Object execute(String docId, String methodName, Object...o) {
         try {
-            URLConnection conn = new URL("http://localhost:8080/docs/api")
+            URLConnection conn = new URL("http://localhost:8080/docs/" + docId)
                 .openConnection();
             conn.setDoInput(true);
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
-            JSON.encode(o, conn.getOutputStream());
+            JsonRpcRequest request = new JsonRpcRequest();
+            request.setId(String.valueOf(System.currentTimeMillis()));
+            request.setMethod("show");
+            request.setParams(o);
+            JSON.encode(request, conn.getOutputStream());
             InputStream is = conn.getInputStream();
-            return JSON.decode(is);
+            JsonRpcResponse response = JSON.decode(is, JsonRpcResponse.class);
+            return response.getResult();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -46,11 +53,13 @@ public class JsonRPC {
         return null;
     }
 
-    public static void main(String[] args) throws Exception {
-        JsonRPC rpc = new JsonRPC();
-        Object o = rpc.execute("foo", new Object() {
-           public int intValue = 123;
-           public String stringValue = "string";
-        });
+    private Object show(String docId) {
+        return execute(docId, "show");
+    }
+
+    @Test
+    public void testView() throws Exception {
+        Object result = show("specout");
+        System.out.println(result);
     }
 }

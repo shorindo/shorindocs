@@ -15,15 +15,10 @@
  */
 package com.shorindo.docs;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-
-//import javax.servlet.ServletContext;
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpServletResponse;
 
 import com.shorindo.docs.auth.entity.UserEntity;
 
@@ -33,26 +28,13 @@ import com.shorindo.docs.auth.entity.UserEntity;
 public class ActionContext {
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionContext.class);
     private ViewModel viewModel;
-//    private HttpServletRequest request;
-//    private HttpServletResponse response;
-//    private ServletContext servletContext;
+    private String action = "view";
     private Locale locale;
     private ResourceBundle bundle;
 
-//    public ActionContext(HttpServletRequest req, HttpServletResponse res, ServletContext ctx) {
     public ActionContext() {        
-//        viewModel = new ViewModel(req);
-//        request = req;
-//        response = res;
-//        servletContext = ctx;
-//        locale = req.getLocale();
-//        bundle = ResourceBundle.getBundle("messages", req.getLocale());
-//        this.setAttribute("request", request);
-//        this.setAttribute("response", response);
-//        this.setAttribute("session", request.getSession());
+        bundle = ResourceBundle.getBundle("messages", Locale.JAPANESE /*req.getLocale()*/);
         Map<String,String> application = new HashMap<String,String>();
-//        application.put("contextPath", servletContext.getContextPath());
-//        application.put("info", servletContext.getServerInfo());
         this.setAttribute("application", application);
     }
 
@@ -64,43 +46,12 @@ public class ActionContext {
         return viewModel;
     }
 
-//    private String path;
-//    public void setPath(String path) {
-//        this.path = path;
-//    }
-//
-//    public String getPath() {
-//        return this.path;
-//    }
-
-//    public HttpServletRequest getRequest() {
-//        return request;
-//    }
-//
-//    public HttpServletResponse getResponse() {
-//        return response;
-//    }
-//
-//    public ServletContext getApplication() {
-//        return servletContext;
-//    }
-
-    public String getAction() {
-        String action = getParameter("action");
-        if (action == null || "".equals(action)) {
-            return "view";
-        } else {
-            return action;
-        }
+    public void setAction(String action) {
+        this.action = action;
     }
 
-    public String getFormat() {
-        String format = getParameter("format");
-        if (format == null || "".equals(format)) {
-            return "html";
-        } else {
-            return format;
-        }
+    public String getAction() {
+        return action;
     }
 
     public Locale getLocale() {
@@ -118,24 +69,17 @@ public class ActionContext {
 
     private Map<String,Object> attributes = new HashMap<String,Object>();
     public Map<String,Object> getAttributes() {
-//        Map<String,Object> resultMap = new HashMap<String,Object>();
-//        for (Enumeration<?> e = request.getAttributeNames(); e.hasMoreElements();) {
-//            String name = (String)e.nextElement();
-//            resultMap.put(name, request.getAttribute(name));
-//        }
         return attributes;
     }
     public void setAttribute(String key, Object value) {
-//        request.setAttribute(key, value);
         attributes.put(key, value);
     }
     public Object getAttribute(String key) {
-//        return request.getAttribute(key);
         return attributes.get(key);
     }
-    public String getParameter(String key) {
-        //LOG.debug("getParameter(" + key + ")=>" + request.getParameter(key));
-//        return request.getParameter(key);
-        return null;
-    }
+//    public String getParameter(String key) {
+//        //LOG.debug("getParameter(" + key + ")=>" + request.getParameter(key));
+////        return request.getParameter(key);
+//        return null;
+//    }
 }

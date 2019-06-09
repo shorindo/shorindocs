@@ -17,14 +17,20 @@ package com.shorindo.docs;
 
 import static com.shorindo.docs.DocumentMessages.*;
 
+import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.List;
+
+import javax.xml.bind.JAXB;
+
+import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceFactory;
+import com.shorindo.docs.specout.SpecoutEntity;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
@@ -35,7 +41,7 @@ import com.shorindo.docs.view.View;
 public abstract class DocumentController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentController.class);
     private static final RepositoryService repositoryService = RepositoryServiceFactory.repositoryService();
-    private DocumentEntity model;
+//    private DocumentEntity model;
 
     public static void setup(List<Class<?>> clazzList) {
         for (Class<?> clazz : clazzList) {
@@ -46,8 +52,37 @@ public abstract class DocumentController extends ActionController {
     /**
      * 
      */
-    protected DocumentEntity getModel() {
-        return model;
+    protected DocumentEntity getModel(ActionContext context) {
+        try {
+            DocumentEntity entity = new DocumentEntity();
+            entity.setDocumentId((String)context.getAttribute("documentId"));
+            entity.setVersion(0);
+            return repositoryService.get(entity);
+        } catch (DatabaseException e) {
+            LOG.error(DOCS_9999, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 
+     * @param context
+     * @return
+     * @throws DocumentException
+     */
+    @ActionMethod
+    public String show(ActionContext context) throws DocumentException {
+        try {
+            DocumentEntity entity = new DocumentEntity();
+            entity.setDocumentId((String)context.getAttribute("documentId"));
+            entity.setVersion(0);
+            entity = repositoryService.get(entity);
+            String xml = entity.getContent();
+            SpecoutEntity specout = JAXB.unmarshal(new StringReader(xml), SpecoutEntity.class);
+            return JSON.encode(specout, true);
+        } catch (DatabaseException e) {
+            throw new DocumentException("show", e);
+        }
     }
 
     /**
@@ -58,9 +93,9 @@ public abstract class DocumentController extends ActionController {
      */
     @ActionMethod
     public View save(ActionContext context) throws DocumentException {
-        DocumentEntity model = getModel();
-        model.setTitle(context.getParameter("title"));
-        model.setContent(context.getParameter("body"));
+        DocumentEntity model = getModel(context);
+//        model.setTitle(context.getParameter("title"));
+//        model.setContent(context.getParameter("body"));
         String id = model.getDocumentId();
         try {
             int result = repositoryService.put(model);
@@ -89,8 +124,8 @@ public abstract class DocumentController extends ActionController {
             DocumentEntity model = new DocumentEntity();
             model.setDocumentId(id);
             model.setController(getClass().getName());
-            model.setTitle(context.getParameter("title"));
-            model.setContent(context.getParameter("body"));
+//            model.setTitle(context.getParameter("title"));
+//            model.setContent(context.getParameter("body"));
 
             if (repositoryService.put(model) >= 0) {
                 return new RedirectView(id + "?action=edit", context);
@@ -111,7 +146,7 @@ public abstract class DocumentController extends ActionController {
      */
     @ActionMethod
     public View remove(ActionContext context) throws DocumentException {
-        DocumentEntity model = getModel();
+        DocumentEntity model = getModel(context);
         String id = model.getDocumentId();
         if ("index".equals(id)) {
             return new RedirectView("/index", context);
@@ -139,6 +174,7 @@ public abstract class DocumentController extends ActionController {
         return repositoryService.query(
               "SELECT document_id,title,update_date " +
               "FROM   docs_document " +
+              "WHERE  version=0 " +
               "ORDER  BY update_date DESC " +
               "LIMIT  10",
               DocumentEntity.class);

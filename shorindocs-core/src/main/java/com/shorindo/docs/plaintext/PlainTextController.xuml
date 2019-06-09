@@ -18,7 +18,7 @@
         </listbox>
       </vbox>
       <vbox flex="1">
-        {{document.content}}
+        {{content}}
       </vbox>
     </hbox>
   </vbox>

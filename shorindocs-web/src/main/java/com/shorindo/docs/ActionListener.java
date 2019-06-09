@@ -54,6 +54,7 @@ public class ActionListener implements ServletContextListener {
             }
         }
 
+        DocumentServiceFactory.init();
         XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
     }
 

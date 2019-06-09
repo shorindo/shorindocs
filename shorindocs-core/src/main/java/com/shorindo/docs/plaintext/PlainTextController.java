@@ -22,6 +22,8 @@ import com.shorindo.docs.DocumentController;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
 import com.shorindo.docs.entity.DocumentEntity;
+import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceFactory;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
@@ -32,6 +34,7 @@ import com.shorindo.xuml.XumlView;
 @ContentTypeReady("text/plain")
 public class PlainTextController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(PlainTextController.class);
+    private static final RepositoryService repositoryService = RepositoryServiceFactory.repositoryService();
 
     public PlainTextController() {
     }
@@ -43,8 +46,8 @@ public class PlainTextController extends DocumentController {
     public View view(ActionContext context) {
         LOG.trace("view()");
         try {
-            DocumentEntity model = (DocumentEntity)context.getAttribute("document");
-            String content = model.getContent() == null ? "" : model.getContent();
+            DocumentEntity entity = getModel(context);
+            String content = entity.getContent() == null ? "" : entity.getContent();
             context.setAttribute("content", content
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")

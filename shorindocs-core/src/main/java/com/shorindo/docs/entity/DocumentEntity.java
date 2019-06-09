@@ -30,6 +30,9 @@ public class DocumentEntity extends SchemaEntity {
     @Column(name="DOCUMENT_ID", typeName="VARCHAR")
     private String documentId;
 
+    @Column(name="VERSION", typeName="INT")
+    private int version;
+
     @Column(name="CONTROLLER", typeName="VARCHAR")
     private String controller;
 
@@ -63,6 +66,14 @@ public class DocumentEntity extends SchemaEntity {
 
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public String getController() {

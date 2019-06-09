@@ -158,7 +158,11 @@ public class RepositoryService {
                     resultList.add(msg);
                 }
                 crset.close();
-                LOG.info(DBMS_1104, entityName);
+                if (resultList.size() == 0) {
+                    LOG.info(DBMS_1104, entityName);
+                } else {
+                    LOG.error(DBMS_1107, entityName);
+                }
             }
             return resultList;
         } catch (SQLException e) {
@@ -955,7 +959,7 @@ public class RepositoryService {
                 if (field != null) {
                     columnCache.setField(field);
                 } else {
-                    throw new SQLException(DBMS_5119.getMessage(LANG, columnName));
+                    throw new SQLException(DBMS_5119.getMessage(LANG, columnName, columnName));
                 }
 
                 // PreparedStatement/ResultSetのsetter/getter

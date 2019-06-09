@@ -11,6 +11,12 @@
             <primaryKey>1</primaryKey>
         </column>
         <column>
+            <name>VERSION</name>
+            <type>int</type>
+            <notNull>true</notNull>
+            <primaryKey>2</primaryKey>
+        </column>
+        <column>
             <name>CONTROLLER</name>
             <type>varchar</type>
             <size>256</size>

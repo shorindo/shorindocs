@@ -34,26 +34,26 @@ public abstract class ActionController {
     @ActionMethod
     public abstract View view(ActionContext context);
 
-    public View action(ActionContext context) {
+    public Object action(ActionContext context) {
         LapCounter lap = new LapCounter();
         LOG.debug(DOCS_1107, getClass().getSimpleName() + ".action()");
         try {
             Class<?> clazz = getClass();
             while (clazz != null) {
                 Method method = clazz.getMethod(context.getAction(), ActionContext.class);
-                if (method.getAnnotation(ActionMethod.class) != null &&
-                        View.class.isAssignableFrom(method.getReturnType())) {
-                    View view = (View)method.invoke(this, context);
+                if (method.getAnnotation(ActionMethod.class) != null) {
+                    Object result = method.invoke(this, context);
                     LOG.debug(DOCS_1108, getClass().getSimpleName() + ".action()", lap.elapsed());
-                    return view;
+                    return result;
                 }
                 clazz = clazz.getSuperclass();
             }
             LOG.warn(DOCS_3003, context.getAction());
-            return view(context);
+            return null;
         } catch (Exception e) {
             LOG.error(DOCS_3003, e, context.getAction());
-            return new ErrorView(500);
+            //return new ErrorView(500);
+            throw new RuntimeException(e);
         }
     }
 

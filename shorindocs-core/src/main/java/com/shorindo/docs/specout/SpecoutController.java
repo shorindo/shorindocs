@@ -48,7 +48,7 @@ public class SpecoutController extends DocumentController {
     @Override @ActionMethod
     public View view(ActionContext context) {
         try {
-            DocumentEntity model = (DocumentEntity)context.getAttribute("document");
+            DocumentEntity model = getModel(context);
             String content = model.getContent() == null ? "" : model.getContent();
             SpecoutEntity specout = JAXB.unmarshal(new StringReader(content), SpecoutEntity.class);
             context.setAttribute("specout", specout);
