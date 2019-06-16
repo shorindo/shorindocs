@@ -15,6 +15,8 @@
  */
 package com.shorindo.docs.auth.entity;
 
+import java.util.Date;
+
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
@@ -24,8 +26,63 @@ import com.shorindo.docs.repository.Table;
  */
 @Table("AUTH_GROUP")
 public class GroupEntity extends SchemaEntity {
+    private String groupId;
+    private String groupName;
+    private String ownerId;
+    private int status;
+    private Date createdDate;
+    private Date updatedDate;
+
     public GroupEntity() throws DatabaseException {
         super();
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
 }

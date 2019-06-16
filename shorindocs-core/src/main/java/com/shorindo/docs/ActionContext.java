@@ -27,10 +27,13 @@ import com.shorindo.docs.auth.entity.UserEntity;
  */
 public class ActionContext {
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionContext.class);
-    private ViewModel viewModel;
+//    private ViewModel viewModel;
     private String action = "view";
     private Locale locale;
     private ResourceBundle bundle;
+
+    private String id;
+    
 
     public ActionContext() {        
         bundle = ResourceBundle.getBundle("messages", Locale.JAPANESE /*req.getLocale()*/);
@@ -38,12 +41,12 @@ public class ActionContext {
         this.setAttribute("application", application);
     }
 
-    public UserEntity getUser() {
-        return new UserEntity();
+    public String getId() {
+        return id;
     }
 
-    public ViewModel getViewModel() {
-        return viewModel;
+    public UserEntity getUser() {
+        return new UserEntity();
     }
 
     public void setAction(String action) {

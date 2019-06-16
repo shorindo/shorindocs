@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2019 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,37 +15,68 @@
  */
 package com.shorindo.docs.outlogger;
 
-import java.io.FileInputStream;
+import static org.junit.Assert.*;
+
 import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
 
 /**
  * 
  */
 public class OutloggerServiceTest {
-    private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerServiceTest.class);
-    private static OutloggerService service;
+    private OutloggerService service = new OutloggerService();
 
     @BeforeClass
     public static void setUpBefore() throws Exception {
-        InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
+        InputStream is = OutloggerServiceTest.class.getClassLoader().getResourceAsStream("site.properties");
         ApplicationContext.loadProperties(is);
-        service = new OutloggerService();
     }
 
     @Test
-    public void testCreateSchema() throws Exception {
-        service.createSchema();
+    public void testAddLog() throws Exception {
+        OutloggerEntity entity = new OutloggerEntity();
+        entity.setDocumentId("test");
+        entity.setLogId(1);
+        entity.setContent("putLog " + new Date());
+        entity.setCreateUser("testuser");
+        entity.setCreateDate(new Date());
+        entity.setUpdateUser("testuser");
+        entity.setUpdateDate(new Date());
+        service.putLog(entity);
     }
 
     @Test
-    public void testCreateMetaData() throws Exception {
-        String metaData = service.createMetaData();
-        LOG.info(metaData);
+    public void testModLog() throws Exception {
+        OutloggerEntity entity = new OutloggerEntity();
+        entity.setDocumentId("test");
+        entity.setContent("putLog[1]");
+        entity.setCreateUser("testuser");
+        entity.setCreateDate(new Date());
+        entity.setUpdateUser("testuser");
+        entity.setUpdateDate(new Date());
+        entity = service.putLog(entity);
+
+        entity.setContent("putLog[2]");
+        entity = service.putLog(entity);
+
+        entity.setContent("putLog[3]");
+        entity = service.putLog(entity);
+    }
+
+    @Test
+    public void testListLog() throws Exception {
+        OutloggerEntity entity = new OutloggerEntity();
+        entity.setDocumentId("test");
+        List<OutloggerEntity> entityList = service.listLog(entity);
+        assertTrue(entityList.size() > 0);
+        entityList.stream().forEach(e -> {
+            System.out.println(e);
+        });
     }
 }

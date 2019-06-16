@@ -15,9 +15,12 @@
  */
 package com.shorindo.docs.auth.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.repository.Column;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
 
@@ -29,14 +32,31 @@ public class UserEntity extends SchemaEntity {
     @SuppressWarnings("unused")
     private static final ActionLogger LOG = ActionLogger.getLogger(UserEntity.class);
 
+    @Column(name="USER_ID", typeName="VARCHAR")
     private String userId = "anonymous";
-    private String loginId;
+
+    @Column(name="LOGIN_NAME", typeName="VARCHAR")
+    private String loginName;
+
+    @Column(name="DISPLAY_NAME", typeName="VARCHAR")
     private String displayName;
+
+    @Column(name="PASSWORD", typeName="VARCHAR")
     private String password;
+
+    @Column(name="MAIL", typeName="VARCHAR")
     private String mail;
+
+    @Column(name="STATUS", typeName="INT")
     private int status;
+
+    @Column(name="CREATED_DATE", typeName="TIMESTAMP")
     private Date createdDate;
+
+    @Column(name="UPDATED_DATE", typeName="TIMESTAMP")
     private Date updatedDate;
+
+    private List<GroupEntity> groupList = new ArrayList<GroupEntity>();
 
     public UserEntity() {
     }
@@ -49,12 +69,12 @@ public class UserEntity extends SchemaEntity {
         this.userId = userId;
     }
 
-    public String getLoginId() {
-        return loginId;
+    public String getLoginName() {
+        return loginName;
     }
 
-    public void setLoginId(String loginId) {
-        this.loginId = loginId;
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
     }
 
     public String getDisplayName() {
@@ -105,4 +125,15 @@ public class UserEntity extends SchemaEntity {
         this.updatedDate = updatedDate;
     }
 
+    public List<GroupEntity> getGroupList() {
+        return groupList;
+    }
+
+    public void setGroupList(List<GroupEntity> groupList) {
+        this.groupList = groupList;
+    }
+
+    public void addGroup(GroupEntity group) {
+        this.groupList.add(group);
+    }
 }

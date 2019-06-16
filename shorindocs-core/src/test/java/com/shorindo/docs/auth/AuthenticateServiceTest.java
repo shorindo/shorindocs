@@ -24,18 +24,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.IdentityProvider;
 import com.shorindo.docs.auth.AuthenticateService;
+import com.shorindo.docs.auth.entity.UserEntity;
 
 /**
  * 
  */
 public class AuthenticateServiceTest {
-    @SuppressWarnings("unused")
     private static AuthenticateService authenticateService;
 
     @BeforeClass
     public static void setUpBefore() throws Exception {
-        InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
+        InputStream is = new FileInputStream("src/test/resources/site.properties");
         try {
             ApplicationContext.loadProperties(is);
             authenticateService = AuthenticateServiceFactory.authenticateService();
@@ -45,8 +46,24 @@ public class AuthenticateServiceTest {
     }
 
     @Test
-    public void test() {
-        assertTrue(true);
+    public void testHashPassword() throws Exception {
+        String hash = authenticateService.hashPassword("password");
+        assertEquals(36, hash.length());
+        assertTrue(authenticateService.confitmPassword("password", hash));
     }
 
+    @Test
+    public void testLogin() throws Exception {
+        authenticateService.login("test", "password");
+    }
+
+    @Test
+    public void testCreateUser() throws Exception {
+        UserEntity entity = new UserEntity();
+        entity.setLoginName(String.format("%x", IdentityProvider.newId()));
+        entity.setPassword("password");
+        entity.setMail("mail");
+        authenticateService.createUser(entity);
+        authenticateService.login(entity.getLoginName(), entity.getPassword());
+    }
 }

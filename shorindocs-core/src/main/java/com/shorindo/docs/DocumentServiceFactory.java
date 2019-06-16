@@ -18,7 +18,6 @@ package com.shorindo.docs;
 import static com.shorindo.docs.DocumentMessages.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.shorindo.docs.admin.AdminSettings;
@@ -28,8 +27,10 @@ import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.outlogger.OutloggerSettings;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.DatabaseSchema;
+import com.shorindo.docs.repository.NotFoundException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceFactory;
+import com.shorindo.docs.specout.SpecoutSettings;
 
 /**
  * 
@@ -70,6 +71,7 @@ public abstract class DocumentServiceFactory {
         addSettings(AdminSettings.class);
         addSettings(DocumentSettings.class);
         addSettings(OutloggerSettings.class);
+        addSettings(SpecoutSettings.class);
     }
 
     public static void addSettings(Class<? extends PluginSettings> settingsClass) {
@@ -121,23 +123,19 @@ public abstract class DocumentServiceFactory {
         ActionController controller = controllerMap.get(path);
         if (controller == null) {
             try {
-                List<DocumentEntity> entityList = repositoryService.query(
-                        "SELECT CONTROLLER FROM DOCS_DOCUMENT " +
-                        "WHERE DOCUMENT_ID=? AND VERSION=0",
-                        DocumentEntity.class,
-                        path.substring(1));
-                if (entityList.size() > 0) {
-                    DocumentEntity entity = entityList.get(0);
-                    if (classMap.containsKey(entity.getController())) {
-                        controller = classMap.get(entity.getController());    
-                    } else {
-                        Class<?> clazz = Class.forName(entity.getController());
-                        controller = (ActionController)clazz.newInstance();
-                        classMap.put(entity.getController(), controller);
-                    }
+                DocumentEntity key = new DocumentEntity();
+                key.setDocumentId(path.substring(1));
+                key.setVersion(0);
+                DocumentEntity entity = repositoryService.get(key);
+                if (classMap.containsKey(entity.getController())) {
+                    controller = classMap.get(entity.getController());    
                 } else {
-                    LOG.warn(DOCS_5010, path);
+                    Class<?> clazz = Class.forName(entity.getController());
+                    controller = (ActionController)clazz.newInstance();
+                    classMap.put(entity.getController(), controller);
                 }
+            } catch (NotFoundException e) {
+                LOG.warn(DOCS_5010, path);
             } catch (DatabaseException e) {
                 LOG.error(DOCS_9999, e);
             } catch (ClassNotFoundException e) {

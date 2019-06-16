@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2019 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.model;
-
-import java.util.List;
+package com.shorindo.docs.repository;
 
 /**
  * 
  */
-public interface Group extends Principal {
-    public List<Principal> getMembers();
+public class Transaction<T> implements Transactionable<T> {
+    protected RepositoryService repositoryService;
+
+    @Override
+    public T run(Object... params) throws DatabaseException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

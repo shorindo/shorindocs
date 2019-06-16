@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.outlogger;
+package com.shorindo.docs.specout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,20 +22,15 @@ import java.util.List;
 import com.shorindo.docs.ActionController;
 import com.shorindo.docs.PluginSettings;
 import com.shorindo.docs.repository.DatabaseSchema;
-import com.shorindo.docs.repository.RepositoryService;
-import com.shorindo.docs.repository.RepositoryServiceFactory;
 
 /**
  * 
  */
-public class OutloggerSettings extends PluginSettings {
-    private RepositoryService repositoryService
-        = RepositoryServiceFactory.repositoryService();
+public class SpecoutSettings extends PluginSettings {
 
     @Override
     public List<ActionController> getControllers() {
         List<ActionController> controllers = new ArrayList<ActionController>();
-        controllers.add(new OutloggerController());
         Collections.unmodifiableList(controllers);
         return controllers;
     }
@@ -43,7 +38,6 @@ public class OutloggerSettings extends PluginSettings {
     @Override
     public List<DatabaseSchema> getSchemas() {
         List<DatabaseSchema> schemas = new ArrayList<DatabaseSchema>();
-        schemas.add(repositoryService.loadSchema(getClass().getResourceAsStream("Outlogger.dsdl")));
         Collections.unmodifiableList(schemas);
         return schemas;
     }

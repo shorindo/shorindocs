@@ -19,6 +19,7 @@ import static com.shorindo.docs.DocumentMessages.*;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +37,32 @@ public class BeanUtil {
     private static final Pattern SNAKE_PATTERN = Pattern.compile("_*([^_])([^_]*)");
     private static final Pattern CAMEL_PATTERN = Pattern.compile("(.[^A-Z0-9]*)");
     private static final Pattern BEAN_PATTERN = Pattern.compile("\\.?([^\\.\\[\\s]+)(\\[([^\\]]+)\\])?");
+
+    public static <T> T copy(Object source, Class<T> clazz) {
+        T dest = null;
+        try {
+            dest = clazz.newInstance();
+            for (Method setterMethod : clazz.getMethods()) {
+                if (!setterMethod.getName().startsWith("set") ||
+                        setterMethod.getParameterCount() != 1) {
+                    continue;
+                }
+                String getterMethodName = "get" + setterMethod.getName().substring(3);
+                try {
+                    Method getterMethod = source.getClass().getMethod(getterMethodName);
+                    if (getterMethod.getReturnType().isAssignableFrom(setterMethod.getParameterTypes()[0])) {
+                        setterMethod.invoke(dest, getterMethod.invoke(source));
+                    }
+                } catch (Exception e) {
+                }
+            }
+        } catch (InstantiationException e1) {
+            e1.printStackTrace();
+        } catch (IllegalAccessException e1) {
+            e1.printStackTrace();
+        }
+        return dest;
+    }
 
     /**
      * 
@@ -99,16 +126,16 @@ public class BeanUtil {
      * @return
      */
     private static String createMethodName(String prefix, String propertyName) {
-        String getterName = prefix;
+        String methodName = prefix;
         Matcher matcher = PROPERTY_PATTERN.matcher(propertyName);
         int start = 0;
         while (matcher.find(start)) {
-            getterName +=
+            methodName +=
                     matcher.group(1).toUpperCase() +
                     matcher.group(2);
             start = matcher.end();
         }
-        return getterName;
+        return methodName;
     }
 
     /**
@@ -285,7 +312,7 @@ public class BeanUtil {
                 Method method = bean.getClass().getMethod(setterName, targetType);
                 method.invoke(bean, value);
             } catch (Exception e) {
-                if (Long.class.isAssignableFrom(targetType)) {
+                if (Byte.class.isAssignableFrom(targetType)) {
                     targetType = byte.class;
                 } else if (Short.class.isAssignableFrom(targetType)) {
                     targetType = short.class;

@@ -34,15 +34,6 @@ import net.arnx.jsonic.JSON;
 import net.arnx.jsonic.JSONException;
 
 import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.ResourceFinder.ClassMatcher;
-import com.shorindo.docs.admin.AdminSettings;
-import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.auth.AuthenticateSettings;
-import com.shorindo.docs.outlogger.OutloggerSettings;
-import com.shorindo.docs.repository.DatabaseException;
-import com.shorindo.docs.repository.DatabaseSchema;
-import com.shorindo.docs.repository.RepositoryService;
-import com.shorindo.docs.repository.RepositoryServiceFactory;
 import com.shorindo.docs.view.DefaultView;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
@@ -62,38 +53,7 @@ public class ActionServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-
-//        // FIXME
-//        addSettings(AuthenticateSettings.class);
-//        addSettings(AdminSettings.class);
-//        addSettings(DocumentSettings.class);
-//        addSettings(OutloggerSettings.class);
     }
-
-//    public static void addSettings(Class<? extends PluginSettings> settingsClass) {
-//        try {
-//            PluginSettings settings = settingsClass.newInstance();
-//
-//            for (ActionController controller : settings.getControllers()) {
-//                Class<?> clazz = controller.getClass();
-//                ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
-//                if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
-//                    LOG.info(DOCS_0001, mapping.value(), clazz);
-//                    actionMap.put(mapping.value(), controller);
-//                }
-//            }
-//
-//            for (DatabaseSchema schema : settings.getSchemas()) {
-//                repositoryService.validateSchema(schema);
-//            }
-//        } catch (InstantiationException e) {
-//            LOG.error(DOCS_9999, e);
-//        } catch (IllegalAccessException e) {
-//            LOG.error(DOCS_9999, e);
-//        } catch (DatabaseException e) {
-//            LOG.error(DOCS_9999, e);
-//        }
-//    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -112,13 +72,23 @@ public class ActionServlet extends HttpServlet {
                 output(context, res, new RedirectView("/index", context));
                 return;
             }
+
             File file = new File(getServletContext().getRealPath(documentId));
             if (documentId.endsWith(".xuml") && file.exists()) {
                 View view = new XumlView(file.getName(), new FileInputStream(file));
                 output(context, res, view);
-            } else if (!dispatch(context, res)) {
-                LOG.error(DOCS_5003, path);
+            } else if (file.exists()) {
+                output(context, res, new DefaultView(file, context));
+            } else {
+                ActionController controller = DocumentServiceFactory.getController((String)context.getAttribute("requestPath"));
+                if (controller != null) {
+                    output(context, res, controller.view(context));
+                } else {
+                    LOG.error(DOCS_5003, path);
+                    output(context, res, new ErrorView(404));
+                }
             }
+
             LOG.info(DOCS_1106, "GET " + req.getServletPath(),
                     (System.currentTimeMillis() - st));
         } catch (Exception e) {
@@ -178,7 +148,6 @@ public class ActionServlet extends HttpServlet {
             return true;
         }
         
-//        ActionController controller = actionMap.get((String)context.getAttribute("requestPath"));
         ActionController controller = DocumentServiceFactory.getController((String)context.getAttribute("requestPath"));
         if (controller != null) {
             output(context, res, controller.view(context));

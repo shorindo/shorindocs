@@ -21,6 +21,6 @@ import java.util.List;
  * 
  */
 public interface Acl {
-    public List<Principal> getSubjects();
+    public List<UserModel> getSubjects();
     public Permission getOperator();
 }

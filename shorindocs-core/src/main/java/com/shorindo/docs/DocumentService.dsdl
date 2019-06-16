@@ -33,11 +33,13 @@
             <type>text</type>
         </column>
         <column>
-            <name>CONTENT_CACHE</name>
-            <type>text</type>
+            <name>OWNER_ID</name>
+            <type>varchar</type>
+            <size>36</size>
+            <notNull>true</notNull>
         </column>
         <column>
-            <name>OWNER_ID</name>
+            <name>ACL_ID</name>
             <type>varchar</type>
             <size>36</size>
             <notNull>true</notNull>

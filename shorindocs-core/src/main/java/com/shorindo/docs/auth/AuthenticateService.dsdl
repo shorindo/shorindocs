@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <schema namespace="com.shorindo.docs.auth">
     <table>
+        <javaClass>com.shorindo.docs.auth.entity.AuthSessionEntity</javaClass>
         <name>AUTH_SESSION</name>
         <column>
             <name>SESSION_ID</name>

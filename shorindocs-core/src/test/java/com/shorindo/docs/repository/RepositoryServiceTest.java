@@ -44,37 +44,43 @@ public class RepositoryServiceTest {
     
     @BeforeClass
     public static void setUpBefore() throws Exception {
-        InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
+        InputStream is = new FileInputStream("src/test/resources/site.properties");
         ApplicationContext.loadProperties(is);
         
         repositoryService = RepositoryServiceFactory.repositoryService();
-        repositoryService.execute("DROP TABLE IF EXISTS SAMPLE");
-        repositoryService.execute("CREATE TABLE IF NOT EXISTS SAMPLE (" +
-                     "    STRING_VALUE VARCHAR(100) UNIQUE," +
-                     "    INT_VALUE INT," +
-                     "    DOUBLE_VALUE DOUBLE," +
-                     "    DATE_VALUE DATETIME," +
-                     "    CONSTRAINT PRIMARY KEY (STRING_VALUE, INT_VALUE)" +
-                     ")"
-                );
+        repositoryService.execute(
+                "DROP TABLE IF EXISTS SAMPLE");
+        repositoryService.execute(
+                "CREATE TABLE IF NOT EXISTS SAMPLE (" +
+                "    STRING_VALUE VARCHAR(100) UNIQUE," +
+                "    INT_VALUE INT," +
+                "    DOUBLE_VALUE DOUBLE," +
+                "    DATE_VALUE DATETIME," +
+                "    CONSTRAINT PRIMARY KEY (STRING_VALUE, INT_VALUE)" +
+                ")");
     }
 
     @AfterClass
     public static void tearDownAfter() throws Exception {
-        repositoryService.execute("DROP TABLE SAMPLE");
+        repositoryService.execute(
+                "DROP TABLE SAMPLE");
     }
 
     @Test
     public void testTransactional() throws Exception {
         long st = System.currentTimeMillis();
-        SampleEntity result = repositoryService.transaction(new Transactionable<SampleEntity>() {
-            @Override
-            public SampleEntity run(Object...params) throws DatabaseException {
-                repositoryService.execute("INSERT INTO SAMPLE VALUES('BAR', 123, 123.456, '1970/01/01 12:34:56')");
-                List<SampleEntity> resultList = repositoryService.query("SELECT * FROM SAMPLE", SampleEntity.class);
-                return resultList.get(0);
-            }
-        });
+        SampleEntity result = repositoryService.transaction(
+            new Transactionable<SampleEntity>() {
+                @Override
+                public SampleEntity run(Object...params) throws DatabaseException {
+                    repositoryService.execute(
+                        "INSERT INTO SAMPLE " + 
+                        "VALUES('BAR', 123, 123.456, '1970/01/01 12:34:56')");
+                    List<SampleEntity> resultList = repositoryService.query(
+                        "SELECT * FROM SAMPLE", SampleEntity.class);
+                    return resultList.get(0);
+                }
+            });
         LOG.debug("elapsed:" + (System.currentTimeMillis() - st) + "ms"); 
         assertEquals("BAR", result.getStringValue());
         assertEquals(123, (int)result.getIntValue());
@@ -158,6 +164,7 @@ public class RepositoryServiceTest {
         entity.setStringValue("stringValue");
         entity.setByteObject(Byte.valueOf((byte)123));
         entity.setIntValue(123);
+        entity.setDateValue(new java.util.Date());
         return entity;
     }
 }

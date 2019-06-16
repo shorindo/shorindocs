@@ -15,8 +15,9 @@
  */
 package com.shorindo.docs.outlogger;
 
+import net.arnx.jsonic.JSON;
+
 import com.shorindo.docs.repository.Column;
-import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
 
@@ -27,21 +28,21 @@ import com.shorindo.docs.repository.Table;
 public class OutloggerEntity extends SchemaEntity {
     //private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerEntity.class);
 
-    public OutloggerEntity() throws DatabaseException {
+    public OutloggerEntity() {
         super();
     }
 
     @Column(name="DOCUMENT_ID", typeName="varchar", size=36, primaryKey=1)
     private String documentId;
 
-    @Column(name="LOGGER_ID", typeName="varchar", size=36, primaryKey=2)
-    private String loggerId;
+    @Column(name="LOG_ID", typeName="int",primaryKey=2)
+    private Integer logId;
 
     @Column(name="VERSION", typeName="int")
     private int version;
 
-    @Column(name="PARENT_ID", typeName="varchar", size=36)
-    private String parentId;
+    @Column(name="PARENT_ID", typeName="int")
+    private Integer parentId;
 
     @Column(name="DISPLAY_ORDER", typeName="integer")
     private int displayOrder;
@@ -51,9 +52,6 @@ public class OutloggerEntity extends SchemaEntity {
 
     @Column(name="CONTENT", typeName="text")
     private String content;
-
-    @Column(name="CONTENT_CACHE", typeName="text", notNull=false)
-    private String contentCache;
 
     @Column(name="CREATE_USER", typeName="varchar", size=36)
     private String createUser;
@@ -73,11 +71,11 @@ public class OutloggerEntity extends SchemaEntity {
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
-    public String getLoggerId() {
-        return loggerId;
+    public Integer getLogId() {
+        return logId;
     }
-    public void setLoggerId(String loggerId) {
-        this.loggerId = loggerId;
+    public void setLogId(Integer logId) {
+        this.logId = logId;
     }
     public int getVersion() {
         return version;
@@ -103,16 +101,10 @@ public class OutloggerEntity extends SchemaEntity {
     public void setContent(String content) {
         this.content = content;
     }
-    public String getContentCache() {
-        return contentCache;
-    }
-    public void setContentCache(String contentCache) {
-        this.contentCache = contentCache;
-    }
-    public String getParentId() {
+    public Integer getParentId() {
         return parentId;
     }
-    public void setParentId(String parentId) {
+    public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
     public String getCreateUser() {
@@ -138,5 +130,8 @@ public class OutloggerEntity extends SchemaEntity {
     }
     public void setUpdateDate(java.util.Date updateDate) {
         this.updateDate = updateDate;
+    }
+    public String toString() {
+        return JSON.encode(this);
     }
 }

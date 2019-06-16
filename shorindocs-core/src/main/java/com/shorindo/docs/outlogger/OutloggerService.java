@@ -15,21 +15,30 @@
  */
 package com.shorindo.docs.outlogger;
 
+import static com.shorindo.docs.outlogger.OutloggerMessages.*;
 import static com.shorindo.docs.repository.DatabaseMessages.*;
+import static com.shorindo.docs.DocumentMessages.*;
 
 import java.io.StringWriter;
+import java.sql.ResultSet;
+import java.util.List;
 
 import javax.xml.bind.JAXB;
 
 import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.DocumentException;
 import com.shorindo.docs.DocumentService;
 import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.NotFoundException;
 
 /**
  * 
  */
 public class OutloggerService extends DocumentService {
     private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerService.class);
+
+    protected OutloggerService() {
+    }
 
     /*==========================================================================
      * 初期設定
@@ -72,18 +81,109 @@ public class OutloggerService extends DocumentService {
     /**=========================================================================
      * ドキュメントのアクセス権を操作する。
      */
-    public void listAcl() {}
-    public void addAcl() {}
-    public void removeAcl() {}
+    public void listAcl() {
+    }
+
+    public void addAcl() {
+    }
+
+    public void removeAcl() {
+    }
 
     /**=========================================================================
      * アウトラインを操作する。
      */
-    public void listOutlog() {}
-    public void createOutlog() {}
-    public void registOutlog() {}
-    public void removeOutlog() {}
-    public void commitOutlog() {}
+    public List<OutloggerEntity> listLog(OutloggerEntity entity) throws DocumentException {
+        try {
+            List<OutloggerEntity> entityList = repositoryService.query(
+                    "SELECT * " +
+                    "FROM   DOCS_OUTLOGGER " +
+                    "WHERE  DOCUMENT_ID=? " +
+                    "AND    VERSION=0 " +
+                    "ORDER BY DISPLAY_ORDER ASC",
+                    OutloggerEntity.class,
+                    entity.getDocumentId());
+            return entityList;
+        } catch (DatabaseException e) {
+            throw new DocumentException(e.getMessage(), e);
+        }
+    }
+
+    public OutloggerEntity putLog(OutloggerEntity entity) throws DocumentException {
+        long st = System.currentTimeMillis();
+        LOG.debug(OLOG_0001, "addLog");
+        try {
+            if (entity.getLogId() == null) {
+                entity.setLogId(getNextLogId(entity.getDocumentId()));
+                repositoryService.insert(entity);
+            } else {
+                OutloggerEntity prev = removeLog(entity);
+                if (prev != null) {
+                    entity.setCreateUser(prev.getCreateUser());
+                    entity.setCreateDate(prev.getCreateDate());
+                }
+                repositoryService.insert(entity);
+            }
+            return repositoryService.get(entity);
+        } catch (NotFoundException e) {
+            LOG.warn(DOCS_9999, e);
+            return null;
+        } catch (DatabaseException e) {
+            LOG.warn(DOCS_9999, e);
+            return null;
+        } finally {
+            LOG.debug(OLOG_0002, "addLog", (System.currentTimeMillis() - st));
+        }
+    }
+
+    public OutloggerEntity removeLog(OutloggerEntity entity) throws DocumentException {
+        try {
+            // 前バージョンのデータがあったらバージョンをインクリメントする
+            int version = 0;
+            OutloggerEntity prev = new OutloggerEntity();
+            prev.setDocumentId(entity.getDocumentId());
+            prev.setLogId(entity.getLogId());
+            prev.setVersion(0);
+            prev = repositoryService.get(prev);
+
+            List<OutloggerEntity> versions = repositoryService.query(
+                    "SELECT MAX(VERSION) VERSION " +
+                    "FROM   DOCS_OUTLOGGER " +
+                    "WHERE  DOCUMENT_ID=? AND LOG_ID=?",
+                    OutloggerEntity.class,
+                    entity.getDocumentId(),
+                    entity.getLogId());
+            version = versions.get(0).getVersion() + 1;
+            prev.setVersion(version);
+
+            repositoryService.execute(
+                    "UPDATE DOCS_OUTLOGGER " +
+                    "SET    VERSION=? " +
+                    "WHERE  DOCUMENT_ID=? AND LOG_ID=? AND VERSION=0",
+                    version, prev.getDocumentId(), prev.getLogId());
+
+            return prev;
+        } catch (DatabaseException e) {
+            throw new DocumentException(e.getMessage(), e);
+        } catch (NotFoundException e) {
+            //FIXME LOG.warn(DOCS, args);
+            return null;
+        }
+    }
+
+    private int getNextLogId(String documentId) throws DatabaseException {
+        List<OutloggerEntity> entityList = repositoryService.query(
+                "SELECT MAX(LOG_ID) + 1 LOG_ID " +
+                "FROM   DOCS_OUTLOGGER " +
+                "WHERE  DOCUMENT_ID=?",
+                OutloggerEntity.class,
+                documentId);
+        Integer logId = entityList.get(0).getLogId();
+        if (logId == null) {
+            logId = 1;
+        }
+        return logId;
+    }
 
 //    /**
 //     * 

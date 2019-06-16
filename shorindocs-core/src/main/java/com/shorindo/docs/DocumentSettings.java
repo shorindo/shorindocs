@@ -41,7 +41,6 @@ public class DocumentSettings extends PluginSettings {
     @Override
     public List<ActionController> getControllers() {
         List<ActionController> controllers = new ArrayList<ActionController>();
-        controllers.add(new DocumentBroker());
         Collections.unmodifiableList(controllers);
         return controllers;
     }

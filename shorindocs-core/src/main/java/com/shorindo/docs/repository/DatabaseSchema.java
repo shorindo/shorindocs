@@ -65,12 +65,14 @@ public class DatabaseSchema {
 
     public static interface Entity {
         public String getName();
+        public String getJavaClass();
         public Column getColumn(String name);
         public List<Column> getColumnList();
     }
 
     public static class Table implements Entity {
         private String name;
+        private String javaClass;
         private List<String> aliasList = new ArrayList<String>();
         private List<Column> columnList = new ArrayList<Column>();
 
@@ -93,6 +95,12 @@ public class DatabaseSchema {
         public Table addAlias(String alias) {
             aliasList.add(alias);
             return this;
+        }
+        public String getJavaClass() {
+            return javaClass;
+        }
+        public void setJavaClass(String javaClass) {
+            this.javaClass = javaClass;
         }
         @XmlElement(name="column")
         public List<Column> getColumnList() {
@@ -206,12 +214,13 @@ public class DatabaseSchema {
             return null;
         }
 
-        /* (non-Javadoc)
-         * @see com.shorindo.docs.database.DatabaseSchema.Entity#getColumnList()
-         */
         @Override
         public List<Column> getColumnList() {
-            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public String getJavaClass() {
             return null;
         }
     }

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<schema package="com.shorindo.docs.outlogger">
+<schema namespace="com.shorindo.docs.outlogger">
     <table>
         <name>DOCS_OUTLOGGER</name>
         <column>
@@ -14,12 +14,19 @@
             </relations>
         </column>
         <column>
-            <name>LOGGER_ID</name>
+            <name>LOG_ID</name>
             <type>varchar</type>
             <javaType>String</javaType>
             <size>36</size>
             <notNull>true</notNull>
             <primaryKey>2</primaryKey>
+        </column>
+        <column>
+            <name>VERSION</name>
+            <type>int</type>
+            <javaType>int</javaType>
+            <notNull>true</notNull>
+            <primaryKey>3</primaryKey>
         </column>
         <column>
             <name>DISPLAY_ORDER</name>
@@ -40,17 +47,11 @@
             <notNull>true</notNull>
         </column>
         <column>
-            <name>CONTENT_CACHE</name>
-            <type>text</type>
-            <javaType>String</javaType>
-            <notNull>false</notNull>
-        </column>
-        <column>
             <name>PARENT_ID</name>
             <type>varchar</type>
             <javaType>String</javaType>
             <size>36</size>
-            <notNull>true</notNull>
+            <notNull>false</notNull>
             <relations>
                 <relateTo>DOCS_OUTLOGGER.LOG_ID</relateTo>
             </relations>
@@ -84,89 +85,6 @@
         <column>
             <name>UPDATE_DATE</name>
             <javaType>java.util.Date</javaType>
-            <type>datetime</type>
-            <notNull>true</notNull>
-        </column>
-    </table>
-    
-    <table>
-        <name>DOCS_OUTLOGGER_HIST</name>
-        <column>
-            <name>DOCUMENT_ID</name>
-            <type>varchar</type>
-            <size>36</size>
-            <notNull>true</notNull>
-            <primaryKey>1</primaryKey>
-            <references>
-                <referTo>DOCS_OUTLOGGER.DOCUMENT_ID</referTo>
-            </references>
-        </column>
-        <column>
-            <name>LOG_ID</name>
-            <type>varchar</type>
-            <size>36</size>
-            <notNull>true</notNull>
-            <primaryKey>2</primaryKey>
-            <references>
-                <referTo>DOCS_OUTLOGGER.LOG_ID</referTo>
-            </references>
-        </column>
-        <column>
-            <name>HIST_ID</name>
-            <type>varchar</type>
-            <size>36</size>
-            <notNull>true</notNull>
-            <primaryKey>3</primaryKey>
-        </column>
-        <column>
-            <name>DISPLAY_ORDER</name>
-            <type>integer</type>
-            <notNull>true</notNull>
-        </column>
-        <column>
-            <name>LEVEL</name>
-            <type>smallint</type>
-            <notNull>true</notNull>
-        </column>
-        <column>
-            <name>CONTENT</name>
-            <type>text</type>
-            <notNull>true</notNull>
-        </column>
-        <column>
-            <name>PARENT_ID</name>
-            <type>varchar</type>
-            <size>36</size>
-            <notNull>true</notNull>
-            <references>
-                <referTo>DOCS_OUTLOGGER.LOG_ID</referTo>
-            </references>
-        </column>
-        <column>
-            <name>CREATED_USER</name>
-            <type>varchar</type>
-            <size>36</size>
-            <notNull>true</notNull>
-            <references>
-                <referTo>AUTH_USER.USER_ID</referTo>
-            </references>
-        </column>
-        <column>
-            <name>CREATED_DATE</name>
-            <type>datetime</type>
-            <notNull>true</notNull>
-        </column>
-        <column>
-            <name>UPDATED_USER</name>
-            <type>varchar</type>
-            <size>36</size>
-            <notNull>true</notNull>
-            <references>
-                <referTo>AUTH_USER.USER_ID</referTo>
-            </references>
-        </column>
-        <column>
-            <name>UPDATED_DATE</name>
             <type>datetime</type>
             <notNull>true</notNull>
         </column>

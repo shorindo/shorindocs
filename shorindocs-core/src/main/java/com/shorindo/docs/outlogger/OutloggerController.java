@@ -18,15 +18,23 @@ package com.shorindo.docs.outlogger;
 import static com.shorindo.docs.specout.SpecoutMessages.*;
 
 import java.io.StringReader;
+import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.JAXB;
 
 import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.DocumentController;
+import com.shorindo.docs.DocumentException;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
 import com.shorindo.docs.entity.DocumentEntity;
+import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.NotFoundException;
+import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceFactory;
+import com.shorindo.docs.repository.Transactionable;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
@@ -36,7 +44,12 @@ import com.shorindo.xuml.XumlView;
  */
 @ContentTypeReady("com.shorindo.docs.outlogger.OutloggerController")
 public class OutloggerController extends DocumentController {
-    private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerController.class);
+    private static final ActionLogger LOG =
+            ActionLogger.getLogger(OutloggerController.class);
+    private OutloggerService outloggerService =
+            OutloggerFactory.outloggerService();
+    private RepositoryService repositoryService =
+            RepositoryServiceFactory.repositoryService();
 
     public OutloggerController() {
     }
@@ -59,4 +72,20 @@ public class OutloggerController extends DocumentController {
         }
     }
 
+    @ActionMethod
+    public List<OutloggerEntity> listLogs(ActionContext context, OutloggerEntity entity) throws DocumentException {
+        entity.setDocumentId(context.getId());
+        return outloggerService.listLog(entity);
+    }
+
+    @ActionMethod
+    public void putLog(ActionContext context, OutloggerEntity entity) throws DocumentException {
+        entity.setDocumentId(context.getId());
+        outloggerService.removeLog(entity);
+    }
+
+    @ActionMethod
+    public OutloggerEntity removeLog(ActionContext context, OutloggerEntity entity) throws DocumentException {
+        return outloggerService.removeLog(entity);
+    }
 }

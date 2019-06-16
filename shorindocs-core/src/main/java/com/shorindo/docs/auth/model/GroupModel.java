@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Shorindo, Inc.
+ * Copyright 2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.bean;
+package com.shorindo.docs.auth.model;
 
 /**
  * 
  */
-public class BeanChecker {
+public class GroupModel implements Princimal {
+    private String groupId;
+    private String groupName;
 
-    /**
-     * 
-     */
-    public BeanChecker() {
-        // TODO Auto-generated constructor stub
-        
+    @Override
+    public String getId() {
+        return groupId;
     }
-
+    public String getGroupId() {
+        return groupId;
+    }
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+    public String getGroupName() {
+        return groupName;
+    }
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 }

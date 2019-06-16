@@ -28,6 +28,7 @@ import net.arnx.jsonic.JSON;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.NotFoundException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceFactory;
 import com.shorindo.docs.specout.SpecoutEntity;
@@ -41,7 +42,6 @@ import com.shorindo.docs.view.View;
 public abstract class DocumentController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentController.class);
     private static final RepositoryService repositoryService = RepositoryServiceFactory.repositoryService();
-//    private DocumentEntity model;
 
     public static void setup(List<Class<?>> clazzList) {
         for (Class<?> clazz : clazzList) {
@@ -58,6 +58,8 @@ public abstract class DocumentController extends ActionController {
             entity.setDocumentId((String)context.getAttribute("documentId"));
             entity.setVersion(0);
             return repositoryService.get(entity);
+        } catch (NotFoundException e) {
+            throw new RuntimeException(e);
         } catch (DatabaseException e) {
             LOG.error(DOCS_9999, e);
             throw new RuntimeException(e);
@@ -80,6 +82,8 @@ public abstract class DocumentController extends ActionController {
             String xml = entity.getContent();
             SpecoutEntity specout = JAXB.unmarshal(new StringReader(xml), SpecoutEntity.class);
             return JSON.encode(specout, true);
+        } catch (NotFoundException e) {
+            throw new DocumentException("show", e);
         } catch (DatabaseException e) {
             throw new DocumentException("show", e);
         }
