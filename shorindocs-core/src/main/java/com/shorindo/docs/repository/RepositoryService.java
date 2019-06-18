@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,7 +54,6 @@ import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.BeanUtil;
 import com.shorindo.docs.BeanUtil.BeanNotFoundException;
-import com.shorindo.docs.IdentityProvider;
 
 /**
  * 
@@ -405,7 +403,6 @@ public class RepositoryService {
 
             LOG.debug(DBMS_0011, paramList);
             rset = stmt.executeQuery();
-            ResultSetMapper[] mappers = null;
             List<String> columnList = null;
             Map<String,Method> methodMap = new HashMap<String,Method>();
             for (Method method : clazz.getMethods()) {
@@ -439,9 +436,9 @@ public class RepositoryService {
                         method.invoke(bean, fixInt(rset.getInt(columnName), rset.wasNull()));
                     } else if (long.class.isAssignableFrom(type) || Long.class.isAssignableFrom(type)) {
                         method.invoke(bean, fixLong(rset.getLong(columnName), rset.wasNull()));
+                    } else if (Timestamp.class.isAssignableFrom(type)) {
+                        method.invoke(bean, rset.getTimestamp(columnName));
                     } else if (Date.class.isAssignableFrom(type)) {
-//                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-//                        method.invoke(bean, format.parse(rset.getString(columnName)));
                         method.invoke(bean, Date.from(rset.getTimestamp(columnName).toInstant()));
                     } else if (short.class.isAssignableFrom(type) || Short.class.isAssignableFrom(type)) {
                         method.invoke(bean, fixShort(rset.getShort(columnName), rset.wasNull()));
@@ -542,11 +539,18 @@ public class RepositoryService {
                             method);
                 }
             }
+            List<Object> paramList = new ArrayList<Object>();
             for (ColumnMapping columnMapping : mapping.getColumns()) {
                 if (columnMapping.getPrimaryKey() > 0) {
                     index = applySetMethod(stmt, entity, columnMapping, index);
+                    try {
+                        paramList.add(BeanUtil.getValue(entity, BeanUtil.snake2camel(columnMapping.getColumnName())));
+                    } catch (BeanNotFoundException e) {
+                        paramList.add(null);
+                    }
                 }
             }
+            LOG.debug(DBMS_0011, paramList);
             rset = stmt.executeQuery();
             if (rset.next()) {
                 ResultSetMetaData meta = rset.getMetaData();
@@ -565,9 +569,9 @@ public class RepositoryService {
                         method.invoke(entity, fixInt(rset.getInt(columnName), rset.wasNull()));
                     } else if (long.class.isAssignableFrom(type) || Long.class.isAssignableFrom(type)) {
                         method.invoke(entity, fixLong(rset.getLong(columnName), rset.wasNull()));
+                    } else if (Timestamp.class.isAssignableFrom(type)) {
+                        method.invoke(entity, rset.getTimestamp(columnName));
                     } else if (Date.class.isAssignableFrom(type)) {
-//                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-//                        method.invoke(entity, format.parse(rset.getString(columnName)));
                         method.invoke(entity, Date.from(rset.getTimestamp(columnName).toInstant()));
                     } else if (short.class.isAssignableFrom(type) || Short.class.isAssignableFrom(type)) {
                         method.invoke(entity, fixShort(rset.getShort(columnName), rset.wasNull()));
@@ -1199,6 +1203,7 @@ public class RepositoryService {
         } else if (double.class.isAssignableFrom(clazz) || Double.class.isAssignableFrom(clazz)) {
             stmt.setDouble(index, (double)param);
         } else if (Date.class.isAssignableFrom(clazz)) {
+            //FIXME
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             stmt.setString(index, format.format((Date)param));
         }

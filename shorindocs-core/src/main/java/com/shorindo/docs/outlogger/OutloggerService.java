@@ -20,7 +20,6 @@ import static com.shorindo.docs.repository.DatabaseMessages.*;
 import static com.shorindo.docs.DocumentMessages.*;
 
 import java.io.StringWriter;
-import java.sql.ResultSet;
 import java.util.List;
 
 import javax.xml.bind.JAXB;
@@ -109,9 +108,15 @@ public class OutloggerService extends DocumentService {
         }
     }
 
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws DocumentException
+     */
     public OutloggerEntity putLog(OutloggerEntity entity) throws DocumentException {
         long st = System.currentTimeMillis();
-        LOG.debug(OLOG_0001, "addLog");
+        LOG.debug(OLOG_0001, "putLog");
         try {
             if (entity.getLogId() == null) {
                 entity.setLogId(getNextLogId(entity.getDocumentId()));
@@ -132,11 +137,39 @@ public class OutloggerService extends DocumentService {
             LOG.warn(DOCS_9999, e);
             return null;
         } finally {
-            LOG.debug(OLOG_0002, "addLog", (System.currentTimeMillis() - st));
+            LOG.debug(OLOG_0002, "putLog", (System.currentTimeMillis() - st));
         }
     }
 
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws DocumentException
+     */
+    public OutloggerEntity getLog(OutloggerEntity entity) throws DocumentException {
+        long st = System.currentTimeMillis();
+        LOG.debug(OLOG_0001, "getLog");
+        try {
+            return repositoryService.get(entity);
+        } catch (NotFoundException e) {
+            return null;
+        } catch (DatabaseException e) {
+            throw new DocumentException(e.getMessage(), e);
+        } finally {
+            LOG.debug(OLOG_0002, "getLog", (System.currentTimeMillis() - st));
+        }
+    }
+
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws DocumentException
+     */
     public OutloggerEntity removeLog(OutloggerEntity entity) throws DocumentException {
+        long st = System.currentTimeMillis();
+        LOG.debug(OLOG_0001, "putLog");
         try {
             // 前バージョンのデータがあったらバージョンをインクリメントする
             int version = 0;
@@ -166,11 +199,18 @@ public class OutloggerService extends DocumentService {
         } catch (DatabaseException e) {
             throw new DocumentException(e.getMessage(), e);
         } catch (NotFoundException e) {
-            //FIXME LOG.warn(DOCS, args);
             return null;
+        } finally {
+            LOG.debug(OLOG_0002, "getLog", (System.currentTimeMillis() - st));
         }
     }
 
+    /**
+     * 
+     * @param documentId
+     * @return
+     * @throws DatabaseException
+     */
     private int getNextLogId(String documentId) throws DatabaseException {
         List<OutloggerEntity> entityList = repositoryService.query(
                 "SELECT MAX(LOG_ID) + 1 LOG_ID " +

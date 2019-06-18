@@ -13,23 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.outlogger;
 
-import org.junit.Test;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * 
  */
-public class DocumentControllerTest {
-    private static RpcClient client = new RpcClient("http://localhost:8080/docs/");
+public class ProxyInputStream extends InputStream {
+    private InputStream is;
+    private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    private Object show(String docId) {
-        return client.execute(docId, "show");
+    public ProxyInputStream(InputStream is) {
+        this.is = is;
     }
 
-    @Test
-    public void testView() throws Exception {
-        Object result = show("specout");
-        System.out.println(result);
+    @Override
+    public int read() throws IOException {
+        int c = is.read();
+        baos.write(c);
+        return c;
+    }
+
+    public String toString() {
+        return baos.toString();
     }
 }

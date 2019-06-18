@@ -79,4 +79,19 @@ public class OutloggerServiceTest {
             System.out.println(e);
         });
     }
+
+    @Test
+    public void testRemoveLog() throws Exception {
+        OutloggerEntity entity = new OutloggerEntity();
+        entity.setDocumentId("test");
+        entity.setContent("removeLog " + new Date());
+        entity.setCreateUser("testuser");
+        entity.setCreateDate(new Date());
+        entity.setUpdateUser("testuser");
+        entity.setUpdateDate(new Date());
+        entity = service.putLog(entity);
+
+        service.removeLog(entity);
+        assertNull(service.getLog(entity));
+    }
 }

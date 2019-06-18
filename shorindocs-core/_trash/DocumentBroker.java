@@ -17,6 +17,7 @@ package com.shorindo.docs;
 
 import static com.shorindo.docs.DocumentMessages.*;
 
+import com.shorindo.docs.ActionContext;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;
@@ -50,7 +51,7 @@ public final class DocumentBroker extends ActionController {
     @Override
     public Object action(ActionContext context) {
         try {
-            String id = ((String)context.getAttribute("requestPath")).substring(1);
+            String id = context.getId();
             DocumentEntity model = getDocumentModel(id);
             if (model != null) {
                 context.setAttribute("document", model);

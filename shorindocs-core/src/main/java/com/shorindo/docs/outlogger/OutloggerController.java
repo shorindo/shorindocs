@@ -18,7 +18,6 @@ package com.shorindo.docs.outlogger;
 import static com.shorindo.docs.specout.SpecoutMessages.*;
 
 import java.io.StringReader;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.JAXB;
@@ -30,11 +29,6 @@ import com.shorindo.docs.DocumentException;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
 import com.shorindo.docs.entity.DocumentEntity;
-import com.shorindo.docs.repository.DatabaseException;
-import com.shorindo.docs.repository.NotFoundException;
-import com.shorindo.docs.repository.RepositoryService;
-import com.shorindo.docs.repository.RepositoryServiceFactory;
-import com.shorindo.docs.repository.Transactionable;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
@@ -48,8 +42,6 @@ public class OutloggerController extends DocumentController {
             ActionLogger.getLogger(OutloggerController.class);
     private OutloggerService outloggerService =
             OutloggerFactory.outloggerService();
-    private RepositoryService repositoryService =
-            RepositoryServiceFactory.repositoryService();
 
     public OutloggerController() {
     }
@@ -60,11 +52,14 @@ public class OutloggerController extends DocumentController {
     @Override @ActionMethod
     public View view(ActionContext context) {
         try {
-            DocumentEntity model = (DocumentEntity)context.getAttribute("document");
+            DocumentEntity model = getModel(context);
             String content = model.getContent() == null ? "" : model.getContent();
             OutloggerMetaData metaData = JAXB.unmarshal(new StringReader(content), OutloggerMetaData.class);
             context.setAttribute("outlogger", metaData);
             context.setAttribute("recents", recents());
+            OutloggerEntity key = new OutloggerEntity();
+            key.setDocumentId(model.getDocumentId());
+            context.setAttribute("logs", outloggerService.listLog(key));
             return XumlView.create(getClass());
         } catch (Exception e) {
             LOG.error(SPEC_9001, e);
@@ -73,19 +68,24 @@ public class OutloggerController extends DocumentController {
     }
 
     @ActionMethod
-    public List<OutloggerEntity> listLogs(ActionContext context, OutloggerEntity entity) throws DocumentException {
+    public List<OutloggerEntity> listLog(ActionContext context) throws DocumentException {
+        LOG.debug("listLog");
+        OutloggerEntity entity = new OutloggerEntity();
         entity.setDocumentId(context.getId());
         return outloggerService.listLog(entity);
     }
 
     @ActionMethod
-    public void putLog(ActionContext context, OutloggerEntity entity) throws DocumentException {
-        entity.setDocumentId(context.getId());
-        outloggerService.removeLog(entity);
+    public void putLog(ActionContext context) throws DocumentException {
+        LOG.debug("putLog");
+//        entity.setDocumentId(context.getId());
+//        outloggerService.putLog(entity);
     }
 
     @ActionMethod
-    public OutloggerEntity removeLog(ActionContext context, OutloggerEntity entity) throws DocumentException {
-        return outloggerService.removeLog(entity);
+    public void removeLog(ActionContext context) throws DocumentException {
+        LOG.debug("removeLog");
+//        OutloggerEntity entity;
+//        return outloggerService.removeLog(entity);
     }
 }

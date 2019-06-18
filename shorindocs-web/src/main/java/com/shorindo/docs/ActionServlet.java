@@ -46,9 +46,6 @@ import com.shorindo.xuml.XumlView;
 public class ActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionServlet.class);
-//    private static final ActionMapper actionMap = new ActionMapper();
-//    private static final RepositoryService repositoryService
-//        = RepositoryServiceFactory.repositoryService();
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -65,7 +62,8 @@ public class ActionServlet extends HttpServlet {
         ActionContext context = new ActionContext();
         context.setAttribute("requestPath", req.getServletPath());
         context.setAttribute("contextPath", req.getServletContext().getContextPath());
-        context.setAttribute("documentId", documentId);
+        context.setAttribute("documentId", req.getServletPath().substring(1));
+        context.setId(req.getServletPath().substring(1));
 
         try {
             if (documentId == null || "".equals(documentId)) {
@@ -104,8 +102,8 @@ public class ActionServlet extends HttpServlet {
         LOG.info(DOCS_1105, "POST " + req.getServletPath());
         ActionContext context = new ActionContext();
         context.setAttribute("requestPath", req.getServletPath());
-        context.setAttribute("contextPath", req.getServletContext().getContextPath());
-        context.setAttribute("documentId", req.getServletPath().substring(1));
+        context.setAttribute("contextPath", req.getContextPath());
+        context.setId(req.getServletPath().substring(1));
         if ("application/json".equals(req.getContentType())) {
             res.setContentType("application/json");
             doRpc(context, req.getInputStream(), res.getOutputStream());
@@ -141,14 +139,15 @@ public class ActionServlet extends HttpServlet {
 
     protected boolean dispatch(ActionContext context, HttpServletResponse res)
             throws ServletException, IOException {
-        File file = new File(getServletContext().getRealPath((String)context.getAttribute("requestPath")));
+        String requestPath = (String)context.getAttribute("requestPath");
+        File file = new File(getServletContext().getRealPath(requestPath));
 
         if (file.exists()) {
             output(context, res, new DefaultView(file, context));
             return true;
         }
         
-        ActionController controller = DocumentServiceFactory.getController((String)context.getAttribute("requestPath"));
+        ActionController controller = DocumentServiceFactory.getController(requestPath);
         if (controller != null) {
             output(context, res, controller.view(context));
             return true;

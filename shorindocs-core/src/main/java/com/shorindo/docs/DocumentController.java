@@ -55,7 +55,7 @@ public abstract class DocumentController extends ActionController {
     protected DocumentEntity getModel(ActionContext context) {
         try {
             DocumentEntity entity = new DocumentEntity();
-            entity.setDocumentId((String)context.getAttribute("documentId"));
+            entity.setDocumentId(context.getId());
             entity.setVersion(0);
             return repositoryService.get(entity);
         } catch (NotFoundException e) {
@@ -76,7 +76,7 @@ public abstract class DocumentController extends ActionController {
     public String show(ActionContext context) throws DocumentException {
         try {
             DocumentEntity entity = new DocumentEntity();
-            entity.setDocumentId((String)context.getAttribute("documentId"));
+            entity.setDocumentId(context.getId());
             entity.setVersion(0);
             entity = repositoryService.get(entity);
             String xml = entity.getContent();

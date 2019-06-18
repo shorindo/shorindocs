@@ -27,13 +27,21 @@ import com.shorindo.docs.auth.entity.UserEntity;
  */
 public class ActionContext {
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionContext.class);
-//    private ViewModel viewModel;
     private String action = "view";
     private Locale locale;
     private ResourceBundle bundle;
 
+    // URL
     private String id;
-    
+    private String requestPath;
+    private String contextPath;
+    // RequestHeader
+    // RequestParameter
+    private Map<String,Object> params;
+    // ResponseHeader
+    // ResponseResult
+    // Request属性
+    // Session属性
 
     public ActionContext() {        
         bundle = ResourceBundle.getBundle("messages", Locale.JAPANESE /*req.getLocale()*/);
@@ -41,9 +49,29 @@ public class ActionContext {
         this.setAttribute("application", application);
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getId() {
         return id;
     }
+
+//    public String getRequestPath() {
+//        return requestPath;
+//    }
+//
+//    public void setRequestPath(String requestPath) {
+//        this.requestPath = requestPath;
+//    }
+//
+//    public String getContextPath() {
+//        return contextPath;
+//    }
+//
+//    public void setContextPath(String contextPath) {
+//        this.contextPath = contextPath;
+//    }
 
     public UserEntity getUser() {
         return new UserEntity();

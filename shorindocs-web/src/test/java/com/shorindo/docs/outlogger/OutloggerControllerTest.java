@@ -13,23 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.outlogger;
+
+import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import com.shorindo.docs.RpcClient;
 
 /**
  * 
  */
-public class DocumentControllerTest {
-    private static RpcClient client = new RpcClient("http://localhost:8080/docs/");
+public class OutloggerControllerTest {
+    private RpcClient client = new RpcClient("http://localhost:8080/docs/");
 
-    private Object show(String docId) {
-        return client.execute(docId, "show");
+    @Test
+    public void testListLog() throws Exception {
+        client.execute("outlogger", "listLog");
     }
 
     @Test
-    public void testView() throws Exception {
-        Object result = show("specout");
-        System.out.println(result);
+    public void testPutLog() throws Exception {
+        OutloggerEntity entity = new OutloggerEntity();
+        entity.setDocumentId("outlogger");
+        entity.setContent("putLog");
+        client.execute("outlogger", "putLog", entity);
     }
 }
