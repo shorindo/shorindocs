@@ -17,7 +17,7 @@ package com.shorindo.xuml;
 
 import java.util.Locale;
 
-import com.shorindo.docs.ActionMessages;
+import com.shorindo.docs.action.ActionMessages;
 
 /**
  * 

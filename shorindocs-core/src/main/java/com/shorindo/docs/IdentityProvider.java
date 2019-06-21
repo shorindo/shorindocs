@@ -15,6 +15,9 @@
  */
 package com.shorindo.docs;
 
+import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.document.DocumentMessages;
+
 /**
  * http://d.hatena.ne.jp/maachang/20150624/1435116219
  */

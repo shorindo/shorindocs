@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.shorindo.docs.ResourceFinder.FileMatcher;
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 

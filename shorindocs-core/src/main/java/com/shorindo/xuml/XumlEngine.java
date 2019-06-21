@@ -47,7 +47,7 @@ import org.xml.sax.SAXException;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 

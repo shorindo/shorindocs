@@ -38,6 +38,7 @@ public class RpcClient {
 
     public Object execute(String docId, String methodName, Object...o) {
         try {
+            long st = System.currentTimeMillis();
             URLConnection conn = new URL(base + docId)
                 .openConnection();
             conn.setDoInput(true);
@@ -54,14 +55,13 @@ public class RpcClient {
             Object result = response.getResult();
             System.out.println(">> " + reqStream.toString());
             System.out.println("<< " + resStream.toString());
+            System.out.println("elapsed: " + (System.currentTimeMillis() - st) + " ms");
             return result;
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        
-        return null;
     }
 
 }

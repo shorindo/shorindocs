@@ -50,10 +50,10 @@ import javax.xml.bind.JAXB;
 
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
 
-import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.BeanUtil;
 import com.shorindo.docs.BeanUtil.BeanNotFoundException;
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 

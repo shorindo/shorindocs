@@ -15,8 +15,8 @@
  */
 package com.shorindo.docs.admin;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionController;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.View;
 

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.repository.Column;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;

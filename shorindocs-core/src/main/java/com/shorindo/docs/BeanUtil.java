@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs;
 
-import static com.shorindo.docs.DocumentMessages.*;
+import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -26,6 +26,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 

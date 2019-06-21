@@ -25,6 +25,9 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.document.DocumentMessages;
+import com.shorindo.docs.document.DocumentServiceFactory;
 import com.shorindo.xuml.XumlView;
 
 /**

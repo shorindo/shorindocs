@@ -23,4 +23,8 @@
   		<version>1.2.3.RELEASE</version>
   	</dependency>
   </dependencies>
+  <name>shorindocs-auth</name>
+  <build>
+    <finalName>shorindocs-auth-${parent.version}</finalName>
+  </build>
 </project>

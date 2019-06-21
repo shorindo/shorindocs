@@ -15,7 +15,7 @@
  */
 package com.shorindo.xuml;
 
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 

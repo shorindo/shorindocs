@@ -24,7 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 

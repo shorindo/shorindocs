@@ -15,11 +15,11 @@
  */
 package com.shorindo.docs.admin;
 
-import static com.shorindo.docs.DocumentMessages.DOCS_9999;
+import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionController;
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionController;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;

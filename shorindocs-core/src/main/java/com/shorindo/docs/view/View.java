@@ -19,8 +19,8 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 

@@ -15,8 +15,8 @@
  */
 package com.shorindo.docs.form;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionController;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.annotation.ContentTypeReady;
 import com.shorindo.docs.view.View;
 

@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs;
 
-import static com.shorindo.docs.DocumentMessages.*;
+import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +33,10 @@ import javax.servlet.http.HttpServletResponse;
 import net.arnx.jsonic.JSON;
 import net.arnx.jsonic.JSONException;
 
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionController;
+import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.document.DocumentServiceFactory;
 import com.shorindo.docs.view.DefaultView;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;

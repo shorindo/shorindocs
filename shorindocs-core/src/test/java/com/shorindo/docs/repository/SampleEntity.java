@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs.repository;
 
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.repository.Column;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.SchemaEntity;

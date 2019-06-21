@@ -17,7 +17,7 @@ package com.shorindo.docs.view;
 
 import java.io.OutputStream;
 
-import com.shorindo.docs.ActionContext;
+import com.shorindo.docs.action.ActionContext;
 
 /**
  * 

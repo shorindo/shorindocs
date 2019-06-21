@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.document;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.shorindo.docs.PluginSettings;
+import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.repository.DatabaseSchema;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceFactory;

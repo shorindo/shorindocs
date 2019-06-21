@@ -16,7 +16,11 @@
 package com.shorindo.docs.outlogger;
 
 import static org.junit.Assert.*;
-
+//import mockit.Invocation;
+//import mockit.Mock;
+//import mockit.MockUp;
+//
+//import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.RpcClient;
@@ -26,6 +30,17 @@ import com.shorindo.docs.RpcClient;
  */
 public class OutloggerControllerTest {
     private RpcClient client = new RpcClient("http://localhost:8080/docs/");
+
+//    @BeforeClass
+//    public static void setupBefore() {
+//        new MockUp<RpcClient>() {
+//            @Mock
+//            public Object execute(Invocation inv, String docId, String methodName, Object...params) {
+//                System.out.println("mock!(" + docId + "," + methodName + ")");
+//                return inv.proceed(docId, methodName, params);
+//            }
+//        };
+//    }
 
     @Test
     public void testListLog() throws Exception {

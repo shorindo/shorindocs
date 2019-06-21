@@ -18,20 +18,30 @@ package com.shorindo.docs;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.shorindo.docs.document.DocumentService;
-import com.shorindo.docs.document.DocumentServiceFactory;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.auth.entity.UserEntity;
+import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.NotFoundException;
+import com.shorindo.docs.repository.RepositoryService;
 
 /**
  * 
  */
-public class DocsServiceTest {
-
-    private DocumentService docService = DocumentServiceFactory.documentService();
+public class ActionContextTest {
 
     @Test
-    public void sampleTest() throws Exception {
-//        assertEquals("docs", ((Object) docService).get("aaa"));
+    public void test() {
+        fail("Not yet implemented");
+    }
+
+    public static class MyContext extends ActionContext {
+        private RepositoryService repository = getService(RepositoryService.class);
+
+        public void run() throws NotFoundException, DatabaseException {
+            getUser();
+            UserEntity e = new UserEntity();
+            e = repository.get(e);
+        }
     }
 }

@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs.plaintext;
 
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.xuml.Component;
 import com.shorindo.xuml.ComponentReady;
 import com.shorindo.xuml.XumlView;

@@ -40,6 +40,7 @@ import javax.xml.xpath.XPathFactory;
 
 //import nu.validator.htmlparser.dom.HtmlDocumentBuilder;
 
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,7 +51,7 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 

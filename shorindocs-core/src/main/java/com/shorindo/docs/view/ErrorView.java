@@ -15,14 +15,14 @@
  */
 package com.shorindo.docs.view;
 
-import static com.shorindo.docs.DocumentMessages.DOCS_9999;
+import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.xuml.XumlView;
 
 /**

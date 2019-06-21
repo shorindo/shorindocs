@@ -15,7 +15,7 @@
  */
 package com.shorindo.xuml;
 
-import static com.shorindo.docs.DocumentMessages.*;
+import static com.shorindo.docs.document.DocumentMessages.*;
 import static com.shorindo.xuml.XumlMessages.*;
 
 import java.io.File;
@@ -35,10 +35,10 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.BeanUtil;
 import com.shorindo.docs.LapCounter;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.view.View;
 
 /**

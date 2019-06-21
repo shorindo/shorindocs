@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.document;
 
-import static com.shorindo.docs.DocumentMessages.*;
+import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.PluginSettings;
+import com.shorindo.docs.action.ActionController;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.admin.AdminSettings;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.auth.AuthenticateSettings;

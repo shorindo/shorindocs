@@ -27,8 +27,8 @@ import java.sql.Timestamp;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.RepositoryService;

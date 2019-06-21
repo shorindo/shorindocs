@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.action;
 
-import static com.shorindo.docs.DocumentMessages.*;
+import static com.shorindo.docs.document.DocumentMessages.*;
+
 import java.lang.reflect.Method;
 
+import com.shorindo.docs.LapCounter;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;

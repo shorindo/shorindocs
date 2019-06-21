@@ -20,8 +20,8 @@ import static com.shorindo.docs.repository.DatabaseMessages.*;
 import java.lang.reflect.Field;
 import java.util.Locale;
 
-import com.shorindo.docs.ActionLogger;
 import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 

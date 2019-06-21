@@ -17,8 +17,8 @@ package com.shorindo.docs.repository;
 
 import java.util.Locale;
 
-import com.shorindo.docs.ActionMessages;
 import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.action.ActionMessages;
 
 /**
  * 

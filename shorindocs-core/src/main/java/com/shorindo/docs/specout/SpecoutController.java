@@ -21,11 +21,11 @@ import java.io.StringReader;
 
 import javax.xml.bind.JAXB;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocumentController;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
+import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.JsonView;

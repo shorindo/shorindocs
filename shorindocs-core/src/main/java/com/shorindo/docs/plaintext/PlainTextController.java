@@ -15,12 +15,12 @@
  */
 package com.shorindo.docs.plaintext;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocumentMessages;
-import com.shorindo.docs.DocumentController;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
+import com.shorindo.docs.document.DocumentController;
+import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceFactory;

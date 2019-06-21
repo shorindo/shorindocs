@@ -15,10 +15,13 @@
  */
 package com.shorindo.docs;
 
-import static com.shorindo.docs.DocumentMessages.*;
+import static com.shorindo.docs.document.DocumentMessages.*;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 

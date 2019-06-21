@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.document;
 
-import static com.shorindo.docs.DocumentMessages.*;
+import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.io.StringReader;
 import java.sql.SQLException;
@@ -25,6 +25,10 @@ import javax.xml.bind.JAXB;
 
 import net.arnx.jsonic.JSON;
 
+import com.shorindo.docs.IdentityProvider;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionController;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;

@@ -23,6 +23,9 @@ import java.io.InputStream;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.shorindo.docs.document.DocumentService;
+import com.shorindo.docs.document.DocumentServiceFactory;
+
 /**
  * 
  */

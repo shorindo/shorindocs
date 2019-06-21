@@ -13,24 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.action;
 
 import java.util.HashMap;
 import java.util.Map;
 
-//import javax.servlet.http.HttpServletRequest;
-
 /**
  * 
  */
-public class ViewModel {
-    private Map<String,Object> model;
+public class ActionMapper {
+    Map<String,ActionController> map;
 
     /**
      * 
      */
-    protected ViewModel(/*HttpServletRequest request*/) {
-        model = new HashMap<String,Object>();
+    public ActionMapper() {
+        map = new HashMap<String,ActionController>();
     }
 
+    public void put(String path, ActionController controller) {
+        map.put(path, controller);
+    }
+
+    public ActionController get(String path) {
+        ActionController controller = map.get(path);
+        if (controller == null) {
+            controller = map.get("/*"); // FIXME
+        }
+        return controller;
+    }
 }

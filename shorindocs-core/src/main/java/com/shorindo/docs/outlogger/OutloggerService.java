@@ -15,18 +15,18 @@
  */
 package com.shorindo.docs.outlogger;
 
+import static com.shorindo.docs.document.DocumentMessages.*;
 import static com.shorindo.docs.outlogger.OutloggerMessages.*;
 import static com.shorindo.docs.repository.DatabaseMessages.*;
-import static com.shorindo.docs.DocumentMessages.*;
 
 import java.io.StringWriter;
 import java.util.List;
 
 import javax.xml.bind.JAXB;
 
-import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocumentException;
-import com.shorindo.docs.DocumentService;
+import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.document.DocumentException;
+import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.NotFoundException;
 
@@ -36,7 +36,7 @@ import com.shorindo.docs.repository.NotFoundException;
 public class OutloggerService extends DocumentService {
     private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerService.class);
 
-    protected OutloggerService() {
+    public OutloggerService() {
     }
 
     /*==========================================================================

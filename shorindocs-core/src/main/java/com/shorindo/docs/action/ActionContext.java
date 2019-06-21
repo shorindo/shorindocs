@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.action;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import com.shorindo.docs.auth.entity.UserEntity;
+import com.shorindo.docs.document.DocumentMessages;
 
 /**
  * 
@@ -33,8 +34,6 @@ public class ActionContext {
 
     // URL
     private String id;
-    private String requestPath;
-    private String contextPath;
     // RequestHeader
     // RequestParameter
     private Map<String,Object> params;
@@ -56,22 +55,6 @@ public class ActionContext {
     public String getId() {
         return id;
     }
-
-//    public String getRequestPath() {
-//        return requestPath;
-//    }
-//
-//    public void setRequestPath(String requestPath) {
-//        this.requestPath = requestPath;
-//    }
-//
-//    public String getContextPath() {
-//        return contextPath;
-//    }
-//
-//    public void setContextPath(String contextPath) {
-//        this.contextPath = contextPath;
-//    }
 
     public UserEntity getUser() {
         return new UserEntity();
@@ -113,4 +96,26 @@ public class ActionContext {
 ////        return request.getParameter(key);
 //        return null;
 //    }
+
+    public <T> T getService(Class<T> clazz) {
+        return null;
+    }
+    /**
+     * 
+     */
+    public enum RESERVED {
+        REQUEST_PATH("request.path"),
+        REQUEST_CONTEXT_PATH("request.contextPath"),
+        REQUEST_CONTENT_TYPE("request.contentType")
+        ;
+
+        private String key;
+        private RESERVED(String key) {
+            this.key = key;
+        }
+
+        public String key() {
+            return key;
+        }
+    }
 }

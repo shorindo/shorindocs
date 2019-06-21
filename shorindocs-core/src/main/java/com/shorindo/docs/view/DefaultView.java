@@ -25,9 +25,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import com.shorindo.docs.ActionContext;
-import com.shorindo.docs.ActionLogger;
-import com.shorindo.docs.DocumentMessages;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.document.DocumentMessages;
 
 /**
  * 

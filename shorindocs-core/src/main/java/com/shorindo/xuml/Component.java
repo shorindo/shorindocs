@@ -25,7 +25,7 @@ import java.util.Map.Entry;
 
 import org.w3c.dom.Node;
 
-import com.shorindo.docs.ActionLogger;
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 
