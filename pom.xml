@@ -49,6 +49,7 @@
     <module>shorindocs-auth</module>
     <module>shorindocs-web</module>
     <module>shorindocs-outlogger</module>
+    <module>shorindocs-specout</module>
   </modules>
   <name>shorindocs</name>
   <dependencyManagement>

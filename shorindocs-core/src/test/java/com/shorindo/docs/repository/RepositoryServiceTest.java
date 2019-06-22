@@ -31,8 +31,6 @@ import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.repository.DatabaseException;
-import com.shorindo.docs.repository.RepositoryServiceImpl;
-import com.shorindo.docs.repository.RepositoryServiceFactory;
 import com.shorindo.docs.repository.Transactionable;
 
 /**

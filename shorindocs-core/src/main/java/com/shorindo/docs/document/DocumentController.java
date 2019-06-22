@@ -17,13 +17,8 @@ package com.shorindo.docs.document;
 
 import static com.shorindo.docs.document.DocumentMessages.*;
 
-import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.List;
-
-import javax.xml.bind.JAXB;
-
-import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.IdentityProvider;
 import com.shorindo.docs.ServiceFactory;
@@ -35,7 +30,6 @@ import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.NotFoundException;
 import com.shorindo.docs.repository.RepositoryService;
-import com.shorindo.docs.specout.SpecoutEntity;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
@@ -78,22 +72,22 @@ public abstract class DocumentController extends ActionController {
      * @return
      * @throws DocumentException
      */
-    @ActionMethod
-    public String show(ActionContext context) throws DocumentException {
-        try {
-            DocumentEntity entity = new DocumentEntity();
-            entity.setDocumentId(context.getId());
-            entity.setVersion(0);
-            entity = repositoryService.get(entity);
-            String xml = entity.getContent();
-            SpecoutEntity specout = JAXB.unmarshal(new StringReader(xml), SpecoutEntity.class);
-            return JSON.encode(specout, true);
-        } catch (NotFoundException e) {
-            throw new DocumentException("show", e);
-        } catch (DatabaseException e) {
-            throw new DocumentException("show", e);
-        }
-    }
+//    @ActionMethod
+//    public String show(ActionContext context) throws DocumentException {
+//        try {
+//            DocumentEntity entity = new DocumentEntity();
+//            entity.setDocumentId(context.getId());
+//            entity.setVersion(0);
+//            entity = repositoryService.get(entity);
+//            String xml = entity.getContent();
+//            SpecoutEntity specout = JAXB.unmarshal(new StringReader(xml), SpecoutEntity.class);
+//            return JSON.encode(specout, true);
+//        } catch (NotFoundException e) {
+//            throw new DocumentException("show", e);
+//        } catch (DatabaseException e) {
+//            throw new DocumentException("show", e);
+//        }
+//    }
 
     /**
      * 
