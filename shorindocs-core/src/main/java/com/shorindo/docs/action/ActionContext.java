@@ -20,7 +20,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import com.shorindo.docs.auth.entity.UserEntity;
 import com.shorindo.docs.document.DocumentMessages;
 
 /**
@@ -56,9 +55,9 @@ public class ActionContext {
         return id;
     }
 
-    public UserEntity getUser() {
-        return new UserEntity();
-    }
+//    public UserEntity getUser() {
+//        return new UserEntity();
+//    }
 
     public void setAction(String action) {
         this.action = action;
