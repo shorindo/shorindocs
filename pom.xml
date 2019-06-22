@@ -50,6 +50,7 @@
     <module>shorindocs-web</module>
     <module>shorindocs-outlogger</module>
     <module>shorindocs-specout</module>
+    <module>shorindocs-admin</module>
   </modules>
   <name>shorindocs</name>
   <dependencyManagement>
