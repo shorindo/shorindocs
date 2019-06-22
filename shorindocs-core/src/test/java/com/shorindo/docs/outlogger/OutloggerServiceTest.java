@@ -30,7 +30,7 @@ import com.shorindo.docs.ApplicationContext;
  * 
  */
 public class OutloggerServiceTest {
-    private OutloggerService service = new OutloggerService();
+    private OutloggerServiceImpl service = new OutloggerServiceImpl();
 
     @BeforeClass
     public static void setUpBefore() throws Exception {

@@ -28,9 +28,10 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.repository.DatabaseException;
-import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceImpl;
 import com.shorindo.docs.repository.RepositoryServiceFactory;
 import com.shorindo.docs.repository.Transactionable;
 
@@ -47,7 +48,7 @@ public class RepositoryServiceTest {
         InputStream is = new FileInputStream("src/test/resources/site.properties");
         ApplicationContext.loadProperties(is);
         
-        repositoryService = RepositoryServiceFactory.repositoryService();
+        repositoryService = ServiceFactory.getService(RepositoryService.class);
         repositoryService.execute(
                 "DROP TABLE IF EXISTS SAMPLE");
         repositoryService.execute(

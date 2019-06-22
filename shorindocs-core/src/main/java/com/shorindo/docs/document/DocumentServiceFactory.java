@@ -21,20 +21,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.PluginSettings;
+import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.admin.AdminSettings;
-import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.auth.AuthenticateSettings;
 import com.shorindo.docs.entity.DocumentEntity;
-import com.shorindo.docs.outlogger.OutloggerSettings;
 import com.shorindo.docs.repository.DatabaseException;
-import com.shorindo.docs.repository.DatabaseSchema;
 import com.shorindo.docs.repository.NotFoundException;
 import com.shorindo.docs.repository.RepositoryService;
-import com.shorindo.docs.repository.RepositoryServiceFactory;
-import com.shorindo.docs.specout.SpecoutSettings;
 
 /**
  * 
@@ -47,17 +40,17 @@ public abstract class DocumentServiceFactory {
     private static final Map<String,ActionController> classMap =
             new HashMap<String,ActionController>();
     private static final RepositoryService repositoryService =
-            RepositoryServiceFactory.repositoryService();
+            ServiceFactory.getService(RepositoryService.class);
 
     private static DocumentService documentService;
     private static ApplicationContext applicationContext;
 
-    public static synchronized DocumentService documentService() {
-        if (documentService == null) {
-            documentService = new DocumentService();
-        }
-        return documentService;
-    }
+//    public static synchronized DocumentService documentService() {
+//        if (documentService == null) {
+//            documentService = new DocumentService();
+//        }
+//        return documentService;
+//    }
 
     /*
      * 
@@ -71,37 +64,37 @@ public abstract class DocumentServiceFactory {
 
     public static synchronized void init() {
         // FIXME
-        addSettings(AuthenticateSettings.class);
-        addSettings(AdminSettings.class);
-        addSettings(DocumentSettings.class);
-        addSettings(OutloggerSettings.class);
-        addSettings(SpecoutSettings.class);
+//        addSettings(AuthenticatePlugin.class);
+//        addSettings(AdminSettings.class);
+//        addSettings(DocumentSettings.class);
+//        addSettings(OutloggerSettings.class);
+//        addSettings(SpecoutPlugin.class);
     }
 
-    public static void addSettings(Class<? extends PluginSettings> settingsClass) {
-        try {
-            PluginSettings settings = settingsClass.newInstance();
-
-            for (ActionController controller : settings.getControllers()) {
-                Class<?> clazz = controller.getClass();
-                ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
-                if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
-                    LOG.info(DOCS_0001, mapping.value(), clazz);
-                    controllerMap.put(mapping.value(), controller);
-                }
-            }
-
-            for (DatabaseSchema schema : settings.getSchemas()) {
-                repositoryService.validateSchema(schema);
-            }
-        } catch (InstantiationException e) {
-            LOG.error(DOCS_9999, e);
-        } catch (IllegalAccessException e) {
-            LOG.error(DOCS_9999, e);
-        } catch (DatabaseException e) {
-            LOG.error(DOCS_9999, e);
-        }
-    }
+//    public static void addSettings(Class<? extends PluginSettings> settingsClass) {
+//        try {
+//            PluginSettings settings = settingsClass.newInstance();
+//
+//            for (ActionController controller : settings.getControllers()) {
+//                Class<?> clazz = controller.getClass();
+//                ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
+//                if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
+//                    LOG.info(DOCS_0001, mapping.value(), clazz);
+//                    controllerMap.put(mapping.value(), controller);
+//                }
+//            }
+//
+//            for (DatabaseSchema schema : settings.getSchemas()) {
+//                repositoryService.validateSchema(schema);
+//            }
+//        } catch (InstantiationException e) {
+//            LOG.error(DOCS_9999, e);
+//        } catch (IllegalAccessException e) {
+//            LOG.error(DOCS_9999, e);
+//        } catch (DatabaseException e) {
+//            LOG.error(DOCS_9999, e);
+//        }
+//    }
 
     /**
      * 

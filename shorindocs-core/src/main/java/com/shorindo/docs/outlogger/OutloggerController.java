@@ -40,7 +40,7 @@ import com.shorindo.xuml.XumlView;
 public class OutloggerController extends DocumentController {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(OutloggerController.class);
-    private OutloggerService outloggerService =
+    private OutloggerServiceImpl outloggerService =
             OutloggerFactory.outloggerService();
 
     public OutloggerController() {

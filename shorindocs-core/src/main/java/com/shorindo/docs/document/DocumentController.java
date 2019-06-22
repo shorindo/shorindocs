@@ -26,6 +26,7 @@ import javax.xml.bind.JAXB;
 import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.IdentityProvider;
+import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
@@ -34,7 +35,6 @@ import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.NotFoundException;
 import com.shorindo.docs.repository.RepositoryService;
-import com.shorindo.docs.repository.RepositoryServiceFactory;
 import com.shorindo.docs.specout.SpecoutEntity;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
@@ -44,8 +44,10 @@ import com.shorindo.docs.view.View;
  * 
  */
 public abstract class DocumentController extends ActionController {
-    private static final ActionLogger LOG = ActionLogger.getLogger(DocumentController.class);
-    private static final RepositoryService repositoryService = RepositoryServiceFactory.repositoryService();
+    private static final ActionLogger LOG =
+            ActionLogger.getLogger(DocumentController.class);
+    private static final RepositoryService repositoryService =
+            ServiceFactory.getService(RepositoryService.class);
 
     public static void setup(List<Class<?>> clazzList) {
         for (Class<?> clazz : clazzList) {

@@ -33,6 +33,7 @@ import com.shorindo.docs.auth.entity.UserEntity;
 import com.shorindo.docs.auth.model.GroupModel;
 import com.shorindo.docs.auth.model.UserModel;
 import com.shorindo.docs.document.DocumentService;
+import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.DatabaseSchema;
 import com.shorindo.docs.repository.Transactionable;
@@ -40,7 +41,7 @@ import com.shorindo.docs.repository.Transactionable;
 /**
  * 
  */
-public class AuthenticateService extends DocumentService {
+public class AuthenticateService extends DocumentServiceImpl {
     private static final ActionLogger LOG = ActionLogger.getLogger(AuthenticateService.class);
 
     protected AuthenticateService() {

@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.outlogger;
+package com.shorindo.docs.action;
 
 /**
  * 
  */
-public class OutloggerFactory {
-    private static OutloggerServiceImpl outloggerService;
+public abstract class ActionContext2 {
+    protected static synchronized <T> void addService(Class<T> itfc, Class<? extends T> implClass) {
+    }
 
-    public static synchronized OutloggerServiceImpl outloggerService() {
-        if (outloggerService == null) {
-            outloggerService = new OutloggerServiceImpl();
-        }
-        return outloggerService;
+    protected static synchronized <T> T getService(Class<T> itfc) {
+        return null;
     }
 }

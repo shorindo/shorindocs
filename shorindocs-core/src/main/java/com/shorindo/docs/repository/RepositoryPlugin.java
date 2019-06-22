@@ -15,16 +15,17 @@
  */
 package com.shorindo.docs.repository;
 
+import com.shorindo.docs.Plugin;
+import com.shorindo.docs.ServiceFactory;
+
 /**
  * 
  */
-public class RepositoryServiceFactory {
-    private static RepositoryService repositoryService;
+public class RepositoryPlugin extends Plugin {
 
-    public static synchronized RepositoryService repositoryService() {
-        if (repositoryService == null) {
-            repositoryService = new RepositoryService();
-        }
-        return repositoryService;
+    @Override
+    public void initialize() {
+        ServiceFactory.addService(RepositoryService.class, RepositoryServiceImpl.class);
     }
+
 }

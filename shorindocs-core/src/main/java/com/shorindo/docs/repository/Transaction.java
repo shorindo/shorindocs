@@ -19,7 +19,7 @@ package com.shorindo.docs.repository;
  * 
  */
 public class Transaction<T> implements Transactionable<T> {
-    protected RepositoryService repositoryService;
+    protected RepositoryServiceImpl repositoryService;
 
     @Override
     public T run(Object... params) throws DatabaseException {

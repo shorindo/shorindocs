@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.outlogger;
+package com.shorindo.docs.admin;
+
+import com.shorindo.docs.Plugin;
 
 /**
  * 
  */
-public class OutloggerFactory {
-    private static OutloggerServiceImpl outloggerService;
+public class AdminPlugin extends Plugin {
 
-    public static synchronized OutloggerServiceImpl outloggerService() {
-        if (outloggerService == null) {
-            outloggerService = new OutloggerServiceImpl();
-        }
-        return outloggerService;
+    @Override
+    public void initialize() {
+        addController(AclController.class);
+        addController(GroupController.class);
+        addController(MappingController.class);
+        addController(UserController.class);
     }
+
 }

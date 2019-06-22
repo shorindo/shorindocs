@@ -18,17 +18,15 @@ package com.shorindo.docs;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.shorindo.docs.document.DocumentService;
-import com.shorindo.docs.document.DocumentServiceFactory;
 
 /**
  * 
  */
 public class DocsServiceTest {
-
-    private DocumentService docService = DocumentServiceFactory.documentService();
+    private DocumentService docService =
+            ServiceFactory.getService(DocumentService.class);
 
     @Test
     public void sampleTest() throws Exception {

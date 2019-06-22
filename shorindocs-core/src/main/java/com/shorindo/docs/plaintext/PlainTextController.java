@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.plaintext;
 
+import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
@@ -23,7 +24,7 @@ import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.RepositoryService;
-import com.shorindo.docs.repository.RepositoryServiceFactory;
+import com.shorindo.docs.repository.RepositoryServiceImpl;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
@@ -33,8 +34,10 @@ import com.shorindo.xuml.XumlView;
  */
 @ContentTypeReady("text/plain")
 public class PlainTextController extends DocumentController {
-    private static final ActionLogger LOG = ActionLogger.getLogger(PlainTextController.class);
-    private static final RepositoryService repositoryService = RepositoryServiceFactory.repositoryService();
+    private static final ActionLogger LOG =
+            ActionLogger.getLogger(PlainTextController.class);
+    private static final RepositoryService repositoryService =
+            ServiceFactory.getService(RepositoryService.class);
 
     public PlainTextController() {
     }

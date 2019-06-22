@@ -24,7 +24,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.document.DocumentService;
-import com.shorindo.docs.document.DocumentServiceFactory;
 
 /**
  * 
@@ -38,7 +37,7 @@ public class DocumentServiceTest {
 
     @Test
     public void testValidate() throws Exception {
-        DocumentService service = DocumentServiceFactory.documentService();
+        DocumentService service = ServiceFactory.getService(DocumentService.class);
         service.validate();
     }
 

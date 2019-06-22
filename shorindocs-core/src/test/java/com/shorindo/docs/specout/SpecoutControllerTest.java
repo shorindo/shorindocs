@@ -21,19 +21,16 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.sql.Connection;
 import java.sql.Timestamp;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.entity.DocumentEntity;
-import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.RepositoryService;
-import com.shorindo.docs.repository.RepositoryServiceFactory;
-import com.shorindo.docs.repository.Transactionable;
 import com.shorindo.docs.specout.SpecoutController;
 
 /**
@@ -47,7 +44,7 @@ public class SpecoutControllerTest {
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
         ApplicationContext.loadProperties(is);
-        repositoryService = RepositoryServiceFactory.repositoryService();
+        repositoryService = ServiceFactory.getService(RepositoryService.class);
     }
 
     @Test

@@ -23,7 +23,7 @@ import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.auth.entity.UserEntity;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.NotFoundException;
-import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceImpl;
 
 /**
  * 
@@ -36,7 +36,7 @@ public class ActionContextTest {
     }
 
     public static class MyContext extends ActionContext {
-        private RepositoryService repository = getService(RepositoryService.class);
+        private RepositoryServiceImpl repository = getService(RepositoryServiceImpl.class);
 
         public void run() throws NotFoundException, DatabaseException {
             getUser();
