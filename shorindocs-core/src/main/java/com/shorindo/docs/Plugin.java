@@ -25,6 +25,7 @@ import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.document.DocumentService;
+import com.shorindo.docs.document.DocumentServiceFactory;
 import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.DatabaseSchema;
@@ -60,19 +61,14 @@ public abstract class Plugin {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void addController(Class<?> clazz) {
-        // FIXME
-        Map<String,ActionController> actionMap = new HashMap<>();
         ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
         if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
             LOG.info(DOCS_0001, mapping.value(), clazz);
-            try {
-                actionMap.put(mapping.value(), (ActionController)clazz.newInstance());
-            } catch (InstantiationException e) {
-                LOG.error(DOCS_9004, e, mapping.value());
-            } catch (IllegalAccessException e) {
-                LOG.error(DOCS_9004, e, mapping.value());
-            }
+            DocumentServiceFactory.addController(
+                    mapping.value(),
+                    (Class<ActionController>)clazz);
         }
     }
 

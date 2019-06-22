@@ -25,7 +25,8 @@ import com.shorindo.docs.action.ActionMessages;
  */
 public enum OutloggerMessages implements ActionMessages {
     OLOG_0001("サービス開始：{0}"),
-    OLOG_0002("サービス終了：{0} : {1}ms")
+    OLOG_0002("サービス終了：{0} : {1}ms"),
+    OLOG_9999("未知のエラー")
     ;
 
     private String message;

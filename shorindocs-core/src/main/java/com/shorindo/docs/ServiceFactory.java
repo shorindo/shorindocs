@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.annotation.Implementation;
 
 /**
  * 
@@ -42,7 +41,6 @@ public abstract class ServiceFactory {
     }
 
     public static synchronized <T> T getService(Class<T> itfc) {
-
         try {
             if (instanceMap.containsKey(itfc)) {
                 return (T)instanceMap.get(itfc);

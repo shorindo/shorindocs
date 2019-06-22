@@ -42,15 +42,7 @@ public abstract class DocumentServiceFactory {
     private static final RepositoryService repositoryService =
             ServiceFactory.getService(RepositoryService.class);
 
-    private static DocumentService documentService;
     private static ApplicationContext applicationContext;
-
-//    public static synchronized DocumentService documentService() {
-//        if (documentService == null) {
-//            documentService = new DocumentService();
-//        }
-//        return documentService;
-//    }
 
     /*
      * 
@@ -63,38 +55,7 @@ public abstract class DocumentServiceFactory {
     }
 
     public static synchronized void init() {
-        // FIXME
-//        addSettings(AuthenticatePlugin.class);
-//        addSettings(AdminSettings.class);
-//        addSettings(DocumentSettings.class);
-//        addSettings(OutloggerSettings.class);
-//        addSettings(SpecoutPlugin.class);
     }
-
-//    public static void addSettings(Class<? extends PluginSettings> settingsClass) {
-//        try {
-//            PluginSettings settings = settingsClass.newInstance();
-//
-//            for (ActionController controller : settings.getControllers()) {
-//                Class<?> clazz = controller.getClass();
-//                ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
-//                if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
-//                    LOG.info(DOCS_0001, mapping.value(), clazz);
-//                    controllerMap.put(mapping.value(), controller);
-//                }
-//            }
-//
-//            for (DatabaseSchema schema : settings.getSchemas()) {
-//                repositoryService.validateSchema(schema);
-//            }
-//        } catch (InstantiationException e) {
-//            LOG.error(DOCS_9999, e);
-//        } catch (IllegalAccessException e) {
-//            LOG.error(DOCS_9999, e);
-//        } catch (DatabaseException e) {
-//            LOG.error(DOCS_9999, e);
-//        }
-//    }
 
     /**
      * 

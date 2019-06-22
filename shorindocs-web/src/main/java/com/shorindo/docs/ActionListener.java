@@ -29,7 +29,6 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.auth.AuthenticatePlugin;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentPlugin;
-import com.shorindo.docs.document.DocumentServiceFactory;
 import com.shorindo.docs.outlogger.OutloggerPlugin;
 import com.shorindo.docs.repository.RepositoryPlugin;
 import com.shorindo.docs.specout.SpecoutPlugin;
@@ -67,9 +66,6 @@ public class ActionListener implements ServletContextListener {
         Plugin.addPlugin(DocumentPlugin.class);
         Plugin.addPlugin(OutloggerPlugin.class);
         Plugin.addPlugin(SpecoutPlugin.class);
-//        ServiceFactory.addService(RepositoryService.class, RepositoryServiceImpl.class);
-//        ServiceFactory.addService(DocumentService.class, DocumentServiceImpl.class);
-        DocumentServiceFactory.init();
         XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
     }
 

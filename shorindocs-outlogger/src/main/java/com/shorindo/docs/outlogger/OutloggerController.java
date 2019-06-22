@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs.outlogger;
 
-import static com.shorindo.docs.specout.SpecoutMessages.*;
+import static com.shorindo.docs.outlogger.OutloggerMessages.*;
 
 import java.io.StringReader;
 import java.util.List;
@@ -62,7 +62,7 @@ public class OutloggerController extends DocumentController {
             context.setAttribute("logs", outloggerService.listLog(key));
             return XumlView.create(getClass());
         } catch (Exception e) {
-            LOG.error(SPEC_9001, e);
+            LOG.error(OLOG_9999, e);
             return new ErrorView(500);
         }
     }

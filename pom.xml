@@ -48,6 +48,7 @@
     <module>shorindocs-core</module>
     <module>shorindocs-auth</module>
     <module>shorindocs-web</module>
+    <module>shorindocs-outlogger</module>
   </modules>
   <name>shorindocs</name>
   <dependencyManagement>

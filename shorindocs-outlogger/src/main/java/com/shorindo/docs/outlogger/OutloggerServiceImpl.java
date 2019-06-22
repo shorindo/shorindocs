@@ -26,7 +26,6 @@ import javax.xml.bind.JAXB;
 
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentException;
-import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.NotFoundException;
