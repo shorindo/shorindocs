@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Shorindo, Inc.
+ * Copyright 2016-2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,29 @@
  */
 package com.shorindo.docs.auth;
 
+import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionController;
+import com.shorindo.docs.view.View;
+
 /**
  * 
  */
-public abstract class AuthenticateServiceFactory {
-    private static AuthenticateService authenticateService;
+public class AuthenticateController extends ActionController {
+    @SuppressWarnings("unused")
+    private static AuthenticateService service =
+        ServiceFactory.getService(AuthenticateService.class);
 
-    public static synchronized AuthenticateService authenticateService() {
-        if (authenticateService == null) {
-            authenticateService = new AuthenticateService();
-        }
-        return authenticateService;
+    /**
+     * 
+     */
+    public AuthenticateController() {
+        // TODO Auto-generated constructor stub
     }
+
+    @Override
+    public View view(ActionContext context) {
+        return null;
+    }
+
 }

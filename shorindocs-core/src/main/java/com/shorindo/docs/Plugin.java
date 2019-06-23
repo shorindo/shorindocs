@@ -40,7 +40,7 @@ public abstract class Plugin {
 
     public abstract void initialize();
 
-    public static void addPlugin(Class<? extends Plugin> clazz) {
+    public static final void addPlugin(Class<? extends Plugin> clazz) {
         try {
             Plugin plugin = clazz.newInstance();
             plugin.initialize();
@@ -51,7 +51,7 @@ public abstract class Plugin {
         }
     }
     
-    protected void addSchema(InputStream is) {
+    protected final void addSchema(InputStream is) {
         RepositoryService service = ServiceFactory.getService(RepositoryService.class);
         try {
             DatabaseSchema schema = service.loadSchema(is);
@@ -62,7 +62,7 @@ public abstract class Plugin {
     }
 
     @SuppressWarnings("unchecked")
-    protected void addController(Class<?> clazz) {
+    protected final void addController(Class<?> clazz) {
         ActionMapping mapping = clazz.getAnnotation(ActionMapping.class);
         if (mapping != null && ActionController.class.isAssignableFrom(clazz)) {
             LOG.info(DOCS_0001, mapping.value(), clazz);
@@ -72,7 +72,7 @@ public abstract class Plugin {
         }
     }
 
-    protected <T> void addService(Class<T> itfc, Class<? extends T> impl) {
+    protected final <T> void addService(Class<T> itfc, Class<? extends T> impl) {
         ServiceFactory.addService(itfc, impl);
     }
 }

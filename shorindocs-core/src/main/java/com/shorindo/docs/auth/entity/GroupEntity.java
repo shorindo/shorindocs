@@ -17,6 +17,7 @@ package com.shorindo.docs.auth.entity;
 
 import java.util.Date;
 
+import com.shorindo.docs.model.GroupModel;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
@@ -25,7 +26,7 @@ import com.shorindo.docs.repository.Table;
  * 
  */
 @Table("AUTH_GROUP")
-public class GroupEntity extends SchemaEntity {
+public class GroupEntity extends SchemaEntity implements GroupModel {
     private String groupId;
     private String groupName;
     private String ownerId;

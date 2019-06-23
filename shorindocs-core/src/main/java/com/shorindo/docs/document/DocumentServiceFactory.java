@@ -42,20 +42,20 @@ public abstract class DocumentServiceFactory {
     private static final RepositoryService repositoryService =
             ServiceFactory.getService(RepositoryService.class);
 
-    private static ApplicationContext applicationContext;
+//    private static ApplicationContext applicationContext;
 
     /*
      * 
      */
-    public static synchronized ApplicationContext applicationContext() {
-        if (applicationContext == null) {
-            applicationContext = new ApplicationContext();
-        }
-        return applicationContext;
-    }
+//    public static synchronized ApplicationContext applicationContext() {
+//        if (applicationContext == null) {
+//            applicationContext = new ApplicationContext();
+//        }
+//        return applicationContext;
+//    }
 
-    public static synchronized void init() {
-    }
+//    public static synchronized void init() {
+//    }
 
     /**
      * 

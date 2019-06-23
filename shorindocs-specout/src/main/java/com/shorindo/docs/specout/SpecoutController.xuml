@@ -93,7 +93,7 @@
                 <html:tbody>
                   {{#specout.referenceList}}
                   <html:tr>
-                    <html:td style="text-align:right;">[{{id}}]</html:td>
+                    <html:td style="text-align:right;min-height:1.2em;">[{{id}}]</html:td>
                     <html:td style=""><html:a href="{{link}}" target="_blank">{{title}}</html:a></html:td>
                   </html:tr>
                   {{/specout.referenceList}}

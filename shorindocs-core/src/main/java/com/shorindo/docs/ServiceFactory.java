@@ -52,11 +52,13 @@ public abstract class ServiceFactory {
                         new InvocationHandler() {
                             @Override
                             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                                long st = System.currentTimeMillis();
                                 LOG.debug("method[" + method.getName() + "] invoke.");
                                 try {
                                     return method.invoke(instance, args);
                                 } finally {
-                                    LOG.debug("method[" + method.getName() + "] end.");
+                                    LOG.debug("method[" + method.getName() + "] end " +
+                                            (System.currentTimeMillis() - st) + "ms");
                                 }
                             }
                         });

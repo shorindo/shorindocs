@@ -46,7 +46,6 @@
   </build>
   <modules>
     <module>shorindocs-core</module>
-    <module>shorindocs-auth</module>
     <module>shorindocs-web</module>
     <module>shorindocs-outlogger</module>
     <module>shorindocs-specout</module>

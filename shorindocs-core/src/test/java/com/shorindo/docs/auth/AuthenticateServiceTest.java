@@ -25,8 +25,11 @@ import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.IdentityProvider;
+import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.auth.AuthenticateService;
 import com.shorindo.docs.auth.entity.UserEntity;
+import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceImpl;
 
 /**
  * 
@@ -36,21 +39,25 @@ public class AuthenticateServiceTest {
 
     @BeforeClass
     public static void setUpBefore() throws Exception {
-        InputStream is = new FileInputStream("src/test/resources/site.properties");
+        InputStream is = AuthenticateServiceTest.class
+                .getClassLoader()
+                .getResourceAsStream("site.properties");
         try {
             ApplicationContext.loadProperties(is);
-            authenticateService = AuthenticateServiceFactory.authenticateService();
+            ServiceFactory.addService(RepositoryService.class, RepositoryServiceImpl.class);
+            ServiceFactory.addService(AuthenticateService.class, AuthenticateServiceImpl.class);
+            authenticateService = ServiceFactory.getService(AuthenticateService.class);
         } finally {
             is.close();
         }
     }
 
-    @Test
-    public void testHashPassword() throws Exception {
-        String hash = authenticateService.hashPassword("password");
-        assertEquals(36, hash.length());
-        assertTrue(authenticateService.confitmPassword("password", hash));
-    }
+//    @Test
+//    public void testHashPassword() throws Exception {
+//        String hash = authenticateService.hashPassword("password");
+//        assertEquals(36, hash.length());
+//        assertTrue(authenticateService.confitmPassword("password", hash));
+//    }
 
     @Test
     public void testLogin() throws Exception {

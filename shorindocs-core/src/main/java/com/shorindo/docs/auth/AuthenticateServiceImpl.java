@@ -24,15 +24,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
-import com.shorindo.docs.BeanUtil;
 import com.shorindo.docs.IdentityProvider;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.auth.entity.GroupEntity;
 import com.shorindo.docs.auth.entity.SessionEntity;
 import com.shorindo.docs.auth.entity.UserEntity;
-import com.shorindo.docs.auth.model.GroupModel;
-import com.shorindo.docs.auth.model.UserModel;
-import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.repository.DatabaseException;
 import com.shorindo.docs.repository.DatabaseSchema;
@@ -41,10 +37,10 @@ import com.shorindo.docs.repository.Transactionable;
 /**
  * 
  */
-public class AuthenticateService extends DocumentServiceImpl {
-    private static final ActionLogger LOG = ActionLogger.getLogger(AuthenticateService.class);
+public class AuthenticateServiceImpl extends DocumentServiceImpl implements AuthenticateService {
+    private static final ActionLogger LOG = ActionLogger.getLogger(AuthenticateServiceImpl.class);
 
-    protected AuthenticateService() {
+    public AuthenticateServiceImpl() {
         validate();
     }
 

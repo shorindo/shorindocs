@@ -28,11 +28,6 @@
   	</dependency>
   	<dependency>
   		<groupId>com.shorindo</groupId>
-  		<artifactId>shorindocs-auth</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.shorindo</groupId>
   		<artifactId>shorindocs-admin</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>

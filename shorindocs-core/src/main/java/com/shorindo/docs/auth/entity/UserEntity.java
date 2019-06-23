@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.model.UserModel;
 import com.shorindo.docs.repository.Column;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
@@ -28,7 +29,7 @@ import com.shorindo.docs.repository.Table;
  * 
  */
 @Table("AUTH_USER")
-public class UserEntity extends SchemaEntity {
+public class UserEntity extends SchemaEntity implements UserModel {
     @SuppressWarnings("unused")
     private static final ActionLogger LOG = ActionLogger.getLogger(UserEntity.class);
 
