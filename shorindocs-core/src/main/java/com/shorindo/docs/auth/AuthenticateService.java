@@ -20,7 +20,6 @@ import java.util.List;
 import com.shorindo.docs.auth.model.GroupModel;
 import com.shorindo.docs.auth.model.SessionModel;
 import com.shorindo.docs.auth.model.UserModel;
-import com.shorindo.docs.repository.Transactional;
 
 /**
  * 
@@ -31,7 +30,7 @@ public interface AuthenticateService {
     // session management
     public SessionModel login(String loginName, String password) throws AuthenticateException;
     public void logout(String sessionId);
-    public void authenticate(String sessionId);
+    public UserModel authenticate(String sessionId) throws AuthenticateException;
 
     // user management
     public UserModel createUser(UserModel model) throws AuthenticateException;

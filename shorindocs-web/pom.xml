@@ -31,6 +31,11 @@
   		<artifactId>shorindocs-admin</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.shorindo</groupId>
+  		<artifactId>shorindocs-plaintext</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
   <packaging>war</packaging>
   <name>shorindocs-web</name>

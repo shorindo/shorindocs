@@ -95,7 +95,8 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
             }
             
             SessionEntity session = new SessionEntity(
-                    Long.toHexString(IdentityProvider.newId()));
+                    Long.toHexString(IdentityProvider.newId()),
+                    userEntity);
             session.setUserId(userEntity.getUserId());
             session.setCreatedDate(new Date());
             session.setExpiredDate(new Date());
@@ -111,8 +112,25 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
     public void logout(String sessionId) {
     }
 
-    public void authenticate(String sessionId) {
-        
+    public UserModel authenticate(String sessionId) throws AuthenticateException {
+        try {
+            List<UserEntity> userList = repositoryService.query(
+                    "SELECT * " +
+                    "FROM   AUTH_USER " +
+                    "WHERE  USER_ID=( " +
+                    "    SELECT USER_ID " +
+                    "    FROM   AUTH_SESSION " +
+                    "    WHERE  SESSION_ID=? AND STATUS=0 " +
+                    ")",
+                    UserEntity.class,
+                    sessionId);
+            if (userList.size() > 0)
+                return userList.get(0);
+            else
+                return null;
+        } catch (RepositoryException e) {
+            throw new AuthenticateException(e);
+        }
     }
 
     @Transactional
@@ -132,8 +150,8 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
         }
     }
 
-    private static final String SEEDS = "0123456789abcd";
-    protected String hashPassword(String password) {
+    private static final String SEEDS = "0123456789abcdef";
+    private String hashPassword(String password) {
         try {
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < 4; i++) {

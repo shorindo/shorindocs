@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.plaintext;
+
+import com.shorindo.docs.Plugin;
 
 /**
  * 
  */
-public enum TransactionEvent {
-    BEGIN,
-    COMMIT,
-    ROLLBACK
-    ;
+public class PlainTextPlugin extends Plugin {
+
+    @Override
+    public void initialize() {
+        addController(PlainTextController.class);
+    }
+
 }

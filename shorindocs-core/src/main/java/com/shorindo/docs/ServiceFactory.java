@@ -61,7 +61,7 @@ public abstract class ServiceFactory {
                                 long st = System.currentTimeMillis();
                                 LOG.trace("method[" + method.getName() + "] invoke:" + instance);
                                 boolean transactional = isTransactional(implClass, method);
-                                sendEvent(transactional, TransactionEvent.BEGIN_TRANSACTION);
+                                sendEvent(transactional, TransactionEvent.BEGIN);
                                 try {
                                     Object result = method.invoke(instance, args);
                                     sendEvent(transactional, TransactionEvent.COMMIT);

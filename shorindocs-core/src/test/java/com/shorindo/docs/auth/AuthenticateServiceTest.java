@@ -17,7 +17,6 @@ package com.shorindo.docs.auth;
 
 import static org.junit.Assert.*;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.junit.BeforeClass;
@@ -28,6 +27,8 @@ import com.shorindo.docs.IdentityProvider;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.auth.AuthenticateService;
 import com.shorindo.docs.auth.entity.UserEntity;
+import com.shorindo.docs.auth.model.SessionModel;
+import com.shorindo.docs.auth.model.UserModel;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceImpl;
 
@@ -52,26 +53,41 @@ public class AuthenticateServiceTest {
         }
     }
 
-//    @Test
-//    public void testHashPassword() throws Exception {
-//        String hash = authenticateService.hashPassword("password");
-//        assertEquals(36, hash.length());
-//        assertTrue(authenticateService.confitmPassword("password", hash));
-//    }
-
     @Test
-    public void testLogin() throws Exception {
-        authenticateService.login("test", "password");
+    public void testCreateUser() throws Exception {
+        UserEntity expect = generateUser();
+        UserModel user = authenticateService.createUser(expect);
+        assertEquals(expect.getLoginName(), user.getLoginName());
     }
 
     @Test
-    public void testCreateUser() throws Exception {
+    public void testLogin() throws Exception {
+        UserEntity expect = generateUser();
+        UserModel user = authenticateService.createUser(expect);
+        assertEquals(expect.getLoginName(), user.getLoginName());
+
+        SessionModel session = authenticateService.login(expect.getLoginName(), expect.getPassword());
+        assertEquals(expect.getLoginName(), session.getUser().getLoginName());
+    }
+
+    @Test
+    public void testAuthenticate() throws Exception {
+        UserEntity expect = generateUser();
+        authenticateService.createUser(expect);
+
+        SessionModel session = authenticateService.login(expect.getLoginName(), expect.getPassword());
+
+        UserModel actual = authenticateService.authenticate(session.getSessionId());
+        assertNotNull(actual);
+        assertEquals(expect.getLoginName(), actual.getLoginName());
+    }
+
+    private UserEntity generateUser() {
         UserEntity entity = new UserEntity();
         entity.setLoginName(String.format("%x", IdentityProvider.newId()));
         entity.setPassword("password");
         entity.setDisplayName("displayName");
         entity.setMail("mail");
-        authenticateService.createUser(entity);
-        authenticateService.login(entity.getLoginName(), entity.getPassword());
+        return entity;
     }
 }

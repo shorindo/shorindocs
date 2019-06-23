@@ -251,7 +251,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
     @Override
     public void onEvent(TransactionEvent event) {
         switch(event) {
-        case BEGIN_TRANSACTION:
+        case BEGIN:
             transaction();
             break;
         case COMMIT:

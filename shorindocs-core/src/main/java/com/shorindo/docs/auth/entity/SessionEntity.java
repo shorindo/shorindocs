@@ -39,10 +39,12 @@ public class SessionEntity extends SchemaEntity implements SessionModel {
     private Date createdDate;
     @Column(name="EXPIRED_DATE", typeName="Date")
     private Date expiredDate;
+    private UserEntity user;
 
-    public SessionEntity(String sessionId) throws RepositoryException {
+    public SessionEntity(String sessionId, UserEntity user) throws RepositoryException {
         super();
         this.sessionId = sessionId;
+        this.user = user;
     }
 
     @Override
@@ -52,8 +54,7 @@ public class SessionEntity extends SchemaEntity implements SessionModel {
 
     @Override
     public UserModel getUser() {
-        // TODO Auto-generated method stub
-        return null;
+        return user;
     }
 
     public String getUserId() {

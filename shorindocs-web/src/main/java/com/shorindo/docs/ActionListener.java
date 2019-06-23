@@ -31,6 +31,7 @@ import com.shorindo.docs.auth.AuthenticatePlugin;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentPlugin;
 import com.shorindo.docs.outlogger.OutloggerPlugin;
+import com.shorindo.docs.plaintext.PlainTextPlugin;
 import com.shorindo.docs.repository.RepositoryPlugin;
 import com.shorindo.docs.specout.SpecoutPlugin;
 import com.shorindo.xuml.XumlView;
@@ -62,12 +63,14 @@ public class ActionListener implements ServletContextListener {
             }
         }
 
+        // FIXME
         Plugin.addPlugin(RepositoryPlugin.class);
         Plugin.addPlugin(AuthenticatePlugin.class);
         Plugin.addPlugin(DocumentPlugin.class);
         Plugin.addPlugin(AdminPlugin.class);
         Plugin.addPlugin(OutloggerPlugin.class);
         Plugin.addPlugin(SpecoutPlugin.class);
+        Plugin.addPlugin(PlainTextPlugin.class);
         XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
     }
 
