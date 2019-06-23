@@ -18,13 +18,13 @@ package com.shorindo.docs.outlogger;
 import java.util.List;
 
 import com.shorindo.docs.document.DocumentException;
-import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.RepositoryException;
 
 /**
  * 
  */
 public interface OutloggerService {
-    public void createSchema() throws DatabaseException;
+    public void createSchema() throws RepositoryException;
 
     /**
      * メタデータを生成する

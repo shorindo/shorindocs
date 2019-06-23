@@ -16,9 +16,11 @@
 package com.shorindo.docs.auth.entity;
 
 import java.util.Date;
+import java.util.List;
 
-import com.shorindo.docs.model.GroupModel;
-import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.auth.model.GroupModel;
+import com.shorindo.docs.auth.model.Principal;
+import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
 
@@ -34,8 +36,12 @@ public class GroupEntity extends SchemaEntity implements GroupModel {
     private Date createdDate;
     private Date updatedDate;
 
-    public GroupEntity() throws DatabaseException {
+    public GroupEntity() throws RepositoryException {
         super();
+    }
+
+    public String getId() {
+        return getGroupId();
     }
 
     public String getGroupId() {
@@ -86,4 +92,8 @@ public class GroupEntity extends SchemaEntity implements GroupModel {
         this.updatedDate = updatedDate;
     }
 
+    public List<Principal> getMemberList() {
+        //TODO
+        return null;
+    }
 }

@@ -15,25 +15,30 @@
  */
 package com.shorindo.docs;
 
+import static com.shorindo.docs.document.DocumentMessages.*;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.repository.Transactional;
 
 /**
  * 
  */
 @SuppressWarnings("unchecked")
 public abstract class ServiceFactory {
-    private static ActionLogger LOG =
-            ActionLogger.getLogger(ServiceFactory.class);
-    private static Map<Class<?>,Class<?>> interfaceap =
-            new ConcurrentHashMap<Class<?>,Class<?>>();
-    private static Map<Class<?>,Object> instanceMap =
-            new ConcurrentHashMap<Class<?>,Object>();
+    private static ActionLogger LOG = ActionLogger.getLogger(ServiceFactory.class);
+    private static Map<Class<?>,Class<?>> interfaceap = new ConcurrentHashMap<Class<?>,Class<?>>();
+    private static Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<Class<?>,Object>();
+//    private static ThreadLocal<Map<String,Object>> transactionMap = new ThreadLocal<Map<String,Object>>();
+    private static Set<TransactionListener> listenerSet = new HashSet<TransactionListener>();
 
     public static synchronized <T> void addService(Class<T> itfc, Class<? extends T> impl) {
         interfaceap.put(itfc, impl);
@@ -45,7 +50,8 @@ public abstract class ServiceFactory {
             if (instanceMap.containsKey(itfc)) {
                 return (T)instanceMap.get(itfc);
             } else if (interfaceap.containsKey(itfc)){
-                T instance = (T)interfaceap.get(itfc).newInstance();
+                Class<T> implClass = (Class<T>)interfaceap.get(itfc);
+                T instance = implClass.newInstance();
                 Object proxy = Proxy.newProxyInstance(
                         ServiceFactory.class.getClassLoader(),
                         new Class<?>[] { itfc },
@@ -53,22 +59,69 @@ public abstract class ServiceFactory {
                             @Override
                             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                                 long st = System.currentTimeMillis();
-                                LOG.debug("method[" + method.getName() + "] invoke.");
+                                LOG.trace("method[" + method.getName() + "] invoke:" + instance);
+                                boolean transactional = isTransactional(implClass, method);
+                                sendEvent(transactional, TransactionEvent.BEGIN_TRANSACTION);
                                 try {
-                                    return method.invoke(instance, args);
+                                    Object result = method.invoke(instance, args);
+                                    sendEvent(transactional, TransactionEvent.COMMIT);
+                                    return result;
+                                } catch (Throwable th) {
+                                    sendEvent(transactional, TransactionEvent.ROLLBACK);
+                                    throw th;
                                 } finally {
-                                    LOG.debug("method[" + method.getName() + "] end " +
+                                    LOG.trace("method[" + method.getName() + "] end " +
                                             (System.currentTimeMillis() - st) + "ms");
                                 }
                             }
                         });
                 instanceMap.put(itfc, proxy);
+                if (TransactionListener.class.isAssignableFrom(implClass)) {
+                    addListener((TransactionListener)instance);
+                }
                 return (T)proxy;
             } else {
                 throw new RuntimeException("No implementation defined for '" + itfc + "'.");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void addListener(TransactionListener listener) {
+        listenerSet.add(listener);
+    }
+
+    /**
+     * methodと同一のシグネチャを持つobjectのメソッドが@Transactionalアノテーションを
+     * 持つかどうか判定する。
+     * 
+     * @param target
+     * @param method
+     * @return
+     */
+    private static boolean isTransactional(Class<?> target, Method method) {
+        Parameter params[] = method.getParameters();
+        Class<?> targetClasses[] = new Class<?>[params.length];
+        for (int i = 0; i < params.length; i++) {
+            targetClasses[i] = params[i].getType();
+        }
+        try {
+            Method targetMethod = target.getMethod(method.getName(), targetClasses);
+            if (targetMethod.getAnnotation(Transactional.class) != null) {
+                return true;
+            }
+        } catch (Exception e) {
+            LOG.error(DOCS_9999, e);
+        }
+        return false;
+    }
+
+    private static void sendEvent(boolean transactional, TransactionEvent event) {
+        if (transactional) {
+            for (TransactionListener listener : listenerSet) {
+                listener.onEvent(event);
+            }
         }
     }
 }

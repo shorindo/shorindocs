@@ -27,7 +27,7 @@ import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.entity.DocumentEntity;
-import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.NotFoundException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.view.ErrorView;
@@ -60,7 +60,7 @@ public abstract class DocumentController extends ActionController {
             return repositoryService.get(entity);
         } catch (NotFoundException e) {
             throw new RuntimeException(e);
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             LOG.error(DOCS_9999, e);
             throw new RuntimeException(e);
         }
@@ -108,7 +108,7 @@ public abstract class DocumentController extends ActionController {
             } else {
                 return new ErrorView(404);
             }
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             LOG.error(DOCS_9002, id);
             return new ErrorView(500);
         }
@@ -136,7 +136,7 @@ public abstract class DocumentController extends ActionController {
             } else {
                 return new ErrorView(404);
             }
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             LOG.error(DOCS_9002, e, id);
             return new ErrorView(500);
         }
@@ -162,7 +162,7 @@ public abstract class DocumentController extends ActionController {
                     LOG.error(DOCS_9003, id);
                     return new ErrorView(500);
                 }
-            } catch (DatabaseException e) {
+            } catch (RepositoryException e) {
                 LOG.error(DOCS_9003, e, id);
                 return new ErrorView(500);
             }
@@ -174,7 +174,7 @@ public abstract class DocumentController extends ActionController {
      * @return
      * @throws SQLException
      */
-    protected List<DocumentEntity> recents() throws DatabaseException {
+    protected List<DocumentEntity> recents() throws RepositoryException {
         return repositoryService.query(
               "SELECT document_id,title,update_date " +
               "FROM   docs_document " +

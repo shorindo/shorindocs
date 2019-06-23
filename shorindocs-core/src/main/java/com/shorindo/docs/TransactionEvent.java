@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2019 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.model;
-
-import java.util.List;
+package com.shorindo.docs;
 
 /**
  * 
  */
-public interface UserModel extends Principal {
-    public String getId();
-    public String getUserId();
-    public String getLoginName();
-    public String getPassword();
-    public String getDisplayName();
-    public String getMail();
-    public List<GroupModel> getGroupList();
+public enum TransactionEvent {
+    BEGIN_TRANSACTION,
+    COMMIT,
+    ROLLBACK
+    ;
 }

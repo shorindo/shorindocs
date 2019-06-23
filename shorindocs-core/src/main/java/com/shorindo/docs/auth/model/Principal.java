@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.repository;
+package com.shorindo.docs.auth.model;
 
 /**
  * 
  */
-public class Transaction<T> implements Transactionable<T> {
-    protected RepositoryServiceImpl repositoryService;
-
-    @Override
-    public T run(Object... params) throws DatabaseException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+public interface Principal {
+    public String getId();
 }

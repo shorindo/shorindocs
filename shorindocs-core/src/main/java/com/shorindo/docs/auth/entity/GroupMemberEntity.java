@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs.auth.entity;
 
-import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
 
@@ -25,7 +25,7 @@ import com.shorindo.docs.repository.Table;
 @Table("AUTH_GROUP_MEMBER")
 public class GroupMemberEntity extends SchemaEntity {
 
-    public GroupMemberEntity() throws DatabaseException {
+    public GroupMemberEntity() throws RepositoryException {
         super();
     }
 

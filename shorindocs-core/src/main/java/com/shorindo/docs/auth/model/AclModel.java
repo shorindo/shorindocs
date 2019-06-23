@@ -20,12 +20,7 @@ import java.util.List;
 /**
  * 
  */
-public interface UserModel extends Principal {
-    public String getId();
-    public String getUserId();
-    public String getLoginName();
-    public String getPassword();
-    public String getDisplayName();
-    public String getMail();
-    public List<GroupModel> getGroupList();
+public interface AclModel {
+    public List<Principal> getMemberList();
+    public Permission getPermission();
 }

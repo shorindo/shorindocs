@@ -23,32 +23,32 @@ import com.shorindo.docs.action.ActionMessages;
 /**
  * 
  */
-public class DatabaseException extends Exception {
+public class RepositoryException extends Exception {
     private static final long serialVersionUID = 1530910919656505688L;
     private static final Locale LANG = ApplicationContext.getLang();
 
     /**
      * 
      */
-    public DatabaseException() {
+    public RepositoryException() {
         super();
     }
 
-    public DatabaseException(ActionMessages messages, Object...args) {
+    public RepositoryException(ActionMessages messages, Object...args) {
         super(messages.getCode() + ":" + messages.getMessage(LANG, args));
     }
 
     /**
      * @param message
      */
-    public DatabaseException(String message) {
+    public RepositoryException(String message) {
         super(message);
     }
 
     /**
      * @param cause
      */
-    public DatabaseException(Throwable cause) {
+    public RepositoryException(Throwable cause) {
         super(cause);
     }
 
@@ -56,7 +56,7 @@ public class DatabaseException extends Exception {
      * @param message
      * @param cause
      */
-    public DatabaseException(String message, Throwable cause) {
+    public RepositoryException(String message, Throwable cause) {
         super(message, cause);
     }
 

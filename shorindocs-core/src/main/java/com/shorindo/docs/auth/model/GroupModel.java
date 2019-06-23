@@ -15,27 +15,15 @@
  */
 package com.shorindo.docs.auth.model;
 
+import java.util.List;
+
 /**
  * 
  */
-public class GroupModel implements Princimal {
-    private String groupId;
-    private String groupName;
-
+public interface GroupModel extends Principal {
     @Override
-    public String getId() {
-        return groupId;
-    }
-    public String getGroupId() {
-        return groupId;
-    }
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
-    public String getGroupName() {
-        return groupName;
-    }
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
+    public String getId();
+    public String getGroupId();
+    public String getGroupName();
+    public List<Principal> getMemberList();
 }

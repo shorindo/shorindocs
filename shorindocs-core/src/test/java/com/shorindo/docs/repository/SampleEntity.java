@@ -17,7 +17,7 @@ package com.shorindo.docs.repository;
 
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.repository.Column;
-import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
 
@@ -73,7 +73,7 @@ public class SampleEntity extends SchemaEntity {
     @Column(name="TIMESTAMP_VALUE", typeName="timestamp")
     private java.sql.Timestamp timestampValue;
 
-    public SampleEntity() throws DatabaseException {
+    public SampleEntity() throws RepositoryException {
         super();
     }
 

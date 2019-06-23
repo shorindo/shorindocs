@@ -27,7 +27,7 @@ import javax.xml.bind.JAXB;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentServiceImpl;
-import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.NotFoundException;
 
 /**
@@ -42,12 +42,12 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
     /*==========================================================================
      * 初期設定
      */
-    public void createSchema() throws DatabaseException {
+    public void createSchema() throws RepositoryException {
         try {
             OutloggerEntity entity = new OutloggerEntity();
             repositoryService.createTableFromSchema(entity.getTableSchema());
             LOG.info(DBMS_5127, entity.getClass().getName());
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             LOG.warn(DBMS_5128, e, OutloggerEntity.class.getName());
         }
     }
@@ -103,7 +103,7 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
                     OutloggerEntity.class,
                     entity.getDocumentId());
             return entityList;
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             throw new DocumentException(e.getMessage(), e);
         }
     }
@@ -133,7 +133,7 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
         } catch (NotFoundException e) {
             LOG.warn(DOCS_9999, e);
             return null;
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             LOG.warn(DOCS_9999, e);
             return null;
         } finally {
@@ -154,7 +154,7 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
             return repositoryService.get(entity);
         } catch (NotFoundException e) {
             return null;
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             throw new DocumentException(e.getMessage(), e);
         } finally {
             LOG.debug(OLOG_0002, "getLog", (System.currentTimeMillis() - st));
@@ -196,7 +196,7 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
                     version, prev.getDocumentId(), prev.getLogId());
 
             return prev;
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             throw new DocumentException(e.getMessage(), e);
         } catch (NotFoundException e) {
             return null;
@@ -209,9 +209,9 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
      * 
      * @param documentId
      * @return
-     * @throws DatabaseException
+     * @throws RepositoryException
      */
-    private int getNextLogId(String documentId) throws DatabaseException {
+    private int getNextLogId(String documentId) throws RepositoryException {
         List<OutloggerEntity> entityList = repositoryService.query(
                 "SELECT MAX(LOG_ID) + 1 LOG_ID " +
                 "FROM   DOCS_OUTLOGGER " +

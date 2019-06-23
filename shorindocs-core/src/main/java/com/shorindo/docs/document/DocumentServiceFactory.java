@@ -25,7 +25,7 @@ import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.entity.DocumentEntity;
-import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.NotFoundException;
 import com.shorindo.docs.repository.RepositoryService;
 
@@ -94,7 +94,7 @@ public abstract class DocumentServiceFactory {
                 }
             } catch (NotFoundException e) {
                 LOG.warn(DOCS_5010, path);
-            } catch (DatabaseException e) {
+            } catch (RepositoryException e) {
                 LOG.error(DOCS_9999, e);
             } catch (ClassNotFoundException e) {
                 LOG.error(DOCS_9999, e);

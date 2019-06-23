@@ -15,21 +15,33 @@
  */
 package com.shorindo.docs.auth;
 
-import com.shorindo.docs.auth.entity.GroupEntity;
-import com.shorindo.docs.auth.entity.SessionEntity;
-import com.shorindo.docs.auth.entity.UserEntity;
+import java.util.List;
+
+import com.shorindo.docs.auth.model.GroupModel;
+import com.shorindo.docs.auth.model.SessionModel;
+import com.shorindo.docs.auth.model.UserModel;
+import com.shorindo.docs.repository.Transactional;
 
 /**
  * 
  */
 public interface AuthenticateService {
     public void validate();
-    public SessionEntity login(String loginName, String password) throws AuthenticateException;
-    public void logout(SessionEntity session);
-    public UserEntity createUser(UserEntity entity) throws AuthenticateException;
-    public UserEntity updateUser();
-    public UserEntity removeUser();
-    public GroupEntity createGroup();
-    public GroupEntity updateGroup();
-    public GroupEntity removeGroup();
+
+    // session management
+    public SessionModel login(String loginName, String password) throws AuthenticateException;
+    public void logout(String sessionId);
+    public void authenticate(String sessionId);
+
+    // user management
+    public UserModel createUser(UserModel model) throws AuthenticateException;
+    public UserModel updateUser(UserModel model);
+    public UserModel removeUser(UserModel model);
+    public List<UserModel> searchUser();
+
+    // group management
+    public GroupModel createGroup(GroupModel model);
+    public GroupModel updateGroup(GroupModel model);
+    public GroupModel removeGroup(GroupModel model);
+    public List<GroupModel> searchGroup();
 }

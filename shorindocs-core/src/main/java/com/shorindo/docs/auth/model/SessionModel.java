@@ -18,6 +18,7 @@ package com.shorindo.docs.auth.model;
 /**
  * 
  */
-public interface Princimal {
-    public String getId();
+public interface SessionModel {
+    public String getSessionId();
+    public UserModel getUser();
 }

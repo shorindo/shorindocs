@@ -29,10 +29,13 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.auth.entity.GroupEntity;
 import com.shorindo.docs.auth.entity.SessionEntity;
 import com.shorindo.docs.auth.entity.UserEntity;
+import com.shorindo.docs.auth.model.GroupModel;
+import com.shorindo.docs.auth.model.SessionModel;
+import com.shorindo.docs.auth.model.UserModel;
 import com.shorindo.docs.document.DocumentServiceImpl;
-import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.DatabaseSchema;
-import com.shorindo.docs.repository.Transactionable;
+import com.shorindo.docs.repository.Transactional;
 
 /**
  * 
@@ -49,7 +52,7 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
         try {
             DatabaseSchema schema = repositoryService.loadSchema(is);
             repositoryService.validateSchema(schema);
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             LOG.error(DBMS_5123);
         } finally {
             try {
@@ -67,76 +70,66 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
      * @return
      * @throws AuthenticateException
      */
-    public SessionEntity login(String loginName, String password) throws AuthenticateException {
+    @Transactional
+    public SessionModel login(String loginName, String password) throws AuthenticateException {
         try {
-            return repositoryService.transaction(
-                    new Transactionable<SessionEntity>() {
-                        @Override
-                        public SessionEntity run(Object... params) throws DatabaseException {
-                            List<UserEntity> userList = repositoryService.query(
-                                    "SELECT * " +
-                                    "FROM AUTH_USER WHERE LOGIN_NAME=?",
-                                    UserEntity.class,
-                                    loginName);
-                            if (userList.size() == 0) {
-                                return null;
-                            }
+            List<UserEntity> userList = repositoryService.query(
+                    "SELECT * " +
+                    "FROM AUTH_USER WHERE LOGIN_NAME=?",
+                    UserEntity.class,
+                    loginName);
+            if (userList.size() == 0) {
+                return null;
+            }
 
-                            UserEntity userEntity = userList.get(0);
-                            List<GroupEntity> groupList = repositoryService.query(
-                                    "SELECT G.* " +
-                                    "FROM   AUTH_GROUP G, AUTH_GROUP_MEMBER M " +
-                                    "WHERE  G.GROUP_ID=M.GROUP_ID " +
-                                    "AND    M.MEMBER_ID=?",
-                                    GroupEntity.class,
-                                    userEntity.getUserId());
-                            for (GroupEntity group : groupList) {
-                                userEntity.addGroup(group);
-                            }
-                            return null;
-                        }
-                    });
-        } catch (DatabaseException e) {
+            UserEntity userEntity = userList.get(0);
+            List<GroupEntity> groupList = repositoryService.query(
+                    "SELECT G.* " +
+                    "FROM   AUTH_GROUP G, AUTH_GROUP_MEMBER M " +
+                    "WHERE  G.GROUP_ID=M.GROUP_ID " +
+                    "AND    M.MEMBER_ID=?",
+                    GroupEntity.class,
+                    userEntity.getUserId());
+            for (GroupEntity group : groupList) {
+                userEntity.addGroup(group);
+            }
+            
+            SessionEntity session = new SessionEntity(
+                    Long.toHexString(IdentityProvider.newId()));
+            session.setUserId(userEntity.getUserId());
+            session.setCreatedDate(new Date());
+            session.setExpiredDate(new Date());
+            session.setStatus(0);
+            repositoryService.insert(session);
+            return session;
+        } catch (RepositoryException e) {
             throw new AuthenticateException(e);
         }
     }
 
-    public void logout(SessionEntity session) {
+    @Transactional
+    public void logout(String sessionId) {
     }
 
-    public UserEntity createUser(UserEntity entity) throws AuthenticateException {
+    public void authenticate(String sessionId) {
+        
+    }
+
+    @Transactional
+    public UserModel createUser(UserModel model) throws AuthenticateException {
         try {
-            entity.setUserId(String.valueOf(IdentityProvider.newId()));
-            entity.setPassword(hashPassword(entity.getPassword()));
-            entity.setDisplayName("displayName");
+            // TODO 重複チェック
+            UserEntity entity = new UserEntity(model);
+            entity.setUserId(Long.toHexString(IdentityProvider.newId()));
+            entity.setPassword(hashPassword(model.getPassword()));
             entity.setCreatedDate(new java.sql.Date(new Date().getTime()));
             entity.setUpdatedDate(new java.sql.Date(new Date().getTime()));
             entity.setStatus(0);
             repositoryService.insert(entity);
             return entity;
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             throw new AuthenticateException(e);
         }
-    }
-
-    public UserEntity updateUser() {
-        return null;
-    }
-
-    public UserEntity removeUser() {
-        return null;
-    }
-
-    public GroupEntity createGroup() {
-        return null;
-    }
-
-    public GroupEntity updateGroup() {
-        return null;
-    }
-
-    public GroupEntity removeGroup() {
-        return null;
     }
 
     private static final String SEEDS = "0123456789abcd";
@@ -180,4 +173,68 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
             throw new RuntimeException(e);
         }
     }
+
+    /* (non-Javadoc)
+     * @see com.shorindo.docs.auth.AuthenticateService#updateUser(com.shorindo.docs.auth.model.UserModel)
+     */
+    @Override
+    public UserModel updateUser(UserModel model) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.shorindo.docs.auth.AuthenticateService#removeUser(com.shorindo.docs.auth.model.UserModel)
+     */
+    @Override
+    public UserModel removeUser(UserModel model) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.shorindo.docs.auth.AuthenticateService#searchUser()
+     */
+    @Override
+    public List<UserModel> searchUser() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.shorindo.docs.auth.AuthenticateService#createGroup(com.shorindo.docs.auth.model.GroupModel)
+     */
+    @Override
+    public GroupModel createGroup(GroupModel model) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.shorindo.docs.auth.AuthenticateService#updateGroup(com.shorindo.docs.auth.model.GroupModel)
+     */
+    @Override
+    public GroupModel updateGroup(GroupModel model) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.shorindo.docs.auth.AuthenticateService#removeGroup(com.shorindo.docs.auth.model.GroupModel)
+     */
+    @Override
+    public GroupModel removeGroup(GroupModel model) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see com.shorindo.docs.auth.AuthenticateService#searchGroup()
+     */
+    @Override
+    public List<GroupModel> searchGroup() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

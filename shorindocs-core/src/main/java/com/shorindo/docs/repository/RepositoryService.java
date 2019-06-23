@@ -23,15 +23,20 @@ import java.util.List;
  */
 public interface RepositoryService {
     public DatabaseSchema loadSchema(InputStream is);
-    public List<String> validateSchema(DatabaseSchema schema) throws DatabaseException;
-    public int createTableFromSchema(DatabaseSchema.Table table) throws DatabaseException;
-    public String generateDDL(DatabaseSchema.Table table) throws DatabaseException;
-    public <T> T transaction(Transactionable<T> t) throws DatabaseException;
-    public int execute(String sql, Object...params) throws DatabaseException;
-    public <E> List<E> query(String sql, Class<E> clazz, Object...params) throws DatabaseException;
-    public <E extends SchemaEntity> E get(E entity) throws NotFoundException,DatabaseException;
-    public int put(SchemaEntity entity) throws DatabaseException;
-    public int remove(SchemaEntity entity) throws DatabaseException;
-    public int insert(SchemaEntity entity) throws DatabaseException;
-    public int update(SchemaEntity entity) throws DatabaseException;
+    public List<String> validateSchema(DatabaseSchema schema) throws RepositoryException;
+    public int createTableFromSchema(DatabaseSchema.Table table) throws RepositoryException;
+    public String generateDDL(DatabaseSchema.Table table) throws RepositoryException;
+
+    public int execute(String sql, Object...params) throws RepositoryException;
+    public <E> List<E> query(String sql, Class<E> clazz, Object...params) throws RepositoryException;
+    public <E extends SchemaEntity> E get(E entity) throws NotFoundException,RepositoryException;
+    public int put(SchemaEntity entity) throws RepositoryException;
+    public int remove(SchemaEntity entity) throws RepositoryException;
+
+    public int insert(SchemaEntity entity) throws RepositoryException;
+    public int update(SchemaEntity entity) throws RepositoryException;
+
+//    public void beginTransaction() throws RepositoryException;
+//    public void commit() throws RepositoryException;
+//    public void rollback() throws RepositoryException;
 }

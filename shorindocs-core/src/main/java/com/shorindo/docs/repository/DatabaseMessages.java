@@ -43,6 +43,9 @@ public enum DatabaseMessages implements ActionMessages {
     DBMS_1107("エンティティ[{0}]の定義に異常があります。"),
     DBMS_1105("DB接続：{0}"),
     DBMS_1106("DB切断：{0}"),
+    DBMS_1108("トランザクションを開始します。"),
+
+    DBMS_3001("トランザクション実行中ではありません。"),
 
     DBMS_5100("データベース接続の初期化に失敗しました。"),
     DBMS_5101("データベース処理の実行に失敗しました。"),
@@ -72,7 +75,8 @@ public enum DatabaseMessages implements ActionMessages {
     DBMS_5125("テーブル指定アノテーションがありません。"),
     DBMS_5126("カラム指定アノテーションが１つもありません。"),
     DBMS_5127("エンティティ[{0}]の実体を作成しました。"),
-    DBMS_5128("エンティティ[{0}]の実体を作成できませんでした。")
+    DBMS_5128("エンティティ[{0}]の実体を作成できませんでした。"),
+    DBMS_9999("未知のエラーが発生しました。")
     ;
 
     private String message;

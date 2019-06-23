@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2019 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.model;
-
-import java.util.List;
+package com.shorindo.docs;
 
 /**
  * 
  */
-public interface Acl {
-    public List<UserModel> getSubjects();
-    public Permission getOperator();
+public interface TransactionListener {
+    public void onEvent(TransactionEvent event);
 }

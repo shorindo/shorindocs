@@ -34,16 +34,16 @@ public abstract class SchemaEntity {
     public SchemaEntity() {
     }
 
-    public final String getEntityName() throws DatabaseException {
+    public final String getEntityName() throws RepositoryException {
         Table table = getClass().getAnnotation(Table.class);
         if (table != null) {
             return table.value();
         } else {
-            throw new DatabaseException(DBMS_5125);
+            throw new RepositoryException(DBMS_5125);
         }
     }
 
-    public final void validate() throws DatabaseException {
+    public final void validate() throws RepositoryException {
         int count = 0;
         for (Field field : getClass().getDeclaredFields()) {
             Column column = field.getAnnotation(Column.class);
@@ -52,11 +52,11 @@ public abstract class SchemaEntity {
             }
         }
         if (count == 0) {
-            throw new DatabaseException("カラム指定アノテーションが１つもありません");
+            throw new RepositoryException("カラム指定アノテーションが１つもありません");
         }
     }
 
-    public final Object getByName(String name) throws DatabaseException {
+    public final Object getByName(String name) throws RepositoryException {
         for (Field field : getClass().getDeclaredFields()) {
             Column column = field.getAnnotation(Column.class);
             if (column != null && name.equals(column.name())) {
@@ -64,19 +64,19 @@ public abstract class SchemaEntity {
                     field.setAccessible(true);
                     return field.get(this);
                 } catch (IllegalArgumentException e) {
-                    throw new DatabaseException(DBMS_5119.getMessage(LANG, name));
+                    throw new RepositoryException(DBMS_5119.getMessage(LANG, name));
                 } catch (IllegalAccessException e) {
-                    throw new DatabaseException(DBMS_5119.getMessage(LANG, name));
+                    throw new RepositoryException(DBMS_5119.getMessage(LANG, name));
                 }
             }
         }
-        throw new DatabaseException(DBMS_5124.getMessage(LANG, name));
+        throw new RepositoryException(DBMS_5124.getMessage(LANG, name));
     }
 
     /**
      * 
      */
-    public DatabaseSchema.Table getTableSchema() throws DatabaseException {
+    public DatabaseSchema.Table getTableSchema() throws RepositoryException {
         DatabaseSchema.Table tableSchema = new DatabaseSchema.Table();
         tableSchema.setName(getEntityName());
 
@@ -96,7 +96,7 @@ public abstract class SchemaEntity {
             }
         }
         if (tableSchema.getColumnList().size() == 0) {
-            throw new DatabaseException(DBMS_5126.getMessage(LANG));
+            throw new RepositoryException(DBMS_5126.getMessage(LANG));
         }
 
         return tableSchema;

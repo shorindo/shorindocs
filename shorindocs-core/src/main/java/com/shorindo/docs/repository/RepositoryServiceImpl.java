@@ -53,18 +53,20 @@ import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.BeanUtil;
 import com.shorindo.docs.BeanUtil.BeanNotFoundException;
+import com.shorindo.docs.TransactionEvent;
+import com.shorindo.docs.TransactionListener;
 import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 
  */
-public class RepositoryServiceImpl implements RepositoryService {
+public class RepositoryServiceImpl implements RepositoryService, TransactionListener {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(RepositoryServiceImpl.class);
     private static final Locale LANG = ApplicationContext.getLang();
     private DataSource dataSource;
-    private ThreadLocal<Connection> threadConnection =
-            new ThreadLocal<Connection>();
+    private ThreadLocal<Map<String,Object>> threadMap =
+            new ThreadLocal<Map<String,Object>>();
 
     /**
      * 
@@ -115,7 +117,7 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @return
      * @throws SQLException
      */
-    public List<String> validateSchema(DatabaseSchema schema) throws DatabaseException {
+    public List<String> validateSchema(DatabaseSchema schema) throws RepositoryException {
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
@@ -170,7 +172,7 @@ public class RepositoryServiceImpl implements RepositoryService {
             }
             return resultList;
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } finally {
             dispose(conn);
         }
@@ -180,7 +182,7 @@ public class RepositoryServiceImpl implements RepositoryService {
     /**
      * 
      */
-    public int createTableFromSchema(DatabaseSchema.Table table) throws DatabaseException {
+    public int createTableFromSchema(DatabaseSchema.Table table) throws RepositoryException {
         String ddl = generateDDL(table);
         return execute(ddl);
     }
@@ -188,7 +190,7 @@ public class RepositoryServiceImpl implements RepositoryService {
     /**
      * 
      */
-    public String generateDDL(DatabaseSchema.Table table) throws DatabaseException {
+    public String generateDDL(DatabaseSchema.Table table) throws RepositoryException {
         StringBuilder sb = new StringBuilder();
         Map<Integer,String> primaryMap = new TreeMap<Integer,String>();
         sb.append("CREATE TABLE " + table.getName() + " (\n");
@@ -206,7 +208,7 @@ public class RepositoryServiceImpl implements RepositoryService {
             }
             if (column.getPrimaryKey() > 0) {
                 if (primaryMap.containsKey(column.getPrimaryKey())) {
-                    throw new DatabaseException(DBMS_5122.getMessage(
+                    throw new RepositoryException(DBMS_5122.getMessage(
                             LANG,
                             column.getName(),
                             column.getPrimaryKey()));
@@ -228,41 +230,122 @@ public class RepositoryServiceImpl implements RepositoryService {
         return sb.toString();
     }
 
+    private Connection getThreadConnection() {
+        Map<String,Object> map = threadMap.get();
+        if (map == null) return null;
+        else return (Connection)map.get(Connection.class.getName());
+    }
+
+    private void removeThreadConnection() {
+        Connection conn = getThreadConnection();
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                LOG.error(DBMS_5103, e);
+            }
+        }
+        threadMap.remove();
+    }
+
+    @Override
+    public void onEvent(TransactionEvent event) {
+        switch(event) {
+        case BEGIN_TRANSACTION:
+            transaction();
+            break;
+        case COMMIT:
+            commit();
+            break;
+        case ROLLBACK:
+            rollback();
+            break;
+        }
+    }
+
+    private void transaction() {
+        Connection conn = getThreadConnection();
+        try {
+            if (conn == null) {
+                conn = dataSource.getConnection();
+                LOG.debug(DBMS_1108);
+                conn.setAutoCommit(false);
+                Map<String,Object> map = new HashMap<String,Object>();
+                map.put(Connection.class.getName(), conn);
+                threadMap.set(map);
+            }
+        } catch (Exception e) {
+            LOG.error(DBMS_9999, e);
+        }
+    }
+
+    private void commit() {
+        try {
+            Connection conn = getThreadConnection();
+            if (conn != null) {
+                LOG.debug(DBMS_1102);
+                conn.commit();
+            } else {
+                LOG.warn(DBMS_3001);
+            }
+        } catch (Exception e) {
+            LOG.error(DBMS_5104, e);
+        } finally {
+            removeThreadConnection();
+        }
+    }
+
+    private void rollback() {
+        try {
+            Connection conn = getThreadConnection();
+            if (conn != null) {
+                LOG.debug(DBMS_1103);
+                conn.rollback();
+            } else {
+                LOG.warn(DBMS_3001);
+            }
+        } catch (Exception e) {
+            LOG.error(DBMS_5105, e);
+        } finally {
+            removeThreadConnection();
+        }
+    }
+
     /**
      * トランザクションを実行する。
      * @param t
      * @throws SQLException 
      */
-    public <T> T transaction(Transactionable<T> t) throws DatabaseException {
-        T result;
-        try {
-            Connection conn = threadConnection.get();
-            if (conn == null) {
-                conn = dataSource.getConnection();
-                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
-                conn.setAutoCommit(false);
-                threadConnection.set(conn);
-
-                try {
-                    result = t.run();
-                    conn.commit();
-                } catch (Throwable th) {
-                    conn.rollback();
-                    throw th;
-                } finally {
-                    threadConnection.remove();
-                    conn.setAutoCommit(true);
-                    LOG.debug(DBMS_1106,Integer.toHexString(conn.hashCode()));
-                    conn.close();
-                }
-            } else {
-                result = t.run();
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
-        return result;
-    }
+//    public <T> T transaction(Transactionable<T> t) throws RepositoryException {
+//        T result;
+//        try {
+//            Connection conn = threadConnection.get();
+//            if (conn == null) {
+//                conn = dataSource.getConnection();
+//                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+//                conn.setAutoCommit(false);
+//                threadConnection.set(conn);
+//
+//                try {
+//                    result = t.run();
+//                    conn.commit();
+//                } catch (Throwable th) {
+//                    conn.rollback();
+//                    throw th;
+//                } finally {
+//                    threadConnection.remove();
+//                    conn.setAutoCommit(true);
+//                    LOG.debug(DBMS_1106,Integer.toHexString(conn.hashCode()));
+//                    conn.close();
+//                }
+//            } else {
+//                result = t.run();
+//            }
+//        } catch (SQLException e) {
+//            throw new RepositoryException(e);
+//        }
+//        return result;
+//    }
 
     /**
      * 
@@ -311,8 +394,8 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @return
      * @throws SQLException
      */
-    public final int execute(String sql, Object...params) throws DatabaseException {
-        Connection conn = threadConnection.get();
+    public final int execute(String sql, Object...params) throws RepositoryException {
+        Connection conn = getThreadConnection();
         if (conn != null) {
             return execute(conn, sql, params);
         } else {
@@ -321,7 +404,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                 LOG.debug(DBMS_1106,Integer.toHexString(conn.hashCode()));
                 return execute(conn, sql, params);
             } catch (SQLException e) {
-                throw new DatabaseException(e);
+                throw new RepositoryException(e);
             } finally {
                 dispose(conn);
             }
@@ -334,9 +417,9 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @param sql
      * @param params
      * @return
-     * @throws DatabaseException
+     * @throws RepositoryException
      */
-    private final int execute(Connection conn, String sql, Object...params) throws DatabaseException {
+    private final int execute(Connection conn, String sql, Object...params) throws RepositoryException {
         long st = System.currentTimeMillis();
         LOG.debug(DBMS_0001, sql);
         try {
@@ -348,7 +431,7 @@ public class RepositoryServiceImpl implements RepositoryService {
             LOG.debug(DBMS_0002, (System.currentTimeMillis() - st));
             return result;
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         }
     }
 
@@ -360,8 +443,8 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @return
      * @throws SQLException
      */
-    public final <E> List<E> query(String sql, Class<E> clazz, Object...params) throws DatabaseException {
-        Connection conn = threadConnection.get();
+    public final <E> List<E> query(String sql, Class<E> clazz, Object...params) throws RepositoryException {
+        Connection conn = getThreadConnection();
         if (conn != null) {
             return query(conn, sql, clazz, params);
         } else {
@@ -370,7 +453,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                 LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
                 return query(conn, sql, clazz, params);
             } catch (SQLException e) {
-                throw new DatabaseException(e);
+                throw new RepositoryException(e);
             } finally {
                 dispose(conn);
             }
@@ -384,9 +467,9 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @param clazz
      * @param params
      * @return
-     * @throws DatabaseException
+     * @throws RepositoryException
      */
-    private final <E> List<E> query(Connection conn, String sql, Class<E> clazz, Object...params) throws DatabaseException {
+    private final <E> List<E> query(Connection conn, String sql, Class<E> clazz, Object...params) throws RepositoryException {
         LOG.debug(DBMS_0003, sql);
         long st = System.currentTimeMillis();
         List<E> resultList = new ArrayList<E>();
@@ -455,15 +538,15 @@ public class RepositoryServiceImpl implements RepositoryService {
                 resultList.add(bean);
             }
         } catch (InstantiationException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (IllegalAccessException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (IllegalArgumentException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (InvocationTargetException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } finally {
             dispose(stmt);
             dispose(rset);
@@ -498,8 +581,8 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @throws SQLException
      */
     public final <E extends SchemaEntity> E get(E entity)
-            throws NotFoundException,DatabaseException {
-        Connection conn = threadConnection.get();
+            throws NotFoundException,RepositoryException {
+        Connection conn = getThreadConnection();
         if (conn != null) {
             return get(conn, entity);
         } else {
@@ -508,7 +591,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                 LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
                 return get(conn, entity);
             } catch (SQLException e) {
-                throw new DatabaseException(e);
+                throw new RepositoryException(e);
             } finally {
                 dispose(conn);
             }
@@ -520,10 +603,10 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @param conn
      * @param entity
      * @return
-     * @throws DatabaseException
+     * @throws RepositoryException
      * @throws NotFoundException 
      */
-    private final <E extends SchemaEntity> E get(Connection conn, E entity) throws DatabaseException, NotFoundException {
+    private final <E extends SchemaEntity> E get(Connection conn, E entity) throws RepositoryException, NotFoundException {
         EntityMapping mapping = bind(conn, entity);
         LOG.debug(DBMS_0003, mapping.getSelectSql());
         long st = System.currentTimeMillis();
@@ -591,13 +674,13 @@ public class RepositoryServiceImpl implements RepositoryService {
             LOG.debug(DBMS_0004, (System.currentTimeMillis() - st) + " ms");
             return entity;
         } catch (IllegalAccessException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (IllegalArgumentException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (InvocationTargetException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } finally {
             dispose(stmt);
             dispose(rset);
@@ -609,7 +692,7 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @return
      * @throws SQLException
      */
-    public final int put(SchemaEntity entity) throws DatabaseException {
+    public final int put(SchemaEntity entity) throws RepositoryException {
         int result = 0;
         result = update(entity);
         if (result > 0) {
@@ -624,8 +707,8 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @return
      * @throws SQLException
      */
-    public final int remove(SchemaEntity entity) throws DatabaseException {
-        Connection conn = threadConnection.get();
+    public final int remove(SchemaEntity entity) throws RepositoryException {
+        Connection conn = getThreadConnection();
         if (conn != null) {
             return remove(conn, entity);
         } else {
@@ -634,7 +717,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                 LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
                 return remove(conn, entity);
             } catch (SQLException e) {
-                throw new DatabaseException(e);
+                throw new RepositoryException(e);
             } finally {
                 dispose(conn);
             }
@@ -646,9 +729,9 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @param conn
      * @param entity
      * @return
-     * @throws DatabaseException
+     * @throws RepositoryException
      */
-    private final int remove(Connection conn, SchemaEntity entity) throws DatabaseException {
+    private final int remove(Connection conn, SchemaEntity entity) throws RepositoryException {
         EntityMapping mapping = bind(conn, entity);
         LOG.debug(DBMS_0005, mapping.getUpdateSql());
         PreparedStatement stmt = null;
@@ -663,13 +746,13 @@ public class RepositoryServiceImpl implements RepositoryService {
             }
             return stmt.executeUpdate();
         } catch (IllegalAccessException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (IllegalArgumentException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (InvocationTargetException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } finally {
             dispose(stmt);
         }
@@ -681,8 +764,8 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @return
      * @throws SQLException
      */
-    public int insert(SchemaEntity entity) throws DatabaseException {
-        Connection conn = threadConnection.get();
+    public int insert(SchemaEntity entity) throws RepositoryException {
+        Connection conn = getThreadConnection();
         if (conn != null) {
             return insert(conn, entity);
         } else {
@@ -691,7 +774,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                 LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
                 return insert(conn, entity);
             } catch (SQLException e) {
-                throw new DatabaseException(e);
+                throw new RepositoryException(e);
             } finally {
                 dispose(conn);
             }
@@ -703,9 +786,9 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @param conn
      * @param entity
      * @return
-     * @throws DatabaseException
+     * @throws RepositoryException
      */
-    private int insert(Connection conn, SchemaEntity entity) throws DatabaseException {
+    private int insert(Connection conn, SchemaEntity entity) throws RepositoryException {
         long st = System.currentTimeMillis();
         EntityMapping mapping = bind(conn, entity);
         LOG.debug(DBMS_0007, mapping.getInsertSql());
@@ -728,9 +811,9 @@ public class RepositoryServiceImpl implements RepositoryService {
             LOG.debug(DBMS_0008, (System.currentTimeMillis() - st) + " ms");
             return result;
         } catch (IllegalArgumentException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } finally {
             dispose(stmt);
         }
@@ -742,8 +825,8 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @return
      * @throws SQLException
      */
-    public int update(SchemaEntity entity) throws DatabaseException {
-        Connection conn = threadConnection.get();
+    public int update(SchemaEntity entity) throws RepositoryException {
+        Connection conn = getThreadConnection();
         if (conn != null) {
             return update(conn, entity);
         } else {
@@ -752,7 +835,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                 //LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
                 return update(conn, entity);
             } catch (SQLException e) {
-                throw new DatabaseException(e);
+                throw new RepositoryException(e);
             } finally {
                 dispose(conn);
             }
@@ -764,9 +847,9 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @param conn
      * @param entity
      * @return
-     * @throws DatabaseException
+     * @throws RepositoryException
      */
-    private int update(Connection conn, SchemaEntity entity) throws DatabaseException {
+    private int update(Connection conn, SchemaEntity entity) throws RepositoryException {
         LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
         long st = System.currentTimeMillis();
         EntityMapping mapping = bind(conn, entity);
@@ -805,9 +888,9 @@ public class RepositoryServiceImpl implements RepositoryService {
             LOG.debug(DBMS_0010, (System.currentTimeMillis() - st) + "ms");
             return result;
         } catch (IllegalArgumentException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } finally {
             dispose(stmt);
         }
@@ -1011,13 +1094,13 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @param mapping
      * @param index
      * @return
-     * @throws DatabaseException
+     * @throws RepositoryException
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
     private int applySetMethod(Statement stmt, SchemaEntity entity, ColumnMapping mapping, int index)
-            throws DatabaseException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            throws RepositoryException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 //        LOG.debug("applySetMethod(" + mapping.getStatementSetMethod() + "," + mapping.getField() + ")");
         Method setMethod = mapping.getStatementSetMethod();
         setMethod.invoke(stmt, index, entity.getByName(mapping.getColumnName()));
@@ -1047,10 +1130,10 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @param conn
      * @param entity
      * @return
-     * @throws DatabaseException
+     * @throws RepositoryException
      */
     @SuppressWarnings("resource")
-    private EntityMapping bind(Connection conn, SchemaEntity entity) throws DatabaseException {
+    private EntityMapping bind(Connection conn, SchemaEntity entity) throws RepositoryException {
         EntityMapping entityMapping = new EntityMapping(entity.getEntityName());
         ResultSet primarySet = null;
         ResultSet columnSet = null;
@@ -1107,7 +1190,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                 entityMapping.putColumn(columnName, columnCache);
             }
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new RepositoryException(e);
         } finally {
             dispose(primarySet);
             dispose(columnSet);

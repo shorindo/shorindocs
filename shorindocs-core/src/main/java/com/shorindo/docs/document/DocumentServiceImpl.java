@@ -20,7 +20,7 @@ import java.io.InputStream;
 
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.repository.DatabaseException;
+import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.DatabaseSchema;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceImpl;
@@ -51,7 +51,7 @@ public class DocumentServiceImpl implements DocumentService {
                 String ddl = repositoryService.generateDDL((DatabaseSchema.Table)e);
                 LOG.info(ddl);
             }
-        } catch (DatabaseException e) {
+        } catch (RepositoryException e) {
             LOG.error(e.getMessage(), e);
         } finally {
             if (is != null)

@@ -69,6 +69,7 @@ public class AuthenticateServiceTest {
         UserEntity entity = new UserEntity();
         entity.setLoginName(String.format("%x", IdentityProvider.newId()));
         entity.setPassword("password");
+        entity.setDisplayName("displayName");
         entity.setMail("mail");
         authenticateService.createUser(entity);
         authenticateService.login(entity.getLoginName(), entity.getPassword());

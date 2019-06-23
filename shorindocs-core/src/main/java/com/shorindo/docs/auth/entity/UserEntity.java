@@ -20,7 +20,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.model.UserModel;
+import com.shorindo.docs.auth.model.GroupModel;
+import com.shorindo.docs.auth.model.UserModel;
 import com.shorindo.docs.repository.Column;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
@@ -57,9 +58,21 @@ public class UserEntity extends SchemaEntity implements UserModel {
     @Column(name="UPDATED_DATE", typeName="TIMESTAMP")
     private Date updatedDate;
 
-    private List<GroupEntity> groupList = new ArrayList<GroupEntity>();
+    private List<GroupModel> groupList = new ArrayList<GroupModel>();
 
     public UserEntity() {
+    }
+
+    public UserEntity(UserModel model) {
+        this.setUserId(model.getUserId());
+        this.setDisplayName(model.getDisplayName());
+        this.setLoginName(model.getLoginName());
+        this.setMail(model.getMail());
+        this.setPassword(model.getPassword());
+    }
+
+    public String getId() {
+        return getUserId();
     }
 
     public String getUserId() {
@@ -126,15 +139,15 @@ public class UserEntity extends SchemaEntity implements UserModel {
         this.updatedDate = updatedDate;
     }
 
-    public List<GroupEntity> getGroupList() {
+    public List<GroupModel> getGroupList() {
         return groupList;
     }
 
-    public void setGroupList(List<GroupEntity> groupList) {
+    public void setGroupList(List<GroupModel> groupList) {
         this.groupList = groupList;
     }
 
-    public void addGroup(GroupEntity group) {
+    public void addGroup(GroupModel group) {
         this.groupList.add(group);
     }
 }
