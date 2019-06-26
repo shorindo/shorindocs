@@ -29,7 +29,7 @@ public interface RepositoryService {
 
     public int execute(String sql, Object...params) throws RepositoryException;
     public <E> List<E> query(String sql, Class<E> clazz, Object...params) throws RepositoryException;
-    public <E extends SchemaEntity> E get(E entity) throws NotFoundException,RepositoryException;
+    public <E extends SchemaEntity> E get(E entity) throws RepositoryException;
     public int put(SchemaEntity entity) throws RepositoryException;
     public int remove(SchemaEntity entity) throws RepositoryException;
 

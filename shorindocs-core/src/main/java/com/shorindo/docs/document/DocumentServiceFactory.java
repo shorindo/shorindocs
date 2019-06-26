@@ -20,13 +20,11 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.RepositoryException;
-import com.shorindo.docs.repository.NotFoundException;
 import com.shorindo.docs.repository.RepositoryService;
 
 /**
@@ -41,21 +39,6 @@ public abstract class DocumentServiceFactory {
             new HashMap<String,ActionController>();
     private static final RepositoryService repositoryService =
             ServiceFactory.getService(RepositoryService.class);
-
-//    private static ApplicationContext applicationContext;
-
-    /*
-     * 
-     */
-//    public static synchronized ApplicationContext applicationContext() {
-//        if (applicationContext == null) {
-//            applicationContext = new ApplicationContext();
-//        }
-//        return applicationContext;
-//    }
-
-//    public static synchronized void init() {
-//    }
 
     /**
      * 
@@ -92,8 +75,6 @@ public abstract class DocumentServiceFactory {
                     controller = (ActionController)clazz.newInstance();
                     classMap.put(entity.getController(), controller);
                 }
-            } catch (NotFoundException e) {
-                LOG.warn(DOCS_5010, path);
             } catch (RepositoryException e) {
                 LOG.error(DOCS_9999, e);
             } catch (ClassNotFoundException e) {

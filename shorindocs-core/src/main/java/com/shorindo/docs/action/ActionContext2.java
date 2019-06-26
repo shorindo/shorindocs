@@ -18,11 +18,5 @@ package com.shorindo.docs.action;
 /**
  * 
  */
-public abstract class ActionContext2 {
-    protected static synchronized <T> void addService(Class<T> itfc, Class<? extends T> implClass) {
-    }
-
-    protected static synchronized <T> T getService(Class<T> itfc) {
-        return null;
-    }
+public enum ActionContext2 {
 }

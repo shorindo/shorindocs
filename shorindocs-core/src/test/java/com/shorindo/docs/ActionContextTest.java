@@ -20,9 +20,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.shorindo.docs.action.ActionContext;
-import com.shorindo.docs.repository.RepositoryException;
-import com.shorindo.docs.repository.NotFoundException;
-import com.shorindo.docs.repository.RepositoryServiceImpl;
 
 /**
  * 

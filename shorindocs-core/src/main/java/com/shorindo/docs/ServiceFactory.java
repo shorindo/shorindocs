@@ -30,21 +30,32 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.repository.Transactional;
 
 /**
- * 
+ * サービスを管理する
  */
 @SuppressWarnings("unchecked")
 public abstract class ServiceFactory {
     private static ActionLogger LOG = ActionLogger.getLogger(ServiceFactory.class);
     private static Map<Class<?>,Class<?>> interfaceap = new ConcurrentHashMap<Class<?>,Class<?>>();
     private static Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<Class<?>,Object>();
-//    private static ThreadLocal<Map<String,Object>> transactionMap = new ThreadLocal<Map<String,Object>>();
     private static Set<TransactionListener> listenerSet = new HashSet<TransactionListener>();
 
+    /**
+     * サービスを登録する
+     * 
+     * @param itfc サービスのインタフェース
+     * @param impl サービスの実装クラス
+     */
     public static synchronized <T> void addService(Class<T> itfc, Class<? extends T> impl) {
         interfaceap.put(itfc, impl);
         instanceMap.remove(itfc);
     }
 
+    /**
+     * サービスをシングルトンで取得する
+     * 
+     * @param itfc サービスのインタフェース
+     * @return サービスのインスタンス
+     */
     public static synchronized <T> T getService(Class<T> itfc) {
         try {
             if (instanceMap.containsKey(itfc)) {
@@ -56,6 +67,9 @@ public abstract class ServiceFactory {
                         ServiceFactory.class.getClassLoader(),
                         new Class<?>[] { itfc },
                         new InvocationHandler() {
+                            /*
+                             * TODO トランザクションが入れ子の対応
+                             */
                             @Override
                             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                                 long st = System.currentTimeMillis();
@@ -88,11 +102,14 @@ public abstract class ServiceFactory {
         }
     }
 
+    /*
+     * トランザクションリスナーを登録する
+     */
     private static void addListener(TransactionListener listener) {
         listenerSet.add(listener);
     }
 
-    /**
+    /*
      * methodと同一のシグネチャを持つobjectのメソッドが@Transactionalアノテーションを
      * 持つかどうか判定する。
      * 
@@ -117,6 +134,9 @@ public abstract class ServiceFactory {
         return false;
     }
 
+    /*
+     * トランザクションリスナーにイベントを送信する
+     */
     private static void sendEvent(boolean transactional, TransactionEvent event) {
         if (transactional) {
             for (TransactionListener listener : listenerSet) {

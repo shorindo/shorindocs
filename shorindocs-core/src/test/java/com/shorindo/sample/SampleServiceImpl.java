@@ -15,6 +15,8 @@
  */
 package com.shorindo.sample;
 
+import java.util.Locale;
+
 /**
  * 
  */
@@ -31,5 +33,12 @@ public class SampleServiceImpl implements SampleService {
         SampleService service = new SampleServiceImpl();
         Output output = service.sum(new Input("123.0", "456"));
         System.out.println(output.getC());
+
+        System.out.println(SampleMessages.SMPL_000);
+        System.out.println(SampleMessages.SMPL_000.getMessage());
+        System.out.println(SampleMessages.SMPL_000.getMessage(Locale.US));
+        System.out.println(SampleMessages.SMPL_001.getMessage());
+        System.out.println(SampleMessages.SMPL_001.getMessage(Locale.ENGLISH));
+        System.out.println(SampleMessages.SMPL_002.getMessage());
     }
 }

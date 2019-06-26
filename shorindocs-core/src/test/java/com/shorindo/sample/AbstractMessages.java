@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2019 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.action;
+package com.shorindo.sample;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
-import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -28,16 +27,13 @@ import java.util.Map;
 /**
  * 
  */
-public interface ActionMessages {
+public interface AbstractMessages {
+    public Map<String,String> getBundle();
     public String name();
-    public Map<String,MessageFormat> getBundle();
     public String getCode();
-    public String getMessage(Object...args);
-    public String getMessage(Locale locale, Object...args);
+    public String getMessage();
+    public String getMessage(Locale locale);
 
-    /**
-     * 
-     */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public static @interface Message {
@@ -45,43 +41,30 @@ public interface ActionMessages {
         String en() default "undefined";
     }
 
-    /**
-     * 
-     */
-    public static abstract class Util {
-
-        public static Map<String,MessageFormat> bundle(ActionMessages m) {
-            Map<String,MessageFormat> bundle = new LinkedHashMap<String,MessageFormat>();
+    public static abstract class MessageUtil {
+        protected static void bundle(AbstractMessages m) {
+            Map<String,String> bundle = m.getBundle();
             try {
                 Field field = m.getClass().getField(m.name());
                 Message message = field.getAnnotation(Message.class);
                 if (message != null) {
-                    bundle.put(Locale.JAPANESE.getLanguage(), new MessageFormat(message.ja()));
-                    bundle.put(Locale.ENGLISH.getLanguage(), new MessageFormat(message.en()));
+                    bundle.put(Locale.JAPANESE.getLanguage(), message.ja());
+                    bundle.put(Locale.ENGLISH.getLanguage(), message.en());
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
-            return bundle;
         }
 
-        public static String getCode(ActionMessages m) {
-            return m.name();
+        protected static String getMessage(AbstractMessages m) {
+            return getMessage(Locale.getDefault(), m);
         }
 
-        public static String getMessage(ActionMessages m, Object...params) {
-            return getMessage(Locale.getDefault(), m, params);
+        protected static String getMessage(Locale locale, AbstractMessages m) {
+            return m.getBundle().get(locale.getLanguage());
         }
 
-        public static String getMessage(Locale locale, ActionMessages m, Object...params) {
-            MessageFormat format = m.getBundle().get(locale.getLanguage());
-            if (format != null)
-                return format.format(params);
-            else
-                return null;
-        }
-
-        public static String getString(ActionMessages m) {
+        protected static String getString(AbstractMessages m) {
             return m.name() + ":" + m.getBundle();
         }
     }

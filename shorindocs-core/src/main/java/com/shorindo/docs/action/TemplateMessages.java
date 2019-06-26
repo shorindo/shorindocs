@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2019 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,43 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.xuml;
+package com.shorindo.docs.action;
 
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
 
-import com.shorindo.docs.action.ActionMessages;
-
 /**
  * 
  */
-public enum XumlMessages implements ActionMessages {
-    @Message(ja = "コンポーネント[{0}]をロードしました。")
-    XUML_1000,
-    @Message(ja = "レンダリング開始：{0}")
-    XUML_1001,
-    @Message(ja = "レンダリング終了：{0} : {1} ms")
-    XUML_1002,
-    @Message(ja = "XUMLテンプレート[{0}]のクローズに失敗しました。")
-    XUML_3001,
-    @Message(ja = "属性[{0}]は不明です。")
-    XUML_3002,
-    @Message(ja = "コンポーネント[{0}]の指定ができませんでした。")
-    XUML_5001,
-    @Message(ja = "XUMLエンジンの初期化に失敗しました。")
-    XUML_5010,
-    @Message(ja = "XUMLのレンダリングに失敗しました。")
-    XUML_5020,
-    @Message(ja = "ルート要素が'xuml'ではありません。")
-    XUML_5030,
-    @Message(ja = "[{0}]の生成に失敗したため、Generalコンポーネントを使用します。")
-    XUML_5125
-    ;
+public enum TemplateMessages implements ActionMessages {
+    TMPL_0000;
 
     private Map<String,MessageFormat> bundle;
 
-    private XumlMessages() {
+    private TemplateMessages() {
         bundle = ActionMessages.Util.bundle(this);
     }
 

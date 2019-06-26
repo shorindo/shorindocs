@@ -581,7 +581,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @throws SQLException
      */
     public final <E extends SchemaEntity> E get(E entity)
-            throws NotFoundException,RepositoryException {
+            throws RepositoryException {
         Connection conn = getThreadConnection();
         if (conn != null) {
             return get(conn, entity);
@@ -606,10 +606,9 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @throws RepositoryException
      * @throws NotFoundException 
      */
-    private final <E extends SchemaEntity> E get(Connection conn, E entity) throws RepositoryException, NotFoundException {
+    private final <E extends SchemaEntity> E get(Connection conn, E entity) throws RepositoryException {
         EntityMapping mapping = bind(conn, entity);
         LOG.debug(DBMS_0003, mapping.getSelectSql());
-        long st = System.currentTimeMillis();
         PreparedStatement stmt = null;
         ResultSet rset = null;
         try {
@@ -668,11 +667,11 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
                         method.invoke(entity, rset.getObject(columnName));
                     }
                 }
+                return entity;
             } else {
-                throw new NotFoundException();
+                //LOG.warn(code, args);
+                return null;
             }
-            LOG.debug(DBMS_0004, (System.currentTimeMillis() - st) + " ms");
-            return entity;
         } catch (IllegalAccessException e) {
             throw new RepositoryException(e);
         } catch (IllegalArgumentException e) {

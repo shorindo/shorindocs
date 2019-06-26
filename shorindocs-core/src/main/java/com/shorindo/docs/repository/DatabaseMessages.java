@@ -17,6 +17,7 @@ package com.shorindo.docs.repository;
 
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.Map;
 
 import com.shorindo.docs.action.ActionMessages;
 
@@ -24,75 +25,135 @@ import com.shorindo.docs.action.ActionMessages;
  * 
  */
 public enum DatabaseMessages implements ActionMessages {
-    DBMS_0001("SQL開始 : {0}"),
-    DBMS_0002("SQL終了 : {0} ms"),
-    DBMS_0003("検索開始：{0}"),
-    DBMS_0004("検索終了：{0}"),
-    DBMS_0005("削除開始：{0}"),
-    DBMS_0006("削除終了：{0}"),
-    DBMS_0007("追加開始：{0}"),
-    DBMS_0008("追加終了：{0}"),
-    DBMS_0009("更新開始：{0}"),
-    DBMS_0010("更新終了：{0}"),
-    DBMS_0011("パラメータ：{0}"),
+    @Message(ja = "SQL開始 : {0}")
+    DBMS_0001,
+    @Message(ja = "SQL終了 : {0} ms")
+    DBMS_0002,
+    @Message(ja = "検索開始：{0}")
+    DBMS_0003,
+    @Message(ja = "検索終了：{0}")
+    DBMS_0004,
+    @Message(ja = "削除開始：{0}")
+    DBMS_0005,
+    @Message(ja = "削除終了：{0}")
+    DBMS_0006,
+    @Message(ja = "追加開始：{0}")
+    DBMS_0007,
+    @Message(ja = "追加終了：{0}")
+    DBMS_0008,
+    @Message(ja = "更新開始：{0}")
+    DBMS_0009,
+    @Message(ja = "更新終了：{0}")
+    DBMS_0010,
+    @Message(ja = "パラメータ：{0}")
+    DBMS_0011,
 
-    DBMS_1101("スキーマ定義[{0}.{1}]を読み込みました。"),
-    DBMS_1102("トランザクションをコミットします。"),
-    DBMS_1103("トランザクションをロールバックします。"),
-    DBMS_1104("エンティティ[{0}]の定義は正常です。"),
-    DBMS_1107("エンティティ[{0}]の定義に異常があります。"),
-    DBMS_1105("DB接続：{0}"),
-    DBMS_1106("DB切断：{0}"),
-    DBMS_1108("トランザクションを開始します。"),
+    @Message(ja = "スキーマ定義[{0}.{1}]を読み込みました。")
+    DBMS_1101,
+    @Message(ja = "トランザクションをコミットします。")
+    DBMS_1102,
+    @Message(ja = "トランザクションをロールバックします。")
+    DBMS_1103,
+    @Message(ja = "エンティティ[{0}]の定義は正常です。")
+    DBMS_1104,
+    @Message(ja = "エンティティ[{0}]の定義に異常があります。")
+    DBMS_1107,
+    @Message(ja = "DB接続：{0}")
+    DBMS_1105,
+    @Message(ja = "DB切断：{0}")
+    DBMS_1106,
+    @Message(ja = "トランザクションを開始します。")
+    DBMS_1108,
 
-    DBMS_3001("トランザクション実行中ではありません。"),
+    @Message(ja = "トランザクション実行中ではありません。")
+    DBMS_3001,
 
-    DBMS_5100("データベース接続の初期化に失敗しました。"),
-    DBMS_5101("データベース処理の実行に失敗しました。"),
-    DBMS_5102("データベース接続のオープンに失敗しました。"),
-    DBMS_5103("データベース接続のクローズに失敗しました。"),
-    DBMS_5104("トランザクションのコミットに失敗しました。"),
-    DBMS_5105("トランザクションのロールバックに失敗しました。"),
-    DBMS_5106("ステートメントのクローズに失敗しました。"),
-    DBMS_5107("結果セットのクローズに失敗しました。"),
-    DBMS_5108("エンティティ[{0}]がありません。"),
-    DBMS_5109("カラム[{0}.{1}]が未定義です。"),
-    DBMS_5110("カラム[{0}.{1}]がデータベースにありません。"),
-    DBMS_5111("INSERT文の生成でエラーが発生しました。"),
-    DBMS_5112("UPDATE文の生成でエラーが発生しました。"),
-    DBMS_5113("DELETE文の生成でエラーが発生しました。"),
-    DBMS_5114("SELECT文の生成でエラーが発生しました。"),
-    DBMS_5115("INSERT文の実行でエラーが発生しました。"),
-    DBMS_5116("UPDATE文の実行でエラーが発生しました。"),
-    DBMS_5117("DELETE文の実行でエラーが発生しました。"),
-    DBMS_5118("SELECT文の実行でエラーが発生しました。"),
-    DBMS_5119("カラム[{0}]に対応するフィールド[{1}]がありません。"),
-    DBMS_5120("カラム[{0}]に対応するアクセッサ[{1}]がありません。"),
-    DBMS_5121("テーブル[{0}]の作成に失敗しました。"),
-    DBMS_5122("カラム[{0}]の一意キーの順序[{0}]が重複しています。"),
-    DBMS_5123("スキーマの検証に失敗しました。"),
-    DBMS_5124("カラム[{0}]に対応するスキーマタイプがありません。"),
-    DBMS_5125("テーブル指定アノテーションがありません。"),
-    DBMS_5126("カラム指定アノテーションが１つもありません。"),
-    DBMS_5127("エンティティ[{0}]の実体を作成しました。"),
-    DBMS_5128("エンティティ[{0}]の実体を作成できませんでした。"),
-    DBMS_9999("未知のエラーが発生しました。")
+    @Message(ja = "データベース接続の初期化に失敗しました。")
+    DBMS_5100,
+    @Message(ja = "データベース処理の実行に失敗しました。")
+    DBMS_5101,
+    @Message(ja = "データベース接続のオープンに失敗しました。")
+    DBMS_5102,
+    @Message(ja = "データベース接続のクローズに失敗しました。")
+    DBMS_5103,
+    @Message(ja = "トランザクションのコミットに失敗しました。")
+    DBMS_5104,
+    @Message(ja = "トランザクションのロールバックに失敗しました。")
+    DBMS_5105,
+    @Message(ja = "ステートメントのクローズに失敗しました。")
+    DBMS_5106,
+    @Message(ja = "結果セットのクローズに失敗しました。")
+    DBMS_5107,
+    @Message(ja = "エンティティ[{0}]がありません。")
+    DBMS_5108,
+    @Message(ja = "カラム[{0}.{1}]が未定義です。")
+    DBMS_5109,
+    @Message(ja = "カラム[{0}.{1}]がデータベースにありません。")
+    DBMS_5110,
+    @Message(ja = "INSERT文の生成でエラーが発生しました。")
+    DBMS_5111,
+    @Message(ja = "UPDATE文の生成でエラーが発生しました。")
+    DBMS_5112,
+    @Message(ja = "DELETE文の生成でエラーが発生しました。")
+    DBMS_5113,
+    @Message(ja = "SELECT文の生成でエラーが発生しました。")
+    DBMS_5114,
+    @Message(ja = "INSERT文の実行でエラーが発生しました。")
+    DBMS_5115,
+    @Message(ja = "UPDATE文の実行でエラーが発生しました。")
+    DBMS_5116,
+    @Message(ja = "DELETE文の実行でエラーが発生しました。")
+    DBMS_5117,
+    @Message(ja = "SELECT文の実行でエラーが発生しました。")
+    DBMS_5118,
+    @Message(ja = "カラム[{0}]に対応するフィールド[{1}]がありません。")
+    DBMS_5119,
+    @Message(ja = "カラム[{0}]に対応するアクセッサ[{1}]がありません。")
+    DBMS_5120,
+    @Message(ja = "テーブル[{0}]の作成に失敗しました。")
+    DBMS_5121,
+    @Message(ja = "カラム[{0}]の一意キーの順序[{0}]が重複しています。")
+    DBMS_5122,
+    @Message(ja = "スキーマの検証に失敗しました。")
+    DBMS_5123,
+    @Message(ja = "カラム[{0}]に対応するスキーマタイプがありません。")
+    DBMS_5124,
+    @Message(ja = "テーブル指定アノテーションがありません。")
+    DBMS_5125,
+    @Message(ja = "カラム指定アノテーションが１つもありません。")
+    DBMS_5126,
+    @Message(ja = "エンティティ[{0}]の実体を作成しました。")
+    DBMS_5127,
+    @Message(ja = "エンティティ[{0}]の実体を作成できませんでした。")
+    DBMS_5128,
+    @Message(ja = "未知のエラーが発生しました。")
+    DBMS_9999
     ;
 
-    private String message;
+    private Map<String,MessageFormat> bundle;
 
-    private DatabaseMessages(String message) {
-        this.message = message;
+    private DatabaseMessages() {
+        bundle = ActionMessages.Util.bundle(this);
+    }
+
+    @Override
+    public Map<String, MessageFormat> getBundle() {
+        return bundle;
     }
 
     @Override
     public String getCode() {
-        return name();
+        return ActionMessages.Util.getCode(this);
     }
 
     @Override
-    public String getMessage(Locale locale, Object... args) {
-        return MessageFormat.format(message, args);
+    public String getMessage(Object... params) {
+        return ActionMessages.Util.getMessage(this, params);
+    }
+
+    @Override
+    public String getMessage(Locale locale, Object... params) {
+        return ActionMessages.Util.getMessage(this, params);
     }
 
 }

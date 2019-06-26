@@ -25,23 +25,30 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.repository.RepositoryService;
+import com.shorindo.docs.repository.RepositoryServiceImpl;
 
 /**
  * 
  */
 public class OutloggerServiceTest {
-    private OutloggerServiceImpl service = new OutloggerServiceImpl();
+    public static final String DOCUMENT_ID = "outlogger";
+    private static OutloggerService service;
 
     @BeforeClass
     public static void setUpBefore() throws Exception {
         InputStream is = OutloggerServiceTest.class.getClassLoader().getResourceAsStream("site.properties");
         ApplicationContext.loadProperties(is);
+        ServiceFactory.addService(RepositoryService.class, RepositoryServiceImpl.class);
+        ServiceFactory.addService(OutloggerService.class, OutloggerServiceImpl.class);
+        service = ServiceFactory.getService(OutloggerService.class);
     }
 
     @Test
     public void testAddLog() throws Exception {
         OutloggerEntity entity = new OutloggerEntity();
-        entity.setDocumentId("test");
+        entity.setDocumentId(DOCUMENT_ID);
         entity.setLogId(1);
         entity.setContent("putLog " + new Date());
         entity.setCreateUser("testuser");
@@ -54,7 +61,7 @@ public class OutloggerServiceTest {
     @Test
     public void testModLog() throws Exception {
         OutloggerEntity entity = new OutloggerEntity();
-        entity.setDocumentId("test");
+        entity.setDocumentId(DOCUMENT_ID);
         entity.setContent("putLog[1]");
         entity.setCreateUser("testuser");
         entity.setCreateDate(new Date());
@@ -72,7 +79,7 @@ public class OutloggerServiceTest {
     @Test
     public void testListLog() throws Exception {
         OutloggerEntity entity = new OutloggerEntity();
-        entity.setDocumentId("test");
+        entity.setDocumentId(DOCUMENT_ID);
         List<OutloggerEntity> entityList = service.listLog(entity);
         assertTrue(entityList.size() > 0);
         entityList.stream().forEach(e -> {
@@ -83,7 +90,7 @@ public class OutloggerServiceTest {
     @Test
     public void testRemoveLog() throws Exception {
         OutloggerEntity entity = new OutloggerEntity();
-        entity.setDocumentId("test");
+        entity.setDocumentId(DOCUMENT_ID);
         entity.setContent("removeLog " + new Date());
         entity.setCreateUser("testuser");
         entity.setCreateDate(new Date());

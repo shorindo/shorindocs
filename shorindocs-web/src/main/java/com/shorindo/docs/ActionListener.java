@@ -18,6 +18,7 @@ package com.shorindo.docs;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Properties;
 
 import javax.servlet.ServletContextEvent;
@@ -62,7 +63,7 @@ public class ActionListener implements ServletContextListener {
                 LOG.error(DocumentMessages.DOCS_9000, e);
             }
         }
-
+LOG.debug(Locale.getDefault().getLanguage());
         // FIXME
         Plugin.addPlugin(RepositoryPlugin.class);
         Plugin.addPlugin(AuthenticatePlugin.class);

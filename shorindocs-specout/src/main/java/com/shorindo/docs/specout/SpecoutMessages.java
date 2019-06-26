@@ -17,6 +17,7 @@ package com.shorindo.docs.specout;
 
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.Map;
 
 import com.shorindo.docs.action.ActionMessages;
 
@@ -24,24 +25,36 @@ import com.shorindo.docs.action.ActionMessages;
  * 
  */
 public enum SpecoutMessages implements ActionMessages {
-    SPEC_0001("ドキュメント解析開始"),
-    SPEC_0002("ドキュメント解析終了 : {0} ms"),
-    SPEC_9001("ドキュメントの解析に失敗しました。");
+    @Message(ja = "ドキュメント解析開始")
+    SPEC_0001,
+    @Message(ja = "ドキュメント解析終了 : {0} ms")
+    SPEC_0002,
+    @Message(ja = "ドキュメントの解析に失敗しました。")
+    SPEC_9001;
 
-    private String message;
+    private Map<String,MessageFormat> bundle;
 
-    private SpecoutMessages(String message) {
-        this.message = message;
+    private SpecoutMessages() {
+        bundle = ActionMessages.Util.bundle(this);
+    }
+
+    @Override
+    public Map<String, MessageFormat> getBundle() {
+        return bundle;
     }
 
     @Override
     public String getCode() {
-        return name();
+        return ActionMessages.Util.getCode(this);
     }
 
     @Override
-    public String getMessage(Locale locale, Object... args) {
-        return MessageFormat.format(message, args);
+    public String getMessage(Object... params) {
+        return ActionMessages.Util.getMessage(this, params);
     }
 
+    @Override
+    public String getMessage(Locale locale, Object... params) {
+        return ActionMessages.Util.getMessage(this, params);
+    }
 }

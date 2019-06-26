@@ -71,6 +71,11 @@
             {{/rows}}
           </html:tbody>
         </html:table>
+        <html:ol>
+        {{#logs}}
+          <html:li>{{logId}} - {{content}}</html:li>
+        {{/logs}}
+        </html:ol>
       </vbox>
     </hbox>
   </vbox>

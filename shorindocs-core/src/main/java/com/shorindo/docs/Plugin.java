@@ -18,15 +18,11 @@ package com.shorindo.docs;
 import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.document.DocumentServiceFactory;
-import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.DatabaseSchema;
 import com.shorindo.docs.repository.RepositoryService;

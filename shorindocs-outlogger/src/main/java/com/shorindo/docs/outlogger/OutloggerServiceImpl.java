@@ -28,7 +28,7 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.repository.RepositoryException;
-import com.shorindo.docs.repository.NotFoundException;
+import com.shorindo.docs.repository.Transactional;
 
 /**
  * 
@@ -114,6 +114,7 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
      * @return
      * @throws DocumentException
      */
+    @Transactional
     public OutloggerEntity putLog(OutloggerEntity entity) throws DocumentException {
         long st = System.currentTimeMillis();
         LOG.debug(OLOG_0001, "putLog");
@@ -130,9 +131,6 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
                 repositoryService.insert(entity);
             }
             return repositoryService.get(entity);
-        } catch (NotFoundException e) {
-            LOG.warn(DOCS_9999, e);
-            return null;
         } catch (RepositoryException e) {
             LOG.warn(DOCS_9999, e);
             return null;
@@ -152,8 +150,6 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
         LOG.debug(OLOG_0001, "getLog");
         try {
             return repositoryService.get(entity);
-        } catch (NotFoundException e) {
-            return null;
         } catch (RepositoryException e) {
             throw new DocumentException(e.getMessage(), e);
         } finally {
@@ -167,9 +163,10 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
      * @return
      * @throws DocumentException
      */
+    @Transactional
     public OutloggerEntity removeLog(OutloggerEntity entity) throws DocumentException {
         long st = System.currentTimeMillis();
-        LOG.debug(OLOG_0001, "putLog");
+        LOG.debug(OLOG_0001, "removeLog");
         try {
             // 前バージョンのデータがあったらバージョンをインクリメントする
             int version = 0;
@@ -198,10 +195,8 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
             return prev;
         } catch (RepositoryException e) {
             throw new DocumentException(e.getMessage(), e);
-        } catch (NotFoundException e) {
-            return null;
         } finally {
-            LOG.debug(OLOG_0002, "getLog", (System.currentTimeMillis() - st));
+            LOG.debug(OLOG_0002, "removeLog", (System.currentTimeMillis() - st));
         }
     }
 

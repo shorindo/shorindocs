@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 
 import com.shorindo.docs.LapCounter;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 
 /**
@@ -54,7 +53,6 @@ public abstract class ActionController {
             return null;
         } catch (Exception e) {
             LOG.error(DOCS_3003, e, context.getAction());
-            //return new ErrorView(500);
             throw new RuntimeException(e);
         }
     }

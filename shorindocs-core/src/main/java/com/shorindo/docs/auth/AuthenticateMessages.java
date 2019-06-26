@@ -17,6 +17,7 @@ package com.shorindo.docs.auth;
 
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.Map;
 
 import com.shorindo.docs.action.ActionMessages;
 
@@ -26,20 +27,29 @@ import com.shorindo.docs.action.ActionMessages;
 public enum AuthenticateMessages implements ActionMessages {
     ;
 
-    private String message;
+    private Map<String,MessageFormat> bundle;
 
-    private AuthenticateMessages(String message) {
-        this.message = message;
+    private AuthenticateMessages() {
+        bundle = ActionMessages.Util.bundle(this);
+    }
+
+    @Override
+    public Map<String, MessageFormat> getBundle() {
+        return bundle;
     }
 
     @Override
     public String getCode() {
-        return name().replaceAll("_", "-");
+        return ActionMessages.Util.getCode(this);
     }
 
     @Override
-    public String getMessage(Locale locale, Object... args) {
-        return MessageFormat.format(message, args);
+    public String getMessage(Object... params) {
+        return ActionMessages.Util.getMessage(this, params);
     }
 
+    @Override
+    public String getMessage(Locale locale, Object... params) {
+        return ActionMessages.Util.getMessage(this, params);
+    }
 }

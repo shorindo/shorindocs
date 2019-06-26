@@ -28,7 +28,6 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.RepositoryException;
-import com.shorindo.docs.repository.NotFoundException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
@@ -58,8 +57,6 @@ public abstract class DocumentController extends ActionController {
             entity.setDocumentId(context.getId());
             entity.setVersion(0);
             return repositoryService.get(entity);
-        } catch (NotFoundException e) {
-            throw new RuntimeException(e);
         } catch (RepositoryException e) {
             LOG.error(DOCS_9999, e);
             throw new RuntimeException(e);
