@@ -20,6 +20,9 @@ import static org.junit.Assert.*;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import mockit.Mock;
+import mockit.MockUp;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -43,7 +46,10 @@ public class RepositoryServiceTest {
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/test/resources/site.properties");
         ApplicationContext.loadProperties(is);
-        
+
+        ServiceFactory.addService(
+                RepositoryService.class,
+                RepositoryServiceImpl.class);
         repositoryService = ServiceFactory.getService(RepositoryService.class);
         repositoryService.execute(
                 "DROP TABLE IF EXISTS SAMPLE");
@@ -120,6 +126,26 @@ public class RepositoryServiceTest {
         assertEquals(1, result);
         SampleEntity actual = repositoryService.get(expect);
         assertNull(actual);
+    }
+
+    @Test
+    public void testMock() throws Exception {
+        SampleEntity expect = generateSampleEntity();
+        assertNull(repositoryService.get(expect));
+
+        MockUp<RepositoryServiceImpl> mock = new MockUp<RepositoryServiceImpl>() {
+            @Mock
+            public SchemaEntity get(SchemaEntity entity) throws RepositoryException {
+                return expect;
+            }
+        };
+        try {
+            assertNotNull(repositoryService.get(expect));
+        } finally {
+            mock.tearDown();
+        }
+
+        assertNull(repositoryService.get(expect));
     }
 
 //    @Test
