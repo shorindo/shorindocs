@@ -15,8 +15,6 @@
  */
 package com.shorindo.docs.document;
 
-import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -87,6 +85,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    @Transactional
     public void remove(String documentId) {
         // TODO Auto-generated method stub
         

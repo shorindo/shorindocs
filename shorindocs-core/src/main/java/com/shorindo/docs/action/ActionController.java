@@ -50,11 +50,10 @@ public abstract class ActionController {
                 clazz = clazz.getSuperclass();
             }
             LOG.warn(DOCS_3003, context.getAction());
-            return null;
-        } catch (Exception e) {
-            LOG.error(DOCS_3003, e, context.getAction());
-            throw new RuntimeException(e);
+        } catch (Throwable th) {
+            LOG.error(DOCS_3003, th, context.getAction());
         }
+        return null;
     }
 
     protected String createClassPath(String path) {

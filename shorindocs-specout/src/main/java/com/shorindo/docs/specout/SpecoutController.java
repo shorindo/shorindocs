@@ -52,6 +52,7 @@ public class SpecoutController extends DocumentController {
             DocumentModel model = getModel(context);
             String content = model.getContent() == null ? "" : model.getContent();
             SpecoutEntity specout = JAXB.unmarshal(new StringReader(content), SpecoutEntity.class);
+            context.setAttribute("document", model);
             context.setAttribute("specout", specout);
             context.setAttribute("recents", recents(context));
             return XumlView.create(getClass());

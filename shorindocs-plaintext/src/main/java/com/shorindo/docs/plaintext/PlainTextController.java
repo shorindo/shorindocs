@@ -53,6 +53,7 @@ public class PlainTextController extends DocumentController {
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;")
                 .replaceAll("\n", "<br/>"));
+            context.setAttribute("document", model);
             context.setAttribute("recents", recents(context));
             return XumlView.create(getClass());
         } catch (Exception e) {

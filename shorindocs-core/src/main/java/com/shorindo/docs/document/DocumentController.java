@@ -23,6 +23,7 @@ import java.util.List;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
+import com.shorindo.docs.action.ActionError;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.repository.RepositoryException;
@@ -36,8 +37,6 @@ import com.shorindo.docs.view.View;
 public abstract class DocumentController extends ActionController {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(DocumentController.class);
-//    private static final RepositoryService repositoryService =
-//            ServiceFactory.getService(RepositoryService.class);
     private final DocumentService documentService =
             ServiceFactory.getService(DocumentService.class);
 
@@ -60,22 +59,19 @@ public abstract class DocumentController extends ActionController {
      * @return
      * @throws DocumentException
      */
-//    @ActionMethod
-//    public String show(ActionContext context) throws DocumentException {
-//        try {
-//            DocumentEntity entity = new DocumentEntity();
-//            entity.setDocumentId(context.getId());
-//            entity.setVersion(0);
-//            entity = repositoryService.get(entity);
-//            String xml = entity.getContent();
-//            SpecoutEntity specout = JAXB.unmarshal(new StringReader(xml), SpecoutEntity.class);
-//            return JSON.encode(specout, true);
-//        } catch (NotFoundException e) {
-//            throw new DocumentException("show", e);
-//        } catch (DatabaseException e) {
-//            throw new DocumentException("show", e);
-//        }
-//    }
+    @ActionMethod
+    public String load(ActionContext context) throws ActionError {
+        try {
+            DocumentModel model = getModel(context);
+            if (model != null) {
+                return model.getContent();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new ActionError(DOCS_9999, e);
+        }
+    }
 
     /**
      * 

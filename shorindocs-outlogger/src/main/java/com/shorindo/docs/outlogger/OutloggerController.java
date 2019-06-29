@@ -27,7 +27,6 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
 import com.shorindo.docs.document.DocumentController;
-import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
@@ -56,6 +55,7 @@ public class OutloggerController extends DocumentController {
             DocumentModel model = getModel(context);
             String content = model.getContent() == null ? "" : model.getContent();
             OutloggerMetaData metaData = JAXB.unmarshal(new StringReader(content), OutloggerMetaData.class);
+            context.setAttribute("document", model);
             context.setAttribute("outlogger", metaData);
             context.setAttribute("recents", recents(context));
             OutloggerEntity key = new OutloggerEntity();

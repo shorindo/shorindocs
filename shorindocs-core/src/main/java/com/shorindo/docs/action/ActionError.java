@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.document;
-
-import com.shorindo.docs.Plugin;
+package com.shorindo.docs.action;
 
 /**
  * 
  */
-public class DocumentPlugin extends Plugin {
+public class ActionError extends Error {
+    private static final long serialVersionUID = -8229519545695181340L;
 
-    @Override
-    public void initialize() {
-        addSchema(getClass().getResourceAsStream("Document.dsdl"));
-        addController(DocumentController.class);
-        addService(DocumentService.class, DocumentServiceImpl.class);
+    public ActionError(ActionMessages message, Throwable th) {
+        super(message.getMessage(), th);
     }
-
 }
