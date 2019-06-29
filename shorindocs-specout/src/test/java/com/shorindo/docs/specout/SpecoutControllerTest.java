@@ -29,7 +29,7 @@ import org.junit.Test;
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.entity.DocumentEntity;
+import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.specout.SpecoutController;
 

@@ -52,6 +52,7 @@
     <module>shorindocs-admin</module>
     <module>shorindocs-plaintext</module>
     <module>shorindocs-dbmnt</module>
+    <module>shorindocs-snapboard</module>
   </modules>
   <name>shorindocs</name>
   <dependencyManagement>

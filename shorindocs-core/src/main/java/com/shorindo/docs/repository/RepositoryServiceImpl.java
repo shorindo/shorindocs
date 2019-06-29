@@ -607,6 +607,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @throws NotFoundException 
      */
     private final <E extends SchemaEntity> E get(Connection conn, E entity) throws RepositoryException {
+        long st = System.currentTimeMillis();
         EntityMapping mapping = bind(conn, entity);
         LOG.debug(DBMS_0003, mapping.getSelectSql());
         PreparedStatement stmt = null;
@@ -683,6 +684,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
         } finally {
             dispose(stmt);
             dispose(rset);
+            LOG.debug(DBMS_0004, (System.currentTimeMillis() - st) + " ms");
         }
     }
 

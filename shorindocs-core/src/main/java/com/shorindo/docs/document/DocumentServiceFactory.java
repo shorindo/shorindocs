@@ -23,7 +23,6 @@ import java.util.Map;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.entity.DocumentEntity;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.RepositoryService;
 

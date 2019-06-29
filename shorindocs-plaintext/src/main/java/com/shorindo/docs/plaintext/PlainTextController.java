@@ -20,8 +20,9 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
 import com.shorindo.docs.document.DocumentController;
+import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentMessages;
-import com.shorindo.docs.entity.DocumentEntity;
+import com.shorindo.docs.document.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
@@ -44,15 +45,15 @@ public class PlainTextController extends DocumentController {
     public View view(ActionContext context) {
         LOG.trace("view()");
         try {
-            DocumentEntity entity = getModel(context);
-            String content = entity.getContent() == null ? "" : entity.getContent();
+            DocumentModel model = getModel(context);
+            String content = model.getContent() == null ? "" : model.getContent();
             context.setAttribute("content", content
                 .replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
                 .replaceAll("\"", "&quot;")
                 .replaceAll("\n", "<br/>"));
-            context.setAttribute("recents", recents());
+            context.setAttribute("recents", recents(context));
             return XumlView.create(getClass());
         } catch (Exception e) {
             LOG.error(DocumentMessages.DOCS_9001, e);

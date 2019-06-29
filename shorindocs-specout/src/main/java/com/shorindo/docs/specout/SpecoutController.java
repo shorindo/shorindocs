@@ -26,7 +26,8 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentTypeReady;
 import com.shorindo.docs.document.DocumentController;
-import com.shorindo.docs.entity.DocumentEntity;
+import com.shorindo.docs.document.DocumentEntity;
+import com.shorindo.docs.document.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.JsonView;
 import com.shorindo.docs.view.View;
@@ -48,11 +49,11 @@ public class SpecoutController extends DocumentController {
     @Override @ActionMethod
     public View view(ActionContext context) {
         try {
-            DocumentEntity model = getModel(context);
+            DocumentModel model = getModel(context);
             String content = model.getContent() == null ? "" : model.getContent();
             SpecoutEntity specout = JAXB.unmarshal(new StringReader(content), SpecoutEntity.class);
             context.setAttribute("specout", specout);
-            context.setAttribute("recents", recents());
+            context.setAttribute("recents", recents(context));
             return XumlView.create(getClass());
         } catch (Exception e) {
             LOG.error(SPEC_9001, e);

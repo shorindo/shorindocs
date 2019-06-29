@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.entity;
+package com.shorindo.docs.document;
 
 import java.sql.Timestamp;
 
@@ -25,7 +25,7 @@ import com.shorindo.docs.repository.Table;
  * 
  */
 @Table("docs_document")
-public class DocumentEntity extends SchemaEntity {
+public class DocumentEntity extends SchemaEntity implements DocumentModel {
 
     @Column(name="DOCUMENT_ID", typeName="VARCHAR")
     private String documentId;
