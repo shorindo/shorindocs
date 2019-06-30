@@ -18,8 +18,8 @@ package com.shorindo.docs.auth.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.shorindo.docs.auth.model.GroupModel;
-import com.shorindo.docs.auth.model.Principal;
+import com.shorindo.docs.model.GroupModel;
+import com.shorindo.docs.model.Principal;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;

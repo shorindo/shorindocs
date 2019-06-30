@@ -17,6 +17,7 @@ package com.shorindo.docs.document;
 
 import java.sql.Timestamp;
 
+import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.Column;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;

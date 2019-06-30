@@ -24,7 +24,7 @@ public class AuthenticatePlugin extends Plugin {
 
     @Override
     public void initialize() {
-        addSchema(getClass().getResourceAsStream("AuthenticateService.dsdl"));
+        addSchema(getClass().getResourceAsStream("Authenticate.dsdl"));
         addController(LoginController.class);
         addController(LogoutController.class);
     }

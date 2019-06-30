@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Shorindo, Inc.
+ * Copyright 2016-2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  */
 package com.shorindo.docs.document;
 
+import com.shorindo.docs.model.DocumentModel;
+
 /**
  * 
  */
-public interface DocumentModel {
-    public String getDocumentId();
-    public String getController();
-    public String getTitle();
-    public String getContent();
+public interface Documentable {
+    public DocumentModel load(String documentId);
+    public DocumentModel save(DocumentModel model);
+    public DocumentModel remove(String documentId);
 }

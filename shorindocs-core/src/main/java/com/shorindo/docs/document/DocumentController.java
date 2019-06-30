@@ -26,6 +26,7 @@ import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionError;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
+import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
@@ -50,7 +51,7 @@ public abstract class DocumentController extends ActionController {
      * 
      */
     protected DocumentModel getModel(ActionContext context) {
-        return documentService.get(context.getId());
+        return documentService.load(context.getId());
     }
 
     /**
@@ -60,11 +61,28 @@ public abstract class DocumentController extends ActionController {
      * @throws DocumentException
      */
     @ActionMethod
-    public String load(ActionContext context) throws ActionError {
+    public DocumentModel load(ActionContext context) throws ActionError {
         try {
             DocumentModel model = getModel(context);
             if (model != null) {
-                return model.getContent();
+                return new DocumentModel() {
+                    @Override
+                    public String getDocumentId() {
+                        return model.getDocumentId();
+                    }
+                    @Override
+                    public String getController() {
+                        return model.getController();
+                    }
+                    @Override
+                    public String getTitle() {
+                        return model.getTitle();
+                    }
+                    @Override
+                    public String getContent() {
+                        return model.getContent();
+                    }
+                };
             } else {
                 return null;
             }
@@ -80,14 +98,13 @@ public abstract class DocumentController extends ActionController {
      * @throws DocumentException
      */
     @ActionMethod
-    public View save(ActionContext context) {
+    public DocumentModel save(ActionContext context) throws ActionError {
         try {
-            DocumentModel model = getModel(context);
-            documentService.put(model);
-            return new RedirectView(context.getId(), context);
+            DocumentModel model = context.getParameter(DocumentModelImpl.class);
+            documentService.save(model);
+            return model;
         } catch (Exception e) {
-            LOG.error(DOCS_9002, context.getId());
-            return new ErrorView(500);
+            throw new ActionError(DOCS_9002, e, context.getId());
         }
     }
 

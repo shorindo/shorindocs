@@ -27,8 +27,8 @@ import com.shorindo.docs.IdentityProvider;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.auth.AuthenticateService;
 import com.shorindo.docs.auth.entity.UserEntity;
-import com.shorindo.docs.auth.model.SessionModel;
-import com.shorindo.docs.auth.model.UserModel;
+import com.shorindo.docs.model.SessionModel;
+import com.shorindo.docs.model.UserModel;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceImpl;
 

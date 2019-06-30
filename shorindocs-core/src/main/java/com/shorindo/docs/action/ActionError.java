@@ -21,7 +21,7 @@ package com.shorindo.docs.action;
 public class ActionError extends Error {
     private static final long serialVersionUID = -8229519545695181340L;
 
-    public ActionError(ActionMessages message, Throwable th) {
-        super(message.getMessage(), th);
+    public ActionError(ActionMessages message, Throwable th, Object...params) {
+        super(message.getMessage(params), th);
     }
 }

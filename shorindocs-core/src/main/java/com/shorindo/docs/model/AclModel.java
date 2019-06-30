@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.document;
+package com.shorindo.docs.model;
 
 import java.util.List;
-
-import com.shorindo.docs.model.DocumentModel;
 
 /**
  * 
  */
-public interface DocumentService extends Documentable {
-    public void validate();
-//    public DocumentModel load(String documentId);
-//    public DocumentModel save(DocumentModel model);
-//    public DocumentModel remove(String documentId);
-    public List<DocumentModel> recents(String documentId);
+public interface AclModel {
+    public List<Principal> getMemberList();
+    public Permission getPermission();
 }

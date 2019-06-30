@@ -443,7 +443,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @return
      * @throws SQLException
      */
-    public final <E> List<E> query(String sql, Class<E> clazz, Object...params) throws RepositoryException {
+    public final <E> List<E> queryList(String sql, Class<E> clazz, Object...params) throws RepositoryException {
         Connection conn = getThreadConnection();
         if (conn != null) {
             return query(conn, sql, clazz, params);
@@ -452,6 +452,25 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
                 conn = dataSource.getConnection();
                 LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
                 return query(conn, sql, clazz, params);
+            } catch (SQLException e) {
+                throw new RepositoryException(e);
+            } finally {
+                dispose(conn);
+            }
+        }
+    }
+
+    public final <E> E querySingle(String sql, Class<E> clazz, Object...params) throws RepositoryException {
+        Connection conn = getThreadConnection();
+        if (conn != null) {
+            List<E> list = query(conn, sql, clazz, params);
+            return list.size() == 0 ? null : list.get(0);
+        } else {
+            try {
+                conn = dataSource.getConnection();
+                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                List<E> list = query(conn, sql, clazz, params);
+                return list.size() == 0 ? null : list.get(0);
             } catch (SQLException e) {
                 throw new RepositoryException(e);
             } finally {

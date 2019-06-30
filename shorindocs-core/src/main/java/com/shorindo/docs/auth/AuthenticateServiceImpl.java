@@ -29,10 +29,10 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.auth.entity.GroupEntity;
 import com.shorindo.docs.auth.entity.SessionEntity;
 import com.shorindo.docs.auth.entity.UserEntity;
-import com.shorindo.docs.auth.model.GroupModel;
-import com.shorindo.docs.auth.model.SessionModel;
-import com.shorindo.docs.auth.model.UserModel;
 import com.shorindo.docs.document.DocumentServiceImpl;
+import com.shorindo.docs.model.GroupModel;
+import com.shorindo.docs.model.SessionModel;
+import com.shorindo.docs.model.UserModel;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.DatabaseSchema;
 import com.shorindo.docs.repository.Transactional;
@@ -48,7 +48,7 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
     }
 
     public void validate() {
-        InputStream is = getClass().getResourceAsStream("AuthenticateService.dsdl");
+        InputStream is = getClass().getResourceAsStream("Authenticate.dsdl");
         try {
             DatabaseSchema schema = repositoryService.loadSchema(is);
             repositoryService.validateSchema(schema);
@@ -73,7 +73,7 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
     @Transactional
     public SessionModel login(String loginName, String password) throws AuthenticateException {
         try {
-            List<UserEntity> userList = repositoryService.query(
+            List<UserEntity> userList = repositoryService.queryList(
                     "SELECT * " +
                     "FROM AUTH_USER WHERE LOGIN_NAME=?",
                     UserEntity.class,
@@ -83,7 +83,7 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
             }
 
             UserEntity userEntity = userList.get(0);
-            List<GroupEntity> groupList = repositoryService.query(
+            List<GroupEntity> groupList = repositoryService.queryList(
                     "SELECT G.* " +
                     "FROM   AUTH_GROUP G, AUTH_GROUP_MEMBER M " +
                     "WHERE  G.GROUP_ID=M.GROUP_ID " +
@@ -114,7 +114,7 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
 
     public UserModel authenticate(String sessionId) throws AuthenticateException {
         try {
-            List<UserEntity> userList = repositoryService.query(
+            List<UserEntity> userList = repositoryService.queryList(
                     "SELECT * " +
                     "FROM   AUTH_USER " +
                     "WHERE  USER_ID=( " +

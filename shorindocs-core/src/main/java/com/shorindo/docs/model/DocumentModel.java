@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.auth.model;
+package com.shorindo.docs.model;
 
 /**
  * 
  */
-public interface SessionModel {
-    public String getSessionId();
-    public UserModel getUser();
+public interface DocumentModel {
+    public String getDocumentId();
+    public String getController();
+    public String getTitle();
+    public String getContent();
 }

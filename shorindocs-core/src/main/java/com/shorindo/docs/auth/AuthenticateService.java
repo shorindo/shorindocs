@@ -17,9 +17,9 @@ package com.shorindo.docs.auth;
 
 import java.util.List;
 
-import com.shorindo.docs.auth.model.GroupModel;
-import com.shorindo.docs.auth.model.SessionModel;
-import com.shorindo.docs.auth.model.UserModel;
+import com.shorindo.docs.model.GroupModel;
+import com.shorindo.docs.model.SessionModel;
+import com.shorindo.docs.model.UserModel;
 
 /**
  * 

@@ -17,8 +17,8 @@ package com.shorindo.docs.auth.entity;
 
 import java.util.Date;
 
-import com.shorindo.docs.auth.model.SessionModel;
-import com.shorindo.docs.auth.model.UserModel;
+import com.shorindo.docs.model.SessionModel;
+import com.shorindo.docs.model.UserModel;
 import com.shorindo.docs.repository.Column;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.SchemaEntity;

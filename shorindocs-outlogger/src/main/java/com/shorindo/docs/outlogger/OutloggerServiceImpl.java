@@ -94,7 +94,7 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
      */
     public List<OutloggerEntity> listLog(OutloggerEntity entity) throws DocumentException {
         try {
-            List<OutloggerEntity> entityList = repositoryService.query(
+            List<OutloggerEntity> entityList = repositoryService.queryList(
                     "SELECT * " +
                     "FROM   DOCS_OUTLOGGER " +
                     "WHERE  DOCUMENT_ID=? " +
@@ -176,7 +176,7 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
             prev.setVersion(0);
             prev = repositoryService.get(prev);
 
-            List<OutloggerEntity> versions = repositoryService.query(
+            List<OutloggerEntity> versions = repositoryService.queryList(
                     "SELECT MAX(VERSION) VERSION " +
                     "FROM   DOCS_OUTLOGGER " +
                     "WHERE  DOCUMENT_ID=? AND LOG_ID=?",
@@ -207,7 +207,7 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
      * @throws RepositoryException
      */
     private int getNextLogId(String documentId) throws RepositoryException {
-        List<OutloggerEntity> entityList = repositoryService.query(
+        List<OutloggerEntity> entityList = repositoryService.queryList(
                 "SELECT MAX(LOG_ID) + 1 LOG_ID " +
                 "FROM   DOCS_OUTLOGGER " +
                 "WHERE  DOCUMENT_ID=?",

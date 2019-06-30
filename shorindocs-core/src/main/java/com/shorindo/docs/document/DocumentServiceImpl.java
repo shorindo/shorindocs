@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.DatabaseSchema;
 import com.shorindo.docs.repository.RepositoryService;
@@ -66,7 +67,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentModel get(String documentId) {
+    public DocumentModel load(String documentId) {
         try {
             DocumentEntity entity = new DocumentEntity();
             entity.setDocumentId(documentId);
@@ -79,22 +80,57 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional
-    public void put(DocumentModel model) {
-        // TODO Auto-generated method stub
-        
+    public DocumentModel save(DocumentModel model) {
+        try {
+            DocumentEntity prev = repositoryService.querySingle(
+                    "SELECT * " +
+                    "FROM   DOCS_DOCUMENT " +
+                    "WHERE  DOCUMENT_ID=? AND VERSION=0",
+                    DocumentEntity.class,
+                    model.getDocumentId());
+            DocumentEntity entity = new DocumentEntity();
+            if (prev == null) {
+                entity.setDocumentId(model.getDocumentId());
+                entity.setVersion(0);
+                entity.setController(getClass().getName());
+                entity.setTitle(model.getTitle());
+                entity.setContent(model.getContent());
+            } else {
+                entity = prev;
+                List<DocumentEntity> entityList = repositoryService.queryList(
+                        "SELECT MAX(VERSION) VERSION " +
+                        "FROM   DOCS_DOCUMENT " +
+                        "WHERE  DOCUMENT_ID=?",
+                        DocumentEntity.class,
+                        model.getDocumentId());
+                int version = entityList.get(0).getVersion();
+                repositoryService.execute(
+                        "UPDATE DOCS_DOCUMENT " +
+                        "SET    VERSION=? " +
+                        "WHERE  DOCUMENT_ID=? AND VERSION=0",
+                        version + 1, model.getDocumentId());
+                entity.setVersion(0);
+                entity.setTitle(model.getTitle());
+                entity.setContent(model.getContent());
+            }
+            repositoryService.insert(entity);
+            return repositoryService.get(entity);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     @Transactional
-    public void remove(String documentId) {
+    public DocumentModel remove(String documentId) {
         // TODO Auto-generated method stub
-        
+        return null;
     }
 
     @Override
     public List<DocumentModel> recents(String documentId) {
       try {
-        return repositoryService.query(
+        return repositoryService.queryList(
                   "SELECT document_id,title,update_date " +
                   "FROM   docs_document " +
                   "WHERE  version=0 " +

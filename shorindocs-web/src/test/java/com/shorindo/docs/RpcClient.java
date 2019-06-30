@@ -16,7 +16,6 @@
 package com.shorindo.docs;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -36,7 +35,7 @@ public class RpcClient {
         this.base = base;
     }
 
-    public Object execute(String docId, String methodName, Object...o) {
+    public <T> T execute(Class<T> type, String docId, String methodName, Object... params) {
         try {
             long st = System.currentTimeMillis();
             URLConnection conn = new URL(base + docId)
@@ -47,16 +46,15 @@ public class RpcClient {
             JsonRpcRequest request = new JsonRpcRequest();
             request.setId(String.valueOf(System.currentTimeMillis()));
             request.setMethod(methodName);
-            request.setParams(o);
+            request.setParams(params.length == 0 ? null : params[0]);
             ProxyOutputStream reqStream = new ProxyOutputStream(conn.getOutputStream());
             JSON.encode(request, reqStream);
             ProxyInputStream resStream = new ProxyInputStream(conn.getInputStream());
             JsonRpcResponse response = JSON.decode(resStream, JsonRpcResponse.class);
-            Object result = response.getResult();
             System.out.println(">> " + reqStream.toString());
             System.out.println("<< " + resStream.toString());
             System.out.println("elapsed: " + (System.currentTimeMillis() - st) + " ms");
-            return result;
+            return JSON.decode(JSON.encode(response.getResult()), type);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

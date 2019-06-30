@@ -20,6 +20,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import net.arnx.jsonic.JSON;
+
 import com.shorindo.docs.document.DocumentMessages;
 
 /**
@@ -35,7 +37,7 @@ public class ActionContext {
     private String id;
     // RequestHeader
     // RequestParameter
-    private Map<String,Object> params;
+    private Object parameter;
     // ResponseHeader
     // ResponseResult
     // Request属性
@@ -90,15 +92,13 @@ public class ActionContext {
     public Object getAttribute(String key) {
         return attributes.get(key);
     }
-//    public String getParameter(String key) {
-//        //LOG.debug("getParameter(" + key + ")=>" + request.getParameter(key));
-////        return request.getParameter(key);
-//        return null;
-//    }
-
-    public <T> T getService(Class<T> clazz) {
-        return null;
+    public void setParameter(Object param) {
+        this.parameter = param;
     }
+    public <T> T getParameter(Class<T> paramClass) {
+        return JSON.decode(JSON.encode(parameter), paramClass);
+    }
+
     /**
      * 
      */

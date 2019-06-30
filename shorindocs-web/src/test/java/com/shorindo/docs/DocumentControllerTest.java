@@ -15,21 +15,75 @@
  */
 package com.shorindo.docs;
 
+import static org.junit.Assert.*;
+
+import java.util.Date;
+
 import org.junit.Test;
+
+import com.shorindo.docs.document.DocumentModelImpl;
+import com.shorindo.docs.document.Documentable;
+import com.shorindo.docs.model.DocumentModel;
 
 /**
  * 
  */
 public class DocumentControllerTest {
-    private static RpcClient client = new RpcClient("http://localhost:8080/docs/");
+    private DocumentClient client = new DocumentClient();
 
-    private Object show(String docId) {
-        return client.execute(docId, "show");
+    @Test
+    public void testLoad() throws Exception {
+        DocumentModel model = client.load("index");
+        assertEquals("index", model.getDocumentId());
+        assertTrue(model.getTitle().contains("welcome"));
     }
 
     @Test
-    public void testView() throws Exception {
-        Object result = show("specout");
-        System.out.println(result);
+    public void testSave() throws Exception {
+        DocumentModel model = new DocumentModel() {
+            @Override
+            public String getDocumentId() {
+                return "index";
+            }
+            @Override
+            public String getController() {
+                return "com.shorindo.docs.document.DocumentController";
+            }
+            @Override
+            public String getTitle() {
+                return "welcome - " + new Date();
+            }
+            @Override
+            public String getContent() {
+                return new Date().toString();
+            }
+        };
+        client.save(model);
+    }
+
+    public static class DocumentClient implements Documentable {
+        private static RpcClient rpcClient =
+                new RpcClient("http://localhost:8080/docs/");
+
+        public DocumentModel load(String documentId) {
+            return rpcClient.execute(
+                    DocumentModelImpl.class,
+                    documentId,
+                    "load");
+        }
+
+        public DocumentModel save(DocumentModel model) {
+            return rpcClient.execute(
+                    DocumentModelImpl.class,
+                    model.getDocumentId(),
+                    "save",
+                    model);
+        }
+
+        @Override
+        public DocumentModel remove(String documentId) {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 }

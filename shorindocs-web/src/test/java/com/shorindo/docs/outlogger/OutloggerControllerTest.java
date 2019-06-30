@@ -16,6 +16,9 @@
 package com.shorindo.docs.outlogger;
 
 import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+
 //import mockit.Invocation;
 //import mockit.Mock;
 //import mockit.MockUp;
@@ -44,7 +47,10 @@ public class OutloggerControllerTest {
 
     @Test
     public void testListLog() throws Exception {
-        client.execute("outlogger", "listLog");
+        client.execute(
+                ArrayList.class,
+                "outlogger",
+                "listLog");
     }
 
     @Test
@@ -52,6 +58,10 @@ public class OutloggerControllerTest {
         OutloggerEntity entity = new OutloggerEntity();
         entity.setDocumentId("outlogger");
         entity.setContent("putLog");
-        client.execute("outlogger", "putLog", entity);
+        client.execute(
+                OutloggerEntity.class,
+                "outlogger",
+                "putLog",
+                entity);
     }
 }
