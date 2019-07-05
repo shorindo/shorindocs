@@ -122,7 +122,7 @@ public class ActionServlet extends HttpServlet {
         try {
             JsonRpcRequest req = JSON.decode(is, JsonRpcRequest.class);
             context.setAction(req.getMethod());
-            context.setParameter(req.getParams());
+            context.setParameters(req.getParams());
             Object result = controller.action(context);
             JsonRpcResponse res = new JsonRpcResponse();
             res.setId(req.getId());

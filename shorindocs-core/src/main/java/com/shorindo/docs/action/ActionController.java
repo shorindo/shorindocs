@@ -18,6 +18,11 @@ package com.shorindo.docs.action;
 import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.LapCounter;
 import com.shorindo.docs.annotation.ActionMethod;
@@ -39,14 +44,30 @@ public abstract class ActionController {
         LapCounter lap = new LapCounter();
         LOG.debug(DOCS_1107, getClass().getSimpleName() + ".action()");
         try {
+            String actionName = context.getAction();
+            List<Object> reqParams = context.getParameter();
             Class<?> clazz = getClass();
             while (clazz != null) {
-                Method method = clazz.getMethod(context.getAction(), ActionContext.class);
-                if (method.getAnnotation(ActionMethod.class) != null) {
-                    Object result = method.invoke(this, context);
-                    LOG.debug(DOCS_1108, getClass().getSimpleName() + ".action()", lap.elapsed());
-                    return result;
+                for (Method method : clazz.getMethods()) {
+                    if (!method.getName().equals(actionName) ||
+                            reqParams.size() != method.getParameterCount()) {
+                        continue;
+                    }
+                    List<Object> callParams = new ArrayList<Object>();
+                    for (int i = 0; i < method.getParameterCount(); i++) {
+                        Parameter decParam = method.getParameters()[i];
+                        Object reqParam = reqParams.get(i);
+                        callParams.add(
+                                JSON.decode(JSON.encode(reqParam), decParam.getClass()));
+                    }
+                    return method.invoke(this, callParams.toArray());
                 }
+//                Method method = clazz.getMethod(context.getAction(), ActionContext.class);
+//                if (method.getAnnotation(ActionMethod.class) != null) {
+//                    Object result = method.invoke(this, context);
+//                    LOG.debug(DOCS_1108, getClass().getSimpleName() + ".action()", lap.elapsed());
+//                    return result;
+//                }
                 clazz = clazz.getSuperclass();
             }
             LOG.warn(DOCS_3003, context.getAction());

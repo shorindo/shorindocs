@@ -22,10 +22,7 @@ import com.shorindo.docs.model.DocumentModel;
 /**
  * 
  */
-public interface DocumentService extends Documentable {
+public interface DocumentService extends DocumentControllable {
     public void validate();
-//    public DocumentModel load(String documentId);
-//    public DocumentModel save(DocumentModel model);
-//    public DocumentModel remove(String documentId);
     public List<DocumentModel> recents(String documentId);
 }

@@ -31,10 +31,16 @@ public class SampleEntity extends SchemaEntity {
     @Column(name="STRING_VALUE", typeName="varchar", size=80, primaryKey=1)
     private String stringValue;
 
-    @Column(name="BYTE_VALUE", typeName="byte")
+    @Column(name="BOOLEAN_VALUE")
+    private boolean booleanValue;
+
+    @Column(name="BOOLEAN_OBJECT")
+    private Boolean booleanObject;
+
+    @Column(name="BYTE_VALUE")
     private byte byteValue;
 
-    @Column(name="BYTE_OBJECT", typeName="byte")
+    @Column(name="BYTE_OBJECT")
     private Byte byteObject;
 
     @Column(name="SHORT_VALUE", typeName="short")
@@ -43,7 +49,7 @@ public class SampleEntity extends SchemaEntity {
     @Column(name="SHORT_OBJECT", typeName="short")
     private short shortObject;
 
-    @Column(name="INT_VALUE", typeName="int")
+    @Column(name="INT_VALUE", typeName="int", primaryKey=2)
     private int intValue;
 
     @Column(name="INT_OBJECT", typeName="int")
@@ -83,6 +89,34 @@ public class SampleEntity extends SchemaEntity {
 
     public void setStringValue(String stringValue) {
         this.stringValue = stringValue;
+    }
+
+    public boolean isBooleanValue() {
+        return booleanValue;
+    }
+
+    public void setBooleanValue(boolean booleanValue) {
+        this.booleanValue = booleanValue;
+    }
+
+    public Boolean getBooleanObject() {
+        return booleanObject;
+    }
+
+    public void setBooleanObject(Boolean booleanObject) {
+        this.booleanObject = booleanObject;
+    }
+
+    public void setLongObject(Long longObject) {
+        this.longObject = longObject;
+    }
+
+    public void setFloatObject(Float floatObject) {
+        this.floatObject = floatObject;
+    }
+
+    public void setDoubleObject(Double doubleObject) {
+        this.doubleObject = doubleObject;
     }
 
     public byte getByteValue() {

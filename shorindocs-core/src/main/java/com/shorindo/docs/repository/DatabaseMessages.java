@@ -126,6 +126,10 @@ public enum DatabaseMessages implements ActionMessages {
     DBMS_5127,
     @Message(ja = "エンティティ[{0}]の実体を作成できませんでした。")
     DBMS_5128,
+    @Message(ja = "フィールド[{0}]の型[{1}]は不明です。")
+    DBMS_5129,
+    @Message(ja = "エンティティ[{0}]に一意キーがありません。")
+    DBMS_5130,
     @Message(ja = "未知のエラーが発生しました。")
     DBMS_9999
     ;

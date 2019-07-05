@@ -40,8 +40,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.Properties;
 import java.util.TreeMap;
 
@@ -56,6 +54,7 @@ import com.shorindo.docs.BeanUtil.BeanNotFoundException;
 import com.shorindo.docs.TransactionEvent;
 import com.shorindo.docs.TransactionListener;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.repository.ExecuteStatement.*;
 
 /**
  * 
@@ -120,8 +119,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
     public List<String> validateSchema(DatabaseSchema schema) throws RepositoryException {
         Connection conn = null;
         try {
-            conn = dataSource.getConnection();
-            LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+            conn = getConnection();
             List<String> resultList = new ArrayList<String>();
             DatabaseMetaData meta = conn.getMetaData();
 
@@ -267,7 +265,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
         Connection conn = getThreadConnection();
         try {
             if (conn == null) {
-                conn = dataSource.getConnection();
+                conn = getConnection();
                 LOG.debug(DBMS_1108);
                 conn.setAutoCommit(false);
                 Map<String,Object> map = new HashMap<String,Object>();
@@ -311,41 +309,11 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
         }
     }
 
-    /**
-     * トランザクションを実行する。
-     * @param t
-     * @throws SQLException 
-     */
-//    public <T> T transaction(Transactionable<T> t) throws RepositoryException {
-//        T result;
-//        try {
-//            Connection conn = threadConnection.get();
-//            if (conn == null) {
-//                conn = dataSource.getConnection();
-//                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
-//                conn.setAutoCommit(false);
-//                threadConnection.set(conn);
-//
-//                try {
-//                    result = t.run();
-//                    conn.commit();
-//                } catch (Throwable th) {
-//                    conn.rollback();
-//                    throw th;
-//                } finally {
-//                    threadConnection.remove();
-//                    conn.setAutoCommit(true);
-//                    LOG.debug(DBMS_1106,Integer.toHexString(conn.hashCode()));
-//                    conn.close();
-//                }
-//            } else {
-//                result = t.run();
-//            }
-//        } catch (SQLException e) {
-//            throw new RepositoryException(e);
-//        }
-//        return result;
-//    }
+    private Connection getConnection() throws SQLException {
+        Connection conn = dataSource.getConnection();
+        LOG.debug(DBMS_1105, Integer.toHexString(conn.toString().hashCode()));
+        return conn;
+    }
 
     /**
      * 
@@ -354,7 +322,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
     private void dispose(Connection conn) {
         if (conn != null)
             try {
-                LOG.debug(DBMS_1106,Integer.toHexString(conn.hashCode()));
+                LOG.debug(DBMS_1106,Integer.toHexString(conn.toString().hashCode()));
                 conn.close();
             } catch (SQLException e) {
                 LOG.error(DBMS_5103, e);
@@ -400,8 +368,8 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
             return execute(conn, sql, params);
         } else {
             try {
-                conn = dataSource.getConnection();
-                LOG.debug(DBMS_1106,Integer.toHexString(conn.hashCode()));
+                conn = getConnection();
+                //LOG.debug(DBMS_1106,Integer.toHexString(conn.hashCode()));
                 return execute(conn, sql, params);
             } catch (SQLException e) {
                 throw new RepositoryException(e);
@@ -449,8 +417,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
             return query(conn, sql, clazz, params);
         } else {
             try {
-                conn = dataSource.getConnection();
-                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                conn = getConnection();
                 return query(conn, sql, clazz, params);
             } catch (SQLException e) {
                 throw new RepositoryException(e);
@@ -467,8 +434,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
             return list.size() == 0 ? null : list.get(0);
         } else {
             try {
-                conn = dataSource.getConnection();
-                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                conn = getConnection();
                 List<E> list = query(conn, sql, clazz, params);
                 return list.size() == 0 ? null : list.get(0);
             } catch (SQLException e) {
@@ -594,6 +560,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
     private Double fixDouble(double value, boolean isNull) {
         return isNull ? null : value;
     }
+
     /**
      * @param entity
      * @return
@@ -606,8 +573,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
             return get(conn, entity);
         } else {
             try {
-                conn = dataSource.getConnection();
-                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                conn = getConnection();
                 return get(conn, entity);
             } catch (SQLException e) {
                 throw new RepositoryException(e);
@@ -727,14 +693,13 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @return
      * @throws SQLException
      */
-    public final int remove(SchemaEntity entity) throws RepositoryException {
+    public final int remove(Object entity) throws RepositoryException {
         Connection conn = getThreadConnection();
         if (conn != null) {
             return remove(conn, entity);
         } else {
             try {
-                conn = dataSource.getConnection();
-                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                conn = getConnection();
                 return remove(conn, entity);
             } catch (SQLException e) {
                 throw new RepositoryException(e);
@@ -751,31 +716,41 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @return
      * @throws RepositoryException
      */
-    private final int remove(Connection conn, SchemaEntity entity) throws RepositoryException {
-        EntityMapping mapping = bind(conn, entity);
-        LOG.debug(DBMS_0005, mapping.getUpdateSql());
-        PreparedStatement stmt = null;
-        int index = 1;
-
-        try {
-            stmt = conn.prepareStatement(mapping.getDeleteSql());
-            for (ColumnMapping columnMapping : mapping.getColumns()) {
-                if (columnMapping.getPrimaryKey() > 0) {
-                    index = applySetMethod(stmt, entity, columnMapping, index);
-                }
-            }
-            return stmt.executeUpdate();
-        } catch (IllegalAccessException e) {
-            throw new RepositoryException(e);
-        } catch (IllegalArgumentException e) {
-            throw new RepositoryException(e);
-        } catch (InvocationTargetException e) {
-            throw new RepositoryException(e);
-        } catch (SQLException e) {
-            throw new RepositoryException(e);
-        } finally {
-            dispose(stmt);
-        }
+    private final int remove(Connection conn, Object entity) throws RepositoryException {
+        long st = System.currentTimeMillis();
+        ExecuteStatement deleteStatement = new ExecuteStatement.DeleteStatement(entity.getClass());
+        return deleteStatement.execute(conn, entity);
+//        EntityMapping mapping = bind(conn, entity);
+//        LOG.debug(DBMS_0005, mapping.getUpdateSql());
+//        PreparedStatement stmt = null;
+//        List<Object> paramList = new ArrayList<Object>();
+//        int index = 1;
+//
+//        try {
+//            stmt = conn.prepareStatement(mapping.getDeleteSql());
+//            for (ColumnMapping columnMapping : mapping.getColumns()) {
+//                if (columnMapping.getPrimaryKey() > 0) {
+//                    //index = applySetMethod(stmt, entity, columnMapping, index);
+//                    Object value = null;
+//                    try {
+//                        value = BeanUtil.getValue(entity, BeanUtil.snake2camel(columnMapping.getColumnName()));
+//                    } catch (BeanNotFoundException e) {
+//                    }
+//                    placeHolder(stmt, index++, value);
+//                    paramList.add(value);
+//                }
+//            }
+//            LOG.debug(DBMS_0011, paramList);
+//            int result = stmt.executeUpdate();
+//            LOG.debug(DBMS_0010, (System.currentTimeMillis() - st) + "ms");
+//            return result;
+//        } catch (IllegalArgumentException e) {
+//            throw new RepositoryException(e);
+//        } catch (SQLException e) {
+//            throw new RepositoryException(e);
+//        } finally {
+//            dispose(stmt);
+//        }
     }
 
     /**
@@ -784,22 +759,21 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @return
      * @throws SQLException
      */
-    public int insert(SchemaEntity entity) throws RepositoryException {
-        Connection conn = getThreadConnection();
-        if (conn != null) {
-            return insert(conn, entity);
-        } else {
-            try {
-                conn = dataSource.getConnection();
-                LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
-                return insert(conn, entity);
-            } catch (SQLException e) {
-                throw new RepositoryException(e);
-            } finally {
-                dispose(conn);
-            }
-        }
-    }
+//    public int insert(SchemaEntity entity) throws RepositoryException {
+//        Connection conn = getThreadConnection();
+//        if (conn != null) {
+//            return insert(conn, entity);
+//        } else {
+//            try {
+//                conn = getConnection();
+//                return insert(conn, entity);
+//            } catch (SQLException e) {
+//                throw new RepositoryException(e);
+//            } finally {
+//                dispose(conn);
+//            }
+//        }
+//    }
 
     /**
      * 
@@ -808,36 +782,36 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @return
      * @throws RepositoryException
      */
-    private int insert(Connection conn, SchemaEntity entity) throws RepositoryException {
-        long st = System.currentTimeMillis();
-        EntityMapping mapping = bind(conn, entity);
-        LOG.debug(DBMS_0007, mapping.getInsertSql());
-        PreparedStatement stmt = null;
-        int index = 1;
-        try {
-            stmt = conn.prepareStatement(mapping.getInsertSql());
-            List<Object> paramList = new ArrayList<Object>();
-            for (ColumnMapping columnMapping : mapping.getColumns()) {
-                Object value = null;
-                try {
-                    value = BeanUtil.getValue(entity, BeanUtil.snake2camel(columnMapping.getColumnName()));
-                } catch (BeanNotFoundException e) {
-                }
-                placeHolder(stmt, index++, value);
-                paramList.add(value);
-            }
-            LOG.debug(DBMS_0011, paramList);
-            int result = stmt.executeUpdate();
-            LOG.debug(DBMS_0008, (System.currentTimeMillis() - st) + " ms");
-            return result;
-        } catch (IllegalArgumentException e) {
-            throw new RepositoryException(e);
-        } catch (SQLException e) {
-            throw new RepositoryException(e);
-        } finally {
-            dispose(stmt);
-        }
-    }
+//    private int insert(Connection conn, SchemaEntity entity) throws RepositoryException {
+//        long st = System.currentTimeMillis();
+//        EntityMapping mapping = bind(conn, entity);
+//        LOG.debug(DBMS_0007, mapping.getInsertSql());
+//        PreparedStatement stmt = null;
+//        int index = 1;
+//        try {
+//            stmt = conn.prepareStatement(mapping.getInsertSql());
+//            List<Object> paramList = new ArrayList<Object>();
+//            for (ColumnMapping columnMapping : mapping.getColumns()) {
+//                Object value = null;
+//                try {
+//                    value = BeanUtil.getValue(entity, BeanUtil.snake2camel(columnMapping.getColumnName()));
+//                } catch (BeanNotFoundException e) {
+//                }
+//                placeHolder(stmt, index++, value);
+//                paramList.add(value);
+//            }
+//            LOG.debug(DBMS_0011, paramList);
+//            int result = stmt.executeUpdate();
+//            LOG.debug(DBMS_0008, (System.currentTimeMillis() - st) + " ms");
+//            return result;
+//        } catch (IllegalArgumentException e) {
+//            throw new RepositoryException(e);
+//        } catch (SQLException e) {
+//            throw new RepositoryException(e);
+//        } finally {
+//            dispose(stmt);
+//        }
+//    }
 
     /**
      * 
@@ -851,8 +825,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
             return update(conn, entity);
         } else {
             try {
-                conn = dataSource.getConnection();
-                //LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
+                conn = getConnection();
                 return update(conn, entity);
             } catch (SQLException e) {
                 throw new RepositoryException(e);
@@ -870,50 +843,55 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @throws RepositoryException
      */
     private int update(Connection conn, SchemaEntity entity) throws RepositoryException {
-        LOG.debug(DBMS_1105,Integer.toHexString(conn.hashCode()));
         long st = System.currentTimeMillis();
-        EntityMapping mapping = bind(conn, entity);
-        LOG.debug(DBMS_0009, mapping.getUpdateSql());
-        List<Object> paramList = new ArrayList<Object>();
-        PreparedStatement stmt = null;
-        int index = 1;
+        ExecuteStatement updateStatement = new ExecuteStatement.UpdateStatement(entity.getClass());
         try {
-            stmt = conn.prepareStatement(mapping.getUpdateSql());
-            for (ColumnMapping columnMapping : mapping.getColumns()) {
-                if (columnMapping.getPrimaryKey() <= 0) {
-                    //index = applySetMethod(stmt, entity, columnMapping, index);
-                    Object value = null;
-                    try {
-                        value = BeanUtil.getValue(entity, BeanUtil.snake2camel(columnMapping.getColumnName()));
-                    } catch (BeanNotFoundException e) {
-                    }
-                    placeHolder(stmt, index++, value);
-                    paramList.add(value);
-                }
-            }
-            for (ColumnMapping columnMapping : mapping.getColumns()) {
-                if (columnMapping.getPrimaryKey() > 0) {
-                    //index = applySetMethod(stmt, entity, columnMapping, index);
-                    Object value = null;
-                    try {
-                        value = BeanUtil.getValue(entity, BeanUtil.snake2camel(columnMapping.getColumnName()));
-                    } catch (BeanNotFoundException e) {
-                    }
-                    placeHolder(stmt, index++, value);
-                    paramList.add(value);
-                }
-            }
-            LOG.debug(DBMS_0011, paramList);
-            int result = stmt.executeUpdate();
-            LOG.debug(DBMS_0010, (System.currentTimeMillis() - st) + "ms");
-            return result;
-        } catch (IllegalArgumentException e) {
-            throw new RepositoryException(e);
-        } catch (SQLException e) {
-            throw new RepositoryException(e);
+            return updateStatement.execute(conn, entity);
         } finally {
-            dispose(stmt);
+            LOG.debug(DBMS_0010, (System.currentTimeMillis() - st) + "ms");
         }
+//        EntityMapping mapping = bind(conn, entity);
+//        LOG.debug(DBMS_0009, mapping.getUpdateSql());
+//        List<Object> paramList = new ArrayList<Object>();
+//        PreparedStatement stmt = null;
+//        int index = 1;
+//        try {
+//            stmt = conn.prepareStatement(mapping.getUpdateSql());
+//            for (ColumnMapping columnMapping : mapping.getColumns()) {
+//                if (columnMapping.getPrimaryKey() <= 0) {
+//                    //index = applySetMethod(stmt, entity, columnMapping, index);
+//                    Object value = null;
+//                    try {
+//                        value = BeanUtil.getValue(entity, BeanUtil.snake2camel(columnMapping.getColumnName()));
+//                    } catch (BeanNotFoundException e) {
+//                    }
+//                    placeHolder(stmt, index++, value);
+//                    paramList.add(value);
+//                }
+//            }
+//            for (ColumnMapping columnMapping : mapping.getColumns()) {
+//                if (columnMapping.getPrimaryKey() > 0) {
+//                    //index = applySetMethod(stmt, entity, columnMapping, index);
+//                    Object value = null;
+//                    try {
+//                        value = BeanUtil.getValue(entity, BeanUtil.snake2camel(columnMapping.getColumnName()));
+//                    } catch (BeanNotFoundException e) {
+//                    }
+//                    placeHolder(stmt, index++, value);
+//                    paramList.add(value);
+//                }
+//            }
+//            LOG.debug(DBMS_0011, paramList);
+//            int result = stmt.executeUpdate();
+//            LOG.debug(DBMS_0010, (System.currentTimeMillis() - st) + "ms");
+//            return result;
+//        } catch (IllegalArgumentException e) {
+//            throw new RepositoryException(e);
+//        } catch (SQLException e) {
+//            throw new RepositoryException(e);
+//        } finally {
+//            dispose(stmt);
+//        }
     }
 
     /**
@@ -997,35 +975,35 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @param target
      * @return
      */
-    private boolean isPrimitive(Class<?> target) {
-        return target.isPrimitive() ||
-                target.isAssignableFrom(Short.class) ||
-                target.isAssignableFrom(Integer.class) ||
-                target.isAssignableFrom(Long.class) ||
-                target.isAssignableFrom(Float.class) ||
-                target.isAssignableFrom(Double.class) ||
-                target.isAssignableFrom(Date.class) ||
-                target.isAssignableFrom(String.class);
-    }
+//    private boolean isPrimitive(Class<?> target) {
+//        return target.isPrimitive() ||
+//                target.isAssignableFrom(Short.class) ||
+//                target.isAssignableFrom(Integer.class) ||
+//                target.isAssignableFrom(Long.class) ||
+//                target.isAssignableFrom(Float.class) ||
+//                target.isAssignableFrom(Double.class) ||
+//                target.isAssignableFrom(Date.class) ||
+//                target.isAssignableFrom(String.class);
+//    }
 
     /**
      * 
      */
-    private static Pattern SNAKE_PATTERN = Pattern.compile("_*([^_])([^_]*)");
-    private static String snake2camel(String prefix, String name) {
-        Matcher m = SNAKE_PATTERN.matcher(name);
-        StringBuilder sb = new StringBuilder(prefix);
-        int start = 0;
-        while (m.find(start)) {
-            sb.append(m.group(1).toUpperCase());
-            String rest = m.group(2);
-            if (rest != null) {
-                sb.append(rest.toLowerCase());
-            }
-            start = m.end();
-        }
-        return sb.toString();
-    }
+//    private static Pattern SNAKE_PATTERN = Pattern.compile("_*([^_])([^_]*)");
+//    private static String snake2camel(String prefix, String name) {
+//        Matcher m = SNAKE_PATTERN.matcher(name);
+//        StringBuilder sb = new StringBuilder(prefix);
+//        int start = 0;
+//        while (m.find(start)) {
+//            sb.append(m.group(1).toUpperCase());
+//            String rest = m.group(2);
+//            if (rest != null) {
+//                sb.append(rest.toLowerCase());
+//            }
+//            start = m.end();
+//        }
+//        return sb.toString();
+//    }
 
     /**
      * 
@@ -1035,49 +1013,49 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @return
      * @throws SQLException
      */
-    private ResultSetMapper[] generateMappers(ResultSetMapper[] mappers, ResultSetMetaData meta, Class<?> target) throws SQLException {
-        if (mappers != null) {
-            return mappers;
-        }
-
-        int count = meta.getColumnCount();
-        mappers = new ResultSetMapper[count];
-
-        // targetがprimitiveかStringで、戻り値が１つのときの扱い
-        if (count == 1 && isPrimitive(target)) {
-            try {
-                ResultSetMapper mapper = new ResultSetMapper();
-                mapper.setGetter(getResultSetGetter(target));
-                mappers[0] = mapper;
-            } catch (NoSuchMethodException e) {
-                throw new SQLException(e);
-            } catch (SecurityException e) {
-                throw new SQLException(e);
-            }
-            return mappers;
-        }
-
-        for (int index = 1; index <= count; index++) {
-            try {
-                ResultSetMapper mapper = new ResultSetMapper();
-                String columnName = meta.getColumnName(index);
-                String getterName = snake2camel("get", columnName);
-                Method getter = target.getMethod(getterName);
-                Class<?> returnType = getter.getReturnType();
-                String setterName = snake2camel("set", columnName);
-                Method setter = target.getMethod(setterName, returnType);
-                mapper.setSetter(setter);
-                mapper.setGetter(getResultSetGetter(returnType));
-                mappers[index - 1] = mapper;
-            } catch (NoSuchMethodException e) {
-                throw new SQLException(e);
-            } catch (SecurityException e) {
-                throw new SQLException(e);
-            }
-        }
-
-        return mappers;
-    }
+//    private ResultSetMapper[] generateMappers(ResultSetMapper[] mappers, ResultSetMetaData meta, Class<?> target) throws SQLException {
+//        if (mappers != null) {
+//            return mappers;
+//        }
+//
+//        int count = meta.getColumnCount();
+//        mappers = new ResultSetMapper[count];
+//
+//        // targetがprimitiveかStringで、戻り値が１つのときの扱い
+//        if (count == 1 && isPrimitive(target)) {
+//            try {
+//                ResultSetMapper mapper = new ResultSetMapper();
+//                mapper.setGetter(getResultSetGetter(target));
+//                mappers[0] = mapper;
+//            } catch (NoSuchMethodException e) {
+//                throw new SQLException(e);
+//            } catch (SecurityException e) {
+//                throw new SQLException(e);
+//            }
+//            return mappers;
+//        }
+//
+//        for (int index = 1; index <= count; index++) {
+//            try {
+//                ResultSetMapper mapper = new ResultSetMapper();
+//                String columnName = meta.getColumnName(index);
+//                String getterName = snake2camel("get", columnName);
+//                Method getter = target.getMethod(getterName);
+//                Class<?> returnType = getter.getReturnType();
+//                String setterName = snake2camel("set", columnName);
+//                Method setter = target.getMethod(setterName, returnType);
+//                mapper.setSetter(setter);
+//                mapper.setGetter(getResultSetGetter(returnType));
+//                mappers[index - 1] = mapper;
+//            } catch (NoSuchMethodException e) {
+//                throw new SQLException(e);
+//            } catch (SecurityException e) {
+//                throw new SQLException(e);
+//            }
+//        }
+//
+//        return mappers;
+//    }
 
     /**
      * 
@@ -1107,6 +1085,23 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
         return bean;
     }
 
+    private Object getValueByColumnName(Object entity, String name) throws RepositoryException {
+        for (Field field : entity.getClass().getDeclaredFields()) {
+            Column column = field.getAnnotation(Column.class);
+            if (column != null && name.equals(column.name())) {
+                try {
+                    field.setAccessible(true);
+                    return field.get(entity);
+                } catch (IllegalArgumentException e) {
+                    throw new RepositoryException(DBMS_5119.getMessage(LANG, name));
+                } catch (IllegalAccessException e) {
+                    throw new RepositoryException(DBMS_5119.getMessage(LANG, name));
+                }
+            }
+        }
+        throw new RepositoryException(DBMS_5124.getMessage(LANG, name));
+    }
+
     /**
      * 
      * @param stmt
@@ -1119,11 +1114,11 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
-    private int applySetMethod(Statement stmt, SchemaEntity entity, ColumnMapping mapping, int index)
+    private int applySetMethod(Statement stmt, Object entity, ColumnMapping mapping, int index)
             throws RepositoryException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-//        LOG.debug("applySetMethod(" + mapping.getStatementSetMethod() + "," + mapping.getField() + ")");
+        //LOG.debug("applySetMethod(" + mapping.getStatementSetMethod() + "," + mapping.getField() + ")");
         Method setMethod = mapping.getStatementSetMethod();
-        setMethod.invoke(stmt, index, entity.getByName(mapping.getColumnName()));
+        setMethod.invoke(stmt, index, getValueByColumnName(entity, mapping.getColumnName()));
         return index + 1;
     }
 
@@ -1137,12 +1132,21 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
-    private void applyGetMethod(ResultSet rset, SchemaEntity entity, ColumnMapping mapping, int index)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Method getMethod = mapping.getResultSetGetMethod();
-        Field field = mapping.getField();
-        field.setAccessible(true);
-        field.set(entity, getMethod.invoke(rset, index));
+//    private void applyGetMethod(ResultSet rset, SchemaEntity entity, ColumnMapping mapping, int index)
+//            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+//        Method getMethod = mapping.getResultSetGetMethod();
+//        Field field = mapping.getField();
+//        field.setAccessible(true);
+//        field.set(entity, getMethod.invoke(rset, index));
+//    }
+
+    private String getEntityName(Object entity) throws RepositoryException {
+        Table table = entity.getClass().getAnnotation(Table.class);
+        if (table != null) {
+            return table.value();
+        } else {
+            throw new RepositoryException(DBMS_5125);
+        }
     }
 
     /**
@@ -1153,8 +1157,9 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @throws RepositoryException
      */
     @SuppressWarnings("resource")
-    private EntityMapping bind(Connection conn, SchemaEntity entity) throws RepositoryException {
-        EntityMapping entityMapping = new EntityMapping(entity.getEntityName());
+    private EntityMapping bind(Connection conn, Object entity) throws RepositoryException {
+        String entityName = getEntityName(entity);
+        EntityMapping entityMapping = new EntityMapping(entityName);
         ResultSet primarySet = null;
         ResultSet columnSet = null;
 
@@ -1171,7 +1176,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
                 }
             }
 
-            primarySet = meta.getPrimaryKeys(null, null, entity.getEntityName());
+            primarySet = meta.getPrimaryKeys(null, null, entityName);
             Map<String,Integer> primaryOrder = new HashMap<String,Integer>();
             while (primarySet.next()) {
                 String columnName = primarySet.getString("COLUMN_NAME");
@@ -1179,7 +1184,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
                 primaryOrder.put(columnName, seq);
             }
 
-            columnSet = meta.getColumns(null,  null, entity.getEntityName(),  null);
+            columnSet = meta.getColumns(null,  null, entityName,  null);
             while (columnSet.next()) {
                 String columnName = columnSet.getString("COLUMN_NAME");
                 ColumnMapping columnCache = new ColumnMapping(columnName);
@@ -1228,7 +1233,7 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
      * @return
      */
     private Method[] getStatementSetMethod(Class<?> clazz) {
-        //LOG.debug("getStatementSetMethod(" + clazz + ")");
+        LOG.debug("getStatementSetMethod(" + clazz + ")");
         try {
             switch (SqlType.assignable(clazz)) {
             case SHORT:
@@ -1562,4 +1567,110 @@ public class RepositoryServiceImpl implements RepositoryService, TransactionList
             this.setter = setter;
         }
     }
+
+    public int insert(Object entity) throws RepositoryException {
+        Connection conn = getThreadConnection();
+        if (conn != null) {
+            return insert(conn, entity);
+        } else {
+            try {
+                conn = getConnection();
+                return insert(conn, entity);
+            } catch (SQLException e) {
+                throw new RepositoryException(e);
+            } finally {
+                dispose(conn);
+            }
+        }
+    }
+
+    private int insert(Connection conn, Object entity) throws RepositoryException {
+        long st = System.currentTimeMillis();
+        ExecuteStatement insertStatement = new ExecuteStatement.InsertStatement(entity.getClass());
+        try {
+            return insertStatement.execute(conn, entity);
+        } finally {
+            LOG.debug(DBMS_0008, (System.currentTimeMillis() - st) + "ms");
+        }
+//        EntityMapping mapping = bind(conn, entity);
+//        String sql = mapping.getInsertSql();
+//        LOG.debug(DBMS_0007, sql);
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            int index = 1;
+//            List<Object> params = new ArrayList<Object>();
+//            for (ColumnMapping columnMapping : mapping.getColumns()) {
+//                index = applySetMethod(stmt, entity, columnMapping, index);
+//                try {
+//                    params.add(BeanUtil.getValue(entity, BeanUtil.snake2camel(columnMapping.getColumnName())));
+//                } catch (BeanNotFoundException e) {
+//                    params.add(null);
+//                }
+//            }
+//            LOG.debug(DBMS_0011, params);
+//            return stmt.executeUpdate();
+//        } catch (SQLException e) {
+//            throw new RepositoryException(e);
+//        } catch (IllegalAccessException e) {
+//            throw new RepositoryException(e);
+//        } catch (IllegalArgumentException e) {
+//            throw new RepositoryException(e);
+//        } catch (InvocationTargetException e) {
+//            throw new RepositoryException(e);
+//        } finally {
+//            LOG.debug(DBMS_0008, (System.currentTimeMillis() - st) + "ms");
+//        }
+    }
+
+    @Override
+    public int update(Object entity) throws RepositoryException {
+        ExecuteStatement mapper = getMapper(entity.getClass());
+        return 0;
+    }
+
+    private Map<Class<?>, ExecuteStatement> mapperMap = new HashMap<Class<?>, ExecuteStatement>();
+    protected synchronized ExecuteStatement getMapper(Class<?> clazz) throws RepositoryException {
+        if (!mapperMap.containsKey(clazz)) {
+            mapperMap.put(clazz, new InsertStatement(clazz));
+        }
+        return mapperMap.get(clazz);
+    }
+
+//    protected static class EntityMapper {
+//        private String tableName;
+//        private Map<Field,ColumnMapper> columnMap = new LinkedHashMap<Field,ColumnMapper>();
+//
+//        public EntityMapper(Class<?> clazz) throws RepositoryException {
+//            applyTableName(clazz);
+//            applyColumnMapper(clazz);
+//        }
+//
+//        public String getTableName() {
+//            return tableName;
+//        }
+//
+//        public Map<Field,ColumnMapper> getColumnMapperList() {
+//            return columnMap;
+//        }
+//
+//        private void applyTableName(Class<?> clazz) throws RepositoryException {
+//            Table table = clazz.getAnnotation(Table.class);
+//            if (table != null) {
+//                tableName = table.value();
+//            } else {
+//                throw new RepositoryException(DBMS_5125);
+//            }
+//        }
+//
+//        private void applyColumnMapper(Class<?> clazz) {
+//            for (Field field : clazz.getFields()) {
+//                Column column = field.getAnnotation(Column.class);
+//                if (column == null) {
+//                    continue;
+//                }
+//                columnMap.put(field, new ColumnMapper(field, column));
+//            }
+//            columnMap = Collections.unmodifiableMap(columnMap);
+//        }
+//    }
+
 }

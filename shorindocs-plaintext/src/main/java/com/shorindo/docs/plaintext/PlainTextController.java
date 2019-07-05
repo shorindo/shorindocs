@@ -41,7 +41,7 @@ public class PlainTextController extends DocumentController {
     /**
      * 
      */
-    @Override @ActionMethod
+    @Override
     public View view(ActionContext context) {
         LOG.trace("view()");
         try {

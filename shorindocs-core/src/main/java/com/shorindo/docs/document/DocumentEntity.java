@@ -28,10 +28,10 @@ import com.shorindo.docs.repository.Table;
 @Table("docs_document")
 public class DocumentEntity extends SchemaEntity implements DocumentModel {
 
-    @Column(name="DOCUMENT_ID", typeName="VARCHAR")
+    @Column(name="DOCUMENT_ID", typeName="VARCHAR", primaryKey=1)
     private String documentId;
 
-    @Column(name="VERSION", typeName="INT")
+    @Column(name="VERSION", typeName="INT", primaryKey=2)
     private int version;
 
     @Column(name="CONTROLLER", typeName="VARCHAR")

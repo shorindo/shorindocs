@@ -20,6 +20,7 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.shorindo.docs.IdentityProvider;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
@@ -35,7 +36,8 @@ import com.shorindo.docs.view.View;
 /**
  * 
  */
-public abstract class DocumentController extends ActionController {
+public abstract class DocumentController extends ActionController
+        implements DocumentControllable {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(DocumentController.class);
     private final DocumentService documentService =
@@ -61,9 +63,10 @@ public abstract class DocumentController extends ActionController {
      * @throws DocumentException
      */
     @ActionMethod
-    public DocumentModel load(ActionContext context) throws ActionError {
+    @Override
+    public DocumentModel load(String documentId) throws ActionError {
         try {
-            DocumentModel model = getModel(context);
+            DocumentModel model = documentService.load(documentId);
             if (model != null) {
                 return new DocumentModel() {
                     @Override
@@ -98,13 +101,13 @@ public abstract class DocumentController extends ActionController {
      * @throws DocumentException
      */
     @ActionMethod
-    public DocumentModel save(ActionContext context) throws ActionError {
+    @Override
+    public DocumentModel save(DocumentModel model) throws ActionError {
         try {
-            DocumentModel model = context.getParameter(DocumentModelImpl.class);
             documentService.save(model);
             return model;
         } catch (Exception e) {
-            throw new ActionError(DOCS_9002, e, context.getId());
+            throw new ActionError(DOCS_9002, e, model.getDocumentId());
         }
     }
 
@@ -114,27 +117,27 @@ public abstract class DocumentController extends ActionController {
      * @return
      * @throws DocumentException
      */
-//    @ActionMethod
-//    public View create(ActionContext context) throws DocumentException {
-//        String id = String.valueOf(IdentityProvider.newId());
-//
-//        try {
-//            DocumentEntity model = new DocumentEntity();
-//            model.setDocumentId(id);
-//            model.setController(getClass().getName());
-//            //model.setTitle(context.getParameter("title"));
-//            //model.setContent(context.getParameter("body"));
-//
-//            if (repositoryService.put(model) >= 0) {
-//                return new RedirectView(id + "?action=edit", context);
-//            } else {
-//                return new ErrorView(404);
-//            }
-//        } catch (RepositoryException e) {
-//            LOG.error(DOCS_9002, e, id);
-//            return new ErrorView(500);
-//        }
-//    }
+    @ActionMethod
+    public View create(ActionContext context) throws DocumentException {
+        String id = String.valueOf(IdentityProvider.newId());
+
+        try {
+            DocumentEntity model = new DocumentEntity();
+            model.setDocumentId(id);
+            model.setController(getClass().getName());
+            //model.setTitle(context.getParameter("title"));
+            //model.setContent(context.getParameter("body"));
+
+            if (documentService.save(model) != null) {
+                return new RedirectView(id + "?action=edit", context);
+            } else {
+                return new ErrorView(404);
+            }
+        } catch (Throwable th) {
+            LOG.error(DOCS_9002, th, id);
+            return new ErrorView(500);
+        }
+    }
 
     /**
      * 
@@ -143,16 +146,16 @@ public abstract class DocumentController extends ActionController {
      * @throws DocumentException
      */
     @ActionMethod
-    public View remove(ActionContext context) {
-        if ("index".equals(context.getId())) {
-            return new RedirectView("/index", context);
+    @Override
+    public DocumentModel remove(String documentId) {
+        if ("index".equals(documentId)) {
+            return null;
         } else {
             try {
-                documentService.remove(context.getId());
-                return new RedirectView("/index", context);
+                return documentService.remove(documentId);
             } catch (Exception e) {
-                LOG.error(DOCS_9003, e, context.getId());
-                return new ErrorView(500);
+                LOG.error(DOCS_9003, e, documentId);
+                return null;
             }
         }
     }

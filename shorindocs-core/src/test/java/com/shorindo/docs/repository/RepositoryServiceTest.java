@@ -15,14 +15,21 @@
  */
 package com.shorindo.docs.repository;
 
+import static com.shorindo.docs.repository.DatabaseMessages.DBMS_5100;
 import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.util.Properties;
+import java.util.Map.Entry;
+
+import javax.sql.DataSource;
 
 import mockit.Mock;
 import mockit.MockUp;
 
+import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -33,6 +40,10 @@ import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.repository.RepositoryException;
+import com.shorindo.docs.repository.RepositoryServiceImpl;
+import com.shorindo.docs.repository.ExecuteStatement.InsertStatement;
+import com.shorindo.docs.repository.ExecuteStatement.UpdateStatement;
+import com.shorindo.docs.repository.ExecuteStatement.DeleteStatement;
 
 /**
  * 
@@ -41,6 +52,7 @@ import com.shorindo.docs.repository.RepositoryException;
 public class RepositoryServiceTest {
     private static final ActionLogger LOG = ActionLogger.getLogger(RepositoryServiceTest.class);
     private static RepositoryService repositoryService;
+    private static DataSource dataSource;
     
     @BeforeClass
     public static void setUpBefore() throws Exception {
@@ -55,12 +67,39 @@ public class RepositoryServiceTest {
                 "DROP TABLE IF EXISTS SAMPLE");
         repositoryService.execute(
                 "CREATE TABLE IF NOT EXISTS SAMPLE (" +
-                "    STRING_VALUE VARCHAR(100) UNIQUE," +
-                "    INT_VALUE INT," +
-                "    DOUBLE_VALUE DOUBLE," +
+                "    STRING_VALUE VARCHAR(100)," +
+                "    BOOLEAN_VALUE BOOLEAN NOT NULL," +
+                "    BOOLEAN_OBJECT BOOLEAN," +
+                "    BYTE_VALUE TINYINT NOT NULL," +
+                "    BYTE_OBJECT TINYINT," +
+                "    SHORT_VALUE SMALLINT NOT NULL," +
+                "    SHORT_OBJECT SMALLINT," +
+                "    INT_VALUE INT NOT NULL," +
+                "    INT_OBJECT INT," +
+                "    LONG_VALUE LONG NOT NULL," +
+                "    LONG_OBJECT LONG," +
+                "    FLOAT_VALUE FLOAT NOT NULL," +
+                "    FLOAT_OBJECT FLOAT," +
+                "    DOUBLE_VALUE DOUBLE NOT NULL," +
+                "    DOUBLE_OBJECT DOUBLE," +
                 "    DATE_VALUE DATETIME," +
+                "    TIMESTAMP_VALUE TIMESTAMP," +
                 "    CONSTRAINT PRIMARY KEY (STRING_VALUE, INT_VALUE)" +
                 ")");
+        
+        try {
+            Properties props = new Properties();
+            for (Entry<Object,Object> e : ApplicationContext.getProperties().entrySet()) {
+                String key = (String)e.getKey();
+                String val = (String)e.getValue();
+                if (key.startsWith("datasource.") && val != null) {
+                    props.setProperty(key.substring(11), val);
+                }
+            }
+            dataSource = BasicDataSourceFactory.createDataSource(props);
+        } catch (Exception e) {
+            LOG.error(DBMS_5100, e);
+        }
     }
 
     @AfterClass
@@ -105,18 +144,26 @@ public class RepositoryServiceTest {
     @Test
     public void testPut() throws Exception {
         SampleEntity e = generateSampleEntity();
-        int result = repositoryService.put(e);
-        assertEquals(1, result);
+        try {
+            int result = repositoryService.put(e);
+            assertEquals(1, result);
+        } finally {
+            repositoryService.remove(e);
+        }
     }
 
-    @Test
-    public void testGet() throws Exception {
-        SampleEntity expect = generateSampleEntity();
-        repositoryService.put(expect);
-        SampleEntity actual = repositoryService.get(expect);
-        assertEquals("stringValue", actual.getStringValue());
-        assertEquals(123, (int)actual.getIntValue());
-    }
+//    @Test
+//    public void testGet() throws Exception {
+//        SampleEntity expect = generateSampleEntity();
+//        try {
+//            repositoryService.put(expect);
+//            SampleEntity actual = repositoryService.get(expect);
+//            assertEquals("stringValue", actual.getStringValue());
+//            assertEquals(123, (int)actual.getIntValue());
+//        } finally {
+//            repositoryService.remove(expect);
+//        }
+//    }
 
     @Test
     public void testRemove() throws Exception {
@@ -182,10 +229,49 @@ public class RepositoryServiceTest {
 //        }
 //    }
 
+    @Test
+    public void testInsertStatement() throws Exception {
+        ExecuteStatement insert = new InsertStatement(SampleEntity.class);
+        System.out.println(insert.sql);
+        Connection conn = dataSource.getConnection();
+        try {
+            SampleEntity entity = generateSampleEntity();
+            insert.execute(conn, entity);
+        } finally {
+            conn.close();
+        }
+    }
+
+    @Test
+    public void testUpdateStatement() throws Exception {
+        ExecuteStatement update = new UpdateStatement(SampleEntity.class);
+        System.out.println(update.sql);
+        Connection conn = dataSource.getConnection();
+        try {
+            SampleEntity entity = generateSampleEntity();
+            update.execute(conn, entity);
+        } finally {
+            conn.close();
+        }
+    }
+
+    @Test
+    public void testDeleteStatement() throws Exception {
+        ExecuteStatement delete = new DeleteStatement(SampleEntity.class);
+        System.out.println(delete.sql);
+        Connection conn = dataSource.getConnection();
+        try {
+            SampleEntity entity = generateSampleEntity();
+            delete.execute(conn, entity);
+        } finally {
+            conn.close();
+        }
+    }
+
     public SampleEntity generateSampleEntity() throws RepositoryException {
         SampleEntity entity = new SampleEntity();
         entity.setStringValue("stringValue");
-        entity.setByteObject(Byte.valueOf((byte)123));
+//        entity.setByteObject(Byte.valueOf((byte)123));
         entity.setIntValue(123);
         entity.setDateValue(new java.util.Date());
         return entity;

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 
 import com.shorindo.docs.outlogger.ProxyInputStream;
 import com.shorindo.docs.outlogger.ProxyOutputStream;
@@ -46,7 +47,7 @@ public class RpcClient {
             JsonRpcRequest request = new JsonRpcRequest();
             request.setId(String.valueOf(System.currentTimeMillis()));
             request.setMethod(methodName);
-            request.setParams(params.length == 0 ? null : params[0]);
+            request.setParams(Arrays.asList(new Object[]{}));
             ProxyOutputStream reqStream = new ProxyOutputStream(conn.getOutputStream());
             JSON.encode(request, reqStream);
             ProxyInputStream resStream = new ProxyInputStream(conn.getInputStream());

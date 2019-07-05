@@ -20,7 +20,7 @@ import com.shorindo.docs.model.DocumentModel;
 /**
  * 
  */
-public interface Documentable {
+public interface DocumentControllable {
     public DocumentModel load(String documentId);
     public DocumentModel save(DocumentModel model);
     public DocumentModel remove(String documentId);

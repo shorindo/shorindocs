@@ -16,11 +16,10 @@
 package com.shorindo.docs.action;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-
-import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.document.DocumentMessages;
 
@@ -37,7 +36,7 @@ public class ActionContext {
     private String id;
     // RequestHeader
     // RequestParameter
-    private Object parameter;
+    private List<Object> parameters;
     // ResponseHeader
     // ResponseResult
     // Request属性
@@ -92,11 +91,11 @@ public class ActionContext {
     public Object getAttribute(String key) {
         return attributes.get(key);
     }
-    public void setParameter(Object param) {
-        this.parameter = param;
+    public void setParameters(List<Object> params) {
+        this.parameters = params;
     }
-    public <T> T getParameter(Class<T> paramClass) {
-        return JSON.decode(JSON.encode(parameter), paramClass);
+    public List<Object> getParameter() {
+        return parameters;
     }
 
     /**

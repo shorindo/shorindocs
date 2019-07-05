@@ -22,7 +22,7 @@ import java.util.Date;
 import org.junit.Test;
 
 import com.shorindo.docs.document.DocumentModelImpl;
-import com.shorindo.docs.document.Documentable;
+import com.shorindo.docs.document.DocumentControllable;
 import com.shorindo.docs.model.DocumentModel;
 
 /**
@@ -61,7 +61,7 @@ public class DocumentControllerTest {
         client.save(model);
     }
 
-    public static class DocumentClient implements Documentable {
+    public static class DocumentClient implements DocumentControllable {
         private static RpcClient rpcClient =
                 new RpcClient("http://localhost:8080/docs/");
 

@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 public @interface Column {
     String value() default "";
     String name();
-    String typeName();
+    String typeName() default "";
     int size() default 0;
     int precision() default 0;
     boolean unique() default false;
