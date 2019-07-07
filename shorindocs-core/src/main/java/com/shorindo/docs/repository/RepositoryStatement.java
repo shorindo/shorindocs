@@ -39,11 +39,11 @@ public abstract class RepositoryStatement {
             ActionLogger.getLogger(RepositoryStatement.class);
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    protected Class<?> clazz;
-    protected String tableName;
-    protected Map<Field, ColumnMapper> columnMap;
-    protected Map<String,ColumnMapper> namedMap;
-    protected String sql;
+    private Class<?> clazz;
+    private String tableName;
+    private Map<Field, ColumnMapper> columnMap;
+    private Map<String,ColumnMapper> namedMap;
+    private String sql;
 
     public RepositoryStatement(Class<?> clazz) throws RepositoryException {
         this.clazz = clazz;
@@ -55,7 +55,25 @@ public abstract class RepositoryStatement {
         return tableName;
     }
 
-    public Map<Field,ColumnMapper> getColumnMapperList() {
+    public Class<?> getEntityClass() {
+        return clazz;
+    }
+
+    public String getSql() {
+        return sql;
+    }
+
+    public void setSql(String sql) {
+        this.sql = sql;
+    }
+
+    public void checkEntity(Object entity) throws RepositoryException {
+        if (entity != null && !getEntityClass().isAssignableFrom(entity.getClass())) {
+            throw new RepositoryException(DBMS_5132);
+        }
+    }
+
+    public Map<Field,ColumnMapper> getColumnMap() {
         return columnMap;
     }
 

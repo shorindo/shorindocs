@@ -34,8 +34,6 @@ public abstract class ExecuteStatement extends RepositoryStatement {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(ExecuteStatement.class);
 
-    protected String sql;
-
     public abstract int execute(Connection conn, Object entity) throws RepositoryException;
 
     public ExecuteStatement(Class<?> clazz) throws RepositoryException {
@@ -58,34 +56,37 @@ public abstract class ExecuteStatement extends RepositoryStatement {
         }
     }
 
+    /**
+     * 指定クラスのエンティティに対応するINSERT文を生成・実行する
+     */
     public static class InsertStatement extends ExecuteStatement {
         public InsertStatement(Class<?> clazz) throws RepositoryException {
             super(clazz);
             StringBuffer nameList = new StringBuffer();
             StringBuffer holderList = new StringBuffer();
             String sep = "";
-            for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+            for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
                 nameList.append(sep + entry.getValue().getColumn().name());
                 holderList.append(sep + "?");
                 sep = ", ";
             }
             StringBuffer sb = new StringBuffer("INSERT INTO ");
-            sb.append(tableName + "(");
+            sb.append(getTableName() + "(");
             sb.append(nameList);
             sb.append(") VALUES (");
             sb.append(holderList);
             sb.append(")");
-            sql = sb.toString();
+            setSql(sb.toString());
         }
 
         @Override
         public int execute(Connection conn, Object entity) throws RepositoryException {
-            LOG.debug(DBMS_0007, sql);
+            LOG.debug(DBMS_0007, getSql());
             long st = System.currentTimeMillis();
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (PreparedStatement stmt = conn.prepareStatement(getSql())) {
                 int index = 1;
                 List<Object> paramList = new ArrayList<Object>();
-                for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+                for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
                     String fieldName = entry.getKey().getName();
                     Object param = BeanUtil.getProperty(entity, fieldName);
                     setPlaceHolder(stmt, index++, param);
@@ -102,12 +103,15 @@ public abstract class ExecuteStatement extends RepositoryStatement {
 
     }
 
+    /**
+     * 指定クラスのエンティティに対応するUPDATE文を生成・実行する
+     */
     public static class UpdateStatement extends ExecuteStatement {
         public UpdateStatement(Class<?> clazz) throws RepositoryException {
             super(clazz);
             List<String> valueList = new ArrayList<String>();
             List<String> keyList = new ArrayList<String>();
-            for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+            for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
                 Column column = entry.getValue().getColumn();
                 if (column.primaryKey() > 0) {
                     keyList.add(column.name());
@@ -119,7 +123,7 @@ public abstract class ExecuteStatement extends RepositoryStatement {
                 throw new RepositoryException(DBMS_5130, clazz.getSimpleName());
             }
             StringBuffer sb = new StringBuffer("UPDATE ");
-            sb.append(tableName + " SET ");
+            sb.append(getTableName() + " SET ");
             String sep = "";
             for (String value : valueList) {
                 sb.append(sep + value + "=?");
@@ -131,18 +135,18 @@ public abstract class ExecuteStatement extends RepositoryStatement {
                 sb.append(sep + key + "=?");
                 sep = " AND ";
             }
-            sql = sb.toString();
+            setSql(sb.toString());
         }
 
         @Override
         public int execute(Connection conn, Object entity)
                 throws RepositoryException {
-            LOG.debug(DBMS_0009, sql);
+            LOG.debug(DBMS_0009, getSql());
             long st = System.currentTimeMillis();
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (PreparedStatement stmt = conn.prepareStatement(getSql())) {
                 int index = 1;
                 List<Object> paramList = new ArrayList<Object>();
-                for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+                for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
                     String fieldName = entry.getKey().getName();
                     Column column = entry.getValue().getColumn();
                     if (column.primaryKey() == 0) {
@@ -151,7 +155,7 @@ public abstract class ExecuteStatement extends RepositoryStatement {
                         paramList.add(param);
                     }
                 }
-                for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+                for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
                     String fieldName = entry.getKey().getName();
                     Column column = entry.getValue().getColumn();
                     if (column.primaryKey() > 0) {
@@ -171,11 +175,14 @@ public abstract class ExecuteStatement extends RepositoryStatement {
 
     }
 
+    /**
+     * 指定クラスのエンティティに対応するDELETE文を生成・実行する
+     */
     public static class DeleteStatement extends ExecuteStatement {
         public DeleteStatement(Class<?> clazz) throws RepositoryException {
             super(clazz);
             List<String> keyList = new ArrayList<String>();
-            for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+            for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
                 Column column = entry.getValue().getColumn();
                 if (column.primaryKey() > 0) {
                     keyList.add(column.name());
@@ -185,24 +192,24 @@ public abstract class ExecuteStatement extends RepositoryStatement {
                 throw new RepositoryException(DBMS_5130, clazz.getSimpleName());
             }
             StringBuffer sb = new StringBuffer("DELETE FROM ");
-            sb.append(tableName + " WHERE ");
+            sb.append(getTableName() + " WHERE ");
             String sep = "";
             for (String key : keyList) {
                 sb.append(sep + key + "=?");
                 sep = " AND ";
             }
-            sql = sb.toString();
+            setSql(sb.toString());
         }
 
         @Override
         public int execute(Connection conn, Object entity)
                 throws RepositoryException {
-            LOG.debug(DBMS_0005, sql);
+            LOG.debug(DBMS_0005, getSql());
             long st = System.currentTimeMillis();
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (PreparedStatement stmt = conn.prepareStatement(getSql())) {
                 int index = 1;
                 List<Object> paramList = new ArrayList<Object>();
-                for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+                for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
                     String fieldName = entry.getKey().getName();
                     Column column = entry.getValue().getColumn();
                     if (column.primaryKey() > 0) {

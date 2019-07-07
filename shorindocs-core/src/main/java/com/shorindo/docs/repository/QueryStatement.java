@@ -55,7 +55,7 @@ public abstract class QueryStatement extends RepositoryStatement {
             super(clazz);
             List<String> valueList = new ArrayList<String>();
             List<String> keyList = new ArrayList<String>();
-            for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+            for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
                 Column column = entry.getValue().getColumn();
                 valueList.add(column.name());
                 if (column.primaryKey() > 0) {
@@ -78,19 +78,19 @@ public abstract class QueryStatement extends RepositoryStatement {
                 sb.append(sep + key + "=?");
                 sep = " AND ";
             }
-            sql = sb.toString();
+            setSql(sb.toString());
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public <T> T get(Connection conn, T entity) throws RepositoryException {
-            LOG.debug(DBMS_0003, sql);
+            LOG.debug(DBMS_0003, getSql());
             long st = System.currentTimeMillis();
             ResultSet rset = null;
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (PreparedStatement stmt = conn.prepareStatement(getSql())) {
                 int index = 1;
                 List<Object> paramList = new ArrayList<Object>();
-                for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+                for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
                     String fieldName = entry.getKey().getName();
                     Column column = entry.getValue().getColumn();
                     if (column.primaryKey() > 0) {
