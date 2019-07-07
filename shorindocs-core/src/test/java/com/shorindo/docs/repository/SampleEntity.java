@@ -43,40 +43,40 @@ public class SampleEntity extends SchemaEntity {
     @Column(name="BYTE_OBJECT")
     private Byte byteObject;
 
-    @Column(name="SHORT_VALUE", typeName="short")
+    @Column(name="SHORT_VALUE")
     private short shortValue;
 
-    @Column(name="SHORT_OBJECT", typeName="short")
+    @Column(name="SHORT_OBJECT")
     private short shortObject;
 
-    @Column(name="INT_VALUE", typeName="int", primaryKey=2)
+    @Column(name="INT_VALUE", primaryKey=2)
     private int intValue;
 
-    @Column(name="INT_OBJECT", typeName="int")
+    @Column(name="INT_OBJECT")
     private Integer intObject;
 
-    @Column(name="LONG_VALUE", typeName="long")
+    @Column(name="LONG_VALUE")
     private long longValue;
 
-    @Column(name="LONG_OBJECT", typeName="long")
+    @Column(name="LONG_OBJECT")
     private Long longObject;
 
-    @Column(name="FLOAT_VALUE", typeName="float")
+    @Column(name="FLOAT_VALUE")
     private float floatValue;
 
-    @Column(name="FLOAT_OBJECT", typeName="float")
+    @Column(name="FLOAT_OBJECT")
     private Float floatObject;
 
-    @Column(name="DOUBLE_VALUE", typeName="double")
+    @Column(name="DOUBLE_VALUE")
     private double doubleValue;
 
-    @Column(name="DOUBLE_OBJECT", typeName="double")
+    @Column(name="DOUBLE_OBJECT")
     private Double doubleObject;
 
-    @Column(name="DATE_VALUE", typeName="date")
+    @Column(name="DATE_VALUE")
     private java.util.Date dateValue;
 
-    @Column(name="TIMESTAMP_VALUE", typeName="timestamp")
+    @Column(name="TIMESTAMP_VALUE")
     private java.sql.Timestamp timestampValue;
 
     public SampleEntity() throws RepositoryException {

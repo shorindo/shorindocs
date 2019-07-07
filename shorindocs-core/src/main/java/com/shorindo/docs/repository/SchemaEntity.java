@@ -85,13 +85,8 @@ public abstract class SchemaEntity {
             if (column != null) {
                 DatabaseSchema.Column columnSchema = new DatabaseSchema.Column();
                 columnSchema.setName(column.name());
-                columnSchema.setType(column.typeName());
                 columnSchema.setJavaType(field.getType().toString());
-                columnSchema.setSize(column.size());
-                columnSchema.setPrecision(column.precision());
                 columnSchema.setPrimaryKey(column.primaryKey());
-                columnSchema.setUnique(column.unique());
-                columnSchema.setNotNull(column.notNull());
                 tableSchema.addColumn(columnSchema);
             }
         }

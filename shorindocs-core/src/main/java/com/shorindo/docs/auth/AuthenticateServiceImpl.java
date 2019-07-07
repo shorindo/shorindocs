@@ -142,7 +142,7 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
             entity.setPassword(hashPassword(model.getPassword()));
             entity.setCreatedDate(new java.sql.Date(new Date().getTime()));
             entity.setUpdatedDate(new java.sql.Date(new Date().getTime()));
-            entity.setStatus(0);
+//            entity.setStatus(0);
             repositoryService.insert(entity);
             return entity;
         } catch (RepositoryException e) {

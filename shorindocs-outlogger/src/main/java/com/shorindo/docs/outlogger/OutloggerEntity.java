@@ -32,37 +32,37 @@ public class OutloggerEntity extends SchemaEntity {
         super();
     }
 
-    @Column(name="DOCUMENT_ID", typeName="varchar", size=36, primaryKey=1)
+    @Column(name="DOCUMENT_ID", primaryKey=1)
     private String documentId;
 
-    @Column(name="LOG_ID", typeName="int",primaryKey=2)
+    @Column(name="LOG_ID", primaryKey=2)
     private Integer logId;
 
-    @Column(name="VERSION", typeName="int")
+    @Column(name="VERSION")
     private int version;
 
-    @Column(name="PARENT_ID", typeName="int")
+    @Column(name="PARENT_ID")
     private Integer parentId;
 
-    @Column(name="DISPLAY_ORDER", typeName="integer")
+    @Column(name="DISPLAY_ORDER")
     private int displayOrder;
 
-    @Column(name="LEVEL", typeName="smallint")
+    @Column(name="LEVEL")
     private short level;
 
-    @Column(name="CONTENT", typeName="text")
+    @Column(name="CONTENT")
     private String content;
 
-    @Column(name="CREATE_USER", typeName="varchar", size=36)
+    @Column(name="CREATE_USER")
     private String createUser;
 
-    @Column(name="CREATE_DATE", typeName="timestamp")
+    @Column(name="CREATE_DATE")
     private java.util.Date createDate;
 
-    @Column(name="UPDATE_USER", typeName="varchar", size=36)
+    @Column(name="UPDATE_USER")
     private String updateUser;
 
-    @Column(name="UPDATE_DATE", typeName="timestamp")
+    @Column(name="UPDATE_DATE")
     private java.util.Date updateDate;
 
     public String getDocumentId() {

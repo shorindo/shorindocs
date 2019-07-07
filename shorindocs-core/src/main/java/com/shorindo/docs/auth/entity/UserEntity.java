@@ -34,28 +34,28 @@ public class UserEntity extends SchemaEntity implements UserModel {
     @SuppressWarnings("unused")
     private static final ActionLogger LOG = ActionLogger.getLogger(UserEntity.class);
 
-    @Column(name="USER_ID", typeName="VARCHAR")
+    @Column(name="USER_ID", primaryKey=1)
     private String userId = "anonymous";
 
-    @Column(name="LOGIN_NAME", typeName="VARCHAR")
+    @Column(name="LOGIN_NAME")
     private String loginName;
 
-    @Column(name="DISPLAY_NAME", typeName="VARCHAR")
+    @Column(name="DISPLAY_NAME")
     private String displayName;
 
-    @Column(name="PASSWORD", typeName="VARCHAR")
+    @Column(name="PASSWORD")
     private String password;
 
-    @Column(name="MAIL", typeName="VARCHAR")
+    @Column(name="MAIL")
     private String mail;
 
-    @Column(name="STATUS", typeName="INT")
-    private int status;
+//    @Column(name="STATUS", typeName="INT")
+//    private int status;
 
-    @Column(name="CREATED_DATE", typeName="TIMESTAMP")
+    @Column(name="CREATED_DATE")
     private Date createdDate;
 
-    @Column(name="UPDATED_DATE", typeName="TIMESTAMP")
+    @Column(name="UPDATED_DATE")
     private Date updatedDate;
 
     private List<GroupModel> groupList = new ArrayList<GroupModel>();
@@ -115,13 +115,13 @@ public class UserEntity extends SchemaEntity implements UserModel {
         this.mail = mail;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
+//    public int getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(int status) {
+//        this.status = status;
+//    }
 
     public Date getCreatedDate() {
         return createdDate;

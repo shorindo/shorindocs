@@ -29,16 +29,21 @@ import com.shorindo.docs.repository.Table;
  */
 @Table("AUTH_SESSION")
 public class SessionEntity extends SchemaEntity implements SessionModel {
-    @Column(name="SESSION_ID", typeName="String")
+    @Column(name="SESSION_ID", primaryKey=1)
     private String sessionId;
-    @Column(name="USER_ID", typeName="String")
+
+    @Column(name="USER_ID")
     private String userId;
-    @Column(name="STATUS", typeName="int")
+
+    @Column(name="STATUS")
     private int status;
-    @Column(name="CREATED_DATE", typeName="Date")
+
+    @Column(name="CREATED_DATE")
     private Date createdDate;
-    @Column(name="EXPIRED_DATE", typeName="Date")
+
+    @Column(name="EXPIRED_DATE")
     private Date expiredDate;
+
     private UserEntity user;
 
     public SessionEntity(String sessionId, UserEntity user) throws RepositoryException {

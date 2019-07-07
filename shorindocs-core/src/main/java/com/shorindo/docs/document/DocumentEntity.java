@@ -29,34 +29,34 @@ import com.shorindo.docs.repository.Table;
 @Table("docs_document")
 public class DocumentEntity extends SchemaEntity implements DocumentModel {
 
-    @Column(name="DOCUMENT_ID", typeName="VARCHAR", primaryKey=1)
+    @Column(name="DOCUMENT_ID", primaryKey=1)
     private String documentId;
 
-    @Column(name="VERSION", typeName="INT", primaryKey=2)
+    @Column(name="VERSION", primaryKey=2)
     private int version;
 
-    @Column(name="CONTROLLER", typeName="VARCHAR")
+    @Column(name="CONTROLLER")
     private String controller;
 
-    @Column(name="TITLE", typeName="VARCHAR")
+    @Column(name="TITLE")
     private String title;
 
-    @Column(name="CONTENT", typeName="TEXT")
+    @Column(name="CONTENT")
     private String content;
 
-    @Column(name="OWNER_ID", typeName="VARCHAR")
+    @Column(name="OWNER_ID")
     private String ownerId;
 
-    @Column(name="CREATE_USER", typeName="VARCHAR")
+    @Column(name="CREATE_USER")
     private String createUser;
 
-    @Column(name="CREATE_DATE", typeName="TIMESTAMP")
+    @Column(name="CREATE_DATE")
     private Date createDate;
 
-    @Column(name="UPDATE_USER", typeName="VARCHAR")
+    @Column(name="UPDATE_USER")
     private String updateUser;
 
-    @Column(name="UPDATE_DATE", typeName="TIMESTAMP")
+    @Column(name="UPDATE_DATE")
     private Date updateDate;
 
     public String getDocumentId() {

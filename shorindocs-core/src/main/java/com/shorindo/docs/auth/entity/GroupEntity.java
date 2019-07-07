@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.shorindo.docs.model.GroupModel;
 import com.shorindo.docs.model.Principal;
+import com.shorindo.docs.repository.Column;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
@@ -29,11 +30,22 @@ import com.shorindo.docs.repository.Table;
  */
 @Table("AUTH_GROUP")
 public class GroupEntity extends SchemaEntity implements GroupModel {
+    @Column(name="GROUP_ID", primaryKey=1)
     private String groupId;
+
+    @Column(name="GROUP_NAME")
     private String groupName;
+
+    @Column(name="OWNER_ID")
     private String ownerId;
+
+    @Column(name="STATUS")
     private int status;
+
+    @Column(name="CREATED_DATE")
     private Date createdDate;
+
+    @Column(name="UPDATED_DATE")
     private Date updatedDate;
 
     public GroupEntity() throws RepositoryException {
