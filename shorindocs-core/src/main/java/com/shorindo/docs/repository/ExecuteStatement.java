@@ -20,11 +20,11 @@ import static com.shorindo.docs.repository.DatabaseMessages.*;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.shorindo.docs.BeanUtil;
 import com.shorindo.docs.action.ActionLogger;
 
 /**
@@ -40,6 +40,22 @@ public abstract class ExecuteStatement extends RepositoryStatement {
 
     public ExecuteStatement(Class<?> clazz) throws RepositoryException {
         super(clazz);
+    }
+
+    public int execute(Connection conn, String sql, Object...params) throws RepositoryException {
+        LOG.debug(DBMS_0001, sql);
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int index = 1;
+            List<Object> paramList = new ArrayList<Object>();
+            for (Object param : params) {
+                setPlaceHolder(stmt, index++, param);
+                paramList.add(param);
+            }
+            LOG.debug(DBMS_0011, paramList);
+            return stmt.executeUpdate();
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        }
     }
 
     public static class InsertStatement extends ExecuteStatement {
@@ -64,16 +80,26 @@ public abstract class ExecuteStatement extends RepositoryStatement {
 
         @Override
         public int execute(Connection conn, Object entity) throws RepositoryException {
+            LOG.debug(DBMS_0007, sql);
+            long st = System.currentTimeMillis();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 int index = 1;
+                List<Object> paramList = new ArrayList<Object>();
                 for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
-                    setHolders(stmt, index++, entry.getValue(), entity);
+                    String fieldName = entry.getKey().getName();
+                    Object param = BeanUtil.getProperty(entity, fieldName);
+                    setPlaceHolder(stmt, index++, param);
+                    paramList.add(param);
                 }
+                LOG.debug(DBMS_0011, paramList);
                 return stmt.executeUpdate();
             } catch (Exception e) {
                 throw new RepositoryException(e);
+            } finally {
+                LOG.debug(DBMS_0008, (System.currentTimeMillis() - st) + "ms");
             }
         }
+
     }
 
     public static class UpdateStatement extends ExecuteStatement {
@@ -111,25 +137,38 @@ public abstract class ExecuteStatement extends RepositoryStatement {
         @Override
         public int execute(Connection conn, Object entity)
                 throws RepositoryException {
+            LOG.debug(DBMS_0009, sql);
+            long st = System.currentTimeMillis();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 int index = 1;
+                List<Object> paramList = new ArrayList<Object>();
                 for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+                    String fieldName = entry.getKey().getName();
                     Column column = entry.getValue().getColumn();
                     if (column.primaryKey() == 0) {
-                        setHolders(stmt, index++, entry.getValue(), entity);
+                        Object param = BeanUtil.getProperty(entity, fieldName);
+                        setPlaceHolder(stmt, index++, param);
+                        paramList.add(param);
                     }
                 }
                 for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+                    String fieldName = entry.getKey().getName();
                     Column column = entry.getValue().getColumn();
                     if (column.primaryKey() > 0) {
-                        setHolders(stmt, index++, entry.getValue(), entity);
+                        Object param = BeanUtil.getProperty(entity, fieldName);
+                        setPlaceHolder(stmt, index++, param);
+                        paramList.add(param);
                     }
                 }
+                LOG.debug(DBMS_0011, paramList);
                 return stmt.executeUpdate();
             } catch (Exception e) {
                 throw new RepositoryException(e);
+            } finally {
+                LOG.debug(DBMS_0010, (System.currentTimeMillis() - st) + "ms");
             }
         }
+
     }
 
     public static class DeleteStatement extends ExecuteStatement {
@@ -158,19 +197,29 @@ public abstract class ExecuteStatement extends RepositoryStatement {
         @Override
         public int execute(Connection conn, Object entity)
                 throws RepositoryException {
+            LOG.debug(DBMS_0005, sql);
+            long st = System.currentTimeMillis();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 int index = 1;
+                List<Object> paramList = new ArrayList<Object>();
                 for (Entry<Field,ColumnMapper> entry : columnMap.entrySet()) {
+                    String fieldName = entry.getKey().getName();
                     Column column = entry.getValue().getColumn();
                     if (column.primaryKey() > 0) {
-                        setHolders(stmt, index++, entry.getValue(), entity);
+                        Object param = BeanUtil.getProperty(entity, fieldName);
+                        setPlaceHolder(stmt, index++, param);
+                        paramList.add(param);
                     }
                 }
+                LOG.debug(DBMS_0011, paramList);
                 return stmt.executeUpdate();
             } catch (Exception e) {
                 throw new RepositoryException(e);
+            } finally {
+                LOG.debug(DBMS_0006, (System.currentTimeMillis() - st) + "ms");
             }
         }
+
     }
 
 }

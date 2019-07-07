@@ -299,7 +299,7 @@ public class BeanUtil {
      * @throws BeanNotFoundException
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void setProperty(Object bean, String name, Object value)
+    public static void setProperty(Object bean, String name, Object value)
             throws BeanNotFoundException {
         if (bean instanceof Map) {
             ((Map)bean).put(name, value);
@@ -308,13 +308,35 @@ public class BeanUtil {
         } else if (List.class.isAssignableFrom(bean.getClass())) {
             ((List)bean).add(Integer.valueOf(name), value);
         } else {
-            Class<?> targetType = value.getClass();
             String setterName = createMethodName("set", name);
+
+            if (value == null) {
+                for (Method method : bean.getClass().getMethods()) {
+                    if (setterName.equals(method.getName()) &&
+                            method.getParameterCount() == 1 &&
+                            !method.getParameters()[0].getType().isPrimitive()) {
+                        try {
+                            method.invoke(bean, null);
+                        } catch (IllegalAccessException e) {
+                            throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, name), e);
+                        } catch (IllegalArgumentException e) {
+                            throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, name), e);
+                        } catch (InvocationTargetException e) {
+                            throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, name), e);
+                        }
+                    }
+                }
+                return;
+            }
+
+            Class<?> targetType = value.getClass();
             try {
                 Method method = bean.getClass().getMethod(setterName, targetType);
                 method.invoke(bean, value);
             } catch (Exception e) {
-                if (Byte.class.isAssignableFrom(targetType)) {
+                if (Boolean.class.isAssignableFrom(targetType)) {
+                    targetType = boolean.class;
+                } else if (Byte.class.isAssignableFrom(targetType)) {
                     targetType = byte.class;
                 } else if (Short.class.isAssignableFrom(targetType)) {
                     targetType = short.class;
@@ -345,7 +367,7 @@ public class BeanUtil {
      * @throws BeanNotFoundException
      */
     @SuppressWarnings("rawtypes")
-    private static Object getProperty(Object bean, String name) throws BeanNotFoundException {
+    public static Object getProperty(Object bean, String name) throws BeanNotFoundException {
         if (bean instanceof Map) {
             Object result = ((Map<?,?>)bean).get(name);
             return result;
@@ -365,6 +387,29 @@ public class BeanUtil {
                     return field.get(bean);
                 } catch (Exception ex) {
                     throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, name), ex);
+                }
+            }
+        }
+    }
+
+    public boolean hasProperty(Object bean, String name) {
+        if (bean instanceof Map) {
+            return ((Map<?,?>)bean).containsKey(name);
+        } else if (bean.getClass().isArray() && isNumeric(name)) {
+            return Array.getLength(bean) > Integer.valueOf(name);
+        } else if (List.class.isAssignableFrom(bean.getClass())) {
+            return ((List<?>)bean).size() > Integer.valueOf(name);
+        } else {
+            try {
+                String getterName = createMethodName("get", name);
+                bean.getClass().getMethod(getterName);
+                return true;
+            } catch (Exception e) {
+                try {
+                    bean.getClass().getDeclaredField(name);
+                    return true;
+                } catch (Exception ex) {
+                    return false;
                 }
             }
         }

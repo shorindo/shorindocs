@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs.repository;
 
-import static com.shorindo.docs.repository.DatabaseMessages.DBMS_5100;
+import static com.shorindo.docs.repository.DatabaseMessages.*;
 import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
@@ -23,11 +23,9 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import javax.sql.DataSource;
-
-import mockit.Mock;
-import mockit.MockUp;
 
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.junit.AfterClass;
@@ -148,52 +146,52 @@ public class RepositoryServiceTest {
             int result = repositoryService.put(e);
             assertEquals(1, result);
         } finally {
-            repositoryService.remove(e);
+            repositoryService.delete(e);
         }
     }
 
-//    @Test
-//    public void testGet() throws Exception {
-//        SampleEntity expect = generateSampleEntity();
-//        try {
-//            repositoryService.put(expect);
-//            SampleEntity actual = repositoryService.get(expect);
-//            assertEquals("stringValue", actual.getStringValue());
-//            assertEquals(123, (int)actual.getIntValue());
-//        } finally {
-//            repositoryService.remove(expect);
-//        }
-//    }
+    @Test
+    public void testGet() throws Exception {
+        SampleEntity expect = generateSampleEntity();
+        try {
+            repositoryService.put(expect);
+            SampleEntity actual = repositoryService.get(expect);
+            assertEquals(expect.getStringValue(), actual.getStringValue());
+            assertEquals(expect.getIntValue(), (int)actual.getIntValue());
+        } finally {
+            repositoryService.delete(expect);
+        }
+    }
 
     @Test
     public void testRemove() throws Exception {
         SampleEntity expect = generateSampleEntity();
         repositoryService.put(expect);
-        int result = repositoryService.remove(expect);
+        int result = repositoryService.delete(expect);
         assertEquals(1, result);
         SampleEntity actual = repositoryService.get(expect);
         assertNull(actual);
     }
 
-    @Test
-    public void testMock() throws Exception {
-        SampleEntity expect = generateSampleEntity();
-        assertNull(repositoryService.get(expect));
-
-        MockUp<RepositoryServiceImpl> mock = new MockUp<RepositoryServiceImpl>() {
-            @Mock
-            public SchemaEntity get(SchemaEntity entity) throws RepositoryException {
-                return expect;
-            }
-        };
-        try {
-            assertNotNull(repositoryService.get(expect));
-        } finally {
-            mock.tearDown();
-        }
-
-        assertNull(repositoryService.get(expect));
-    }
+//    @Test
+//    public void testMock() throws Exception {
+//        SampleEntity expect = generateSampleEntity();
+//        assertNull(repositoryService.get(expect));
+//
+//        MockUp<RepositoryServiceImpl> mock = new MockUp<RepositoryServiceImpl>() {
+//            @Mock
+//            public SchemaEntity get(SchemaEntity entity) throws RepositoryException {
+//                return expect;
+//            }
+//        };
+//        try {
+//            assertNotNull(repositoryService.get(expect));
+//        } finally {
+//            mock.tearDown();
+//        }
+//
+//        assertNull(repositoryService.get(expect));
+//    }
 
 //    @Test
 //    public void testLoadTables() throws Exception {
@@ -232,7 +230,6 @@ public class RepositoryServiceTest {
     @Test
     public void testInsertStatement() throws Exception {
         ExecuteStatement insert = new InsertStatement(SampleEntity.class);
-        System.out.println(insert.sql);
         Connection conn = dataSource.getConnection();
         try {
             SampleEntity entity = generateSampleEntity();
@@ -245,7 +242,6 @@ public class RepositoryServiceTest {
     @Test
     public void testUpdateStatement() throws Exception {
         ExecuteStatement update = new UpdateStatement(SampleEntity.class);
-        System.out.println(update.sql);
         Connection conn = dataSource.getConnection();
         try {
             SampleEntity entity = generateSampleEntity();
@@ -258,7 +254,6 @@ public class RepositoryServiceTest {
     @Test
     public void testDeleteStatement() throws Exception {
         ExecuteStatement delete = new DeleteStatement(SampleEntity.class);
-        System.out.println(delete.sql);
         Connection conn = dataSource.getConnection();
         try {
             SampleEntity entity = generateSampleEntity();
@@ -271,8 +266,8 @@ public class RepositoryServiceTest {
     public SampleEntity generateSampleEntity() throws RepositoryException {
         SampleEntity entity = new SampleEntity();
         entity.setStringValue("stringValue");
-//        entity.setByteObject(Byte.valueOf((byte)123));
-        entity.setIntValue(123);
+        entity.setByteObject(Byte.valueOf((byte)123));
+        entity.setIntValue(new Random().nextInt());
         entity.setDateValue(new java.util.Date());
         return entity;
     }

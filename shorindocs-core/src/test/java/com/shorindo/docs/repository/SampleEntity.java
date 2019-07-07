@@ -28,7 +28,7 @@ import com.shorindo.docs.repository.Table;
 public class SampleEntity extends SchemaEntity {
     private static final ActionLogger LOG = ActionLogger.getLogger(SampleEntity.class);
     
-    @Column(name="STRING_VALUE", typeName="varchar", size=80, primaryKey=1)
+    @Column(name="STRING_VALUE", primaryKey=1)
     private String stringValue;
 
     @Column(name="BOOLEAN_VALUE")
@@ -107,18 +107,6 @@ public class SampleEntity extends SchemaEntity {
         this.booleanObject = booleanObject;
     }
 
-    public void setLongObject(Long longObject) {
-        this.longObject = longObject;
-    }
-
-    public void setFloatObject(Float floatObject) {
-        this.floatObject = floatObject;
-    }
-
-    public void setDoubleObject(Double doubleObject) {
-        this.doubleObject = doubleObject;
-    }
-
     public byte getByteValue() {
         return byteValue;
     }
@@ -175,11 +163,11 @@ public class SampleEntity extends SchemaEntity {
         this.longValue = longValue;
     }
 
-    public long getLongObject() {
+    public Long getLongObject() {
         return longObject;
     }
 
-    public void setLongObject(long longObject) {
+    public void setLongObject(Long longObject) {
         this.longObject = longObject;
     }
 
@@ -191,11 +179,11 @@ public class SampleEntity extends SchemaEntity {
         this.floatValue = floatValue;
     }
 
-    public float getFloatObject() {
+    public Float getFloatObject() {
         return floatObject;
     }
 
-    public void setFloatObject(float floatObject) {
+    public void setFloatObject(Float floatObject) {
         this.floatObject = floatObject;
     }
 
@@ -207,11 +195,11 @@ public class SampleEntity extends SchemaEntity {
         this.doubleValue = doubleValue;
     }
 
-    public double getDoubleObject() {
+    public Double getDoubleObject() {
         return doubleObject;
     }
 
-    public void setDoubleObject(double doubleObject) {
+    public void setDoubleObject(Double doubleObject) {
         this.doubleObject = doubleObject;
     }
 

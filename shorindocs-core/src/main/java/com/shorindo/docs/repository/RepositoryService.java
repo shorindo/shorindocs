@@ -32,8 +32,8 @@ public interface RepositoryService {
     public <E> List<E> queryList(String sql, Class<E> clazz, Object...params) throws RepositoryException;
     public int insert(Object entity) throws RepositoryException;
     public int update(Object entity) throws RepositoryException;
-    public int remove(Object entity) throws RepositoryException;
+    public int delete(Object entity) throws RepositoryException;
 
-    public <E extends SchemaEntity> E get(E entity) throws RepositoryException;
-    public int put(SchemaEntity entity) throws RepositoryException;
+    public <E> E get(E entity) throws RepositoryException;
+    public int put(Object entity) throws RepositoryException;
     }

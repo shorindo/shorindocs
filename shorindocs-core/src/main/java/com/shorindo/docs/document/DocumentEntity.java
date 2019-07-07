@@ -16,6 +16,7 @@
 package com.shorindo.docs.document;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.Column;
@@ -43,9 +44,6 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
     @Column(name="CONTENT", typeName="TEXT")
     private String content;
 
-    @Column(name="CONTENT_CACHE", typeName="TEXT")
-    private String contentCache;
-
     @Column(name="OWNER_ID", typeName="VARCHAR")
     private String ownerId;
 
@@ -53,13 +51,13 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
     private String createUser;
 
     @Column(name="CREATE_DATE", typeName="TIMESTAMP")
-    private Timestamp createDate;
+    private Date createDate;
 
     @Column(name="UPDATE_USER", typeName="VARCHAR")
     private String updateUser;
 
     @Column(name="UPDATE_DATE", typeName="TIMESTAMP")
-    private Timestamp updateDate;
+    private Date updateDate;
 
     public String getDocumentId() {
         return documentId;
@@ -101,14 +99,6 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
         this.content = content;
     }
 
-    public String getContentCache() {
-        return contentCache;
-    }
-
-    public void setContentCache(String contentCache) {
-        this.contentCache = contentCache;
-    }
-
     public String getOwnerId() {
         return ownerId;
     }
@@ -125,11 +115,11 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
         this.createUser = createUser;
     }
 
-    public Timestamp getCreateDate() {
+    public Date getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Timestamp createDate) {
+    public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
@@ -141,7 +131,7 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
         this.updateUser = updateUser;
     }
 
-    public Timestamp getUpdateDate() {
+    public Date getUpdateDate() {
         return updateDate;
     }
 

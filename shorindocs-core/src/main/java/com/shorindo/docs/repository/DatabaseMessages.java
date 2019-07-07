@@ -130,6 +130,8 @@ public enum DatabaseMessages implements ActionMessages {
     DBMS_5129,
     @Message(ja = "エンティティ[{0}]に一意キーがありません。")
     DBMS_5130,
+    @Message(ja = "カラム[{0}]の型が不明です。")
+    DBMS_5131,
     @Message(ja = "未知のエラーが発生しました。")
     DBMS_9999
     ;

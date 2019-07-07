@@ -20,7 +20,9 @@ import static com.shorindo.docs.repository.DatabaseMessages.*;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -37,11 +39,14 @@ public abstract class RepositoryStatement {
             ActionLogger.getLogger(RepositoryStatement.class);
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
+    protected Class<?> clazz;
     protected String tableName;
     protected Map<Field, ColumnMapper> columnMap;
+    protected Map<String,ColumnMapper> namedMap;
     protected String sql;
 
     public RepositoryStatement(Class<?> clazz) throws RepositoryException {
+        this.clazz = clazz;
         applyTableName(clazz);
         applyColumnMapper(clazz);
     }
@@ -52,6 +57,10 @@ public abstract class RepositoryStatement {
 
     public Map<Field,ColumnMapper> getColumnMapperList() {
         return columnMap;
+    }
+
+    public ColumnMapper getColumnByName(String columnName) {
+        return namedMap.get(columnName);
     }
 
     private void applyTableName(Class<?> clazz) throws RepositoryException {
@@ -65,122 +74,100 @@ public abstract class RepositoryStatement {
 
     private void applyColumnMapper(Class<?> clazz) {
         columnMap = new LinkedHashMap<Field,ColumnMapper>();
+        namedMap = new LinkedHashMap<String,ColumnMapper>();
         for (Field field : clazz.getDeclaredFields()) {
             Column column = field.getAnnotation(Column.class);
             if (column == null) {
                 continue;
             }
-            columnMap.put(field, new ColumnMapper(field, column));
+            ColumnMapper value = new ColumnMapper(field, column);
+            columnMap.put(field, value);
+            namedMap.put(column.name(), value);
         }
         columnMap = Collections.unmodifiableMap(columnMap);
+        namedMap = Collections.unmodifiableMap(namedMap);
     }
 
-    protected void setHolders(PreparedStatement stmt, int index, ColumnMapper entry, Object entity) throws IllegalArgumentException, IllegalAccessException, SQLException {
-        Object value;
-        Field field = entry.getField();
-        field.setAccessible(true);
-        switch(entry.getFieldType()) {
-        case STRING:
-            stmt.setString(index++, (String)field.get(entity));
-            break;
-        case INTEGER:
-            stmt.setInt(index++, (int)field.get(entity));
-            break;
-        case INTEGER_OBJECT:
-            value = field.get(entity);
-            if (value != null) {
+    protected void setPlaceHolder(PreparedStatement stmt, int index, Object value) throws SQLException {
+        if (value != null) {
+            switch(FieldTypes.of(value.getClass())) {
+            case STRING:
+                stmt.setString(index++, (String)value);
+                break;
+            case INTEGER:
+                stmt.setInt(index++, (int)value);
+                break;
+            case INTEGER_OBJECT:
                 stmt.setInt(index++, (Integer)value);
-            } else {
-                stmt.setObject(index++, null);
-            }
-            break;
-        case LONG:
-            stmt.setLong(index++, (long)field.get(entity));
-            break;
-        case LONG_OBJECT:
-            value = field.get(entity);
-            if (value != null) {
-                stmt.setLong(index++, (Long)field.get(entity));
-            } else {
-                stmt.setObject(index++, null);
-            }
-            break;
-        case DATE:
-            value = field.get(entity);
-            if (value != null) {
+                break;
+            case LONG:
+                stmt.setLong(index++, (long)value);
+                break;
+            case LONG_OBJECT:
+                stmt.setLong(index++, (Long)value);
+                break;
+            case DATE:
                 SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-                stmt.setString(index++, format.format((Date)field.get(entity)));
-            } else {
-                stmt.setObject(index++, null);
+                stmt.setString(index++, format.format((Date)value));
+                break;
+            case BOOLEAN:
+                stmt.setBoolean(index++, (boolean)value);
+                break;
+            case BOOLEAN_OBJECT:
+                stmt.setBoolean(index++, (Boolean)value);
+                break;
+            case BYTE:
+                stmt.setByte(index++, (byte)value);
+                break;
+            case BYTE_OBJECT:
+                stmt.setByte(index++, (Byte)value);
+                break;
+            case SHORT:
+                stmt.setShort(index++, (short)value);
+                break;
+            case SHORT_OBJECT:
+                stmt.setShort(index++, (Short)value);
+                break;
+            case FLOAT:
+                stmt.setFloat(index++, (float)value);
+                break;
+            case FLOAT_OBJECT:
+                stmt.setFloat(index++, (Float)value);
+                break;
+            case DOUBLE:
+                stmt.setDouble(index++, (double)value);
+                break;
+            case DOUBLE_OBJECT:
+                stmt.setDouble(index++, (Double)value);
+                break;
+            case BIGDECIMAL:
+                stmt.setBigDecimal(index++, (BigDecimal)value);
+                break;
+            default:
+                LOG.warn(DBMS_5129, String.valueOf(index), value.getClass());
+                stmt.setObject(index++, value);
             }
-            break;
-        case BOOLEAN:
-            stmt.setBoolean(index++, (boolean)field.get(entity));
-            break;
-        case BOOLEAN_OBJECT:
-            value = field.get(entity);
-            if (value != null) {
-                stmt.setBoolean(index++, (Boolean)field.get(entity));
-            } else {
-                stmt.setObject(index++, null);
-            }
-            break;
-        case BYTE:
-            stmt.setByte(index++, (byte)field.get(entity));
-            break;
-        case BYTE_OBJECT:
-            value = field.get(entity);
-            if (value != null) {
-                stmt.setByte(index++, (Byte)field.get(entity));
-            } else {
-                stmt.setObject(index++, null);
-            }
-            break;
-        case SHORT:
-            stmt.setShort(index++, (short)field.get(entity));
-            break;
-        case SHORT_OBJECT:
-            value = field.get(entity);
-            if (value != null) {
-                stmt.setShort(index++, (Short)field.get(entity));
-            } else {
-                stmt.setObject(index++, null);
-            }
-            break;
-        case FLOAT:
-            stmt.setFloat(index++, (float)field.get(entity));
-            break;
-        case FLOAT_OBJECT:
-            value = field.get(entity);
-            if (value != null) {
-                stmt.setFloat(index++, (Float)field.get(entity));
-            } else {
-                stmt.setObject(index++, null);
-            }
-            break;
-        case DOUBLE:
-            stmt.setDouble(index++, (double)field.get(entity));
-            break;
-        case DOUBLE_OBJECT:
-            value = field.get(entity);
-            if (value != null) {
-                stmt.setDouble(index++, (Double)field.get(entity));
-            } else {
-                stmt.setObject(index++, null);
-            }
-            break;
-        case BIGDECIMAL:
-            value = field.get(entity);
-            if (value != null) {
-                stmt.setBigDecimal(index++, (BigDecimal)field.get(entity));
-            } else {
-                stmt.setObject(index++, null);
-            }
-            break;
-        default:
+        } else {
             stmt.setObject(index++, null);
-            LOG.warn(DBMS_5129, field.getName(), field.getType());
         }
+    }
+
+    protected void dispose(Statement stmt) {
+        if (stmt != null)
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+                LOG.warn(DBMS_9999, e);
+            }
+    }
+
+    protected void dispose(ResultSet rset) {
+        if (rset != null)
+            try {
+                rset.close();
+            } catch (SQLException e) {
+                LOG.warn(DBMS_9999, e);
+            }
     }
 
     protected static class ColumnMapper {
