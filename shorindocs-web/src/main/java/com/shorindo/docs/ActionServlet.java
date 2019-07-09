@@ -50,11 +50,17 @@ public class ActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionServlet.class);
 
+    /**
+     * 
+     */
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
     }
 
+    /**
+     * 
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
@@ -98,6 +104,9 @@ public class ActionServlet extends HttpServlet {
         }
     }
 
+    /**
+     * 
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
@@ -141,6 +150,9 @@ public class ActionServlet extends HttpServlet {
         }
     }
 
+    /**
+     * 
+     */
     protected boolean dispatch(ActionContext context, HttpServletResponse res)
             throws ServletException, IOException {
         String requestPath = (String)context.getAttribute("requestPath");
@@ -160,6 +172,9 @@ public class ActionServlet extends HttpServlet {
         return false;
     }
 
+    /**
+     * 
+     */
     protected final void output(ActionContext context, HttpServletResponse res, View view) throws IOException {
         for (Entry<String,String> entry : view.getMeta().entrySet()) {
             res.setHeader(entry.getKey(), entry.getValue());

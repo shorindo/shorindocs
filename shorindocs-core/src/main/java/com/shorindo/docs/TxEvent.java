@@ -15,12 +15,37 @@
  */
 package com.shorindo.docs;
 
+import java.lang.reflect.Method;
+
 /**
  * 
  */
-public enum TransactionEvent {
-    BEGIN,
-    COMMIT,
-    ROLLBACK
-    ;
+public class TxEvent {
+    private TxEventType type;
+    private Object instance;
+    private Method method;
+
+    public TxEvent(TxEventType type, Object instance, Method method) {
+        this.type = type;
+        this.instance = instance;
+        this.method = method;
+    }
+
+    public TxEventType getType() {
+        return type;
+    }
+
+    public Object getInstance() {
+        return instance;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public enum TxEventType {
+        BEGIN,
+        COMMIT,
+        ROLLBACK;
+    }
 }

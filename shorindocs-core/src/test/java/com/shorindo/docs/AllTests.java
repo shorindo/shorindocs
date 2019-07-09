@@ -15,9 +15,24 @@
  */
 package com.shorindo.docs;
 
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
+import com.shorindo.docs.auth.AuthenticateServiceTest;
+import com.shorindo.docs.document.DocumentServiceTest;
+import com.shorindo.docs.repository.RepositoryServiceTest;
+
 /**
  * 
  */
-public interface TransactionListener {
-    public void onEvent(TransactionEvent event);
+@RunWith(Suite.class)
+@SuiteClasses({
+    BeanUtilTest.class,
+    DocumentServiceTest.class,
+    IdentityProviderTest.class,
+    RepositoryServiceTest.class,
+    AuthenticateServiceTest.class
+})
+public class AllTests {
 }

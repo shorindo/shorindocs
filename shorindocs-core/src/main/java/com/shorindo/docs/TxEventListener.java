@@ -15,21 +15,9 @@
  */
 package com.shorindo.docs;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
-import com.shorindo.docs.document.DocumentService;
-
 /**
  * 
  */
-public class DocsServiceTest {
-    private DocumentService docService =
-            ServiceFactory.getService(DocumentService.class);
-
-    @Test
-    public void sampleTest() throws Exception {
-//        assertEquals("docs", ((Object) docService).get("aaa"));
-    }
+public interface TxEventListener {
+    public void onEvent(TxEvent event);
 }

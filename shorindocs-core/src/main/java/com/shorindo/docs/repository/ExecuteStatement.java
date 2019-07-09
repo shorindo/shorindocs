@@ -30,14 +30,20 @@ import com.shorindo.docs.action.ActionLogger;
 /**
  * 
  */
-public abstract class ExecuteStatement extends RepositoryStatement {
+public class ExecuteStatement extends RepositoryStatement {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(ExecuteStatement.class);
 
-    public abstract int execute(Connection conn, Object entity) throws RepositoryException;
+    public ExecuteStatement() {
+        super();
+    }
 
     public ExecuteStatement(Class<?> clazz) throws RepositoryException {
         super(clazz);
+    }
+
+    public int execute(Connection conn, Object entity) throws RepositoryException {
+        return 0;
     }
 
     public int execute(Connection conn, String sql, Object...params) throws RepositoryException {
@@ -83,6 +89,7 @@ public abstract class ExecuteStatement extends RepositoryStatement {
         public int execute(Connection conn, Object entity) throws RepositoryException {
             LOG.debug(DBMS_0007, getSql());
             long st = System.currentTimeMillis();
+            checkEntity(entity);
             try (PreparedStatement stmt = conn.prepareStatement(getSql())) {
                 int index = 1;
                 List<Object> paramList = new ArrayList<Object>();
@@ -143,6 +150,7 @@ public abstract class ExecuteStatement extends RepositoryStatement {
                 throws RepositoryException {
             LOG.debug(DBMS_0009, getSql());
             long st = System.currentTimeMillis();
+            checkEntity(entity);
             try (PreparedStatement stmt = conn.prepareStatement(getSql())) {
                 int index = 1;
                 List<Object> paramList = new ArrayList<Object>();
@@ -206,6 +214,7 @@ public abstract class ExecuteStatement extends RepositoryStatement {
                 throws RepositoryException {
             LOG.debug(DBMS_0005, getSql());
             long st = System.currentTimeMillis();
+            checkEntity(entity);
             try (PreparedStatement stmt = conn.prepareStatement(getSql())) {
                 int index = 1;
                 List<Object> paramList = new ArrayList<Object>();

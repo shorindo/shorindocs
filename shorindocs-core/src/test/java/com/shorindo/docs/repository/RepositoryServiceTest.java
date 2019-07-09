@@ -106,39 +106,6 @@ public class RepositoryServiceTest {
                 "DROP TABLE SAMPLE");
     }
 
-//    @Test
-//    public void testTransactional() throws Exception {
-//        long st = System.currentTimeMillis();
-//        SampleEntity result = repositoryService.transaction(
-//            new Transactionable<SampleEntity>() {
-//                @Override
-//                public SampleEntity run(Object...params) throws RepositoryException {
-//                    repositoryService.execute(
-//                        "INSERT INTO SAMPLE " + 
-//                        "VALUES('BAR', 123, 123.456, '1970/01/01 12:34:56')");
-//                    List<SampleEntity> resultList = repositoryService.query(
-//                        "SELECT * FROM SAMPLE", SampleEntity.class);
-//                    return resultList.get(0);
-//                }
-//            });
-//        LOG.debug("elapsed:" + (System.currentTimeMillis() - st) + "ms"); 
-//        assertEquals("BAR", result.getStringValue());
-//        assertEquals(123, (int)result.getIntValue());
-//        assertEquals(123.456, result.getDoubleValue(), 0.001);
-//        LOG.debug(result.getDateValue().getClass() + "=" + result.getDateValue());
-//    }
-//
-//    private static Transactionable<Integer> TL = new Transactionable<Integer>() {
-//        public Integer run(Object...params) throws RepositoryException {
-//            return repositoryService.query("SELECT 123", int.class).get(0);
-//        }
-//    };
-//
-//    @Test
-//    public void testTransactionless() throws Exception {
-//        assertEquals(123, (int)repositoryService.transaction(TL));
-//    }
-
     @Test
     public void testPut() throws Exception {
         SampleEntity e = generateSampleEntity();
@@ -172,60 +139,6 @@ public class RepositoryServiceTest {
         SampleEntity actual = repositoryService.get(expect);
         assertNull(actual);
     }
-
-//    @Test
-//    public void testMock() throws Exception {
-//        SampleEntity expect = generateSampleEntity();
-//        assertNull(repositoryService.get(expect));
-//
-//        MockUp<RepositoryServiceImpl> mock = new MockUp<RepositoryServiceImpl>() {
-//            @Mock
-//            public SchemaEntity get(SchemaEntity entity) throws RepositoryException {
-//                return expect;
-//            }
-//        };
-//        try {
-//            assertNotNull(repositoryService.get(expect));
-//        } finally {
-//            mock.tearDown();
-//        }
-//
-//        assertNull(repositoryService.get(expect));
-//    }
-
-//    @Test
-//    public void testLoadTables() throws Exception {
-//        repositoryService.loadTables();
-//    }
-
-//    @Test
-//    public void testLoadSchema() throws Exception {
-//        InputStream is = AuthenticateController.class.getResourceAsStream("AuthenticateService.dsdl");
-//        service.loadSchema(is);
-//        is.close();
-//    }
-//
-//    @Test
-//    public void testValidateSchema() throws Exception {
-//        InputStream is = AuthenticateController.class.getResourceAsStream("AuthenticateService.dsdl");
-//        try {
-//            DatabaseSchema schema = service.loadSchema(is);
-//            service.validateSchema(schema);
-//        } finally {
-//            is.close();
-//        }
-//    }
-
-//    @Test
-//    public void testGenerateSchemaEntity() throws Exception {
-//        InputStream is = getClass().getResourceAsStream("Sample.dsdl");
-//        try {
-//            DatabaseSchema schema = service.loadSchema(is);
-//            service.generateSchemaEntity(schema);
-//        } finally {
-//            is.close();
-//        }
-//    }
 
     @Test
     public void testInsertStatement() throws Exception {
@@ -263,12 +176,107 @@ public class RepositoryServiceTest {
         }
     }
 
-    public SampleEntity generateSampleEntity() throws RepositoryException {
+    @Test
+    public void testSucceed() throws Exception {
+        ServiceFactory.addService(TxTestService.class, TxTestServiceImpl.class);
+        ServiceFactory.addService(TxNestedService.class, TxNestedServiceImpl.class);
+        TxTestService txService = ServiceFactory.getService(TxTestService.class);
+        SampleEntity expect = generateSampleEntity();
+        txService.succeed(expect);
+        SampleEntity actual = repositoryService.get(expect);
+        assertNull(actual);
+    }
+
+    @Test
+    public void testFailOnDelete() throws Exception {
+        ServiceFactory.addService(TxTestService.class, TxTestServiceImpl.class);
+        ServiceFactory.addService(TxNestedService.class, TxNestedServiceImpl.class);
+        TxTestService txService = ServiceFactory.getService(TxTestService.class);
+        SampleEntity expect = generateSampleEntity();
+        try {
+            txService.failOnDelete(expect);
+            fail();
+        } catch (Exception e) {
+            SampleEntity actual = repositoryService.get(expect);
+            assertNull(actual);
+        }
+    }
+
+    @Test
+    public void testFailOnUpdate() throws Exception {
+        ServiceFactory.addService(TxTestService.class, TxTestServiceImpl.class);
+        ServiceFactory.addService(TxNestedService.class, TxNestedServiceImpl.class);
+        TxTestService txService = ServiceFactory.getService(TxTestService.class);
+        SampleEntity expect = generateSampleEntity();
+        try {
+            txService.failOnUpdate(expect);
+            fail();
+        } catch (Exception e) {
+            SampleEntity actual = repositoryService.get(expect);
+            assertNull(actual);
+        }
+    }
+
+    public static SampleEntity generateSampleEntity() throws RepositoryException {
         SampleEntity entity = new SampleEntity();
         entity.setStringValue("stringValue");
         entity.setByteObject(Byte.valueOf((byte)123));
         entity.setIntValue(new Random().nextInt());
         entity.setDateValue(new java.util.Date());
         return entity;
+    }
+
+    public static interface TxTestService {
+        public void succeed(SampleEntity entity) throws Exception;
+        public void failOnDelete(SampleEntity entity) throws Exception;
+        public void failOnUpdate(SampleEntity entity) throws Exception;
+    }
+
+    public static class TxTestServiceImpl implements TxTestService {
+        private TxNestedService nestedService =
+                 ServiceFactory.getService(TxNestedService.class);
+
+        @Override
+        @Transactional
+        public void succeed(SampleEntity entity) throws Exception {
+            repositoryService.insert(entity);
+            entity.setBooleanValue(true);
+            repositoryService.update(entity);
+            repositoryService.delete(entity);
+            nestedService.nested(entity);
+        }
+
+        @Override
+        @Transactional
+        public void failOnDelete(SampleEntity entity) throws Exception {
+            repositoryService.insert(entity);
+            entity.setBooleanValue(true);
+            repositoryService.update(entity);
+            repositoryService.delete(null);
+        }
+
+        @Override
+        @Transactional
+        public void failOnUpdate(SampleEntity entity) throws Exception {
+            repositoryService.insert(entity);
+            entity.setBooleanValue(true);
+            repositoryService.update(null);
+            repositoryService.delete(null);
+        }
+        
+    }
+
+    public static interface TxNestedService {
+        public void nested(SampleEntity entity) throws Exception;
+    }
+
+    public static class TxNestedServiceImpl implements TxNestedService {
+
+        @Override
+        @Transactional
+        public void nested(SampleEntity entity) throws Exception {
+            repositoryService.get(entity);
+        }
+        
     }
 }

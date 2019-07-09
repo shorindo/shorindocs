@@ -37,7 +37,7 @@ import com.shorindo.docs.action.ActionLogger;
 /**
  * 
  */
-public abstract class QueryStatement extends RepositoryStatement {
+public class QueryStatement extends RepositoryStatement {
     private static ActionLogger LOG =
             ActionLogger.getLogger(QueryStatement.class);
 
@@ -45,10 +45,187 @@ public abstract class QueryStatement extends RepositoryStatement {
         super(clazz);
     }
 
-    public abstract <T> List<T> queryList(Connection conn, String sql, Object...params) throws RepositoryException;
-    public abstract <T> T querySingle(Connection conn, String sql, Object...params) throws RepositoryException;
-    public abstract <T> T get(Connection conn, T entity) throws RepositoryException;
-    
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T querySingle(Connection conn, String sql, Object... params)
+            throws RepositoryException {
+        LOG.debug(DBMS_0003, sql);
+        long st = System.currentTimeMillis();
+        ResultSet rset = null;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int index = 1;
+            List<Object> paramList = new ArrayList<Object>();
+            for (Object param : params) {
+                setPlaceHolder(stmt, index++, param);
+                paramList.add(param);
+            }
+            LOG.debug(DBMS_0011, paramList);
+            rset = stmt.executeQuery();
+            if (rset.next()) {
+                return (T)getResult(rset, getEntityClass());
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        } finally {
+            dispose(rset);
+            LOG.debug(DBMS_0004, (System.currentTimeMillis() - st) + " ms");
+        }
+    }
+
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    public <T> List<T> queryList(Connection conn, String sql, Object... params)
+            throws RepositoryException {
+        LOG.debug(DBMS_0003, sql);
+        long st = System.currentTimeMillis();
+        ResultSet rset = null;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int index = 1;
+            List<Object> paramList = new ArrayList<Object>();
+            for (Object param : params) {
+                setPlaceHolder(stmt, index++, param);
+                paramList.add(param);
+            }
+            LOG.debug(DBMS_0011, paramList);
+            rset = stmt.executeQuery();
+            List<T> resultList = new ArrayList<T>();
+            while (rset.next()) {
+                resultList.add((T)getResult(rset, getEntityClass()));
+            }
+            return resultList;
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        } finally {
+            dispose(rset);
+            LOG.debug(DBMS_0004, (System.currentTimeMillis() - st) + " ms");
+        }
+    }
+
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T get(Connection conn, T entity) throws RepositoryException {
+        LOG.debug(DBMS_0003, getSql());
+        long st = System.currentTimeMillis();
+        checkEntity(entity);
+        ResultSet rset = null;
+        try (PreparedStatement stmt = conn.prepareStatement(getSql())) {
+            int index = 1;
+            List<Object> paramList = new ArrayList<Object>();
+            for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
+                String fieldName = entry.getKey().getName();
+                Column column = entry.getValue().getColumn();
+                if (column.primaryKey() > 0) {
+                    Object key = BeanUtil.getProperty(entity, fieldName);
+                    setPlaceHolder(stmt, index++, key);
+                    paramList.add(key);
+                }
+            }
+            LOG.debug(DBMS_0011, paramList);
+            rset = stmt.executeQuery();
+            if (rset.next()) {
+                return (T)getResult(rset, entity.getClass());
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e);
+        } finally {
+            dispose(rset);
+            LOG.debug(DBMS_0004, (System.currentTimeMillis() - st) + " ms");
+        }
+    }
+
+    /**
+     * 
+     */
+    private Set<String> getResultSetMetaData(ResultSet rset) throws SQLException {
+        Set<String> columnSet = new HashSet<String>();
+        ResultSetMetaData meta = rset.getMetaData();
+        for (int index = 1; index < meta.getColumnCount(); index++) {
+            columnSet.add(meta.getColumnName(index));
+        }
+        return columnSet;
+    }
+
+    /**
+     * 
+     */
+    private <T> T getResult(ResultSet rset, Class<T> clazz) throws SQLException, BeanNotFoundException, InstantiationException, IllegalAccessException {
+        Set<String> columnSet = getResultSetMetaData(rset);
+        T entity = clazz.newInstance();
+        for (String columnName : columnSet) {
+            ColumnMapper mapper = getColumnByName(columnName);
+            switch (mapper.getFieldType()) {
+            case BOOLEAN:
+            case BOOLEAN_OBJECT:
+                BeanUtil.setProperty(entity,
+                        mapper.getField().getName(),
+                        rset.getBoolean(columnName));
+                break;
+            case BYTE:
+            case BYTE_OBJECT:
+                BeanUtil.setProperty(entity,
+                        mapper.getField().getName(),
+                        rset.getByte(columnName));
+                break;
+            case SHORT:
+            case SHORT_OBJECT:
+                BeanUtil.setProperty(entity,
+                        mapper.getField().getName(),
+                        rset.getShort(columnName));
+                break;
+            case INTEGER:
+            case INTEGER_OBJECT:
+                BeanUtil.setProperty(entity,
+                        mapper.getField().getName(),
+                        rset.getInt(columnName));
+                break;
+            case LONG:
+            case LONG_OBJECT:
+                BeanUtil.setProperty(entity,
+                        mapper.getField().getName(),
+                        rset.getLong(columnName));
+                break;
+            case FLOAT:
+            case FLOAT_OBJECT:
+                BeanUtil.setProperty(entity,
+                        mapper.getField().getName(),
+                        rset.getFloat(columnName));
+                break;
+            case DOUBLE:
+            case DOUBLE_OBJECT:
+                BeanUtil.setProperty(entity,
+                        mapper.getField().getName(),
+                        rset.getDouble(columnName));
+                break;
+            case STRING:
+                BeanUtil.setProperty(entity,
+                        mapper.getField().getName(),
+                        rset.getString(columnName));
+                break;
+            case DATE:
+                BeanUtil.setProperty(entity,
+                        mapper.getField().getName(),
+                        new Date(rset.getDate(columnName).getTime()));
+                break;
+            default:
+                LOG.warn(DBMS_5131, columnName);
+            }
+        }
+        return entity;
+    }
+
+    /**
+     * 指定クラスのエンティティに対応するSELECT文を生成・実行する
+     */
     public static class SelectStatement extends QueryStatement {
 
         public SelectStatement(Class<?> clazz) throws RepositoryException {
@@ -79,126 +256,6 @@ public abstract class QueryStatement extends RepositoryStatement {
                 sep = " AND ";
             }
             setSql(sb.toString());
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public <T> T get(Connection conn, T entity) throws RepositoryException {
-            LOG.debug(DBMS_0003, getSql());
-            long st = System.currentTimeMillis();
-            ResultSet rset = null;
-            try (PreparedStatement stmt = conn.prepareStatement(getSql())) {
-                int index = 1;
-                List<Object> paramList = new ArrayList<Object>();
-                for (Entry<Field,ColumnMapper> entry : getColumnMap().entrySet()) {
-                    String fieldName = entry.getKey().getName();
-                    Column column = entry.getValue().getColumn();
-                    if (column.primaryKey() > 0) {
-                        Object key = BeanUtil.getProperty(entity, fieldName);
-                        setPlaceHolder(stmt, index++, key);
-                        paramList.add(key);
-                    }
-                }
-                LOG.debug(DBMS_0011, paramList);
-                rset = stmt.executeQuery();
-                if (rset.next()) {
-                    return (T)getResult(rset, entity.getClass());
-                } else {
-                    return null;
-                }
-            } catch (Exception e) {
-                throw new RepositoryException(e);
-            } finally {
-                dispose(rset);
-                LOG.debug(DBMS_0004, (System.currentTimeMillis() - st) + " ms");
-            }
-        }
-
-        @Override
-        public <T> T querySingle(Connection conn, String sql, Object... params)
-                throws RepositoryException {
-            return null;
-        }
-
-        @Override
-        public <T> List<T> queryList(Connection conn, String sql,
-                Object... params) throws RepositoryException {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        private Set<String> getResultSetMetaData(ResultSet rset) throws SQLException {
-            Set<String> columnSet = new HashSet<String>();
-            ResultSetMetaData meta = rset.getMetaData();
-            for (int index = 1; index < meta.getColumnCount(); index++) {
-                columnSet.add(meta.getColumnName(index));
-            }
-            return columnSet;
-        }
-
-        private <T> T getResult(ResultSet rset, Class<T> clazz) throws SQLException, BeanNotFoundException, InstantiationException, IllegalAccessException {
-            Set<String> columnSet = getResultSetMetaData(rset);
-            T entity = clazz.newInstance();
-            for (String columnName : columnSet) {
-                ColumnMapper mapper = getColumnByName(columnName);
-                switch (mapper.getFieldType()) {
-                case BOOLEAN:
-                case BOOLEAN_OBJECT:
-                    BeanUtil.setProperty(entity,
-                            mapper.getField().getName(),
-                            rset.getBoolean(columnName));
-                    break;
-                case BYTE:
-                case BYTE_OBJECT:
-                    BeanUtil.setProperty(entity,
-                            mapper.getField().getName(),
-                            rset.getByte(columnName));
-                    break;
-                case SHORT:
-                case SHORT_OBJECT:
-                    BeanUtil.setProperty(entity,
-                            mapper.getField().getName(),
-                            rset.getShort(columnName));
-                    break;
-                case INTEGER:
-                case INTEGER_OBJECT:
-                    BeanUtil.setProperty(entity,
-                            mapper.getField().getName(),
-                            rset.getInt(columnName));
-                    break;
-                case LONG:
-                case LONG_OBJECT:
-                    BeanUtil.setProperty(entity,
-                            mapper.getField().getName(),
-                            rset.getLong(columnName));
-                    break;
-                case FLOAT:
-                case FLOAT_OBJECT:
-                    BeanUtil.setProperty(entity,
-                            mapper.getField().getName(),
-                            rset.getFloat(columnName));
-                    break;
-                case DOUBLE:
-                case DOUBLE_OBJECT:
-                    BeanUtil.setProperty(entity,
-                            mapper.getField().getName(),
-                            rset.getDouble(columnName));
-                    break;
-                case STRING:
-                    BeanUtil.setProperty(entity,
-                            mapper.getField().getName(),
-                            rset.getString(columnName));
-                    break;
-                case DATE:
-                    BeanUtil.setProperty(entity,
-                            mapper.getField().getName(),
-                            new Date(rset.getDate(columnName).getTime()));
-                    break;
-                default:
-                    LOG.warn(DBMS_5131, columnName);
-                }
-            }
-            return entity;
         }
     }
 }

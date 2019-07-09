@@ -64,6 +64,10 @@ public enum DatabaseMessages implements ActionMessages {
     DBMS_1106,
     @Message(ja = "トランザクションを開始します。")
     DBMS_1108,
+    @Message(ja = "トランザクションが入れ子になっているため、コミットせず処理を継続します。")
+    DBMS_1109,
+    @Message(ja = "トランザクションが入れ子になっているため、ロールバックせず処理を継続します。")
+    DBMS_1110,
 
     @Message(ja = "トランザクション実行中ではありません。")
     DBMS_3001,

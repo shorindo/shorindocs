@@ -32,14 +32,23 @@ import com.shorindo.docs.action.ActionLogger;
 public class AuthenticateFilter implements Filter {
     ActionLogger LOG = ActionLogger.getLogger(AuthenticateFilter.class);
 
+    /**
+     * 
+     */
     public void destroy() {
     }
 
+    /**
+     * 
+     */
     public void doFilter(ServletRequest req, ServletResponse res,
             FilterChain chain) throws IOException, ServletException {
         chain.doFilter(req, res);
     }
 
+    /**
+     * 
+     */
     public void init(FilterConfig config) throws ServletException {
         LOG.trace("init()");
     }

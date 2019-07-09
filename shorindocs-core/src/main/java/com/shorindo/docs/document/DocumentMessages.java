@@ -90,6 +90,10 @@ public enum DocumentMessages implements ActionMessages {
     DOCS_9003,
     @Message(ja = "パス[{0}]の指定に失敗しました。")
     DOCS_9004,
+    @Message(ja = "スキーマ定義ファイル[{0}]が読み込めません。")
+    DOCS_9005,
+    @Message(ja = "[{0}]は既に登録されているため、無視します。")
+    DOCS_9006,
     @Message(ja = "未知のエラーです。")
     DOCS_9999;
 

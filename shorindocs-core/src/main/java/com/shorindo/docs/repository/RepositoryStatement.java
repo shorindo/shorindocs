@@ -39,14 +39,17 @@ public abstract class RepositoryStatement {
             ActionLogger.getLogger(RepositoryStatement.class);
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    private Class<?> clazz;
+    private Class<?> entityClass;
     private String tableName;
     private Map<Field, ColumnMapper> columnMap;
     private Map<String,ColumnMapper> namedMap;
     private String sql;
 
+    public RepositoryStatement() {
+    }
+
     public RepositoryStatement(Class<?> clazz) throws RepositoryException {
-        this.clazz = clazz;
+        entityClass = clazz;
         applyTableName(clazz);
         applyColumnMapper(clazz);
     }
@@ -56,7 +59,7 @@ public abstract class RepositoryStatement {
     }
 
     public Class<?> getEntityClass() {
-        return clazz;
+        return entityClass;
     }
 
     public String getSql() {

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.shorindo.docs.TxEvent.TxEventType;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.repository.Transactional;
 
@@ -35,9 +36,9 @@ import com.shorindo.docs.repository.Transactional;
 @SuppressWarnings("unchecked")
 public abstract class ServiceFactory {
     private static ActionLogger LOG = ActionLogger.getLogger(ServiceFactory.class);
-    private static Map<Class<?>,Class<?>> interfaceap = new ConcurrentHashMap<Class<?>,Class<?>>();
+    private static Map<Class<?>,Class<?>> interfacMap = new ConcurrentHashMap<Class<?>,Class<?>>();
     private static Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<Class<?>,Object>();
-    private static Set<TransactionListener> listenerSet = new HashSet<TransactionListener>();
+    private static Set<TxEventListener> listenerSet = new HashSet<TxEventListener>();
 
     /**
      * サービスを登録する
@@ -46,8 +47,12 @@ public abstract class ServiceFactory {
      * @param impl サービスの実装クラス
      */
     public static synchronized <T> void addService(Class<T> itfc, Class<? extends T> impl) {
-        interfaceap.put(itfc, impl);
-        instanceMap.remove(itfc);
+        if (interfacMap.containsKey(itfc)) {
+            LOG.error(DOCS_9006, itfc.getName());
+        } else {
+            interfacMap.put(itfc, impl);
+            instanceMap.remove(itfc);
+        }
     }
 
     /**
@@ -60,8 +65,8 @@ public abstract class ServiceFactory {
         try {
             if (instanceMap.containsKey(itfc)) {
                 return (T)instanceMap.get(itfc);
-            } else if (interfaceap.containsKey(itfc)){
-                Class<T> implClass = (Class<T>)interfaceap.get(itfc);
+            } else if (interfacMap.containsKey(itfc)){
+                Class<T> implClass = (Class<T>)interfacMap.get(itfc);
                 T instance = implClass.newInstance();
                 Object proxy = Proxy.newProxyInstance(
                         ServiceFactory.class.getClassLoader(),
@@ -75,13 +80,13 @@ public abstract class ServiceFactory {
                                 long st = System.currentTimeMillis();
                                 LOG.trace("method[" + method.getName() + "] invoke:" + instance);
                                 boolean transactional = isTransactional(implClass, method);
-                                sendEvent(transactional, TransactionEvent.BEGIN);
+                                sendEvent(transactional, TxEventType.BEGIN, instance, method);
                                 try {
                                     Object result = method.invoke(instance, args);
-                                    sendEvent(transactional, TransactionEvent.COMMIT);
+                                    sendEvent(transactional, TxEventType.COMMIT, instance, method);
                                     return result;
                                 } catch (Throwable th) {
-                                    sendEvent(transactional, TransactionEvent.ROLLBACK);
+                                    sendEvent(transactional, TxEventType.ROLLBACK, instance, method);
                                     throw th;
                                 } finally {
                                     LOG.trace("method[" + method.getName() + "] end " +
@@ -90,8 +95,8 @@ public abstract class ServiceFactory {
                             }
                         });
                 instanceMap.put(itfc, proxy);
-                if (TransactionListener.class.isAssignableFrom(implClass)) {
-                    addListener((TransactionListener)instance);
+                if (TxEventListener.class.isAssignableFrom(implClass)) {
+                    addListener((TxEventListener)instance);
                 }
                 return (T)proxy;
             } else {
@@ -105,7 +110,7 @@ public abstract class ServiceFactory {
     /*
      * トランザクションリスナーを登録する
      */
-    private static void addListener(TransactionListener listener) {
+    private static void addListener(TxEventListener listener) {
         listenerSet.add(listener);
     }
 
@@ -137,10 +142,11 @@ public abstract class ServiceFactory {
     /*
      * トランザクションリスナーにイベントを送信する
      */
-    private static void sendEvent(boolean transactional, TransactionEvent event) {
+    private static void sendEvent(boolean transactional, TxEventType type,
+            Object instance, Method method) {
         if (transactional) {
-            for (TransactionListener listener : listenerSet) {
-                listener.onEvent(event);
+            for (TxEventListener listener : listenerSet) {
+                listener.onEvent(new TxEvent(type, instance, method));
             }
         }
     }

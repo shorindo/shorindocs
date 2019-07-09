@@ -15,6 +15,8 @@
  */
 package com.shorindo.docs.document;
 
+import static com.shorindo.docs.document.DocumentMessages.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -45,9 +47,12 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     public void validate() {
-        String dsdlName = getClass().getSimpleName() + ".dsdl";
+        String dsdlName = "Document.dsdl";
         LOG.debug(dsdlName);
         InputStream is = getClass().getResourceAsStream(dsdlName);
+        if (is == null) {
+            throw new RuntimeException(DOCS_9005.getMessage(dsdlName));
+        }
         try {
             DatabaseSchema schema = repositoryService.loadSchema(is);
             for (DatabaseSchema.Entity e : schema.getEntityList()) {
