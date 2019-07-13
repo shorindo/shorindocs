@@ -25,7 +25,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.IdentityManager;
 import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.document.DocumentEntity;
+import com.shorindo.docs.document.DocumentService;
+import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceImpl;
 
@@ -34,15 +38,31 @@ import com.shorindo.docs.repository.RepositoryServiceImpl;
  */
 public class OutloggerServiceTest {
     public static final String DOCUMENT_ID = "outlogger";
-    private static OutloggerService service;
+    private static OutloggerService outloggerService;
 
     @BeforeClass
     public static void setUpBefore() throws Exception {
         InputStream is = OutloggerServiceTest.class.getClassLoader().getResourceAsStream("site.properties");
         ApplicationContext.loadProperties(is);
         ServiceFactory.addService(RepositoryService.class, RepositoryServiceImpl.class);
+        ServiceFactory.addService(DocumentService.class, DocumentServiceImpl.class);
         ServiceFactory.addService(OutloggerService.class, OutloggerServiceImpl.class);
-        service = ServiceFactory.getService(OutloggerService.class);
+        outloggerService = ServiceFactory.getService(OutloggerService.class);
+    }
+
+    @Test
+    public void testCreateMeta() throws Exception {
+        DocumentEntity entity = outloggerService.newDocument();
+        entity.setDocumentId(Long.toString(IdentityManager.newId()));
+        entity.setController(OutloggerController.class.getName());
+        entity.setTitle("test outlogger");
+        entity.setContent("");
+        entity.setOwnerId("outlogger");
+        entity.setCreateUser("outlogger");
+        entity.setCreateDate(new Date());
+        entity.setUpdateUser("outlogger");
+        entity.setUpdateDate(new Date());
+        outloggerService.save(entity);
     }
 
     @Test
@@ -55,7 +75,7 @@ public class OutloggerServiceTest {
         entity.setCreateDate(new Date());
         entity.setUpdateUser("testuser");
         entity.setUpdateDate(new Date());
-        service.putLog(entity);
+        outloggerService.putLog(entity);
     }
 
     @Test
@@ -67,20 +87,20 @@ public class OutloggerServiceTest {
         entity.setCreateDate(new Date());
         entity.setUpdateUser("testuser");
         entity.setUpdateDate(new Date());
-        entity = service.putLog(entity);
+        entity = outloggerService.putLog(entity);
 
         entity.setContent("putLog[2]");
-        entity = service.putLog(entity);
+        entity = outloggerService.putLog(entity);
 
         entity.setContent("putLog[3]");
-        entity = service.putLog(entity);
+        entity = outloggerService.putLog(entity);
     }
 
     @Test
     public void testListLog() throws Exception {
         OutloggerEntity entity = new OutloggerEntity();
         entity.setDocumentId(DOCUMENT_ID);
-        List<OutloggerEntity> entityList = service.listLog(entity);
+        List<OutloggerEntity> entityList = outloggerService.listLog(entity);
         assertTrue(entityList.size() > 0);
         entityList.stream().forEach(e -> {
             System.out.println(e);
@@ -96,9 +116,18 @@ public class OutloggerServiceTest {
         entity.setCreateDate(new Date());
         entity.setUpdateUser("testuser");
         entity.setUpdateDate(new Date());
-        entity = service.putLog(entity);
+        entity = outloggerService.putLog(entity);
 
-        service.removeLog(entity);
-        assertNull(service.getLog(entity));
+        outloggerService.removeLog(entity);
+        assertNull(outloggerService.getLog(entity));
     }
+
+//    private OutloggerMetaData newOutlogger() {
+//        OutloggerMetaData meta = new OutloggerMetaData();
+//        List<Column> columnList = new ArrayList<Column>();
+//        Column column = new Column();
+//        column.setTitle("test outlogger");
+//        columnList.add(column);
+//        return meta;
+//    }
 }

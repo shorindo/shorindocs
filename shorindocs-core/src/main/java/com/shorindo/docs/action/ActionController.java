@@ -24,7 +24,6 @@ import java.util.List;
 
 import net.arnx.jsonic.JSON;
 
-import com.shorindo.docs.LapCounter;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.view.View;
 
@@ -41,24 +40,24 @@ public abstract class ActionController {
     public abstract View view(ActionContext context);
 
     public Object action(ActionContext context) {
-        LapCounter lap = new LapCounter();
         LOG.debug(DOCS_1107, getClass().getSimpleName() + ".action()");
         try {
             String actionName = context.getAction();
-            List<Object> reqParams = context.getParameter();
+            Object reqParams = context.getParameter();
+            int paramSize = reqParams instanceof List ?
+                    ((List<?>)reqParams).size() : 0;
             Class<?> clazz = getClass();
             while (clazz != null) {
                 for (Method method : clazz.getMethods()) {
                     if (!method.getName().equals(actionName) ||
-                            reqParams.size() != method.getParameterCount()) {
+                            paramSize != method.getParameterCount()) {
                         continue;
                     }
                     List<Object> callParams = new ArrayList<Object>();
                     for (int i = 0; i < method.getParameterCount(); i++) {
                         Parameter decParam = method.getParameters()[i];
-                        Object reqParam = reqParams.get(i);
                         callParams.add(
-                                JSON.decode(JSON.encode(reqParam), decParam.getClass()));
+                                JSON.decode(JSON.encode(reqParams), decParam.getClass()));
                     }
                     return method.invoke(this, callParams.toArray());
                 }

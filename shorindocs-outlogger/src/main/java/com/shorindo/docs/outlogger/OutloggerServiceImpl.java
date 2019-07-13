@@ -19,14 +19,15 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 import static com.shorindo.docs.outlogger.OutloggerMessages.*;
 import static com.shorindo.docs.repository.DatabaseMessages.*;
 
-import java.io.StringWriter;
+import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
-
+import com.shorindo.docs.IdentityManager;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentServiceImpl;
+import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.Transactional;
 
@@ -37,6 +38,18 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
     private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerServiceImpl.class);
 
     public OutloggerServiceImpl() {
+    }
+
+    /**=========================================================================
+     * 
+     */
+    @Override
+    public DocumentEntity newDocument() {
+        DocumentEntity entity = new DocumentEntity();
+        entity.setDocumentId(Long.toString(IdentityManager.newId()));
+        entity.setCreateDate(new Date());
+        entity.setUpdateDate(new Date());
+        return entity;
     }
 
     /*==========================================================================
@@ -59,16 +72,17 @@ public class OutloggerServiceImpl extends DocumentServiceImpl implements Outlogg
      * メタデータを生成する
      * @return　メタデータ(XML)
      */
-    public String createMetaData() {
-        StringWriter writer = new StringWriter();
-        JAXB.marshal(new OutloggerMetaData(), writer);
-        return writer.toString();
+    public String createOutlogger() {
+//        StringWriter writer = new StringWriter();
+//        JAXB.marshal(new OutloggerMetaData(), writer);
+//        return writer.toString();
+        return null;
     }
 
-    public void registMetaData() {
+    public void registOutlogger() {
     }
 
-    public void removeMetaData() {
+    public void removeOutlogger() {
     }
 
     public void commitMetaData() {

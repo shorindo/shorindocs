@@ -25,7 +25,7 @@ import javax.xml.bind.JAXB;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.annotation.ContentTypeReady;
+import com.shorindo.docs.annotation.ContentType;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.model.DocumentModel;
@@ -36,7 +36,7 @@ import com.shorindo.xuml.XumlView;
 /**
  * 
  */
-@ContentTypeReady("com.shorindo.docs.outlogger.OutloggerController")
+@ContentType("application/x-outlogger")
 public class OutloggerController extends DocumentController {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(OutloggerController.class);

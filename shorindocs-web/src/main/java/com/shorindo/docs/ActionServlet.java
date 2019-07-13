@@ -32,11 +32,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.arnx.jsonic.JSON;
 import net.arnx.jsonic.JSONException;
+import net.arnx.jsonic.TypeReference;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentServiceFactory;
+import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.DefaultView;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
@@ -129,11 +131,13 @@ public class ActionServlet extends HttpServlet {
     protected void doRpc(ActionContext context, InputStream is, OutputStream os) {
         ActionController controller = DocumentServiceFactory.getController((String)context.getAttribute("requestPath"));
         try {
-            JsonRpcRequest req = JSON.decode(is, JsonRpcRequest.class);
+            TypeReference<JsonRpcRequest<DocumentModel>> ref =
+                    new TypeReference<JsonRpcRequest<DocumentModel>>(){};
+            JsonRpcRequest<DocumentModel> req = JSON.decode(is, ref);
             context.setAction(req.getMethod());
             context.setParameters(req.getParams());
             Object result = controller.action(context);
-            JsonRpcResponse res = new JsonRpcResponse();
+            JsonRpcResponse<Object> res = new JsonRpcResponse<Object>();
             res.setId(req.getId());
             res.setResult(result);
             JSON.encode(res, os);

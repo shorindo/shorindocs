@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2016 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 
  */
-public class LapCounter {
-    private long startTime;
-
-    /**
-     * 
-     */
-    public LapCounter() {
-        startTime = System.currentTimeMillis();
-    }
-
-    public long elapsed() {
-        return System.currentTimeMillis() - startTime;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ContentType {
+    String value();
 }

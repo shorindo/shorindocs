@@ -43,7 +43,6 @@ public class DocumentServiceImpl implements DocumentService {
      * 
      */
     public DocumentServiceImpl() {
-        //validate();
     }
 
     public void validate() {
@@ -83,40 +82,32 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
-    @Override
     @Transactional
-    public DocumentModel save(DocumentModel model) {
+    public DocumentEntity save(DocumentEntity entity) {
         try {
             DocumentEntity prev = repositoryService.querySingle(
                     "SELECT * " +
                     "FROM   DOCS_DOCUMENT " +
                     "WHERE  DOCUMENT_ID=? AND VERSION=0",
                     DocumentEntity.class,
-                    model.getDocumentId());
-            DocumentEntity entity = new DocumentEntity();
-            if (prev == null) {
-                entity.setDocumentId(model.getDocumentId());
-                entity.setVersion(0);
-                entity.setController(getClass().getName());
-                entity.setTitle(model.getTitle());
-                entity.setContent(model.getContent());
-            } else {
+                    entity.getDocumentId());
+            if (prev != null) {
                 entity = prev;
                 List<DocumentEntity> entityList = repositoryService.queryList(
                         "SELECT MAX(VERSION) VERSION " +
                         "FROM   DOCS_DOCUMENT " +
                         "WHERE  DOCUMENT_ID=?",
                         DocumentEntity.class,
-                        model.getDocumentId());
+                        entity.getDocumentId());
                 int version = entityList.get(0).getVersion();
                 repositoryService.execute(
                         "UPDATE DOCS_DOCUMENT " +
                         "SET    VERSION=? " +
                         "WHERE  DOCUMENT_ID=? AND VERSION=0",
-                        version + 1, model.getDocumentId());
+                        version + 1, entity.getDocumentId());
                 entity.setVersion(0);
-                entity.setTitle(model.getTitle());
-                entity.setContent(model.getContent());
+                entity.setTitle(entity.getTitle());
+                entity.setContent(entity.getContent());
             }
             repositoryService.insert(entity);
             return repositoryService.get(entity);
@@ -151,4 +142,11 @@ public class DocumentServiceImpl implements DocumentService {
           throw new RuntimeException(e);
       }
     }
+
+    @Override
+    public DocumentEntity newDocument() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

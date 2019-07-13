@@ -19,24 +19,24 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Arrays;
 
 import com.shorindo.docs.outlogger.ProxyInputStream;
 import com.shorindo.docs.outlogger.ProxyOutputStream;
 
 import net.arnx.jsonic.JSON;
+import net.arnx.jsonic.TypeReference;
 
 /**
  * 
  */
-public class RpcClient {
+public class RpcClient<T> {
     private String base;
 
     public RpcClient(String base) {
         this.base = base;
     }
 
-    public <T> T execute(Class<T> type, String docId, String methodName, Object... params) {
+    public T execute(String docId, String methodName, T... params) {
         try {
             long st = System.currentTimeMillis();
             URLConnection conn = new URL(base + docId)
@@ -44,18 +44,19 @@ public class RpcClient {
             conn.setDoInput(true);
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
-            JsonRpcRequest request = new JsonRpcRequest();
+            JsonRpcRequest<T> request = new JsonRpcRequest<T>();
             request.setId(String.valueOf(System.currentTimeMillis()));
             request.setMethod(methodName);
-            request.setParams(Arrays.asList(new Object[]{}));
+            request.setParams(params);
             ProxyOutputStream reqStream = new ProxyOutputStream(conn.getOutputStream());
             JSON.encode(request, reqStream);
-            ProxyInputStream resStream = new ProxyInputStream(conn.getInputStream());
-            JsonRpcResponse response = JSON.decode(resStream, JsonRpcResponse.class);
             System.out.println(">> " + reqStream.toString());
+            ProxyInputStream resStream = new ProxyInputStream(conn.getInputStream());
+            TypeReference<JsonRpcResponse<T>> ref = new TypeReference<JsonRpcResponse<T>>(){};
+            JsonRpcResponse<T> response = JSON.decode(resStream, ref);
             System.out.println("<< " + resStream.toString());
             System.out.println("elapsed: " + (System.currentTimeMillis() - st) + " ms");
-            return JSON.decode(JSON.encode(response.getResult()), type);
+            return response.getResult();
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

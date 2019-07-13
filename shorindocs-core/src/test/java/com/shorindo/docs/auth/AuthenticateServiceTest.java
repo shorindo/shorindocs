@@ -23,7 +23,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.IdentityProvider;
+import com.shorindo.docs.IdentityManager;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.auth.AuthenticateService;
 import com.shorindo.docs.auth.entity.UserEntity;
@@ -84,7 +84,7 @@ public class AuthenticateServiceTest {
 
     private UserEntity generateUser() {
         UserEntity entity = new UserEntity();
-        entity.setLoginName(String.format("%x", IdentityProvider.newId()));
+        entity.setLoginName(String.format("%x", IdentityManager.newId()));
         entity.setPassword("password");
         entity.setDisplayName("displayName");
         entity.setMail("mail");

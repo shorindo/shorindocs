@@ -18,7 +18,7 @@ package com.shorindo.docs.plaintext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.annotation.ContentTypeReady;
+import com.shorindo.docs.annotation.ContentType;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentMessages;
@@ -30,7 +30,7 @@ import com.shorindo.xuml.XumlView;
 /**
  * 
  */
-@ContentTypeReady("text/plain")
+@ContentType("text/plain")
 public class PlainTextController extends DocumentController {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(PlainTextController.class);

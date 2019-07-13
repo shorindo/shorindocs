@@ -18,21 +18,22 @@ package com.shorindo.docs.outlogger;
 import java.util.List;
 
 import com.shorindo.docs.document.DocumentException;
+import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.repository.RepositoryException;
 
 /**
  * 
  */
-public interface OutloggerService {
+public interface OutloggerService extends DocumentService {
     public void createSchema() throws RepositoryException;
 
     /**
      * メタデータを生成する
      * @return　メタデータ(XML)
      */
-    public String createMetaData();
-    public void registMetaData();
-    public void removeMetaData();
+    public String createOutlogger();
+    public void registOutlogger();
+    public void removeOutlogger();
     public void commitMetaData();
     public void rollbackMetaData();
 

@@ -15,7 +15,6 @@
  */
 package com.shorindo.docs.document;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 import com.shorindo.docs.model.DocumentModel;
@@ -135,7 +134,7 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
         return updateDate;
     }
 
-    public void setUpdateDate(Timestamp updateDate) {
+    public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
 }

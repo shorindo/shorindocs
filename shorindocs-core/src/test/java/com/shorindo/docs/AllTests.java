@@ -29,10 +29,10 @@ import com.shorindo.docs.repository.RepositoryServiceTest;
 @RunWith(Suite.class)
 @SuiteClasses({
     BeanUtilTest.class,
-    DocumentServiceTest.class,
     IdentityProviderTest.class,
     RepositoryServiceTest.class,
-    AuthenticateServiceTest.class
+    AuthenticateServiceTest.class,
+    DocumentServiceTest.class
 })
 public class AllTests {
 }

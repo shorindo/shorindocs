@@ -17,8 +17,6 @@ package com.shorindo.docs.outlogger;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-
 //import mockit.Invocation;
 //import mockit.Mock;
 //import mockit.MockUp;
@@ -27,12 +25,14 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import com.shorindo.docs.RpcClient;
+import com.shorindo.docs.model.DocumentModel;
 
 /**
  * 
  */
 public class OutloggerControllerTest {
-    private RpcClient client = new RpcClient("http://localhost:8080/docs/");
+    private RpcClient<OutloggerModel> client =
+            new RpcClient<OutloggerModel>("http://localhost:8080/docs/");
 
 //    @BeforeClass
 //    public static void setupBefore() {
@@ -48,20 +48,45 @@ public class OutloggerControllerTest {
     @Test
     public void testListLog() throws Exception {
         client.execute(
-                ArrayList.class,
                 "outlogger",
                 "listLog");
     }
 
     @Test
     public void testPutLog() throws Exception {
-        OutloggerEntity entity = new OutloggerEntity();
-        entity.setDocumentId("outlogger");
-        entity.setContent("putLog");
+        OutloggerModel model = new OutloggerModel() {
+            @Override
+            public String getDocumentId() {
+                return "outlogger";
+            }
+            @Override
+            public Integer getLogId() {
+                return null;
+            }
+            @Override
+            public int getVersion() {
+                return 0;
+            }
+            @Override
+            public int getDisplayOrder() {
+                return 0;
+            }
+            @Override
+            public short getLevel() {
+                return 0;
+            }
+            @Override
+            public String getContent() {
+                return "putLog";
+            }
+            @Override
+            public Integer getParentId() {
+                return null;
+            }
+        };
         client.execute(
-                OutloggerEntity.class,
                 "outlogger",
                 "putLog",
-                entity);
+                model);
     }
 }

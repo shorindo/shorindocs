@@ -19,7 +19,7 @@ import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.annotation.ContentTypeReady;
+import com.shorindo.docs.annotation.ContentType;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
@@ -29,7 +29,7 @@ import com.shorindo.xuml.XumlView;
 /**
  * 
  */
-@ContentTypeReady("application/x-form-template")
+@ContentType("application/x-form-template")
 public class TemplateController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(TemplateController.class);
 

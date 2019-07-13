@@ -21,9 +21,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import com.shorindo.docs.document.DocumentModelImpl;
-import com.shorindo.docs.document.DocumentControllable;
 import com.shorindo.docs.model.DocumentModel;
+import com.shorindo.docs.plaintext.PlainTextController;
 
 /**
  * 
@@ -47,7 +46,7 @@ public class DocumentControllerTest {
             }
             @Override
             public String getController() {
-                return "com.shorindo.docs.document.DocumentController";
+                return PlainTextController.class.getName();
             }
             @Override
             public String getTitle() {
@@ -57,33 +56,32 @@ public class DocumentControllerTest {
             public String getContent() {
                 return new Date().toString();
             }
+            
         };
         client.save(model);
     }
 
-    public static class DocumentClient implements DocumentControllable {
-        private static RpcClient rpcClient =
-                new RpcClient("http://localhost:8080/docs/");
+    public static class DocumentClient {
+        private static RpcClient<DocumentModel> rpcClient =
+                new RpcClient<>("http://localhost:8080/docs/");
 
         public DocumentModel load(String documentId) {
             return rpcClient.execute(
-                    DocumentModelImpl.class,
                     documentId,
                     "load");
         }
 
-        public DocumentModel save(DocumentModel model) {
+        public DocumentModel save(DocumentModel entity) {
             return rpcClient.execute(
-                    DocumentModelImpl.class,
-                    model.getDocumentId(),
+                    entity.getDocumentId(),
                     "save",
-                    model);
+                    entity);
         }
 
-        @Override
         public DocumentModel remove(String documentId) {
-            // TODO Auto-generated method stub
-            return null;
+            return rpcClient.execute(
+                    documentId,
+                    "remove");
         }
     }
 }

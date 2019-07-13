@@ -48,6 +48,10 @@ public class OutloggerMetaData {
         return columnList;
     }
 
+    public void setColumnList(List<Column> columnList) {
+        this.columnList = columnList;
+    }
+
     @XmlElementWrapper(name="outlogs")
     @XmlElement(name="outlog")
     public List<HashMap<String, Object>> getOutlogList() {

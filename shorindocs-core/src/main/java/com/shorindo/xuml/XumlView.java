@@ -36,7 +36,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.shorindo.docs.BeanUtil;
-import com.shorindo.docs.LapCounter;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.view.View;
@@ -106,11 +105,11 @@ public class XumlView extends View {
      */
     public XumlView(String name, InputStream is) throws XumlException {
         LOG.debug(DOCS_1109, name);
-        LapCounter lap = new LapCounter();
+        long st = System.currentTimeMillis();
         init();
         this.name = name;
         engine = new XumlEngine(is);
-        LOG.debug(DOCS_1110, name, lap.elapsed());
+        LOG.debug(DOCS_1110, name, System.currentTimeMillis() - st);
     }
 
     @Override

@@ -50,9 +50,9 @@ public enum DatabaseMessages implements ActionMessages {
 
     @Message(ja = "スキーマ定義[{0}.{1}]を読み込みました。")
     DBMS_1101,
-    @Message(ja = "トランザクションをコミットします。")
+    @Message(ja = "トランザクション[{0}]をコミットします。")
     DBMS_1102,
-    @Message(ja = "トランザクションをロールバックします。")
+    @Message(ja = "トランザクション[{0}]をロールバックします。")
     DBMS_1103,
     @Message(ja = "エンティティ[{0}]の定義は正常です。")
     DBMS_1104,
@@ -62,11 +62,11 @@ public enum DatabaseMessages implements ActionMessages {
     DBMS_1105,
     @Message(ja = "DB切断：{0}")
     DBMS_1106,
-    @Message(ja = "トランザクションを開始します。")
+    @Message(ja = "トランザクション[{0}]を開始します。")
     DBMS_1108,
-    @Message(ja = "トランザクションが入れ子になっているため、コミットせず処理を継続します。")
+    @Message(ja = "トランザクション[{0}]が入れ子になっているため、コミットせず処理を継続します。")
     DBMS_1109,
-    @Message(ja = "トランザクションが入れ子になっているため、ロールバックせず処理を継続します。")
+    @Message(ja = "トランザクション[{0}]が入れ子になっているため、ロールバックせず処理を継続します。")
     DBMS_1110,
 
     @Message(ja = "トランザクション実行中ではありません。")

@@ -25,7 +25,7 @@ import com.shorindo.docs.repository.Table;
  * 
  */
 @Table("DOCS_OUTLOGGER")
-public class OutloggerEntity extends SchemaEntity {
+public class OutloggerEntity extends SchemaEntity implements OutloggerModel {
     //private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerEntity.class);
 
     public OutloggerEntity() {
@@ -134,4 +134,14 @@ public class OutloggerEntity extends SchemaEntity {
     public String toString() {
         return JSON.encode(this);
     }
+
+//    public OutloggerEntityBuilder builder() {
+//        return new OutloggerEntityBuilder();
+//    }
+//    public static class OutloggerEntityBuilder {
+//        private OutloggerEntity entity;
+//        public OutloggerEntityBuilder() {
+//            entity = new OutloggerEntity();
+//        }
+//    }
 }

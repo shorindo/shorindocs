@@ -21,8 +21,8 @@ import com.shorindo.docs.document.DocumentMessages;
 /**
  * http://d.hatena.ne.jp/maachang/20150624/1435116219
  */
-public class IdentityProvider {
-    private static final ActionLogger LOG = ActionLogger.getLogger(IdentityProvider.class);
+public class IdentityManager {
+    private static final ActionLogger LOG = ActionLogger.getLogger(IdentityManager.class);
     private static final long BASE_TIME = 0x151f88d7980L; // 2016/01/01 00:00:00
     private static final long TIME_MASK = bit2long(53);
     private static final long SEQ_MASK  = bit2long(6);

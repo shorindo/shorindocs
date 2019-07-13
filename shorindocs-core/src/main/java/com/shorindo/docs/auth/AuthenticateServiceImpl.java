@@ -24,24 +24,27 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
-import com.shorindo.docs.IdentityProvider;
+import com.shorindo.docs.IdentityManager;
+import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.auth.entity.GroupEntity;
 import com.shorindo.docs.auth.entity.SessionEntity;
 import com.shorindo.docs.auth.entity.UserEntity;
-import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.model.GroupModel;
 import com.shorindo.docs.model.SessionModel;
 import com.shorindo.docs.model.UserModel;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.DatabaseSchema;
+import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.Transactional;
 
 /**
  * 
  */
-public class AuthenticateServiceImpl extends DocumentServiceImpl implements AuthenticateService {
+public class AuthenticateServiceImpl implements AuthenticateService {
     private static final ActionLogger LOG = ActionLogger.getLogger(AuthenticateServiceImpl.class);
+    private RepositoryService repositoryService =
+            ServiceFactory.getService(RepositoryService.class);
 
     public AuthenticateServiceImpl() {
         validate();
@@ -95,7 +98,7 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
             }
             
             SessionEntity session = new SessionEntity(
-                    Long.toHexString(IdentityProvider.newId()),
+                    Long.toHexString(IdentityManager.newId()),
                     userEntity);
             session.setUserId(userEntity.getUserId());
             session.setCreatedDate(new Date());
@@ -138,7 +141,7 @@ public class AuthenticateServiceImpl extends DocumentServiceImpl implements Auth
         try {
             // TODO 重複チェック
             UserEntity entity = new UserEntity(model);
-            entity.setUserId(Long.toHexString(IdentityProvider.newId()));
+            entity.setUserId(Long.toHexString(IdentityManager.newId()));
             entity.setPassword(hashPassword(model.getPassword()));
             entity.setCreatedDate(new java.sql.Date(new Date().getTime()));
             entity.setUpdatedDate(new java.sql.Date(new Date().getTime()));

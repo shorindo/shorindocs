@@ -29,8 +29,8 @@ public class IdentityProviderTest {
     public void testNewId() throws Exception {
         Set<Long> idSet = new HashSet<Long>();
         for (int i = 0; i < 1000; i++) {
-            long id = IdentityProvider.newId();
-            System.out.println(String.format("%x", id) + ":" + String.format("%d", id));
+            long id = IdentityManager.newId();
+            //System.out.println(String.format("%x", id) + ":" + String.format("%d", id));
             if (idSet.contains(id)) {
                 throw new RuntimeException("conflict");
             } else {

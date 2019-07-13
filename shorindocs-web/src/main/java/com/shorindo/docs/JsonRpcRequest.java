@@ -15,16 +15,18 @@
  */
 package com.shorindo.docs;
 
-import java.util.List;
-
 /**
  * 
  */
-public class JsonRpcRequest {
+public class JsonRpcRequest<T> {
+    private static final String jsonrpc = ".0";
     private String id;
     private String method;
-    private List<Object> params;
+    private T[] params;
 
+    public String getJsonrpc() {
+        return jsonrpc;
+    }
     public String getId() {
         return id;
     }
@@ -37,10 +39,10 @@ public class JsonRpcRequest {
     public void setMethod(String method) {
         this.method = method;
     }
-    public List<Object> getParams() {
+    public T[] getParams() {
         return params;
     }
-    public void setParams(List<Object> params) {
+    public void setParams(T[] params) {
         this.params = params;
     }
 }

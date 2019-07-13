@@ -17,7 +17,7 @@
             <primaryKey>2</primaryKey>
         </column>
         <column>
-            <name>CONTROLLER</name>
+            <name>CONTENT_TYPE</name>
             <type>varchar</type>
             <size>256</size>
             <notNull>true</notNull>

@@ -20,7 +20,7 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.shorindo.docs.IdentityProvider;
+import com.shorindo.docs.IdentityManager;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
@@ -41,7 +41,7 @@ public abstract class DocumentController extends ActionController
     private static final ActionLogger LOG =
             ActionLogger.getLogger(DocumentController.class);
     private final DocumentService documentService =
-            ServiceFactory.getService(DocumentService.class);
+           ServiceFactory.getService(DocumentService.class);
 
     public static void setup(List<Class<?>> clazzList) {
         for (Class<?> clazz : clazzList) {
@@ -102,12 +102,12 @@ public abstract class DocumentController extends ActionController
      */
     @ActionMethod
     @Override
-    public DocumentModel save(DocumentModel model) throws ActionError {
+    public DocumentEntity save(DocumentEntity entity) throws ActionError {
         try {
-            documentService.save(model);
-            return model;
+            documentService.save(entity);
+            return entity;
         } catch (Exception e) {
-            throw new ActionError(DOCS_9002, e, model.getDocumentId());
+            throw new ActionError(DOCS_9002, e, entity.getDocumentId());
         }
     }
 
@@ -119,7 +119,7 @@ public abstract class DocumentController extends ActionController
      */
     @ActionMethod
     public View create(ActionContext context) throws DocumentException {
-        String id = String.valueOf(IdentityProvider.newId());
+        String id = String.valueOf(IdentityManager.newId());
 
         try {
             DocumentEntity model = new DocumentEntity();

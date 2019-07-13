@@ -255,10 +255,10 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
         TxConnection txConn = txMap.get();
         try {
             if (txConn == null) {
-                LOG.debug(DBMS_1108);
                 Connection conn = getConnection();
                 conn.setAutoCommit(false);
                 txConn = new TxConnection(conn);
+                LOG.debug(DBMS_1108, String.format("%x", txConn.hashCode()));
                 txMap.set(txConn);
             }
             txConn.pushEvent(event);
@@ -271,7 +271,7 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
         try {
             TxConnection txConn = txMap.get();
             if (txConn.popEvent() > 0) {
-                LOG.info(DBMS_1109);
+                LOG.info(DBMS_1109, String.format("%x", txConn.hashCode()));
                 return;
             }
 
@@ -281,7 +281,7 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
                 return;
             }
             
-            LOG.debug(DBMS_1102);
+            LOG.debug(DBMS_1102, String.format("%x", txConn.hashCode()));
             try {
                 conn.commit();
             } finally {
@@ -296,7 +296,7 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
         try {
             TxConnection txConn = txMap.get();
             if (txConn.popEvent() > 0) {
-                LOG.info(DBMS_1110);
+                LOG.info(DBMS_1110, String.format("%x", txConn.hashCode()));
                 return;
             }
 
@@ -306,7 +306,7 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
                 return;
             }
 
-            LOG.debug(DBMS_1103);
+            LOG.debug(DBMS_1103, String.format("%x", txConn.hashCode()));
             try {
                 conn.rollback();
             } finally {

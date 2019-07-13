@@ -72,9 +72,6 @@ public abstract class ServiceFactory {
                         ServiceFactory.class.getClassLoader(),
                         new Class<?>[] { itfc },
                         new InvocationHandler() {
-                            /*
-                             * TODO トランザクションが入れ子の対応
-                             */
                             @Override
                             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                                 long st = System.currentTimeMillis();
@@ -124,12 +121,12 @@ public abstract class ServiceFactory {
      */
     private static boolean isTransactional(Class<?> target, Method method) {
         Parameter params[] = method.getParameters();
-        Class<?> targetClasses[] = new Class<?>[params.length];
+        Class<?> paramClasses[] = new Class<?>[params.length];
         for (int i = 0; i < params.length; i++) {
-            targetClasses[i] = params[i].getType();
+            paramClasses[i] = params[i].getType();
         }
         try {
-            Method targetMethod = target.getMethod(method.getName(), targetClasses);
+            Method targetMethod = target.getMethod(method.getName(), paramClasses);
             if (targetMethod.getAnnotation(Transactional.class) != null) {
                 return true;
             }

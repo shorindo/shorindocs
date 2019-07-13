@@ -18,15 +18,19 @@ package com.shorindo.docs;
 /**
  * 
  */
-public class JsonRpcResponse {
-    private Object result;
+public class JsonRpcResponse<T> {
+    private static final String jsonrpc = "2.0";
+    private T result;
     private String error;
     private String id;
 
-    public Object getResult() {
+    public String getJsonrpc() {
+        return jsonrpc;
+    }
+    public T getResult() {
         return result;
     }
-    public void setResult(Object result) {
+    public void setResult(T result) {
         this.result = result;
     }
     public String getError() {

@@ -24,5 +24,6 @@ import com.shorindo.docs.model.DocumentModel;
  */
 public interface DocumentService extends DocumentControllable {
     public void validate();
+    public DocumentEntity newDocument();
     public List<DocumentModel> recents(String documentId);
 }
