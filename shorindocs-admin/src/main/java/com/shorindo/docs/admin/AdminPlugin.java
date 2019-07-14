@@ -15,12 +15,12 @@
  */
 package com.shorindo.docs.admin;
 
-import com.shorindo.docs.Plugin;
+import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
-public class AdminPlugin extends Plugin {
+public class AdminPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {

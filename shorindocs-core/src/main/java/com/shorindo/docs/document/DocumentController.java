@@ -102,12 +102,11 @@ public abstract class DocumentController extends ActionController
      */
     @ActionMethod
     @Override
-    public DocumentEntity save(DocumentEntity entity) throws ActionError {
+    public DocumentModel save(DocumentModel model) throws ActionError {
         try {
-            documentService.save(entity);
-            return entity;
+            return documentService.save(model);
         } catch (Exception e) {
-            throw new ActionError(DOCS_9002, e, entity.getDocumentId());
+            throw new ActionError(DOCS_9002, e, model.getDocumentId());
         }
     }
 

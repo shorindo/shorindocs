@@ -15,13 +15,13 @@
  */
 package com.shorindo.docs.repository;
 
-import com.shorindo.docs.Plugin;
 import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
-public class RepositoryPlugin extends Plugin {
+public class RepositoryPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {

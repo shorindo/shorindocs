@@ -15,12 +15,12 @@
  */
 package com.shorindo.docs.specout;
 
-import com.shorindo.docs.Plugin;
+import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
-public class SpecoutPlugin extends Plugin {
+public class SpecoutPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Shorindo, Inc.
+ * Copyright 2018 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.model;
+package com.shorindo.docs.annotation;
 
-import com.shorindo.docs.annotation.Implementation;
-import com.shorindo.docs.document.DocumentEntity;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 
  */
-@Implementation(DocumentEntity.class)
-public interface DocumentModel {
-    public String getDocumentId();
-    public String getController();
-    public String getTitle();
-    public String getContent();
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Implementation {
+    public Class<?> value();
 }

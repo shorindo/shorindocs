@@ -131,13 +131,11 @@ public class ActionServlet extends HttpServlet {
     protected void doRpc(ActionContext context, InputStream is, OutputStream os) {
         ActionController controller = DocumentServiceFactory.getController((String)context.getAttribute("requestPath"));
         try {
-            TypeReference<JsonRpcRequest<DocumentModel>> ref =
-                    new TypeReference<JsonRpcRequest<DocumentModel>>(){};
-            JsonRpcRequest<DocumentModel> req = JSON.decode(is, ref);
+            JsonRpcRequest req = JSON.decode(is, JsonRpcRequest.class);
             context.setAction(req.getMethod());
             context.setParameters(req.getParams());
             Object result = controller.action(context);
-            JsonRpcResponse<Object> res = new JsonRpcResponse<Object>();
+            JsonRpcResponse res = new JsonRpcResponse();
             res.setId(req.getId());
             res.setResult(result);
             JSON.encode(res, os);

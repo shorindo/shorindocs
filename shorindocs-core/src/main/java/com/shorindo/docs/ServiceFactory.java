@@ -36,7 +36,7 @@ import com.shorindo.docs.repository.Transactional;
 @SuppressWarnings("unchecked")
 public abstract class ServiceFactory {
     private static ActionLogger LOG = ActionLogger.getLogger(ServiceFactory.class);
-    private static Map<Class<?>,Class<?>> interfacMap = new ConcurrentHashMap<Class<?>,Class<?>>();
+    private static Map<Class<?>,Class<?>> interfaceMap = new ConcurrentHashMap<Class<?>,Class<?>>();
     private static Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<Class<?>,Object>();
     private static Set<TxEventListener> listenerSet = new HashSet<TxEventListener>();
 
@@ -47,10 +47,10 @@ public abstract class ServiceFactory {
      * @param impl サービスの実装クラス
      */
     public static synchronized <T> void addService(Class<T> itfc, Class<? extends T> impl) {
-        if (interfacMap.containsKey(itfc)) {
+        if (interfaceMap.containsKey(itfc)) {
             LOG.error(DOCS_9006, itfc.getName());
         } else {
-            interfacMap.put(itfc, impl);
+            interfaceMap.put(itfc, impl);
             instanceMap.remove(itfc);
         }
     }
@@ -65,8 +65,8 @@ public abstract class ServiceFactory {
         try {
             if (instanceMap.containsKey(itfc)) {
                 return (T)instanceMap.get(itfc);
-            } else if (interfacMap.containsKey(itfc)){
-                Class<T> implClass = (Class<T>)interfacMap.get(itfc);
+            } else if (interfaceMap.containsKey(itfc)){
+                Class<T> implClass = (Class<T>)interfaceMap.get(itfc);
                 T instance = implClass.newInstance();
                 Object proxy = Proxy.newProxyInstance(
                         ServiceFactory.class.getClassLoader(),

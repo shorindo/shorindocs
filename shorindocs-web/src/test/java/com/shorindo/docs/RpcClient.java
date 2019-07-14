@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 
 import com.shorindo.docs.outlogger.ProxyInputStream;
 import com.shorindo.docs.outlogger.ProxyOutputStream;
@@ -29,14 +30,14 @@ import net.arnx.jsonic.TypeReference;
 /**
  * 
  */
-public class RpcClient<T> {
+public class RpcClient {
     private String base;
 
     public RpcClient(String base) {
         this.base = base;
     }
 
-    public T execute(String docId, String methodName, T... params) {
+    public Object execute(String docId, String methodName, Object... params) {
         try {
             long st = System.currentTimeMillis();
             URLConnection conn = new URL(base + docId)
@@ -44,16 +45,16 @@ public class RpcClient<T> {
             conn.setDoInput(true);
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
-            JsonRpcRequest<T> request = new JsonRpcRequest<T>();
+            JsonRpcRequest request = new JsonRpcRequest();
             request.setId(String.valueOf(System.currentTimeMillis()));
             request.setMethod(methodName);
-            request.setParams(params);
+            request.setParams(Arrays.asList(params));
             ProxyOutputStream reqStream = new ProxyOutputStream(conn.getOutputStream());
             JSON.encode(request, reqStream);
             System.out.println(">> " + reqStream.toString());
             ProxyInputStream resStream = new ProxyInputStream(conn.getInputStream());
-            TypeReference<JsonRpcResponse<T>> ref = new TypeReference<JsonRpcResponse<T>>(){};
-            JsonRpcResponse<T> response = JSON.decode(resStream, ref);
+            TypeReference<JsonRpcResponse> ref = new TypeReference<JsonRpcResponse>(){};
+            JsonRpcResponse response = JSON.decode(resStream, ref);
             System.out.println("<< " + resStream.toString());
             System.out.println("elapsed: " + (System.currentTimeMillis() - st) + " ms");
             return response.getResult();

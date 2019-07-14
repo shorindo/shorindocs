@@ -26,6 +26,7 @@ import javax.servlet.ServletContextListener;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.action.ActionPlugin;
 import com.shorindo.docs.admin.AdminPlugin;
 import com.shorindo.docs.auth.AuthenticatePlugin;
 import com.shorindo.docs.document.DocumentMessages;
@@ -67,13 +68,13 @@ public class ActionListener implements ServletContextListener {
         }
 
         // FIXME
-        Plugin.addPlugin(RepositoryPlugin.class);
-        Plugin.addPlugin(AuthenticatePlugin.class);
-        Plugin.addPlugin(DocumentPlugin.class);
-        Plugin.addPlugin(AdminPlugin.class);
-        Plugin.addPlugin(OutloggerPlugin.class);
-        Plugin.addPlugin(SpecoutPlugin.class);
-        Plugin.addPlugin(PlainTextPlugin.class);
+        ActionPlugin.addPlugin(RepositoryPlugin.class);
+        ActionPlugin.addPlugin(AuthenticatePlugin.class);
+        ActionPlugin.addPlugin(DocumentPlugin.class);
+        ActionPlugin.addPlugin(AdminPlugin.class);
+        ActionPlugin.addPlugin(OutloggerPlugin.class);
+        ActionPlugin.addPlugin(SpecoutPlugin.class);
+        ActionPlugin.addPlugin(PlainTextPlugin.class);
         XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
     }
 

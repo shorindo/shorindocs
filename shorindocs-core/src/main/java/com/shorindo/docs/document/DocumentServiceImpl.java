@@ -83,31 +83,28 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Transactional
-    public DocumentEntity save(DocumentEntity entity) {
+    public DocumentModel save(DocumentModel model) {
         try {
+            DocumentEntity entity = new DocumentEntity(model);
             DocumentEntity prev = repositoryService.querySingle(
                     "SELECT * " +
                     "FROM   DOCS_DOCUMENT " +
                     "WHERE  DOCUMENT_ID=? AND VERSION=0",
                     DocumentEntity.class,
-                    entity.getDocumentId());
+                    model.getDocumentId());
             if (prev != null) {
-                entity = prev;
                 List<DocumentEntity> entityList = repositoryService.queryList(
                         "SELECT MAX(VERSION) VERSION " +
                         "FROM   DOCS_DOCUMENT " +
                         "WHERE  DOCUMENT_ID=?",
                         DocumentEntity.class,
-                        entity.getDocumentId());
+                        model.getDocumentId());
                 int version = entityList.get(0).getVersion();
                 repositoryService.execute(
                         "UPDATE DOCS_DOCUMENT " +
                         "SET    VERSION=? " +
                         "WHERE  DOCUMENT_ID=? AND VERSION=0",
-                        version + 1, entity.getDocumentId());
-                entity.setVersion(0);
-                entity.setTitle(entity.getTitle());
-                entity.setContent(entity.getContent());
+                        version + 1, prev.getDocumentId());
             }
             repositoryService.insert(entity);
             return repositoryService.get(entity);

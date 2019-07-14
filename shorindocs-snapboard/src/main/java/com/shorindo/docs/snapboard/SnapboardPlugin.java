@@ -15,12 +15,12 @@
  */
 package com.shorindo.docs.snapboard;
 
-import com.shorindo.docs.Plugin;
+import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
-public class SnapboardPlugin extends Plugin {
+public class SnapboardPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {

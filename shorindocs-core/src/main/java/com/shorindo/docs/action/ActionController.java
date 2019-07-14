@@ -44,30 +44,43 @@ public abstract class ActionController {
         try {
             String actionName = context.getAction();
             Object reqParams = context.getParameter();
-            int paramSize = reqParams instanceof List ?
-                    ((List<?>)reqParams).size() : 0;
-            Class<?> clazz = getClass();
-            while (clazz != null) {
-                for (Method method : clazz.getMethods()) {
-                    if (!method.getName().equals(actionName) ||
-                            paramSize != method.getParameterCount()) {
-                        continue;
+            if (List.class.isAssignableFrom(reqParams.getClass())) {
+                List<?> paramList = (List<?>)reqParams;
+                Class<?> clazz = getClass();
+                while (clazz != null) {
+                    for (Method method : clazz.getMethods()) {
+                        if (!method.getName().equals(actionName) ||
+                                paramList.size() != method.getParameterCount()) {
+                            continue;
+                        }
+                        List<Object> callParams = new ArrayList<Object>();
+                        for (int i = 0; i < method.getParameterCount(); i++) {
+                            Parameter decParam = method.getParameters()[i];
+                            callParams.add(
+                                    JSON.decode(JSON.encode(paramList.get(i)), decParam.getType()));
+                        }
+                        return method.invoke(this, callParams.toArray());
                     }
-                    List<Object> callParams = new ArrayList<Object>();
-                    for (int i = 0; i < method.getParameterCount(); i++) {
-                        Parameter decParam = method.getParameters()[i];
-                        callParams.add(
-                                JSON.decode(JSON.encode(reqParams), decParam.getClass()));
-                    }
-                    return method.invoke(this, callParams.toArray());
+                    clazz = clazz.getSuperclass();
                 }
-//                Method method = clazz.getMethod(context.getAction(), ActionContext.class);
-//                if (method.getAnnotation(ActionMethod.class) != null) {
-//                    Object result = method.invoke(this, context);
-//                    LOG.debug(DOCS_1108, getClass().getSimpleName() + ".action()", lap.elapsed());
-//                    return result;
+//            } else {
+//                Class<?> clazz = getClass();
+//                while (clazz != null) {
+//                    for (Method method : clazz.getMethods()) {
+//                        if (!method.getName().equals(actionName) ||
+//                                paramSize != method.getParameterCount()) {
+//                            continue;
+//                        }
+//                        List<Object> callParams = new ArrayList<Object>();
+//                        for (int i = 0; i < method.getParameterCount(); i++) {
+//                            Parameter decParam = method.getParameters()[i];
+//                            callParams.add(
+//                                    JSON.decode(JSON.encode(reqParams), decParam.getType()));
+//                        }
+//                        return method.invoke(this, callParams.toArray());
+//                    }
+//                    clazz = clazz.getSuperclass();
 //                }
-                clazz = clazz.getSuperclass();
             }
             LOG.warn(DOCS_3003, context.getAction());
         } catch (Throwable th) {

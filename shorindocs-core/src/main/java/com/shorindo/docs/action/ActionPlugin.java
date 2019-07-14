@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.action;
 
 import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.io.InputStream;
 
-import com.shorindo.docs.action.ActionController;
-import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.document.DocumentServiceFactory;
 import com.shorindo.docs.repository.RepositoryException;
@@ -30,15 +29,15 @@ import com.shorindo.docs.repository.RepositoryService;
 /**
  * 
  */
-public abstract class Plugin {
+public abstract class ActionPlugin {
     private static ActionLogger LOG =
-            ActionLogger.getLogger(Plugin.class);
+            ActionLogger.getLogger(ActionPlugin.class);
 
     public abstract void initialize();
 
-    public static final void addPlugin(Class<? extends Plugin> clazz) {
+    public static final void addPlugin(Class<? extends ActionPlugin> clazz) {
         try {
-            Plugin plugin = clazz.newInstance();
+            ActionPlugin plugin = clazz.newInstance();
             plugin.initialize();
         } catch (InstantiationException e) {
             LOG.error(DOCS_9999, e);

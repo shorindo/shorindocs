@@ -19,6 +19,8 @@ import static org.junit.Assert.*;
 
 import java.util.Date;
 
+import net.arnx.jsonic.JSON;
+
 import org.junit.Test;
 
 import com.shorindo.docs.model.DocumentModel;
@@ -62,26 +64,74 @@ public class DocumentControllerTest {
     }
 
     public static class DocumentClient {
-        private static RpcClient<DocumentModel> rpcClient =
-                new RpcClient<>("http://localhost:8080/docs/");
+        private static RpcClient rpcClient =
+                new RpcClient("http://localhost:8080/docs/");
 
         public DocumentModel load(String documentId) {
-            return rpcClient.execute(
+            Object result = rpcClient.execute(
                     documentId,
-                    "load");
+                    "load",
+                    documentId);
+            return JSON.decode(JSON.encode(result), Document.class);
         }
 
         public DocumentModel save(DocumentModel entity) {
-            return rpcClient.execute(
+            Object result = rpcClient.execute(
                     entity.getDocumentId(),
                     "save",
                     entity);
+            return JSON.decode(JSON.encode(result), Document.class);
         }
 
         public DocumentModel remove(String documentId) {
-            return rpcClient.execute(
+            Object result = rpcClient.execute(
                     documentId,
                     "remove");
+            return JSON.decode(JSON.encode(result), Document.class);
         }
+    }
+
+    public static class Document implements DocumentModel {
+        private String documentId;
+        private String controller;
+        private String title;
+        private String content;
+
+        public void setDocumentId(String documentId) {
+            this.documentId = documentId;
+        }
+
+        public void setController(String controller) {
+            this.controller = controller;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
+
+        @Override
+        public String getDocumentId() {
+            return documentId;
+        }
+
+        @Override
+        public String getController() {
+            return controller;
+        }
+
+        @Override
+        public String getTitle() {
+            return title;
+        }
+
+        @Override
+        public String getContent() {
+            return content;
+        }
+        
     }
 }

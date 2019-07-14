@@ -15,12 +15,12 @@
  */
 package com.shorindo.docs.document;
 
-import com.shorindo.docs.Plugin;
+import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
-public class DocumentPlugin extends Plugin {
+public class DocumentPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {

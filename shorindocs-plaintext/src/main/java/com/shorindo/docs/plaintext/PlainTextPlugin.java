@@ -15,12 +15,12 @@
  */
 package com.shorindo.docs.plaintext;
 
-import com.shorindo.docs.Plugin;
+import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
-public class PlainTextPlugin extends Plugin {
+public class PlainTextPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {

@@ -32,7 +32,7 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
     private String documentId;
 
     @Column(name="VERSION", primaryKey=2)
-    private int version;
+    private int version = 0;
 
     @Column(name="CONTROLLER")
     private String controller;
@@ -57,6 +57,16 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
 
     @Column(name="UPDATE_DATE")
     private Date updateDate;
+
+    public DocumentEntity() {
+    }
+
+    public DocumentEntity(DocumentModel model) {
+        setDocumentId(model.getDocumentId());
+        setController(model.getController());
+        setTitle(model.getTitle());
+        setContent(model.getContent());
+    }
 
     public String getDocumentId() {
         return documentId;

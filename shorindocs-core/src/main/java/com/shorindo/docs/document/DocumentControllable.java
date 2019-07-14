@@ -22,6 +22,6 @@ import com.shorindo.docs.model.DocumentModel;
  */
 public interface DocumentControllable {
     public DocumentModel load(String documentId);
-    public DocumentEntity save(DocumentEntity entity);
+    public DocumentModel save(DocumentModel model);
     public DocumentModel remove(String documentId);
 }

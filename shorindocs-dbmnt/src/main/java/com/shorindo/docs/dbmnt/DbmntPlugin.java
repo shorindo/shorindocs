@@ -15,12 +15,12 @@
  */
 package com.shorindo.docs.dbmnt;
 
-import com.shorindo.docs.Plugin;
+import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
-public class DbmntPlugin extends Plugin {
+public class DbmntPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {

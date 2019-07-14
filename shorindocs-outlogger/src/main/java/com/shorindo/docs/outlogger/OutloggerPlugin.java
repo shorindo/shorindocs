@@ -15,12 +15,12 @@
  */
 package com.shorindo.docs.outlogger;
 
-import com.shorindo.docs.Plugin;
+import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
-public class OutloggerPlugin extends Plugin {
+public class OutloggerPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {

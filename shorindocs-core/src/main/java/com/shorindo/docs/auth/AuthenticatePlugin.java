@@ -15,12 +15,12 @@
  */
 package com.shorindo.docs.auth;
 
-import com.shorindo.docs.Plugin;
+import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
-public class AuthenticatePlugin extends Plugin {
+public class AuthenticatePlugin extends ActionPlugin {
 
     @Override
     public void initialize() {

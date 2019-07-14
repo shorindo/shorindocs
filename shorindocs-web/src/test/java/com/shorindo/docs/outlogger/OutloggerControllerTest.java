@@ -31,8 +31,7 @@ import com.shorindo.docs.model.DocumentModel;
  * 
  */
 public class OutloggerControllerTest {
-    private RpcClient<OutloggerModel> client =
-            new RpcClient<OutloggerModel>("http://localhost:8080/docs/");
+    private RpcClient client = new RpcClient("http://localhost:8080/docs/");
 
 //    @BeforeClass
 //    public static void setupBefore() {
