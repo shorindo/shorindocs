@@ -36,7 +36,7 @@ public class ActionContext {
     private String id;
     // RequestHeader
     // RequestParameter
-    private Object parameters;
+    private Map<String,String[]> parameters;
     // ResponseHeader
     // ResponseResult
     // Request属性
@@ -91,11 +91,11 @@ public class ActionContext {
     public Object getAttribute(String key) {
         return attributes.get(key);
     }
-    public void setParameters(Object params) {
+    public void setParameters(Map<String,String[]> params) {
         this.parameters = params;
     }
-    public Object getParameter() {
-        return parameters;
+    public String[] getParameter(String name) {
+        return parameters.get(name);
     }
 
     /**

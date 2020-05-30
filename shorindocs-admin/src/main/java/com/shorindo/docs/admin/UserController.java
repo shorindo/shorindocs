@@ -19,12 +19,7 @@ import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.document.DocumentMessages;
-import com.shorindo.docs.view.ErrorView;
-import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlException;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -37,7 +32,7 @@ public class UserController extends ActionController {
      * 
      */
     @Override
-    public View view(ActionContext context) {
+    public View action(ActionContext context) {
         return null;
     }
 

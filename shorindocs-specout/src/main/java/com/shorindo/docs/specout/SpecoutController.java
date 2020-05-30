@@ -48,7 +48,7 @@ public class SpecoutController extends DocumentController {
      * 
      */
     @Override @ActionMethod
-    public View view(ActionContext context) {
+    public View action(ActionContext context) {
         long st = System.currentTimeMillis();
         LOG.debug(SPEC_9003);
         try {

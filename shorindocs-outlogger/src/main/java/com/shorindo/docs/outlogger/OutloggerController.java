@@ -51,7 +51,7 @@ public class OutloggerController extends DocumentController {
      * 
      */
     @Override @ActionMethod
-    public View view(ActionContext context) {
+    public View action(ActionContext context) {
         try {
 //            DocumentModel model = getModel(context);
 //            String content = model.getContent() == null ? "" : model.getContent();

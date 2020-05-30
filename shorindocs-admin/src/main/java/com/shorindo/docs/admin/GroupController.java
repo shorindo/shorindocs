@@ -30,7 +30,7 @@ public class GroupController extends ActionController {
      * 
      */
     @Override
-    public AbstractView view(ActionContext context) {
+    public AbstractView action(ActionContext context) {
         return null;
     }
 

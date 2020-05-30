@@ -29,7 +29,7 @@ public class SnapboardController extends DocumentController {
             ServiceFactory.getService(SnapboardService.class);
 
     @Override
-    public AbstractView view(ActionContext context) {
+    public AbstractView action(ActionContext context) {
         return null;
     }
 

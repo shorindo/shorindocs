@@ -83,6 +83,7 @@ public class ActionServlet extends HttpServlet {
         context.setAttribute("contextPath", req.getServletContext().getContextPath());
         context.setAttribute("documentId", req.getServletPath().substring(1));
         context.setId(req.getServletPath().substring(1));
+        context.setParameters(req.getParameterMap());
 
         try {
             if (documentId == null || "".equals(documentId)) {
@@ -93,16 +94,13 @@ public class ActionServlet extends HttpServlet {
             }
 
             File file = new File(getServletContext().getRealPath(documentId));
-            if (documentId.endsWith(".xuml") && file.exists()) {
-//                View view = new XumlView(file.getName(), new FileInputStream(file));
-//                output(context, res, view);
-            } else if (file.exists()) {
+            if (file.exists()) {
                 res.setHeader("Cache-Control", "public, max-age=604800, immutable");
                 output(context, res, new DefaultView(file, context));
             } else {
                 ActionController controller = DocumentServiceFactory.getController((String)context.getAttribute("requestPath"));
                 if (controller != null) {
-                    output(context, res, controller.view(context));
+                    output(context, res, controller.action(context));
                 } else {
                     LOG.error(DOCS_5003, path);
                     output(context, res, new ErrorView(404));
@@ -144,7 +142,7 @@ public class ActionServlet extends HttpServlet {
         try {
             JsonRpcRequest req = JSON.decode(is, JsonRpcRequest.class);
             context.setAction(req.getMethod());
-            context.setParameters(req.getParams());
+            //context.setParameters(req.getParams());
             Object result = controller.action(context);
             JsonRpcResponse res = new JsonRpcResponse();
             res.setId(req.getId());
@@ -166,24 +164,24 @@ public class ActionServlet extends HttpServlet {
     /**
      * 
      */
-    protected boolean dispatch(ActionContext context, HttpServletResponse res)
-            throws ServletException, IOException {
-        String requestPath = (String)context.getAttribute("requestPath");
-        File file = new File(getServletContext().getRealPath(requestPath));
-
-        if (file.exists()) {
-            output(context, res, new DefaultView(file, context));
-            return true;
-        }
-        
-        ActionController controller = DocumentServiceFactory.getController(requestPath);
-        if (controller != null) {
-            output(context, res, controller.view(context));
-            return true;
-        }
-        
-        return false;
-    }
+//    protected boolean dispatch(ActionContext context, HttpServletResponse res)
+//            throws ServletException, IOException {
+//        String requestPath = (String)context.getAttribute("requestPath");
+//        File file = new File(getServletContext().getRealPath(requestPath));
+//
+//        if (file.exists()) {
+//            output(context, res, new DefaultView(file, context));
+//            return true;
+//        }
+//        
+//        ActionController controller = DocumentServiceFactory.getController(requestPath);
+//        if (controller != null) {
+//            output(context, res, controller.action(context));
+//            return true;
+//        }
+//        
+//        return false;
+//    }
 
     /**
      * 

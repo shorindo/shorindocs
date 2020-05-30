@@ -29,7 +29,7 @@ import com.shorindo.docs.view.AbstractView;
 public class RpcController extends ActionController {
 
     @Override
-    public AbstractView view(ActionContext context) {
+    public AbstractView action(ActionContext context) {
         return new JsonView(null, context);
     }
 

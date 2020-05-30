@@ -37,7 +37,7 @@ public class LoginController extends ActionController {
      * TODO
      */
     @Override
-    public View view(ActionContext context) {
+    public View action(ActionContext context) {
         try {
             context.setAttribute("title", "ログイン");
             context.setAttribute("message", "ログインしてください");

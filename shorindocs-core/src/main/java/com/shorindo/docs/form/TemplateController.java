@@ -41,7 +41,7 @@ public class TemplateController extends ActionController {
     }
 
     @Override
-    public View view(ActionContext context) {
+    public View action(ActionContext context) {
         return null;
     }
 

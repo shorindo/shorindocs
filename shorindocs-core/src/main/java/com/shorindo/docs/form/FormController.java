@@ -36,7 +36,7 @@ public class FormController extends ActionController {
      * @see com.shorindo.core.ActionController#view(com.shorindo.core.ActionContext)
      */
     @Override
-    public AbstractView view(ActionContext context) {
+    public AbstractView action(ActionContext context) {
         // TODO Auto-generated method stub
         return null;
     }

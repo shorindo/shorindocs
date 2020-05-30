@@ -43,42 +43,20 @@ public class PlainTextController extends DocumentController {
      * 
      */
     @Override
-    public View view(ActionContext context) {
-        LOG.trace("view()");
+    public View action(ActionContext context) {
+        //LOG.debug("action()->" + context.getParameter("action"));
         try {
             DocumentModel model = getModel(context);
-            String content = model.getContent() == null ? "" : model.getContent();
-            context.setAttribute("content", content
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll("\"", "&quot;")
-                .replaceAll("\n", "<br/>"));
-            context.setAttribute("document", model);
-            context.setAttribute("recents", recents(context));
-            return new PlainTextView(model);
+            switch (getAction(context)) {
+            case "edit":
+                return new PlainTextEdit(model);
+            default:
+                return new PlainTextView(model);
+            }
         } catch (Exception e) {
             LOG.error(DocumentMessages.DOCS_9001, e);
             return new ErrorView(500);
         }
-    }
-
-    /**
-     * 
-     * @param context
-     * @return
-     */
-    @ActionMethod
-    public String edit(ActionContext context) {
-        LOG.trace("edit()");
-        DocumentEntity model = (DocumentEntity)context.getAttribute("document");
-        String body = model.getContent() == null ? "" : model.getContent();
-        context.setAttribute("content", body
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll("\"", "&quot;"));
-        return ".xuml";
     }
 
 }
