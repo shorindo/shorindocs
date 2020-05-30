@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2020 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.admin;
-
-import com.shorindo.docs.action.ActionContext;
-import com.shorindo.docs.action.ActionController;
-import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.view.AbstractView;
+package com.shorindo.docs.action;
 
 /**
  * 
  */
-@ActionMapping("/admin/group")
-public class GroupController extends ActionController {
-
-    /**
-     * 
-     */
-    @Override
-    public AbstractView view(ActionContext context) {
-        return null;
+public class ActionEvent {
+    
+    public static enum ActionEventType {
+        AVAILABLE_EVENTS,
+        ON_LOAD_BEFORE,
+        ON_LOAD_AFTER,
+        ON_SAVE_BEFORE,
+        ON_SAV_AFTER,
+        ON_RENDER_BEFORE,
+        ON_RENDER_AFTER
+        ;
     }
-
 }

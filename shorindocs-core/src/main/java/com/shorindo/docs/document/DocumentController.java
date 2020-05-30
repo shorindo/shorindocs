@@ -27,10 +27,12 @@ import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionError;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
+import com.shorindo.docs.annotation.BeanParameter;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
+import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
 
 /**
@@ -66,43 +68,21 @@ public abstract class DocumentController extends ActionController
     @Override
     public DocumentModel load(String documentId) throws ActionError {
         try {
-            DocumentModel model = documentService.load(documentId);
-            if (model != null) {
-                return new DocumentModel() {
-                    @Override
-                    public String getDocumentId() {
-                        return model.getDocumentId();
-                    }
-                    @Override
-                    public String getController() {
-                        return model.getController();
-                    }
-                    @Override
-                    public String getTitle() {
-                        return model.getTitle();
-                    }
-                    @Override
-                    public String getContent() {
-                        return model.getContent();
-                    }
-                };
-            } else {
-                return null;
-            }
+            return documentService.load(documentId);
         } catch (Exception e) {
             throw new ActionError(DOCS_9999, e);
         }
     }
 
     /**
-     * 
      * @param context
      * @return
      * @throws DocumentException
      */
     @ActionMethod
     @Override
-    public DocumentModel save(DocumentModel model) throws ActionError {
+    public DocumentModel save(@BeanParameter(DocumentEntity.class) DocumentModel model)
+            throws ActionError {
         try {
             return documentService.save(model);
         } catch (Exception e) {
@@ -111,7 +91,6 @@ public abstract class DocumentController extends ActionController
     }
 
     /**
-     * 
      * @param context
      * @return
      * @throws DocumentException
@@ -139,7 +118,6 @@ public abstract class DocumentController extends ActionController
     }
 
     /**
-     * 
      * @param context
      * @return
      * @throws DocumentException
@@ -160,7 +138,6 @@ public abstract class DocumentController extends ActionController
     }
 
     /**
-     * 
      * @return
      * @throws SQLException
      */

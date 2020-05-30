@@ -19,7 +19,7 @@ import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.RedirectView;
-import com.shorindo.docs.view.View;
+import com.shorindo.docs.view.AbstractView;
 
 /**
  * 
@@ -31,7 +31,7 @@ public class LogoutController extends ActionController {
      * TODO
      */
     @Override
-    public View view(ActionContext context) {
+    public AbstractView view(ActionContext context) {
         return new RedirectView("/", context);
     }
 

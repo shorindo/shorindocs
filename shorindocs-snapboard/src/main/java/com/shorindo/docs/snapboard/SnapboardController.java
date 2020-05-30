@@ -19,7 +19,7 @@ import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.document.DocumentController;
-import com.shorindo.docs.view.View;
+import com.shorindo.docs.view.AbstractView;
 
 /**
  * 
@@ -29,7 +29,7 @@ public class SnapboardController extends DocumentController {
             ServiceFactory.getService(SnapboardService.class);
 
     @Override
-    public View view(ActionContext context) {
+    public AbstractView view(ActionContext context) {
         return null;
     }
 

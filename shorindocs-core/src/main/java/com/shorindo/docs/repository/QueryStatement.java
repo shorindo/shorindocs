@@ -64,7 +64,8 @@ public class QueryStatement extends RepositoryStatement {
             LOG.debug(DBMS_0011, paramList);
             rset = stmt.executeQuery();
             if (rset.next()) {
-                return (T)getResult(rset, getEntityClass());
+                Set<String> columnSet = getResultSetMetaData(rset);
+                return (T)getResult(rset, columnSet, getEntityClass());
             } else {
                 return null;
             }
@@ -95,8 +96,12 @@ public class QueryStatement extends RepositoryStatement {
             LOG.debug(DBMS_0011, paramList);
             rset = stmt.executeQuery();
             List<T> resultList = new ArrayList<T>();
+            Set<String> columnSet = null;
             while (rset.next()) {
-                resultList.add((T)getResult(rset, getEntityClass()));
+                if (columnSet == null) {
+                    columnSet = getResultSetMetaData(rset);
+                }
+                resultList.add((T)getResult(rset, columnSet, getEntityClass()));
             }
             return resultList;
         } catch (Exception e) {
@@ -131,7 +136,8 @@ public class QueryStatement extends RepositoryStatement {
             LOG.debug(DBMS_0011, paramList);
             rset = stmt.executeQuery();
             if (rset.next()) {
-                return (T)getResult(rset, entity.getClass());
+                Set<String> columnSet = getResultSetMetaData(rset);
+                return (T)getResult(rset, columnSet, entity.getClass());
             } else {
                 return null;
             }
@@ -149,7 +155,7 @@ public class QueryStatement extends RepositoryStatement {
     private Set<String> getResultSetMetaData(ResultSet rset) throws SQLException {
         Set<String> columnSet = new HashSet<String>();
         ResultSetMetaData meta = rset.getMetaData();
-        for (int index = 1; index < meta.getColumnCount(); index++) {
+        for (int index = 1; index <= meta.getColumnCount(); index++) {
             columnSet.add(meta.getColumnName(index));
         }
         return columnSet;
@@ -158,11 +164,14 @@ public class QueryStatement extends RepositoryStatement {
     /**
      * 
      */
-    private <T> T getResult(ResultSet rset, Class<T> clazz) throws SQLException, BeanNotFoundException, InstantiationException, IllegalAccessException {
-        Set<String> columnSet = getResultSetMetaData(rset);
+    private <T> T getResult(ResultSet rset, Set<String> columnSet, Class<T> clazz) throws SQLException, BeanNotFoundException, InstantiationException, IllegalAccessException {
         T entity = clazz.newInstance();
         for (String columnName : columnSet) {
             ColumnMapper mapper = getColumnByName(columnName);
+            if (mapper == null) {
+                LOG.warn(DBMS_5109, clazz.getSimpleName(), columnName);
+                continue;
+            }
             switch (mapper.getFieldType()) {
             case BOOLEAN:
             case BOOLEAN_OBJECT:

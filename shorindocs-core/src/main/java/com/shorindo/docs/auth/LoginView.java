@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Shorindo, Inc.
+ * Copyright 2020 Shorindo, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.admin;
+package com.shorindo.docs.auth;
+
+import static com.shorindo.xuml.XumlBuilder.*;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 import com.shorindo.docs.action.ActionContext;
-import com.shorindo.docs.action.ActionController;
-import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.view.AbstractView;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-@ActionMapping("/admin/group")
-public class GroupController extends ActionController {
+public class LoginView extends XumlView {
 
-    /**
-     * 
-     */
     @Override
-    public AbstractView view(ActionContext context) {
-        return null;
+    public void render(ActionContext ctx, OutputStream os) throws IOException {
+        layout()
+            .put("title", text("ログイン"))
+            .put("main", dialog()
+                .put("title", text("ログイン"))
+                .put("body", text("ログインしてください")))
+            .render(os);
     }
 
 }

@@ -75,7 +75,7 @@ public class ActionListener implements ServletContextListener {
         ActionPlugin.addPlugin(OutloggerPlugin.class);
         ActionPlugin.addPlugin(SpecoutPlugin.class);
         ActionPlugin.addPlugin(PlainTextPlugin.class);
-        XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
+        //XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
     }
 
     /**

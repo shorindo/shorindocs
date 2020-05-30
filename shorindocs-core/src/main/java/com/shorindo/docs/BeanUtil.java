@@ -56,12 +56,13 @@ public class BeanUtil {
                         setterMethod.invoke(dest, getterMethod.invoke(source));
                     }
                 } catch (Exception e) {
+                    LOG.error(DOCS_9999, e.getMessage());
                 }
             }
-        } catch (InstantiationException e1) {
-            e1.printStackTrace();
-        } catch (IllegalAccessException e1) {
-            e1.printStackTrace();
+        } catch (InstantiationException e) {
+            LOG.error(DOCS_9999, e);
+        } catch (IllegalAccessException e) {
+            LOG.error(DOCS_9999, e);
         }
         return dest;
     }

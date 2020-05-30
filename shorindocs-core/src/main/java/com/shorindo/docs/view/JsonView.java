@@ -26,7 +26,7 @@ import com.shorindo.docs.document.DocumentMessages;
 /**
  * 
  */
-public class JsonView extends View {
+public class JsonView extends AbstractView {
     private static final ActionLogger LOG = ActionLogger.getLogger(JsonView.class);
     Object bean;
 

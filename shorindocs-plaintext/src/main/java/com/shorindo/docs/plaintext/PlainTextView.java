@@ -13,17 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.view;
+package com.shorindo.docs.plaintext;
+
+import static com.shorindo.xuml.HTMLBuilder.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.document.DocumentView;
+import com.shorindo.docs.model.DocumentModel;
 
 /**
  * 
  */
-public interface View {
-    public String getContentType();
-    public void render(ActionContext ctx, OutputStream os) throws IOException;
+public class PlainTextView extends DocumentView {
+    private DocumentModel model;
+
+    public PlainTextView(DocumentModel model) {
+        this.model = model;
+    }
+
+    @Override
+    public void render(ActionContext context, OutputStream os)
+        throws IOException {
+        layout()
+            .put("header", text(model.getTitle()))
+            .put("left", recents(model.getDocumentId()))
+            .put("main", text(model.getContent()))
+            .render(os);
+    }
+
 }

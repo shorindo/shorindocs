@@ -15,102 +15,23 @@
  */
 package com.shorindo.xuml;
 
-import static com.shorindo.docs.document.DocumentMessages.*;
+import static com.shorindo.xuml.HTMLBuilder.*;
 import static com.shorindo.xuml.XumlMessages.*;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
-
-import com.shorindo.docs.BeanUtil;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.view.View;
+import com.shorindo.xuml.DOMBuilder.Element;
 
 /**
  * 
  */
-public class XumlView extends View {
+public class XumlView implements View {
     private static final ActionLogger LOG = ActionLogger.getLogger(XumlView.class);
-    private static final Map<String,Class<?>> componentMap = new HashMap<String,Class<?>>();
-    private String name;
-    private XumlEngine engine;
-
-    public static XumlView create(Class<?> clazz) throws XumlException {
-        String xumlName = clazz.getSimpleName() + ".xuml";
-        InputStream is = clazz.getResourceAsStream(xumlName);
-        try {
-            return new XumlView(xumlName, is);
-        } finally {
-            try {
-                if (is != null) is.close();
-            } catch (IOException e) {
-                LOG.error(DOCS_9999, e);
-            }
-        }
-    }
-
-    public static void init(String path) {
-        find(new File(path), new File(path));
-    }
-
-    private static void defineComponent(Class<?> c) {
-        ComponentReady tag = c.getAnnotation(ComponentReady.class);
-        if (tag != null && tag.value() != null) {
-            componentMap.put(tag.value(), c);
-        }
-    }
-
-    private static void find(File base, File file) {
-        if (file.isDirectory()) {
-            for (File child : file.listFiles()) {
-                find(base, child);
-            }
-        } else {
-            if (file.getName().endsWith(".class")) {
-                String baseURI = base.toURI().toString();
-                String fileURI = file.toURI().toString();
-                String className = fileURI.substring(baseURI.length())
-                        .replaceAll("^(.*?)\\.class$", "$1")
-                        .replaceAll("/", ".");
-                try {
-                    Class<?> c = Class.forName(className);
-                    if (Component.class.isAssignableFrom(c)) {
-                        defineComponent(c);
-                        LOG.info(XUML_1000, c.getName());
-                    }
-                } catch (ClassNotFoundException e) {
-                    LOG.error(XUML_5001, e, className);
-                }
-            }
-        }
-    }
-
-    /**
-     * @throws XumlException 
-     * 
-     */
-    public XumlView(String name, InputStream is) throws XumlException {
-        LOG.debug(DOCS_1109, name);
-        long st = System.currentTimeMillis();
-        init();
-        this.name = name;
-        engine = new XumlEngine(is);
-        LOG.debug(DOCS_1110, name, System.currentTimeMillis() - st);
-    }
+    private Element element;
 
     @Override
     public String getContentType() {
@@ -118,158 +39,94 @@ public class XumlView extends View {
     }
 
     @Override
-    public void render(ActionContext context, OutputStream os) {
+    public void render(ActionContext context, OutputStream os) throws IOException {
         long st = System.currentTimeMillis();
-        LOG.debug(XUML_1001, name);
+        LOG.debug(XUML_1001, "render");
         try {
-            engine.render(context.getAttributes(), os);
+            element.render(os, false, 0);
         } catch (IOException e) {
-            LOG.error(DOCS_9999, e);
+            LOG.error(XUML_5200);
         }
-        LOG.debug(XUML_1002, name, System.currentTimeMillis() - st);
+        LOG.debug(XUML_1002, "render", System.currentTimeMillis() - st);
     }
 
-    public Component parse(InputStream input) throws SAXException, IOException {
-        XumlHandler handler = new XumlHandler(this);
-        XMLReader reader = XMLReaderFactory.createXMLReader();
-        reader.setContentHandler(handler);
-        reader.parse(new InputSource(input));
-        return handler.getRoot();
-    }
-
-    @SuppressWarnings("unchecked")
-    public Component createComponent(String componentName, Attributes attrs) {
-        //LOG.debug("コンポーネント[" + componentName  +"]を生成します。");
-        Component component;
-        Class<Component> clazz = (Class<Component>) componentMap.get(componentName);
-        if (clazz != null) {
-            try {
-                Constructor<Component> c = clazz.getConstructor(XumlView.class);
-                component = c.newInstance(this);
-                for (int i = 0; i < attrs.getLength(); i++) {
-                    String name = attrs.getLocalName(i);
-                    String value = attrs.getValue(i);
-                    BeanUtil.setValue(component, name, value);
-                }
-            } catch (Exception e) {
-                LOG.error(XUML_5125, e, componentName);
-                component = new General(this, componentName, attrs);
-            }
-        } else {
-            component = new General(this, componentName, attrs);
-        }
-        return component;
+    public static final Element layout() {
+        return html()
+            .add(head()
+                .add(meta()
+                    .attr("htt-equiv", "Content-Type")
+                    .attr("content", "text/html; charset=UTF-8"))
+                .add(title()
+                    .add(include("title")))
+                .add(link()
+                    .attr("rel", "stylesheet")
+                    .attr("type", "text/css")
+                    .attr("href", "/docs/css/xuml.css"))
+                .add(script()
+                    .attr("type", "text/javascript")
+                    .attr("src", "/docs/js/xuml.js"))
+                .add(script()
+                    .attr("type", "text/javascript")
+                    .add(include("script")))
+                .add(style()
+                    .attr("type", "text/css")
+                    .add(include("style"))))
+            .add(body()
+                .attr("class", "xuml-width-fill xuml-height-fill")
+//                .eval(getAttrs(), (self,attrs) -> {
+//                    Set<String> classes = new HashSet<>();
+//                    String height = attrs.get("height");
+//                    if ("fill".equals(height)) {
+//                        classes.add("xuml-height-fill");
+//                    } else if ("auto".equals(height)) {
+//                        classes.add("xuml-height-auto");
+//                    }
+//                    String width = attrs.get("width");
+//                    if ("fill".equals(width)) {
+//                        classes.add("xuml-width-fill");
+//                    } else if ("auto".equals(width)) {
+//                        classes.add("xuml-width-auto");
+//                    }
+//                    self.attr("class", String.join(" ", classes));
+//                })
+                .add(div()
+                    .attr("class", "xuml-vbox")
+                    .add(div()
+                        .add(include("header")))
+                        .add(div()
+                            .attr("class", "xuml-hbox")
+                            .add(div()
+                                .attr("class", "xuml-vbox")
+                                .attr("style", "width:200px;")
+                                //.add(text("left"))
+                                .add(include("left")))
+                                .add(div()
+                                    .attr("class", "xuml-vbox")
+                                    .attr("flex", "1")
+                                    .attr("style", "overflow:auto;")
+                                    //.add(text("main"))
+                                    .add(style())
+                                    .add(include("main")))
+//                                .add(div()
+//                                    .attr("class", "xuml-vbox")
+//                                    .attr("style", "width:200px;")
+//                                    .add(text("right"))
+//                                    .add(include("right"))))
+//                                .add(div()
+//                                    .add(text("footer"))))
+                            )));
     }
     
-    protected String evalMustache(ActionContext context, String template) {
-        //LOG.debug("evalMustache(" + template + ")");
-        StringReader reader = new StringReader(template);
-        StringWriter writer = new StringWriter();
-//        MustacheFactory mf = new DefaultMustacheFactory();
-//        Mustache mustache = mf.compile(reader, "xuml-template");
-//        mustache.execute(writer, context.getAttributes());
-        return writer.toString();
-    }
-
-//    private Pattern p1 = Pattern.compile("(\\$|#|@)\\{([^\\.\\}]+?)(\\.(.+?))?\\}");
-//    protected String eval(ActionContext context, String str) {
-//        if (str == null) {
-//            return str;
-//        }
-//        Matcher m1 = p1.matcher(str);
-//        int start = 0, end = 0;
-//        StringBuffer sb = new StringBuffer();
-//        while (m1.find(start)) {
-//            if (start < m1.start()) {
-//                sb.append(str, start, m1.start());
-//            }
-//            String beanName = m1.group(2);
-//            if ("$".equals(m1.group(1))) {
-//                if (m1.group(3) != null) {
-//                    sb.append(escape((String)BeanUtil.getValue(
-//                            context.getAttribute(beanName),
-//                            m1.group(4),
-//                            m1.group())));
-//                } else {
-//                    sb.append(escape(String.valueOf(context.getAttribute(beanName))));
-//                }
-//            } else if ("@".equals(m1.group(1))) {
-//                if (m1.group(3) != null) {
-//                    sb.append(BeanUtil.getValue(
-//                            context.getAttribute(beanName),
-//                            m1.group(4),
-//                            m1.group()));
-//                } else {
-//                    sb.append((String)context.getAttribute(beanName));
-//                }   
-//            } else if ("#".equals(m1.group(1))) {
-//                sb.append(context.getMessage(m1.group(2) + m1.group(3)));
-//            }
-//            start = m1.end();
-//            end = m1.end();
-//        }
-//        if (end < str.length()) {
-//            sb.append(str, end, str.length() - 1);
-//        }
-//        return sb.toString();
-//    }
-
-    public String escape(String in) {
-        if (in == null) {
-            return in;
-        } else {
-            return in.toString().replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll("\"", "&quot;");
-        }
-    }
-
-    public class XumlHandler extends DefaultHandler {
-        private Map<String,String> prefixMap = new HashMap<String,String>();
-        private XumlView view;
-        private Component curr;
-        private Component root;
-
-        public XumlHandler(XumlView view) {
-            this.view = view;
-        }
-
-        public Component getRoot() {
-            return root;
-        }
-
-        public void startPrefixMapping(String prefix, String uri)
-                throws SAXException {
-            prefixMap.put(prefix, uri);
-        }
-
-        public void startElement(String uri, String localName,
-                String qName, Attributes attrs) throws SAXException {
-            Component component = createComponent(qName, attrs);
-            if (root == null) {
-                root = component;
-            }
-            if (curr == null) {
-                curr = component;
-            } else {
-                curr = curr.add(component);
-            }
-        }
-
-        public void endElement(String uri, String localName, String qName)
-                throws SAXException {
-            curr = curr.getParent();
-        }
-
-        @Override
-        public void characters(char[] ch, int start, int length)
-                throws SAXException {
-            String text = new String(ch, start, length);
-            text = text.trim();
-            if (text.length() > 0) {
-                curr.add(new CDATA(view, text));
-            }
-        }
+    public final Element dialog() {
+        return div()
+            .attr("class", "xuml-dialog-pane")
+            .add(div()
+                .attr("class", "xuml-dialog")
+                .add(div()
+                    .attr("class", "xuml-dialog-head")
+                    .add(include("title")))
+                .add(div()
+                    .attr("class", "xuml-dialog-body")
+                    .add(include("body"))));
     }
 }

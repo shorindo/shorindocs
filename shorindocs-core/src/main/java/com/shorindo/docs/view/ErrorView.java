@@ -15,51 +15,38 @@
  */
 package com.shorindo.docs.view;
 
+import static com.shorindo.xuml.XumlBuilder.*;
 import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.xuml.XumlBuilder;
 import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-public class ErrorView extends View {
+public class ErrorView extends XumlView {
     private static final ActionLogger LOG = ActionLogger.getLogger(ErrorView.class);
+    private int status;
 
     public ErrorView(int status) {
-        init();
-        setStatus(status);
+        this.status = status;
     }
 
-    @Override
-    public String getContentType() {
-        return "text/html; charset=UTF-8";
-    }
-
-    /**
-     *
-     */
     @Override
     public void render(ActionContext context, OutputStream os) {
-        context.setAttribute("status", getStatus());
-        context.setAttribute("message", context.getMessage("error." + getStatus()));
-        InputStream is = getClass().getClassLoader().getResourceAsStream("xuml/error.xuml");
         try {
-            new XumlView(String.valueOf(getStatus()), is).render(context, os);
+            layout()
+                .put("title", text(status + " - エラー"))
+                .add(dialog()
+                    .put("title", text("エラー"))
+                    .put("body", text("description")))
+                .render(os);
         } catch (Exception e) {
             LOG.error(DOCS_9999, e);
-        } finally {
-            if (is != null)
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
         }
     }
 

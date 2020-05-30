@@ -18,7 +18,7 @@ package com.shorindo.docs.admin;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.view.View;
+import com.shorindo.docs.view.AbstractView;
 
 /**
  * 
@@ -33,7 +33,7 @@ public class AclController extends ActionController {
     }
 
     @Override
-    public View view(ActionContext context) {
+    public AbstractView view(ActionContext context) {
         return null;
     }
     

@@ -44,7 +44,9 @@ public enum XumlMessages implements ActionMessages {
     @Message(ja = "ルート要素が'xuml'ではありません。")
     XUML_5030,
     @Message(ja = "[{0}]の生成に失敗したため、Generalコンポーネントを使用します。")
-    XUML_5125
+    XUML_5125,
+    @Message(ja = "データ出力に失敗しました。")
+    XUML_5200
     ;
 
     private Map<String,MessageFormat> bundle;

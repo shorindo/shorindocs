@@ -27,6 +27,10 @@ public class Tree extends Container {
 
     @Override
     public String getHtml() {
+//        new XumlDOM("table")
+//            .setAttr("class","tree")
+//            .setAttr("style", getStyles())
+//            .addChild(child)
         StringBuilder sb = new StringBuilder();
         sb.append("<table class=\"tree\" style=\"" + getStyles() + "\">");
         for (Component c : getChildList()) {

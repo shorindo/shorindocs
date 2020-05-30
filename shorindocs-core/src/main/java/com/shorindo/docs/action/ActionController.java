@@ -25,6 +25,7 @@ import java.util.List;
 import net.arnx.jsonic.JSON;
 
 import com.shorindo.docs.annotation.ActionMethod;
+import com.shorindo.docs.annotation.BeanParameter;
 import com.shorindo.docs.view.View;
 
 /**
@@ -56,8 +57,14 @@ public abstract class ActionController {
                         List<Object> callParams = new ArrayList<Object>();
                         for (int i = 0; i < method.getParameterCount(); i++) {
                             Parameter decParam = method.getParameters()[i];
-                            callParams.add(
-                                    JSON.decode(JSON.encode(paramList.get(i)), decParam.getType()));
+                            BeanParameter paramClass = decParam.getAnnotation(BeanParameter.class);
+                            Object param = paramList.get(i);
+                            if (paramClass != null) {
+                                callParams.add(JSON.decode(JSON.encode(param), paramClass.value()));
+                            } else {
+                                callParams.add(JSON.decode(JSON.encode(param), decParam.getType()));
+                            }
+                            
                         }
                         return method.invoke(this, callParams.toArray());
                     }

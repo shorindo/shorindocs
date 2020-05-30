@@ -32,7 +32,7 @@ import com.shorindo.docs.document.DocumentMessages;
 /**
  * 
  */
-public class DefaultView extends View {
+public class DefaultView extends AbstractView {
     private static final ActionLogger LOG = ActionLogger.getLogger(DefaultView.class);
     private static final SimpleDateFormat format =
         new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);

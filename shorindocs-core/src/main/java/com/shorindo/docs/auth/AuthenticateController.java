@@ -18,7 +18,7 @@ package com.shorindo.docs.auth;
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
-import com.shorindo.docs.view.View;
+import com.shorindo.docs.view.AbstractView;
 
 /**
  * 
@@ -36,7 +36,7 @@ public class AuthenticateController extends ActionController {
     }
 
     @Override
-    public View view(ActionContext context) {
+    public AbstractView view(ActionContext context) {
         return null;
     }
 

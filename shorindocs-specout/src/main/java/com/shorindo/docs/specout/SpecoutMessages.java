@@ -30,7 +30,11 @@ public enum SpecoutMessages implements ActionMessages {
     @Message(ja = "ドキュメント解析終了 : {0} ms")
     SPEC_0002,
     @Message(ja = "ドキュメントの解析に失敗しました。")
-    SPEC_9001;
+    SPEC_9001,
+    @Message(ja = "Specout処理開始")
+    SPEC_9003,
+    @Message(ja = "Specout処理終了:{0}ms")
+    SPEC_9004;
 
     private Map<String,MessageFormat> bundle;
 

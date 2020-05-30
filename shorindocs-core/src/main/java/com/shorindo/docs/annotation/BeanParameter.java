@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.admin;
+package com.shorindo.docs.annotation;
 
-import com.shorindo.docs.action.ActionContext;
-import com.shorindo.docs.action.ActionController;
-import com.shorindo.docs.annotation.ActionMapping;
-import com.shorindo.docs.view.AbstractView;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 
  */
-@ActionMapping("/admin/group")
-public class GroupController extends ActionController {
-
-    /**
-     * 
-     */
-    @Override
-    public AbstractView view(ActionContext context) {
-        return null;
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface BeanParameter {
+    public Class<?> value();
 }

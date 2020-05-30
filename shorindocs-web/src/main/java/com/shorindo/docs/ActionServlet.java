@@ -32,16 +32,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.arnx.jsonic.JSON;
 import net.arnx.jsonic.JSONException;
-import net.arnx.jsonic.TypeReference;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentServiceFactory;
-import com.shorindo.docs.model.DocumentModel;
+import com.shorindo.docs.plugin.PluginContainer;
 import com.shorindo.docs.view.DefaultView;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
+import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
 
@@ -57,7 +57,15 @@ public class ActionServlet extends HttpServlet {
      */
     @Override
     public void init(ServletConfig config) throws ServletException {
+        LOG.debug("INITIALIZED");
         super.init(config);
+    }
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        PluginContainer.initContainer();
+        super.service(req, resp);
     }
 
     /**
@@ -78,15 +86,18 @@ public class ActionServlet extends HttpServlet {
 
         try {
             if (documentId == null || "".equals(documentId)) {
-                output(context, res, new RedirectView("/index", context));
+                res.setStatus(302);
+                String location = context.getAttribute("contextPath") + "/top";
+                res.setHeader("Location", location);
                 return;
             }
 
             File file = new File(getServletContext().getRealPath(documentId));
             if (documentId.endsWith(".xuml") && file.exists()) {
-                View view = new XumlView(file.getName(), new FileInputStream(file));
-                output(context, res, view);
+//                View view = new XumlView(file.getName(), new FileInputStream(file));
+//                output(context, res, view);
             } else if (file.exists()) {
+                res.setHeader("Cache-Control", "public, max-age=604800, immutable");
                 output(context, res, new DefaultView(file, context));
             } else {
                 ActionController controller = DocumentServiceFactory.getController((String)context.getAttribute("requestPath"));
@@ -178,10 +189,10 @@ public class ActionServlet extends HttpServlet {
      * 
      */
     protected final void output(ActionContext context, HttpServletResponse res, View view) throws IOException {
-        for (Entry<String,String> entry : view.getMeta().entrySet()) {
-            res.setHeader(entry.getKey(), entry.getValue());
-        }
-        res.setStatus(view.getStatus());
+//        for (Entry<String,String> entry : view.getMeta().entrySet()) {
+//            res.setHeader(entry.getKey(), entry.getValue());
+//        }
+//        res.setStatus(view.getStatus());
         res.setContentType(view.getContentType());
         view.render(context, res.getOutputStream());
     }

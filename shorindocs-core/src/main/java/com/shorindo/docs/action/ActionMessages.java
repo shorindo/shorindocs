@@ -26,7 +26,39 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * 
+ * For example:
+ * public enum FooMessages implements ActionMessages {
+ *     @Message(ja = "key={0}")
+ *     X001,
+ *     @Message(ja = "value={0}")
+ *     X002;
+ *
+ *     private Map<String,MessageFormat> bundle;
+ *
+ *     private DocumentMessages() {
+ *         bundle = ActionMessages.Util.bundle(this);
+ *     }
+ *
+ *     @Override
+ *     public Map<String, MessageFormat> getBundle() {
+ *         return bundle;
+ *     }
+ *
+ *     @Override
+ *     public String getCode() {
+ *         return ActionMessages.Util.getCode(this);
+ *     }
+ *
+ *     @Override
+ *     public String getMessage(Object... params) {
+ *         return ActionMessages.Util.getMessage(this, params);
+ *     }
+ *
+ *     @Override
+ *     public String getMessage(Locale locale, Object... params) {
+ *         return ActionMessages.Util.getMessage(this, params);
+ *     }
+ * } 
  */
 public interface ActionMessages {
     public String name();

@@ -22,6 +22,7 @@ import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.ErrorView;
+import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
 
@@ -40,7 +41,7 @@ public class LoginController extends ActionController {
         try {
             context.setAttribute("title", "ログイン");
             context.setAttribute("message", "ログインしてください");
-            return XumlView.create(getClass());
+            return new LoginView();
         } catch (Exception e) {
             LOG.error(DOCS_9999, e);
             return new ErrorView(500);

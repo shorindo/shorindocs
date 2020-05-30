@@ -27,13 +27,10 @@ public class Box extends Container {
 
     @Override
     public String getHtml() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"box\" style=\"" + getStyles() + "\">");
-        for (Component c : getChildList()) {
-            sb.append(c.getHtml());
-        }
-        sb.append("</div>");
-        return sb.toString();
+        return new XumlDOM("div")
+            .setAttr("class", "box")
+            .setAttr("style", getStyles())
+            .toHtml();
     }
 
 }

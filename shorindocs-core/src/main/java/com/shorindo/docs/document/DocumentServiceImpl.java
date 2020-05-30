@@ -92,6 +92,11 @@ public class DocumentServiceImpl implements DocumentService {
                     "WHERE  DOCUMENT_ID=? AND VERSION=0",
                     DocumentEntity.class,
                     model.getDocumentId());
+            entity.setOwnerId("ownerId"); // FIXME
+            entity.setCreateUser("createUser"); // FIXME
+            entity.setCreateDate(new java.util.Date());
+            entity.setUpdateUser("updateUser"); // FIXME
+            entity.setUpdateDate(new java.util.Date());
             if (prev != null) {
                 List<DocumentEntity> entityList = repositoryService.queryList(
                         "SELECT MAX(VERSION) VERSION " +

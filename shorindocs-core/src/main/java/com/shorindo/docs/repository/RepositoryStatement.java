@@ -212,7 +212,7 @@ public abstract class RepositoryStatement {
         }
     }
 
-    protected enum FieldTypes {
+    protected static enum FieldTypes {
         STRING(String.class),
         INTEGER(int.class),
         INTEGER_OBJECT(Integer.class),

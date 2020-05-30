@@ -24,6 +24,7 @@ import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
+import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
 
@@ -55,7 +56,7 @@ public class PlainTextController extends DocumentController {
                 .replaceAll("\n", "<br/>"));
             context.setAttribute("document", model);
             context.setAttribute("recents", recents(context));
-            return XumlView.create(getClass());
+            return new PlainTextView(model);
         } catch (Exception e) {
             LOG.error(DocumentMessages.DOCS_9001, e);
             return new ErrorView(500);

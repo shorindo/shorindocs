@@ -22,7 +22,7 @@ import com.shorindo.docs.action.ActionContext;
 /**
  * 
  */
-public class RedirectView extends View {
+public class RedirectView extends AbstractView {
 
     public RedirectView(String location, ActionContext context) {
         init();

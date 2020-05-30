@@ -30,6 +30,7 @@ import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.JsonView;
+import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
 import com.shorindo.xuml.XumlView;
 
@@ -48,17 +49,21 @@ public class SpecoutController extends DocumentController {
      */
     @Override @ActionMethod
     public View view(ActionContext context) {
+        long st = System.currentTimeMillis();
+        LOG.debug(SPEC_9003);
         try {
             DocumentModel model = getModel(context);
-            String content = model.getContent() == null ? "" : model.getContent();
-            SpecoutEntity specout = JAXB.unmarshal(new StringReader(content), SpecoutEntity.class);
-            context.setAttribute("document", model);
-            context.setAttribute("specout", specout);
-            context.setAttribute("recents", recents(context));
-            return XumlView.create(getClass());
+            //String content = model.getContent() == null ? "" : model.getContent();
+            //SpecoutEntity specout = JAXB.unmarshal(new StringReader(content), SpecoutEntity.class);
+            //context.setAttribute("document", model);
+            //context.setAttribute("specout", specout);
+            //context.setAttribute("recents", recents(context));
+            return new SpecoutView(model);
         } catch (Exception e) {
             LOG.error(SPEC_9001, e);
             return new ErrorView(500);
+        } finally {
+            LOG.debug(SPEC_9004, System.currentTimeMillis() - st);
         }
     }
 
@@ -68,7 +73,7 @@ public class SpecoutController extends DocumentController {
      * @return
      */
     @ActionMethod
-    public View edit(ActionContext context) {
+    public AbstractView edit(ActionContext context) {
         DocumentEntity model = (DocumentEntity)context.getAttribute("document");
         SpecoutEntity specout = JAXB.unmarshal(new StringReader(model.getContent()), SpecoutEntity.class);
         return new JsonView(specout, context);

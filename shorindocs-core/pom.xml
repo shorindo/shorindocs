@@ -35,6 +35,11 @@
         <artifactId>compiler</artifactId>
         <version>0.9.0</version>
     </dependency>
+  	<dependency>
+  		<groupId>org.mozilla</groupId>
+  		<artifactId>rhino</artifactId>
+  		<version>1.7R5</version>
+  	</dependency>
   </dependencies>
   <build>
     <finalName>shorindocs-core-${parent.version}</finalName>
