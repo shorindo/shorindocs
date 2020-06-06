@@ -36,7 +36,9 @@ public class CSSSelectorTest {
     public void testClassSelector() throws Exception {
         CSSSelector.parse(".left");
         CSSSelector.parse(".top .main");
+        CSSSelector.parse(".top.left");
         CSSSelector.parse("div.top");
+        CSSSelector.parse("div.top.left");
     }
 
     @Test
@@ -48,6 +50,7 @@ public class CSSSelectorTest {
     
     @Test
     public void testChildOperator() throws Exception {
+        CSSSelector.parse("a b c");
         CSSSelector.parse("a > b");
         CSSSelector.parse("a b  >  c");
     }

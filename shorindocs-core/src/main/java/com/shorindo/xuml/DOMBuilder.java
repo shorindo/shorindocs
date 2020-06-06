@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.xuml.PEGCombinator.UnmatchException;
 
 /**
  * 
@@ -153,7 +155,12 @@ public abstract class DOMBuilder {
         }
 
         public List<Element> findByCssSelector(String selector) {
-            List<Element> resultList = new ArrayList<>(); 
+            List<Element> resultList = new ArrayList<>();
+            try {
+                List<CSSSelector> list = CSSSelector.parse(selector);
+            } catch (UnmatchException e) {
+                e.printStackTrace();
+            }
 //            if (getTagName().equals(tagName)) { // TODO
 //                resultList.add(this);
 //            }
@@ -161,6 +168,18 @@ public abstract class DOMBuilder {
                 resultList.addAll(child.findByCssSelector(tagName));
             }
             return resultList;
+        }
+        
+        private List<Element> findByCssSelector(Iterator<CSSSelector> iter) {
+            List<Element> result = new ArrayList<>();
+            CSSSelector selector = iter.next();
+            for (Element child : getChildList()) {
+                if (selector.match(this)) {
+                    child.findByCssSelector(iter);
+                }
+                
+            }
+            return result;
         }
         
         public void render(OutputStream os) throws IOException {

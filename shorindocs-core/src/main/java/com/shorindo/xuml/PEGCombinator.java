@@ -143,14 +143,19 @@ public class PEGCombinator {
             public Node accept(BacktrackReader is) throws UnmatchException {
                 Node $$ = new Node(Types.ZERO_OR_MORE);
                 while (true) {
+                    Node seq = new Node(Types.SEQUENCE);
                     int curr = is.position();
                     try {
                         for (Rule child : rules) {
-                            $$.add(child.accept(is));
+                            seq.add(child.accept(is));
                         }
                     } catch (UnmatchException e) {
                         is.reset(curr);
                         break;
+                    } finally {
+                        if (seq.length() == rules.length) {
+                            $$.add(seq);
+                        }
                     }
                 }
                 LOG.trace("rule$zeroOrMore <= " + toString(rules));
@@ -165,15 +170,20 @@ public class PEGCombinator {
                 int count = 0;
                 Node $$ = new Node(Types.ONE_OR_MORE);
                 while (true) {
+                    Node seq = new Node(Types.SEQUENCE);
                     int curr = is.position();
                     try {
                         for (Rule child : rules) {
-                            $$.add(child.accept(is));
+                            seq.add(child.accept(is));
                         }
                         count++;
                     } catch (UnmatchException e) {
                         is.reset(curr);
                         break;
+                    } finally {
+                        if (seq.length() == rules.length) {
+                            $$.add(seq);
+                        }
                     }
                 }
                 if (count > 0) {

@@ -37,22 +37,31 @@ public class CSSSelector {
             .define(
                 PEG.rule(ALL_SELECTOR),
                 PEG.rule$ZeroOrMore(
-                    PEG.rule(ALL_OPERATOR),
+                    PEG.rule(ALL_COMBINATOR),
                     PEG.rule(ALL_SELECTOR)))
             .pack($$ -> {
+                // (ALL_SELECTOR (ALL_COMBINATOR ALL_SELECTOR)*)
+                // ↓
+                // (DESCENDANT_COMBINATOR (ALL_SELECTOR)) (ALL_COMBINATOR (ALL_SELECTOR))*
                 Node $0 = $$.get(0);
                 Node $1 = $$.get(1);
                 $$.clear();
-                $$.add($0);
+                Node combinator = new Node(DESCENDANT_COMBINATOR);
+                combinator.add($0);
+                $$.add(combinator);
                 for (int i = 0; i < $1.length(); i++) {
-                    $$.add($1.get(i));
+                    Node c = $1.get(i).get(0);
+                    Node s = $1.get(i).get(1);
+                    c.clear();
+                    c.add(s);
+                    $$.add(c);
                 }
                 return $$;
             });
         PEG.rule(ALL_SELECTOR)
             .define(
                 PEG.rule$Choice(
-                    PEG.rule(GENERAL_SELECTOR),
+                    PEG.rule(UNIVERSAL_SELECTOR),
                     PEG.rule(ELEMENT_SELECTOR),
                     PEG.rule(CLASS_SELECTOR),
                     PEG.rule(ID_SELECTOR),
@@ -60,7 +69,7 @@ public class CSSSelector {
             .pack($$ -> {
                 return $$.get(0);
             });
-        PEG.rule(GENERAL_SELECTOR)
+        PEG.rule(UNIVERSAL_SELECTOR)
             .define(
                 PEG.rule$Literal("*"),
                 PEG.rule$ZeroOrMore(
@@ -83,7 +92,7 @@ public class CSSSelector {
                 Node $1 = $$.get(1);
                 Node $2 = $$.get(2);
                 for (int i = 0; i < $1.length(); i++) {
-                    sb.append($1.get(i).getValue().toString());
+                    sb.append($1.get(i).get(0).getValue().toString());
                 }
                 $$.clear();
                 $$.setValue(sb.toString());
@@ -102,7 +111,7 @@ public class CSSSelector {
                 StringBuffer sb = new StringBuffer($$.get(1).getValue().toString());
                 Node $2 = $$.get(2);
                 for (int i = 0; i < $2.length(); i++) {
-                    sb.append($2.get(i).getValue().toString());
+                    sb.append($2.get(i).get(0).getValue().toString());
                 }
                 $$.clear();
                 $$.setValue(sb.toString());
@@ -118,7 +127,7 @@ public class CSSSelector {
                 StringBuffer sb = new StringBuffer($$.get(1).getValue().toString());
                 Node $2 = $$.get(2);
                 for (int i = 0; i < $2.length(); i++) {
-                    sb.append($2.get(i).getValue().toString());
+                    sb.append($2.get(i).get(0).getValue().toString());
                 }
                 $$.clear();
                 $$.setValue(sb.toString());
@@ -162,7 +171,7 @@ public class CSSSelector {
                 StringBuffer sb = new StringBuffer($$.get(0).getValue().toString());
                 Node $1 = $$.get(1);
                 for (int i = 0; i < $1.length(); i++) {
-                    sb.append($1.get(i).getValue().toString());
+                    sb.append($1.get(i).get(0).getValue().toString());
                 }
                 $$.clear();
                 $$.setValue(sb.toString());
@@ -194,7 +203,7 @@ public class CSSSelector {
                         StringBuffer sb = new StringBuffer();
                         Node $1 = $$.get(1);
                         for (int i = 0; i < $1.length(); i++) {
-                            sb.append($1.get(i).getValue());
+                            sb.append($1.get(i).get(0).getValue());
                         }
                         $$.clear();
                         $$.setValue(sb.toString());
@@ -208,7 +217,7 @@ public class CSSSelector {
                         StringBuffer sb = new StringBuffer();
                         Node $1 = $$.get(1);
                         for (int i = 0; i < $1.length(); i++) {
-                            sb.append($1.get(i).getValue());
+                            sb.append($1.get(i).get(0).getValue());
                         }
                         $$.clear();
                         $$.setValue(sb.toString());
@@ -220,99 +229,102 @@ public class CSSSelector {
                     $$.setValue($0.getValue());
                     return $$;
                 });
-        PEG.rule(ALL_OPERATOR)
+        PEG.rule(ALL_COMBINATOR)
             .define(
                 PEG.rule$Choice(
-                    PEG.rule(CHILD_OPERATOR),
-                    PEG.rule(DESCENDANT_OPERATOR)))
+                    PEG.rule(CHILD_COMBINATOR),
+                    PEG.rule(DESCENDANT_COMBINATOR)))
             .pack($$ -> {
                 return $$.get(0);
             });
-        PEG.rule(CHILD_OPERATOR)
+        PEG.rule(CHILD_COMBINATOR)
             .define(
                 PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")),
                 PEG.rule$Literal(">"),
                 PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")))
             .pack($$ -> {
                 Node $1 = $$.get(1);
-                $1.setType(CHILD_OPERATOR);
+                $1.setType(CHILD_COMBINATOR);
                 return $1;
             });
-        PEG.rule(DESCENDANT_OPERATOR)
+        PEG.rule(DESCENDANT_COMBINATOR)
             .define(
                 PEG.rule$OneOrMore(
                     PEG.rule$Literal(" ")))
             .pack($$ -> {
                 Node $0 = $$.get(0).get(0);
-                $0.setType(DESCENDANT_OPERATOR);
+                $0.setType(DESCENDANT_COMBINATOR);
                 return $0;
             });
     }
 
     public static List<CSSSelector> parse(String selector) throws UnmatchException {
+        List<CSSSelector> resultList = new ArrayList<>();
         Node node = PEG.rule(CSS_SELECTOR).accept(new BacktrackReader(selector));
         System.out.println(node.getSource() + " -> " + node.toString());
-        //return visit(node);
-        return null;
+        for (int i = 0; i < node.length(); i++) {
+            Node child = node.get(i);
+//            resultList.add(new CSSSelector(child));
+        }
+        return resultList;
     }
     
-    private CSSTypes type = GENERAL_SELECTOR;
-    private String name;
-    private String id;
-    private String classes;
-    private String attrs;
+    private CSSTypes type = UNIVERSAL_SELECTOR;
+    private CombinatorTypes combinator;
+    private String elementName;
+    private List<CSSSelector> subSelectors;
 
-    public CSSSelector() {
+    protected CSSSelector(Node node) {
+        subSelectors = new ArrayList<>();
+        switch ((CSSTypes)node.getType()) {
+        case DESCENDANT_COMBINATOR:
+        case CHILD_COMBINATOR:
+        case ADJACENT_COMBINATOR:
+        case SIBLING_COMBINATOR:
+            break;
+        default:
+            throw new RuntimeException(node.getType() + " not allowed here.");
+        }
+        
+        Node selector = node.get(0);
+        switch ((CSSTypes)selector.getType()) {
+        case UNIVERSAL_SELECTOR:
+            this.type = UNIVERSAL_SELECTOR;
+            break;
+        case ELEMENT_SELECTOR:
+            this.type = ELEMENT_SELECTOR;
+            break;
+        case CLASS_SELECTOR:
+        case ID_SELECTOR:
+        case ATTR_SELECTOR:
+            this.type = UNIVERSAL_SELECTOR;
+            break;
+        default:
+            throw new RuntimeException(node.getType() + " not allowed here.");
+        }
+    }
+    
+    public CombinatorTypes getCombinator() {
+        return combinator;
     }
     
     public CSSTypes getType() {
         return type;
     }
 
-    private void setType(CSSTypes type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    private void setName(String name) {
-        this.name = name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    private void setId(String id) {
-        this.id = id;
-    }
-
-    public String getClasses() {
-        return classes;
-    }
-
-    private void setClasses(String classes) {
-        this.classes = classes;
-    }
-
-    public String getAttrs() {
-        return attrs;
-    }
-
-    private void setAttrs(String attrs) {
-        this.attrs = attrs;
-    }
-
-    public List<Element> find(Element target) {
-        return null;
+    public boolean match(Element element) {
+        return false;
     }
 
     protected enum CSSTypes implements RuleTypes {
-        CSS_SELECTOR, ALL_SELECTOR, GENERAL_SELECTOR, ELEMENT_SELECTOR,
+        CSS_SELECTOR, ALL_SELECTOR, UNIVERSAL_SELECTOR, ELEMENT_SELECTOR,
         CLASS_SELECTOR, ID_SELECTOR, ATTR_SELECTOR, ATTR_NAME, ATTR_VALUE,
-        ALL_OPERATOR, CHILD_OPERATOR, DESCENDANT_OPERATOR, ATTR_COMPARATOR
+        ATTR_COMPARATOR, ALL_COMBINATOR, CHILD_COMBINATOR, DESCENDANT_COMBINATOR,
+        ADJACENT_COMBINATOR, SIBLING_COMBINATOR
         ;
+    }
+    
+    public enum CombinatorTypes {
+        DESCENDANT, CHILD, SIBLING, ADJACENT;
     }
 }
