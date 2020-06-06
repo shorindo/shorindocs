@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.plaintext;
 
+import static com.shorindo.xuml.DOMBuilder.text;
 import static com.shorindo.xuml.HTMLBuilder.*;
 
 import java.io.IOException;
@@ -39,6 +40,11 @@ public class PlainTextView extends DocumentView {
         throws IOException {
         layout()
             .put("header", text(model.getTitle()))
+            .put("menubar-left",button()
+                    .add(text("新規")))
+            .put("menubar-left", button()
+                    .attr("onclick", "location='?action=edit'")
+                    .add(text("編集")))
             .put("left", recents(model.getDocumentId()))
             .put("main", text(model.getContent()))
             .render(os);

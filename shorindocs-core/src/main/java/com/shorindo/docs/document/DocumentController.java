@@ -32,7 +32,6 @@ import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
-import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
 
 /**
@@ -107,7 +106,7 @@ public abstract class DocumentController extends ActionController
             //model.setContent(context.getParameter("body"));
 
             if (documentService.save(model) != null) {
-                return new RedirectView(id + "?action=edit", context);
+                return new RedirectView(id + "?action=edit");
             } else {
                 return new ErrorView(404);
             }

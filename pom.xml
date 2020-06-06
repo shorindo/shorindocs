@@ -53,6 +53,8 @@
     <module>shorindocs-plaintext</module>
     <module>shorindocs-dbmnt</module>
     <module>shorindocs-snapboard</module>
+    <module>shorindocs-spreadsheet</module>
+    <module>shorindocs-docbook</module>
   </modules>
   <name>shorindocs</name>
   <dependencyManagement>

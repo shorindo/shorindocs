@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,13 +30,13 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionPlugin;
 import com.shorindo.docs.admin.AdminPlugin;
 import com.shorindo.docs.auth.AuthenticatePlugin;
+import com.shorindo.docs.datagrid.DataGridPlugin;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentPlugin;
 import com.shorindo.docs.outlogger.OutloggerPlugin;
 import com.shorindo.docs.plaintext.PlainTextPlugin;
 import com.shorindo.docs.repository.RepositoryPlugin;
 import com.shorindo.docs.specout.SpecoutPlugin;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -71,11 +72,26 @@ public class ActionListener implements ServletContextListener {
         ActionPlugin.addPlugin(RepositoryPlugin.class);
         ActionPlugin.addPlugin(AuthenticatePlugin.class);
         ActionPlugin.addPlugin(DocumentPlugin.class);
+        ActionPlugin.addPlugin(DataGridPlugin.class);
         ActionPlugin.addPlugin(AdminPlugin.class);
+
         ActionPlugin.addPlugin(OutloggerPlugin.class);
         ActionPlugin.addPlugin(SpecoutPlugin.class);
         ActionPlugin.addPlugin(PlainTextPlugin.class);
+
+        scan(new File(event.getServletContext().getRealPath("/WEB-INF/classes")));
+        scan(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
         //XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
+    }
+    
+    private void scan(File file) {
+        if (file.isDirectory()) {
+            for (File child : file.listFiles()) {
+                scan(child);
+            }
+        } else {
+            LOG.debug("file:" + file.getAbsolutePath());
+        }
     }
 
     /**

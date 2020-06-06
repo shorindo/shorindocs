@@ -39,23 +39,13 @@ public class DefaultView extends AbstractView {
     private File file;
 
     public DefaultView(File file, ActionContext context) {
-        init();
         this.file = file;
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        getMeta().put("Last-Modified",
+        getMetaData().put("Last-Modified",
                 format.format(new Date(file.lastModified())));
-    }
-
-    @Override
-    public String getContentType() {
-        String ext = file.getName().replaceAll("^.*?(\\.(.+))?$", "$2");
-        if ("css".equals(ext)) {
-            return "text/css";
-        } else if ("js".equals(ext)) {
-            return "text/javascript";
-        } else {
-            return "application/octet-stream";
-        }
+        String ext = file.getName().replaceAll("^.*?(\\.([^\\.]+))?$", "$2");
+        ContentTypes type = ContentTypes.of(ext);
+        getMetaData().put("Content-Type", type.getContentType());
     }
 
     /**
@@ -83,4 +73,43 @@ public class DefaultView extends AbstractView {
         }
     }
 
+    public enum ContentTypes {
+        HTML("html", "text/html"),
+        CSS("css", "text/css"),
+        JS("js", "text/javascript"),
+        JPG("jpg", "image/jpeg"),
+        JPEG("jpeg", "image/jpeg"),
+        PNG("png", "image/png"),
+        GIF("gif", "image/gif"),
+        BINARY("", "application/octet-stream")
+        ;
+        
+        private String extension;
+        private String contentType;
+
+        public static ContentTypes of(String extension) {
+            if (extension != null) {
+                for (ContentTypes type : values()) {
+                    if (type.getExtension().equals(extension.toLowerCase())) {
+                        return type;
+                    }
+                }
+            }
+            return BINARY;
+        }
+
+        private ContentTypes(String extension, String contentType) {
+            this.extension = extension;
+            this.contentType = contentType;
+        }
+
+        public String getExtension() {
+            return extension;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+        
+    }
 }

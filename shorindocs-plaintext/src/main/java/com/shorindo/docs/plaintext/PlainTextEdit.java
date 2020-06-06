@@ -39,6 +39,10 @@ public class PlainTextEdit extends DocumentView {
         throws IOException {
         layout()
             .put("header", text(model.getTitle()))
+            .put("menubar-left", button()
+                .add("表示"))
+            .put("menubar-left", button()
+                .add("保存"))
             .put("left", recents(model.getDocumentId()))
             .put("main", textarea()
                 .add(text(model.getContent())))

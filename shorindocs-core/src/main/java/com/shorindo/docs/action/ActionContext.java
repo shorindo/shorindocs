@@ -16,7 +16,6 @@
 package com.shorindo.docs.action;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -28,16 +27,19 @@ import com.shorindo.docs.document.DocumentMessages;
  */
 public class ActionContext {
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionContext.class);
+    int status = 200;
+    private String requestPath;
+    private String contextPath;
     private String action = "view";
     private Locale locale;
     private ResourceBundle bundle;
 
     // URL
     private String id;
-    // RequestHeader
+    private Map<String,String> requestHeader;
     // RequestParameter
     private Map<String,String[]> parameters;
-    // ResponseHeader
+    private Map<String,String> responseHeader;
     // ResponseResult
     // Request属性
     // Session属性
@@ -46,6 +48,32 @@ public class ActionContext {
         bundle = ResourceBundle.getBundle("messages", Locale.JAPANESE /*req.getLocale()*/);
         Map<String,String> application = new HashMap<String,String>();
         this.setAttribute("application", application);
+        requestHeader = new HashMap<>();
+        responseHeader = new HashMap<>();
+    }
+
+//    public int getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(int status) {
+//        this.status = status;
+//    }
+
+    public String getRequestPath() {
+        return requestPath;
+    }
+
+    public void setRequestPath(String requestPath) {
+        this.requestPath = requestPath;
+    }
+
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 
     public void setId(String id) {
@@ -55,10 +83,6 @@ public class ActionContext {
     public String getId() {
         return id;
     }
-
-//    public UserEntity getUser() {
-//        return new UserEntity();
-//    }
 
     public void setAction(String action) {
         this.action = action;
@@ -81,6 +105,14 @@ public class ActionContext {
         }
     }
 
+    public String getHeader(String name) {
+        return requestHeader.get(name);
+    }
+
+    public void setHeader(String name, String value) {
+        requestHeader.put(name, value);
+    }
+
     private Map<String,Object> attributes = new HashMap<String,Object>();
     public Map<String,Object> getAttributes() {
         return attributes;
@@ -94,26 +126,16 @@ public class ActionContext {
     public void setParameters(Map<String,String[]> params) {
         this.parameters = params;
     }
-    public String[] getParameter(String name) {
+    public String getParameter(String name) {
+        String[] params = parameters.get(name);
+        if (params == null || params.length == 0) {
+            return null;
+        } else {
+            return params[0];
+        }
+    }
+    public String[] getParameters(String name) {
         return parameters.get(name);
     }
 
-    /**
-     * 
-     */
-    public enum RESERVED {
-        REQUEST_PATH("request.path"),
-        REQUEST_CONTEXT_PATH("request.contextPath"),
-        REQUEST_CONTENT_TYPE("request.contentType")
-        ;
-
-        private String key;
-        private RESERVED(String key) {
-            this.key = key;
-        }
-
-        public String key() {
-            return key;
-        }
-    }
 }

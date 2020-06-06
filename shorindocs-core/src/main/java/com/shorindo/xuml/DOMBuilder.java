@@ -18,6 +18,7 @@ package com.shorindo.xuml;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,18 +29,21 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.shorindo.docs.action.ActionLogger;
+
 /**
  * 
  */
 public abstract class DOMBuilder {
     private static String encoding = "UTF-8";
+    private static ActionLogger LOG = ActionLogger.getLogger(DOMBuilder.class);
     
     public static Element text(String text, Object...args) {
         return new TextElement(text, args);
     }
 
-    public static Element include(String name) {
-        return new IncludeElement(name);
+    public static Element marker(String name) {
+        return new MarkerElement(name);
     }
 
     protected static String getEncoding() {
@@ -50,6 +54,7 @@ public abstract class DOMBuilder {
         private String tagName;
         private Map<String,String> attrs;
         private List<Element> childList;
+        private Map<String,List<Predicate<Event>>> eventHandler;
 
         protected Element(String name) {
             this.tagName = name;
@@ -90,7 +95,7 @@ public abstract class DOMBuilder {
         public final Element put(String name, Element...elements) {
             Element curr = this;
             for (Element child : curr.getChildList()) {
-                if (child instanceof IncludeElement && ((IncludeElement) child).getName().equals(name)) {
+                if (child instanceof MarkerElement && name.equals(child.getAttr("name"))) {
                     for (Element element : elements) {
                         child.add(element);
                     }
@@ -99,10 +104,17 @@ public abstract class DOMBuilder {
             }
             return this;
         }
-        
-        public final Element on(EventType eventType, BiConsumer<Element,Event> action) {
-            Event event = new Event();
-            action.accept(this, event);
+
+        public final Element on(String eventType, Predicate<Event> action) {
+            if (eventHandler == null) {
+                eventHandler = new HashMap<>();
+            }
+            List<Predicate<Event>> handlers = eventHandler.get(eventType);
+            if (handlers == null) {
+                handlers = new ArrayList<>();
+                eventHandler.put(eventType, handlers);
+            }
+            handlers.add(action);
             return this;
         }
         
@@ -118,14 +130,64 @@ public abstract class DOMBuilder {
             return childList;
         }
         
-        public void findById(String id) {
+        public List<Element> findById(String id) {
+            List<Element> resultList = new ArrayList<>(); 
+            if (id.equals(this.getAttr("id"))) {
+                resultList.add(this);
+            }
+            for (Element child : getChildList()) {
+                resultList.addAll(child.findById(id));
+            }
+            return resultList;
         }
 
+        public List<Element> findByTagName(String tagName) {
+            List<Element> resultList = new ArrayList<>(); 
+            if (getTagName().equals(tagName)) {
+                resultList.add(this);
+            }
+            for (Element child : getChildList()) {
+                resultList.addAll(child.findByTagName(tagName));
+            }
+            return resultList;
+        }
+
+        public List<Element> findByCssSelector(String selector) {
+            List<Element> resultList = new ArrayList<>(); 
+//            if (getTagName().equals(tagName)) { // TODO
+//                resultList.add(this);
+//            }
+            for (Element child : getChildList()) {
+                resultList.addAll(child.findByCssSelector(tagName));
+            }
+            return resultList;
+        }
+        
         public void render(OutputStream os) throws IOException {
             render(os, false, 0);
         }
 
+        private boolean doEvent(String eventType) {
+            if (eventHandler == null) {
+                return true;
+            }
+            List<Predicate<Event>> handlerList = eventHandler.get(eventType);
+            if (handlerList == null) {
+                return true;
+            }
+            Event event = new Event(eventType, this);
+            for (Predicate<Event> p : handlerList) {
+                if (!p.test(event)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         protected void render(OutputStream os, boolean useIndent, int level) throws IOException {
+            if (!doEvent("RENDER_BEFORE")) {
+                return;
+            }
             if ("#text".equals(getTagName())) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(indent(useIndent, level))
@@ -165,6 +227,7 @@ public abstract class DOMBuilder {
                 sb.append(lf(useIndent));
                 os.write(sb.toString().getBytes(getEncoding()));
             }
+            doEvent("RENDER_AFTER");
         }
 
         protected String lf(boolean useIndent) {
@@ -193,10 +256,11 @@ public abstract class DOMBuilder {
     }
 
     protected static class TextElement extends Element {
+        public static final String TAG = "#text";
         private String text;
 
         protected TextElement(String text, Object...args) {
-            super("#text");
+            super(TAG);
             this.text = text == null ? "" : escape(String.format(text, args));
         }
 
@@ -214,16 +278,12 @@ public abstract class DOMBuilder {
         }
     }
 
-    protected static class IncludeElement extends Element {
-        private String name;
+    protected static class MarkerElement extends Element {
+        public static final String TAG = "#marker";
 
-        protected IncludeElement(String name) {
-            super("#include");
-            this.name = name;
-        }
-        
-        public String getName() {
-            return name;
+        protected MarkerElement(String name) {
+            super(TAG);
+            attr("name", name);
         }
 
         @Override
@@ -236,10 +296,27 @@ public abstract class DOMBuilder {
     }
 
     public enum EventType {
-        CLICK, CHANGE
+        CLICK,
+        CHANGE,
+        RENDER_BEFORE,
+        RENDER_AFTER;
     }
 
     public static class Event {
-        
+        String eventType;
+        Element target;
+
+        public Event(String eventType, Element target) {
+            this.eventType = eventType;
+            this.target = target;
+        }
+
+        public String getEventType() {
+            return eventType;
+        }
+
+        public Element getTarget() {
+            return target;
+        }
     }
 }

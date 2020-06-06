@@ -32,7 +32,7 @@ public class LogoutController extends ActionController {
      */
     @Override
     public AbstractView action(ActionContext context) {
-        return new RedirectView("/", context);
+        return new RedirectView("/");
     }
 
 }

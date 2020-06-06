@@ -34,7 +34,7 @@ import com.shorindo.docs.view.View;
 /**
  * 
  */
-public class OutloggerView extends DocumentView implements View {
+public class OutloggerView extends DocumentView {
     private OutloggerService service = ServiceFactory.getService(OutloggerService.class);
 
     @Override
@@ -42,6 +42,8 @@ public class OutloggerView extends DocumentView implements View {
         DocumentModel model = service.load(ctx.getId());
         OutloggerMetaData metaData = JAXB.unmarshal(new StringReader(model.getContent()), OutloggerMetaData.class);
         layout()
+            .put("menubar-left", button("新規"))
+            .put("menubar-left", button("編集"))
             .put("left", text("左"))
             .put("left", recents(ctx.getId()))
             .put("main", getLogs(ctx.getId()))
@@ -64,11 +66,6 @@ public class OutloggerView extends DocumentView implements View {
         } catch (DocumentException e) {
             throw new IOException(e);
         }
-    }
-
-    @Override
-    public String getContentType() {
-        return "text/html; charset=UTF-8";
     }
 
 }

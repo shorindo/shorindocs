@@ -5,11 +5,19 @@
     <artifactId>docs</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>shorindocs-spreadsheet</artifactId>
+  <artifactId>shorindocs-docbook</artifactId>
+  <build>
+    <finalName>shorindocs-outlogger-${parent.version}</finalName>
+  </build>
   <dependencies>
+    <dependency>
+        <groupId>com.shorindo</groupId>
+        <artifactId>shorindocs-core</artifactId>
+    </dependency>
   	<dependency>
-  		<groupId>com.shorindo</groupId>
-  		<artifactId>shorindocs-core</artifactId>
+  		<groupId>net.arnx</groupId>
+  		<artifactId>jsonic</artifactId>
+  		<version>1.3.7</version>
   	</dependency>
   </dependencies>
 </project>

@@ -96,7 +96,7 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
         } finally {
             try {
                 is.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 LOG.error(DBMS_5103, e);
             }
         }

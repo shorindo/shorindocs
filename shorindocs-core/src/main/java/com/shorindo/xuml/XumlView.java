@@ -20,22 +20,30 @@ import static com.shorindo.xuml.XumlMessages.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.view.View;
+import com.shorindo.docs.view.AbstractView;
 import com.shorindo.xuml.DOMBuilder.Element;
 
 /**
  * 
  */
-public class XumlView implements View {
+public class XumlView extends AbstractView {
     private static final ActionLogger LOG = ActionLogger.getLogger(XumlView.class);
+    private static final int STATUS_OK = 200;
+    private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
     private Element element;
 
+    public XumlView() {
+        super();
+        getMetaData().put("Content-Type", CONTENT_TYPE);
+    }
+
     @Override
-    public String getContentType() {
-        return "text/html; charset=UTF-8";
+    public int getStatus() {
+        return STATUS_OK;
     }
 
     @Override
@@ -55,9 +63,9 @@ public class XumlView implements View {
             .add(head()
                 .add(meta()
                     .attr("htt-equiv", "Content-Type")
-                    .attr("content", "text/html; charset=UTF-8"))
+                    .attr("content", CONTENT_TYPE))
                 .add(title()
-                    .add(include("title")))
+                    .add(marker("title")))
                 .add(link()
                     .attr("rel", "stylesheet")
                     .attr("type", "text/css")
@@ -65,56 +73,72 @@ public class XumlView implements View {
                 .add(script()
                     .attr("type", "text/javascript")
                     .attr("src", "/docs/js/xuml.js"))
-                .add(script()
-                    .attr("type", "text/javascript")
-                    .add(include("script")))
-                .add(style()
-                    .attr("type", "text/css")
-                    .add(include("style"))))
+                .add(marker("meta")))
             .add(body()
                 .attr("class", "xuml-width-fill xuml-height-fill")
-//                .eval(getAttrs(), (self,attrs) -> {
-//                    Set<String> classes = new HashSet<>();
-//                    String height = attrs.get("height");
-//                    if ("fill".equals(height)) {
-//                        classes.add("xuml-height-fill");
-//                    } else if ("auto".equals(height)) {
-//                        classes.add("xuml-height-auto");
-//                    }
-//                    String width = attrs.get("width");
-//                    if ("fill".equals(width)) {
-//                        classes.add("xuml-width-fill");
-//                    } else if ("auto".equals(width)) {
-//                        classes.add("xuml-width-auto");
-//                    }
-//                    self.attr("class", String.join(" ", classes));
-//                })
                 .add(div()
                     .attr("class", "xuml-vbox")
                     .add(div()
-                        .add(include("header")))
+                        .attr("id", "header-pane")
+                        .add(marker("header")))
+                        .add(div()
+                            .attr("id", "menubar")
+                            .attr("class", "xuml-menubar")
+                            .add(div()
+                                .attr("class", "xuml-menubar-left")
+                                .add(marker("menubar-left")))
+                            .add(div()
+                                .attr("class", "xuml-menubar-right")
+                                .add(input()
+                                    .attr("type", "text"))
+                                .add(button("検索"))
+                                .add(marker("menubar-right"))))
                         .add(div()
                             .attr("class", "xuml-hbox")
                             .add(div()
+                                .attr("id", "left-pane")
                                 .attr("class", "xuml-vbox")
                                 .attr("style", "width:200px;")
-                                //.add(text("left"))
-                                .add(include("left")))
-                                .add(div()
-                                    .attr("class", "xuml-vbox")
-                                    .attr("flex", "1")
-                                    .attr("style", "overflow:auto;")
-                                    //.add(text("main"))
-                                    .add(style())
-                                    .add(include("main")))
-//                                .add(div()
-//                                    .attr("class", "xuml-vbox")
-//                                    .attr("style", "width:200px;")
-//                                    .add(text("right"))
-//                                    .add(include("right"))))
-//                                .add(div()
-//                                    .add(text("footer"))))
-                            )));
+                                .add(marker("left"))
+                                .on("RENDER_BEFORE", evt -> {
+                                    for (Element e : evt.getTarget().findByTagName(MarkerElement.TAG)) {
+                                        if (e.getChildList().size() > 0) {
+                                            return true;
+                                        }
+                                    }
+                                    return false;
+                                }))
+                            .add(div()
+                                .attr("id", "main-pane")
+                                .attr("class", "xuml-vbox")
+                                .attr("flex", "1")
+                                .attr("style", "overflow:auto;")
+                                .add(style())
+                                .add(marker("main")))
+                            .add(div()
+                                .attr("id", "right-pane")
+                                .attr("class", "xuml-vbox")
+                                .attr("style", "width:200px;")
+                                .add(marker("right"))
+                                .on("RENDER_BEFORE", evt -> {
+                                    for (Element e : evt.getTarget().findByTagName(MarkerElement.TAG)) {
+                                        if (e.getChildList().size() > 0) {
+                                            return true;
+                                        }
+                                    }
+                                    return false;
+                                })))
+                        .add(div()
+                            .attr("id", "footer-pane")
+                            .add(marker("footer"))
+                            .on("RENDER_BEFORE", evt -> {
+                                for (Element e : evt.getTarget().findByTagName(MarkerElement.TAG)) {
+                                    if (e.getChildList().size() > 0) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }))));
     }
     
     public final Element dialog() {
@@ -124,9 +148,10 @@ public class XumlView implements View {
                 .attr("class", "xuml-dialog")
                 .add(div()
                     .attr("class", "xuml-dialog-head")
-                    .add(include("title")))
+                    .add(marker("title")))
                 .add(div()
                     .attr("class", "xuml-dialog-body")
-                    .add(include("body"))));
+                    .add(marker("body"))));
     }
+
 }

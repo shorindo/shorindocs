@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.view;
+package com.shorindo.docs.datagrid;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
+import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
 
-import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
-public interface View {
-    public int getStatus();
-    public Map<String,String> getMetaData();
-    public void render(ActionContext ctx, OutputStream os) throws IOException;
+public class DataGridPlugin extends ActionPlugin {
+    private static final ActionLogger LOG = ActionLogger.getLogger(DataGridPlugin.class);
+
+    @Override
+    public void initialize() {
+        addSchema(getClass().getResourceAsStream("DataGrid.dsdl"));
+        addController(DataGridController.class);
+    }
+
 }

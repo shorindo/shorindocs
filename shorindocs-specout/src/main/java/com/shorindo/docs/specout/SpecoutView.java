@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.specout;
 
+import static com.shorindo.xuml.DOMBuilder.text;
 import static com.shorindo.xuml.HTMLBuilder.*;
 
 import java.io.IOException;
@@ -46,14 +47,21 @@ public class SpecoutView extends DocumentView {
         SpecoutEntity specout = JAXB.unmarshal(new StringReader(model.getContent()), SpecoutEntity.class);
         layout()
             .put("header", text(model.getTitle()))
-            .put("style", style())
+            .put("meta", meta())
+            .put("menubar-left", button("新規"))
+            .put("menubar-left", button("編集")
+                .attr("onclick", "location='?action=edit'"))
             .put("left", recents(model.getDocumentId()))
             .put("main", specout(specout))
+            .put("right", text("右側ペイン"))
+            .put("footer", text("Powered by shorindo.com"))
             .render(os);
     }
     
-    private Element style() {
-        return text(
+    private Element meta() {
+        return style()
+            .attr("type", "text/css")
+            .add(text(
             "table.specout {\n" +
             "  table-layout:fixed;\n" +
             "  border-collapse:collapse;\n" +
@@ -80,7 +88,7 @@ public class SpecoutView extends DocumentView {
             "}\n" +
             "tr.spec:nth-child(odd) {\n" +
             "  background:#F8F8F8;\n" +
-            "}\n");
+            "}\n"));
     }
     
     private Element specout(SpecoutEntity entity) {
@@ -105,7 +113,7 @@ public class SpecoutView extends DocumentView {
                         .add(text("目的・理由")))
                     .add(td()
                         .attr("style", "border-right:1px solid gray; border-bottom:1px solid gray;")
-                        .add(text("発生元")))
+                        .add(text("要求元")))
                     .add(td()
                         .attr("style", "border-bottom:1px solid gray;")
                         .add(text("Ver."))))
@@ -181,19 +189,22 @@ public class SpecoutView extends DocumentView {
             .add(col().attr("style", "width:8%; white-space:nowrap;"))
             .add(col().attr("style", "width:70%; white-space:nowrap;"))
             .eval(changeList, (self,changes) -> {
-                for (Change change : changes) {
+                for (int i = 0; i < changes.size(); i++) {
+                    String bottom = i != changes.size() - 1 ?
+                        "border-bottom:1px dashed gray;" : "";
+                    Change change = changes.get(i);
                     self.add(tr()
                         .add(td()
-                            .attr("style", "border-right:1px solid gray; border-bottom:1px dashed gray; text-align:center;")
+                            .attr("style", "border-right:1px solid gray; text-align:center; " + bottom)
                             .add(text(change.getDate())))
                         .add(td()
-                            .attr("style", "border-right:1px solid gray; border-bottom:1px dashed gray; text-align:center;")
+                            .attr("style", "border-right:1px solid gray; text-align:center;" + bottom)
                             .add(text(change.getVersion())))
                         .add(td()
-                            .attr("style", "border-right:1px solid gray; border-bottom:1px dashed gray; text-align:center;")
+                            .attr("style", "border-right:1px solid gray; text-align:center;" + bottom)
                             .add(text(change.getPerson())))
                         .add(td()
-                            .attr("style", "border-bottom:1px dashed gray;")
+                            .attr("style", bottom)
                             .add(text(change.getDescription()))));
 
                 }

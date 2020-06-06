@@ -50,7 +50,7 @@ public class DatabaseSchema {
     public void setEntityList(List<Entity> entityList) {
         this.entityList = entityList;
     }
-    public Entity getEntiry(String name) {
+    public Entity getEntity(String name) {
         for (Entity entity : entityList) {
             if (name.equals(entity.getName())) {
                 return entity;

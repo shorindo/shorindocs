@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.view;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,29 +28,23 @@ import com.shorindo.docs.action.ActionLogger;
  */
 public abstract class AbstractView implements View {
     private static final ActionLogger LOG = ActionLogger.getLogger(AbstractView.class);
-    private int status = 200;
-    private Map<String,String> metaMap;
+    private static final int STATUS_OK = 200;
+    private Map<String,String> metaData;
 
-    public abstract String getContentType();
-    public abstract void render(ActionContext context, OutputStream os);
+    public abstract void render(ActionContext context, OutputStream os) throws IOException;
 
     public AbstractView() {
+        metaData = new TreeMap<String,String>();
     }
     
-    public void init() {
-        metaMap = new TreeMap<String,String>();
-    }
-
+    @Override
     public int getStatus() {
-        return status;
+        return STATUS_OK;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public Map<String, String> getMeta() {
-        return metaMap;
+    @Override
+    public Map<String, String> getMetaData() {
+        return metaData;
     }
 
 //    protected InputStream filter(InputStream is) {

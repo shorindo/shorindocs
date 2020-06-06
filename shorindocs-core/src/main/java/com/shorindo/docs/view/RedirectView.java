@@ -23,20 +23,18 @@ import com.shorindo.docs.action.ActionContext;
  * 
  */
 public class RedirectView extends AbstractView {
+    private int STATUS_MOVED = 302;
+    private String location;
 
-    public RedirectView(String location, ActionContext context) {
-        init();
-        setStatus(302);
-        if (!location.startsWith("/")) {
-            location = "/" + location;
-        }
-        location = context.getAttribute("contextPath") + location;
-        getMeta().put("Location", location);
+    public RedirectView(String location) {
+        super();
+        this.location = location;
+        this.getMetaData().put("Location", location);
     }
 
     @Override
-    public String getContentType() {
-        return "";
+    public int getStatus() {
+        return STATUS_MOVED;
     }
 
     @Override

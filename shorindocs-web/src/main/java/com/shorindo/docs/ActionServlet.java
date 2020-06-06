@@ -18,10 +18,10 @@ package com.shorindo.docs;
 import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
@@ -36,14 +36,13 @@ import net.arnx.jsonic.JSONException;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentServiceFactory;
 import com.shorindo.docs.plugin.PluginContainer;
+import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.view.DefaultView;
 import com.shorindo.docs.view.ErrorView;
-import com.shorindo.docs.view.RedirectView;
-import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -51,6 +50,8 @@ import com.shorindo.xuml.XumlView;
 public class ActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionServlet.class);
+    private static final RepositoryService repositoryService =
+        ServiceFactory.getService(RepositoryService.class);
 
     /**
      * 
@@ -62,10 +63,10 @@ public class ActionServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
+    protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         PluginContainer.initContainer();
-        super.service(req, resp);
+        super.service(req, res);
     }
 
     /**
@@ -88,7 +89,7 @@ public class ActionServlet extends HttpServlet {
         try {
             if (documentId == null || "".equals(documentId)) {
                 res.setStatus(302);
-                String location = context.getAttribute("contextPath") + "/top";
+                String location = context.getContextPath() + "/index";
                 res.setHeader("Location", location);
                 return;
             }
@@ -98,8 +99,18 @@ public class ActionServlet extends HttpServlet {
                 res.setHeader("Cache-Control", "public, max-age=604800, immutable");
                 output(context, res, new DefaultView(file, context));
             } else {
-                ActionController controller = DocumentServiceFactory.getController((String)context.getAttribute("requestPath"));
+                DocumentEntity key = new DocumentEntity();
+                key.setDocumentId(path.substring(1));
+                key.setVersion(0);
+                DocumentEntity entity = repositoryService.get(key);
+                if (entity == null) {
+                    output(context, res, new ErrorView(404));
+                    return;
+                }
+
+                ActionController controller = DocumentServiceFactory.getController(entity);
                 if (controller != null) {
+                    context.setAttribute("document", entity);
                     output(context, res, controller.action(context));
                 } else {
                     LOG.error(DOCS_5003, path);
@@ -124,14 +135,44 @@ public class ActionServlet extends HttpServlet {
         long st = System.currentTimeMillis();
         LOG.info(DOCS_1105, "POST " + req.getServletPath());
         ActionContext context = new ActionContext();
-        context.setAttribute("requestPath", req.getServletPath());
-        context.setAttribute("contextPath", req.getContextPath());
+        context.setRequestPath(req.getServletPath());
+        context.setContextPath(req.getContextPath());
         context.setId(req.getServletPath().substring(1));
+        context.setParameters(req.getParameterMap());
+        for (Enumeration<String> e = req.getHeaderNames(); e.hasMoreElements();) {
+            String name = e.nextElement();
+            context.setHeader(name, req.getHeader(name));
+        }
+        
+        try {
+            DocumentEntity key = new DocumentEntity();
+            String path = req.getServletPath();
+            key.setDocumentId(path.substring(1));
+            key.setVersion(0);
+            DocumentEntity entity = repositoryService.get(key);
+            if (entity == null) {
+                output(context, res, new ErrorView(404));
+                return;
+            }
+
+            ActionController controller = DocumentServiceFactory.getController(entity);
+            if (controller != null) {
+                context.setAttribute("document", entity);
+                output(context, res, controller.action(context));
+            } else {
+                LOG.error(DOCS_5003, path);
+                output(context, res, new ErrorView(404));
+            }
+        } catch (Exception e) {
+            LOG.error(DOCS_9999, e);
+        }
+
         if ("application/json".equals(req.getContentType())) {
             res.setContentType("application/json");
             doRpc(context, req.getInputStream(), res.getOutputStream());
         } else {
-            LOG.warn(DOCS_5009);
+            //LOG.warn(DOCS_5009);
+            
         }
         LOG.info(DOCS_1106, "POST " + req.getServletPath(),
                 (System.currentTimeMillis() - st));
@@ -164,34 +205,11 @@ public class ActionServlet extends HttpServlet {
     /**
      * 
      */
-//    protected boolean dispatch(ActionContext context, HttpServletResponse res)
-//            throws ServletException, IOException {
-//        String requestPath = (String)context.getAttribute("requestPath");
-//        File file = new File(getServletContext().getRealPath(requestPath));
-//
-//        if (file.exists()) {
-//            output(context, res, new DefaultView(file, context));
-//            return true;
-//        }
-//        
-//        ActionController controller = DocumentServiceFactory.getController(requestPath);
-//        if (controller != null) {
-//            output(context, res, controller.action(context));
-//            return true;
-//        }
-//        
-//        return false;
-//    }
-
-    /**
-     * 
-     */
     protected final void output(ActionContext context, HttpServletResponse res, View view) throws IOException {
-//        for (Entry<String,String> entry : view.getMeta().entrySet()) {
-//            res.setHeader(entry.getKey(), entry.getValue());
-//        }
-//        res.setStatus(view.getStatus());
-        res.setContentType(view.getContentType());
+        res.setStatus(view.getStatus());
+        for (Entry<String,String> entry : view.getMetaData().entrySet()) {
+            res.addHeader(entry.getKey(), entry.getValue());
+        }
         view.render(context, res.getOutputStream());
     }
 

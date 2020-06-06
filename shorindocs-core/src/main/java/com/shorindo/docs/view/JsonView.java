@@ -31,13 +31,8 @@ public class JsonView extends AbstractView {
     Object bean;
 
     public JsonView(Object bean, ActionContext context) {
-        init();
         this.bean = bean;
-    }
-
-    @Override
-    public String getContentType() {
-        return "application/json";
+        this.getMetaData().put("Content-Type", "application/json");
     }
 
     @Override

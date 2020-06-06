@@ -30,10 +30,6 @@ public class XumlBuilder extends DOMBuilder {
         return new WindowElement();
     }
 
-//    public Element dialog() {
-//        return new DialogElement();
-//    }
-    
     public Element vbox() {
         return new VBoxElement();
     }

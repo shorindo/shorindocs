@@ -82,6 +82,11 @@ public class HTMLBuilder extends DOMBuilder {
         return new Buttonelement();
     }
 
+    public static final Element button(String text) {
+        return new Buttonelement()
+            .add(text(text));
+    }
+
     public static final Element canvas() {
         return new CanvasElement();
     }

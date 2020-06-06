@@ -22,7 +22,9 @@ import java.util.Map;
 
 import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionController;
+import com.shorindo.docs.action.ActionError;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.RepositoryService;
 
@@ -51,6 +53,21 @@ public abstract class DocumentServiceFactory {
             LOG.error(DOCS_9004, e, path);
         } catch (IllegalAccessException e) {
             LOG.error(DOCS_9004, e, path);
+        }
+    }
+
+    public static synchronized ActionController getController(DocumentModel model) throws ActionError {
+        if (classMap.containsKey(model.getController())) {
+            return classMap.get(model.getController());    
+        } else {
+            try {
+                Class<?> clazz = Class.forName(model.getController());
+                ActionController controller = (ActionController)clazz.newInstance();
+                classMap.put(model.getController(), controller);
+                return controller;
+            } catch (Exception e) {
+                throw new ActionError(DocumentMessages.DOCS_9999, e);
+            }
         }
     }
 

@@ -52,12 +52,13 @@ public class SpecoutController extends DocumentController {
         long st = System.currentTimeMillis();
         LOG.debug(SPEC_9003);
         try {
-            DocumentModel model = getModel(context);
+            //DocumentModel model = getModel(context);
             //String content = model.getContent() == null ? "" : model.getContent();
             //SpecoutEntity specout = JAXB.unmarshal(new StringReader(content), SpecoutEntity.class);
             //context.setAttribute("document", model);
             //context.setAttribute("specout", specout);
             //context.setAttribute("recents", recents(context));
+            DocumentModel model = (DocumentModel)context.getAttribute("document");
             return new SpecoutView(model);
         } catch (Exception e) {
             LOG.error(SPEC_9001, e);
