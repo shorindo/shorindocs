@@ -20,7 +20,6 @@ import static com.shorindo.xuml.XumlMessages.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
@@ -59,7 +58,7 @@ public class XumlView extends AbstractView {
     }
 
     public static final Element layout() {
-        return html()
+        return document().add(html()
             .add(head()
                 .add(meta()
                     .attr("htt-equiv", "Content-Type")
@@ -101,7 +100,7 @@ public class XumlView extends AbstractView {
                                 .attr("style", "width:200px;")
                                 .add(marker("left"))
                                 .on("RENDER_BEFORE", evt -> {
-                                    for (Element e : evt.getTarget().findByTagName(MarkerElement.TAG)) {
+                                    for (Element e : evt.getTarget().findByCssSelector(MarkerElement.TAG + "[name='left']")) {
                                         if (e.getChildList().size() > 0) {
                                             return true;
                                         }
@@ -121,7 +120,7 @@ public class XumlView extends AbstractView {
                                 .attr("style", "width:200px;")
                                 .add(marker("right"))
                                 .on("RENDER_BEFORE", evt -> {
-                                    for (Element e : evt.getTarget().findByTagName(MarkerElement.TAG)) {
+                                    for (Element e : evt.getTarget().findByCssSelector(MarkerElement.TAG + "[name='right']")) {
                                         if (e.getChildList().size() > 0) {
                                             return true;
                                         }
@@ -132,13 +131,13 @@ public class XumlView extends AbstractView {
                             .attr("id", "footer-pane")
                             .add(marker("footer"))
                             .on("RENDER_BEFORE", evt -> {
-                                for (Element e : evt.getTarget().findByTagName(MarkerElement.TAG)) {
+                                for (Element e : evt.getTarget().findByCssSelector(MarkerElement.TAG + "[name='footer']")) {
                                     if (e.getChildList().size() > 0) {
                                         return true;
                                     }
                                 }
                                 return false;
-                            }))));
+                            })))));
     }
     
     public final Element dialog() {

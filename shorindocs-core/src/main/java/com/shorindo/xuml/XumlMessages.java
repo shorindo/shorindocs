@@ -46,7 +46,11 @@ public enum XumlMessages implements ActionMessages {
     @Message(ja = "[{0}]の生成に失敗したため、Generalコンポーネントを使用します。")
     XUML_5125,
     @Message(ja = "データ出力に失敗しました。")
-    XUML_5200
+    XUML_5200,
+    @Message(ja = "CSSセレクタの構文が不正です")
+    XUML_6000,
+    @Message(ja = "予期せぬエラーが発生しました：{0}")
+    XUML_9999
     ;
 
     private Map<String,MessageFormat> bundle;

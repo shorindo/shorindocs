@@ -83,8 +83,9 @@ public class HTMLBuilderTest {
                                 if (b) self.attr("selected");  
                             })
                             .add("オレンジ"))
-                            .on(EventType.CHANGE, (self,event) -> {
-                                System.err.println(self + " -> " + event);
+                            .on("CHANGE", event -> {
+                                System.err.println(event.getTarget() + " -> " + event);
+                                return true;
                             }))
                     .eval(true, (self, val) -> {
                         Element input = input()

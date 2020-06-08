@@ -31,7 +31,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.xuml.PEGCombinator.UnmatchException;
+import com.shorindo.util.PEGCombinator.UnmatchException;
+import com.shorindo.xuml.CSSSelector.CSSException;
 
 /**
  * 
@@ -40,6 +41,10 @@ public abstract class DOMBuilder {
     private static String encoding = "UTF-8";
     private static ActionLogger LOG = ActionLogger.getLogger(DOMBuilder.class);
     
+    public static Element document() {
+        return new DocumentElement();
+    }
+
     public static Element text(String text, Object...args) {
         return new TextElement(text, args);
     }
@@ -95,14 +100,11 @@ public abstract class DOMBuilder {
         }
 
         public final Element put(String name, Element...elements) {
-            Element curr = this;
-            for (Element child : curr.getChildList()) {
-                if (child instanceof MarkerElement && name.equals(child.getAttr("name"))) {
-                    for (Element element : elements) {
-                        child.add(element);
-                    }
+            for (Element marker : this.findByCssSelector("marker[name='" + name + "']")) {
+                LOG.debug("marker[name=" + marker.getAttr("name") + "] <- " + name);
+                for (Element element : elements) {
+                    marker.add(element);
                 }
-                child.put(name, elements);
             }
             return this;
         }
@@ -156,28 +158,52 @@ public abstract class DOMBuilder {
 
         public List<Element> findByCssSelector(String selector) {
             List<Element> resultList = new ArrayList<>();
+            long st = System.currentTimeMillis();
             try {
-                List<CSSSelector> list = CSSSelector.parse(selector);
-            } catch (UnmatchException e) {
-                e.printStackTrace();
-            }
-//            if (getTagName().equals(tagName)) { // TODO
-//                resultList.add(this);
-//            }
-            for (Element child : getChildList()) {
-                resultList.addAll(child.findByCssSelector(tagName));
+                List<List<CSSSelector>> list = CSSSelector.parse(selector);
+                for (List<CSSSelector> groupList : list) {
+                    resultList.addAll(findByCssSelector(groupList));
+                }
+            } catch (CSSException e) {
+                LOG.error(e.getMessage(), e, selector);
+            } finally {
+                LOG.debug("findByCssSelector({0}) - {1}ms", selector, (System.currentTimeMillis() - st));
             }
             return resultList;
         }
         
-        private List<Element> findByCssSelector(Iterator<CSSSelector> iter) {
+        private List<Element> findByCssSelector(List<CSSSelector> selectorList) {
             List<Element> result = new ArrayList<>();
-            CSSSelector selector = iter.next();
-            for (Element child : getChildList()) {
-                if (selector.match(this)) {
-                    child.findByCssSelector(iter);
+            CSSSelector selector = selectorList.get(0);
+            switch (selector.getCombinator()) {
+            case DESCENDANT:
+                for (Element child : getChildList()) {
+                    //LOG.debug("match:" + child + " <=> " + selector);
+                    if (selector.match(child)) {
+                        if (selectorList.size() > 1) {
+                            result.addAll(child.findByCssSelector(selectorList.subList(1, selectorList.size())));
+                        } else {
+                            result.add(child);
+                        }
+                    } else {
+                        result.addAll(child.findByCssSelector(selectorList));
+                    }
                 }
-                
+                break;
+            case CHILD:
+                for (Element child : getChildList()) {
+                    if (selector.match(child)) {
+                        //LOG.debug("match:" + child + " <=> " + selector);
+                        if (selectorList.size() > 1) {
+                            result.addAll(child.findByCssSelector(selectorList.subList(1, selectorList.size())));
+                        } else {
+                            result.add(child);
+                        }
+                    }
+                }
+                break;
+            case SIBLING:
+            case ADJACENT:
             }
             return result;
         }
@@ -274,6 +300,20 @@ public abstract class DOMBuilder {
             .replaceAll(">", "&gt;");
     }
 
+    protected static class DocumentElement extends Element {
+        public static final String TAG = "#document";
+        public DocumentElement() {
+            super(TAG);
+        }
+        @Override
+        public void render(OutputStream os, boolean useIndent, int level) throws IOException {
+            os.write("<!doctype html>".getBytes());
+            for (Element child : getChildList()) {
+                child.render(os);
+            }
+        }
+    }
+
     protected static class TextElement extends Element {
         public static final String TAG = "#text";
         private String text;
@@ -298,7 +338,7 @@ public abstract class DOMBuilder {
     }
 
     protected static class MarkerElement extends Element {
-        public static final String TAG = "#marker";
+        public static final String TAG = "marker";
 
         protected MarkerElement(String name) {
             super(TAG);

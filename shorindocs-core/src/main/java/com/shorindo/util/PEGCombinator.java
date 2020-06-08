@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.xuml;
+package com.shorindo.util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,12 +39,12 @@ public class PEGCombinator {
         ruleMap = new HashMap<RuleTypes,Rule>();
     }
 
-    protected Rule rule(final RuleTypes ruleType) {
+    public Rule rule(final RuleTypes ruleType) {
         if (!ruleMap.containsKey(ruleType)) {
             ruleMap.put(ruleType, new Rule(ruleType) {
                 @Override
-                public Node accept(BacktrackReader is) throws UnmatchException {
-                    Node $$ = new Node(ruleType);
+                public PEGNode accept(BacktrackReader is) throws UnmatchException {
+                    PEGNode $$ = new PEGNode(ruleType);
                     $$.setType(ruleType);
                     for (Rule rule : childRules) {
                         $$.add(rule.accept(is));
@@ -60,16 +57,16 @@ public class PEGCombinator {
         return ruleMap.get(ruleType);
     }
 
-    protected Rule rule$Any() {
+    public Rule rule$Any() {
         return new Rule(Types.ANY) {
             @Override
-            public Node accept(BacktrackReader is) throws UnmatchException {
+            public PEGNode accept(BacktrackReader is) throws UnmatchException {
                 int c = is.read();
                 if (c == -1) {
                     throw new UnmatchException();
                 } else {
                     LOG.trace("rule$any() <= " + (char)c);
-                    Node $$ = new Node(Types.ANY);
+                    PEGNode $$ = new PEGNode(Types.ANY);
                     $$.setValue(String.valueOf((char)c));
                     return action.apply($$);
                 }
@@ -77,16 +74,16 @@ public class PEGCombinator {
         };
     }
 
-    protected Rule rule$Not(final Rule rule) {
+    public Rule rule$Not(final Rule rule) {
         return new Rule(Types.NOT) {
             @Override
-            public Node accept(BacktrackReader is) throws UnmatchException {
+            public PEGNode accept(BacktrackReader is) throws UnmatchException {
                 int pos = is.position();
                 try {
                     rule.accept(is);
                 } catch (UnmatchException e) {
                     LOG.trace("rule$not() <= " + rule);
-                    Node $$ = new Node(Types.NOT);
+                    PEGNode $$ = new PEGNode(Types.NOT);
                     return action.apply($$);
                 }
                 is.reset(pos);
@@ -95,10 +92,10 @@ public class PEGCombinator {
         };
     }
 
-    protected Rule rule$Literal(final String literal) {
+    public Rule rule$Literal(final String literal) {
         return new Rule(Types.LITERAL) {
             @Override
-            public Node accept(BacktrackReader is) throws UnmatchException {
+            public PEGNode accept(BacktrackReader is) throws UnmatchException {
                 int mark = is.position();
                 for (int i = 0; i < literal.length(); i++) {
                     char c = literal.charAt(i);
@@ -109,25 +106,25 @@ public class PEGCombinator {
                     }
                 }
                 LOG.trace("rule$literal() <= " + literal);
-                Node $$ = new Node(Types.LITERAL);
+                PEGNode $$ = new PEGNode(Types.LITERAL);
                 $$.setValue(literal);
                 return action.apply($$);
             }
         };
     }
     
-    protected Rule rule$Class(final String charClass) {
+    public Rule rule$Class(final String charClass) {
         return new Rule(Types.CLASS) {
             Pattern pattern = Pattern.compile("[" + charClass + "]");
 
             @Override
-            public Node accept(BacktrackReader is) throws UnmatchException {
+            public PEGNode accept(BacktrackReader is) throws UnmatchException {
                 int curr = is.position();
                 int c = is.read();
                 Matcher m = pattern.matcher(String.valueOf((char)c));
                 if (m.matches()) {
                     LOG.trace("rule$class(" + (char)c + ") <= " + charClass);
-                    Node $$ = new Node(Types.CLASS);
+                    PEGNode $$ = new PEGNode(Types.CLASS);
                     $$.setValue(String.valueOf((char)c));
                     return action.apply($$);
                 } else {
@@ -137,13 +134,13 @@ public class PEGCombinator {
             }
         };
     }
-    protected Rule rule$ZeroOrMore(final Rule...rules) {
+    public Rule rule$ZeroOrMore(final Rule...rules) {
         return new Rule(Types.ZERO_OR_MORE) {
             @Override
-            public Node accept(BacktrackReader is) throws UnmatchException {
-                Node $$ = new Node(Types.ZERO_OR_MORE);
+            public PEGNode accept(BacktrackReader is) throws UnmatchException {
+                PEGNode $$ = new PEGNode(Types.ZERO_OR_MORE);
                 while (true) {
-                    Node seq = new Node(Types.SEQUENCE);
+                    PEGNode seq = new PEGNode(Types.SEQUENCE);
                     int curr = is.position();
                     try {
                         for (Rule child : rules) {
@@ -163,14 +160,14 @@ public class PEGCombinator {
             }
         };
     }
-    protected Rule rule$OneOrMore(final Rule...rules) {
+    public Rule rule$OneOrMore(final Rule...rules) {
         return new Rule(Types.ONE_OR_MORE) {
             @Override
-            public Node accept(BacktrackReader is) throws UnmatchException {
+            public PEGNode accept(BacktrackReader is) throws UnmatchException {
                 int count = 0;
-                Node $$ = new Node(Types.ONE_OR_MORE);
+                PEGNode $$ = new PEGNode(Types.ONE_OR_MORE);
                 while (true) {
-                    Node seq = new Node(Types.SEQUENCE);
+                    PEGNode seq = new PEGNode(Types.SEQUENCE);
                     int curr = is.position();
                     try {
                         for (Rule child : rules) {
@@ -195,16 +192,16 @@ public class PEGCombinator {
             }
         };
     }
-    protected Rule rule$Sequence(final Rule...rules) {
+    public Rule rule$Sequence(final Rule...rules) {
         return new Rule(Types.SEQUENCE) {
             @Override
-            public Node accept(BacktrackReader is) throws UnmatchException {
+            public PEGNode accept(BacktrackReader is) throws UnmatchException {
                 //LOG.trace(toString());
                 int curr = is.position();
-                Node $$ = new Node(Types.SEQUENCE);
+                PEGNode $$ = new PEGNode(Types.SEQUENCE);
                 try {
                     for (Rule child : rules) {
-                        Node $n = (Node)child.accept(is);
+                        PEGNode $n = (PEGNode)child.accept(is);
                         $$.add($n);
                     }
                 } catch (UnmatchException e) {
@@ -217,16 +214,16 @@ public class PEGCombinator {
         };
     }
     
-    protected Rule rule$Choice(final Rule...rules) {
+    public Rule rule$Choice(final Rule...rules) {
         return new Rule(Types.CHOICE) {
             @Override
-            public Node accept(BacktrackReader is) throws UnmatchException {
+            public PEGNode accept(BacktrackReader is) throws UnmatchException {
                 //LOG.trace(toString());
                 int curr = is.position();
                 for (Rule child : rules) {
                     try {
                         LOG.trace("rule$choice <= " + toString(rules));
-                        Node $$ = child.accept(is);
+                        PEGNode $$ = child.accept(is);
                         return action.apply($$);
                     } catch (UnmatchException e) {
                         is.reset(curr);
@@ -237,16 +234,16 @@ public class PEGCombinator {
         };
     }
 
-    protected Rule rule$Optional(final Rule...rules) {
+    public Rule rule$Optional(final Rule...rules) {
         return new Rule(Types.OPTIONAL) {
             @Override
-            public Node accept(BacktrackReader is) throws UnmatchException {
+            public PEGNode accept(BacktrackReader is) throws UnmatchException {
                 for (Rule child : rules) {
                     childRules.add(child);
                 }
 
                 int curr = is.position();
-                Node $$ = new Node(Types.OPTIONAL);
+                PEGNode $$ = new PEGNode(Types.OPTIONAL);
                 try {
                     for (Rule child : rules) {
                         $$.add(child.accept(is));
@@ -272,21 +269,21 @@ public class PEGCombinator {
      * 
      */
     public static abstract class Rule {
-        protected RuleTypes type;
-        protected Function<Node,Node> action;
+        public RuleTypes type;
+        protected Function<PEGNode,PEGNode> action;
         protected List<Rule> childRules = new ArrayList<Rule>();
 
         public Rule(RuleTypes type) {
             this.type = type;
-            this.action = new Function<Node,Node>() {
+            this.action = new Function<PEGNode,PEGNode>() {
                 @Override
-                public Node apply(Node $$) {
+                public PEGNode apply(PEGNode $$) {
                     return $$;
                 }
             };
         }
 
-        public abstract Node accept(BacktrackReader is)
+        public abstract PEGNode accept(BacktrackReader is)
                 throws UnmatchException;
 
         public Rule define(Rule...rules) {
@@ -300,7 +297,7 @@ public class PEGCombinator {
             return childRules.get(i);
         }
         
-        public Rule pack(Function<Node,Node> action) {
+        public Rule pack(Function<PEGNode,PEGNode> action) {
             this.action = action;
             return this;
         }
@@ -325,13 +322,13 @@ public class PEGCombinator {
     /**
      * 
      */
-    public static class Node {
+    public static class PEGNode {
         private RuleTypes type;
-        private Object value;
+        private String value;
         private boolean empty = false;
-        private List<Node> childList = new ArrayList<Node>();
+        private List<PEGNode> childList = new ArrayList<PEGNode>();
 
-        public Node(RuleTypes type) {
+        public PEGNode(RuleTypes type) {
             this.type = type;
         }
         public RuleTypes getType() {
@@ -340,10 +337,10 @@ public class PEGCombinator {
         public void setType(RuleTypes type) {
             this.type = type;
         }
-        public Object getValue() {
+        public String getValue() {
             return value;
         }
-        public void setValue(Object value) {
+        public void setValue(String value) {
             this.value = value;
         }
         public boolean isEmpty() {
@@ -352,10 +349,10 @@ public class PEGCombinator {
         public void setEmpty(boolean empty) {
             this.empty = empty;
         }
-        public void add(Node child) {
+        public void add(PEGNode child) {
             childList.add(child);
         }
-        public Node get(int i) {
+        public PEGNode get(int i) {
             return childList.get(i);
         }
         public int length() {
@@ -369,7 +366,7 @@ public class PEGCombinator {
             if (value != null) {
                 sb.append(value);
             }
-            for (Node child : childList) {
+            for (PEGNode child : childList) {
                 sb.append(child.getSource());
             }
             return sb.toString();
@@ -381,7 +378,7 @@ public class PEGCombinator {
             StringBuffer sb = new StringBuffer();
             sb.append("(");
             sb.append(getType());
-            for (Node child : childList) {
+            for (PEGNode child : childList) {
                 sb.append(" " + child.toString());
             }
             sb.append(")");
