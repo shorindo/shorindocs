@@ -78,29 +78,29 @@ public abstract class DocumentServiceFactory {
      */
     public static synchronized ActionController getController(String path) {
         ActionController controller = controllerMap.get(path);
-        if (controller == null) {
-            try {
-                DocumentEntity key = new DocumentEntity();
-                key.setDocumentId(path.substring(1));
-                key.setVersion(0);
-                DocumentEntity entity = repositoryService.get(key);
-                if (classMap.containsKey(entity.getController())) {
-                    controller = classMap.get(entity.getController());    
-                } else {
-                    Class<?> clazz = Class.forName(entity.getController());
-                    controller = (ActionController)clazz.newInstance();
-                    classMap.put(entity.getController(), controller);
-                }
-            } catch (RepositoryException e) {
-                LOG.error(DOCS_9999, e);
-            } catch (ClassNotFoundException e) {
-                LOG.error(DOCS_9999, e);
-            } catch (InstantiationException e) {
-                LOG.error(DOCS_9999, e);
-            } catch (IllegalAccessException e) {
-                LOG.error(DOCS_9999, e);
-            }
-        }
+//        if (controller == null) {
+//            try {
+//                DocumentEntity key = new DocumentEntity();
+//                key.setDocumentId(path.substring(1));
+//                key.setVersion(0);
+//                DocumentEntity entity = repositoryService.get(key);
+//                if (classMap.containsKey(entity.getController())) {
+//                    controller = classMap.get(entity.getController());    
+//                } else {
+//                    Class<?> clazz = Class.forName(entity.getController());
+//                    controller = (ActionController)clazz.newInstance();
+//                    classMap.put(entity.getController(), controller);
+//                }
+//            } catch (RepositoryException e) {
+//                LOG.error(DOCS_9999, e);
+//            } catch (ClassNotFoundException e) {
+//                LOG.error(DOCS_9999, e);
+//            } catch (InstantiationException e) {
+//                LOG.error(DOCS_9999, e);
+//            } catch (IllegalAccessException e) {
+//                LOG.error(DOCS_9999, e);
+//            }
+//        }
         return controller;
     }
 }

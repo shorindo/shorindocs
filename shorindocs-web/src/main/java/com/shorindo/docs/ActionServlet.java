@@ -58,7 +58,6 @@ public class ActionServlet extends HttpServlet {
      */
     @Override
     public void init(ServletConfig config) throws ServletException {
-        LOG.debug("INITIALIZED");
         super.init(config);
     }
 
@@ -80,11 +79,13 @@ public class ActionServlet extends HttpServlet {
         String path = req.getServletPath();
         String documentId = path.substring(1);
         ActionContext context = new ActionContext();
+        context.setRequestPath(req.getServletPath());
+        context.setContextPath(req.getServletContext().getContextPath());
+        context.setId(req.getServletPath().substring(1));
+        context.setParameters(req.getParameterMap());
         context.setAttribute("requestPath", req.getServletPath());
         context.setAttribute("contextPath", req.getServletContext().getContextPath());
         context.setAttribute("documentId", req.getServletPath().substring(1));
-        context.setId(req.getServletPath().substring(1));
-        context.setParameters(req.getParameterMap());
 
         try {
             if (documentId == null || "".equals(documentId)) {
@@ -98,31 +99,38 @@ public class ActionServlet extends HttpServlet {
             if (file.exists()) {
                 res.setHeader("Cache-Control", "public, max-age=604800, immutable");
                 output(context, res, new DefaultView(file, context));
-            } else {
-                DocumentEntity key = new DocumentEntity();
-                key.setDocumentId(path.substring(1));
-                key.setVersion(0);
-                DocumentEntity entity = repositoryService.get(key);
-                if (entity == null) {
-                    output(context, res, new ErrorView(404));
-                    return;
-                }
-
-                ActionController controller = DocumentServiceFactory.getController(entity);
-                if (controller != null) {
-                    context.setAttribute("document", entity);
-                    output(context, res, controller.action(context));
-                } else {
-                    LOG.error(DOCS_5003, path);
-                    output(context, res, new ErrorView(404));
-                }
+                return;
+            }
+            
+            ActionController controller = DocumentServiceFactory.getController(context.getRequestPath());
+            if (controller != null) {
+                output(context, res, controller.action(context));
+                return;
             }
 
-            LOG.info(DOCS_1106, "GET " + req.getServletPath(),
-                    (System.currentTimeMillis() - st));
+            DocumentEntity key = new DocumentEntity();
+            key.setDocumentId(path.substring(1));
+            key.setVersion(0);
+            DocumentEntity entity = repositoryService.get(key);
+            if (entity == null) {
+                output(context, res, new ErrorView(404));
+                return;
+            }
+            
+            controller = DocumentServiceFactory.getController(entity);
+            if (controller != null) {
+                context.setAttribute("document", entity);
+                output(context, res, controller.action(context));
+            } else {
+                LOG.error(DOCS_5003, path);
+                output(context, res, new ErrorView(404));
+            }
         } catch (Exception e) {
             LOG.error(DOCS_9999, e);
             output(context, res, new ErrorView(500));
+        } finally {
+            LOG.info(DOCS_1106, "GET " + req.getServletPath(),
+                (System.currentTimeMillis() - st));
         }
     }
 

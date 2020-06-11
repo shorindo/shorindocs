@@ -46,18 +46,25 @@ public class DataGridView extends DocumentView {
         layout()
             .put("meta", script()
                 .attr("type", "text/javascript")
-                .attr("src", "/docs/js/handsontable.full.min.js"))
+                .attr("src", context.getContextPath() + "/js/handsontable.full.min.js"))
             .put("meta", script()
                 .attr("type", "text/javascript")
                 .add(text("window.onload = function() { tbl = new Handsontable(document.getElementById('datagrid'), " + model.getContent() + "); };")))
             .put("meta", link()
                 .attr("rel", "stylesheet")
                 .attr("type", "text/css")
-                .attr("href", "/docs/css/handsontable.full.min.css"))
+                .attr("href", context.getContextPath() + "/css/handsontable.full.min.css"))
             .put("header", text(model.getTitle()))
-            .put("menubar-left", button("新規"))
+            
+            .put("menubar-left", button("新規")
+                .on("RENDER_BEFORE", evt -> {
+                    return true;
+                }))
             .put("menubar-left", button("編集")
-                    .attr("onclick", "location='?action=edit'"))
+                .attr("onclick", "location='?action=edit'")
+                .on("RENDER_BEFORE",evt -> {
+                    return true;
+                }))
             .put("left", recents(model.getDocumentId()))
             .put("main", div()
                 .attr("class", "datagrid-wrapper")

@@ -23,6 +23,11 @@ import com.shorindo.docs.action.ActionPlugin;
 public class SnapboardPlugin extends ActionPlugin {
 
     @Override
+    public String getId() {
+        return "snapboard";
+    }
+
+    @Override
     public void initialize() {
         addService(SnapboardService.class, SnapboardServiceImpl.class);
     }

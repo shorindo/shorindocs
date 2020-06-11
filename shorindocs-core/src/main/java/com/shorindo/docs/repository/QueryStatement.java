@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.shorindo.docs.BeanUtil;
-import com.shorindo.docs.BeanUtil.BeanNotFoundException;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.util.BeanUtil;
+import com.shorindo.util.BeanUtil.BeanNotFoundException;
 
 /**
  * 

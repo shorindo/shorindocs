@@ -30,4 +30,9 @@ public class AdminPlugin extends ActionPlugin {
         addController(UserController.class);
     }
 
+    @Override
+    public String getId() {
+        return "admin";
+    }
+
 }

@@ -17,6 +17,9 @@ package com.shorindo.docs.specout;
 
 import static com.shorindo.xuml.DOMBuilder.text;
 import static com.shorindo.xuml.HTMLBuilder.*;
+import static com.shorindo.xuml.XumlMessages.XUML_1001;
+import static com.shorindo.xuml.XumlMessages.XUML_1002;
+import static com.shorindo.xuml.XumlMessages.XUML_5200;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,6 +29,7 @@ import java.util.List;
 import javax.xml.bind.JAXB;
 
 import com.shorindo.docs.action.ActionContext;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentView;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.specout.SpecoutEntity.Change;
@@ -36,6 +40,7 @@ import com.shorindo.docs.specout.SpecoutEntity.Spec;
  * 
  */
 public class SpecoutView extends DocumentView {
+    private static ActionLogger LOG = ActionLogger.getLogger(SpecoutView.class);
     private DocumentModel model;
 
     public SpecoutView(DocumentModel model) {
@@ -44,7 +49,10 @@ public class SpecoutView extends DocumentView {
 
     @Override
     public void render(ActionContext ctx, OutputStream os) throws IOException {
+        long st = System.currentTimeMillis();
+        LOG.debug(XUML_1001, "render");
         SpecoutEntity specout = JAXB.unmarshal(new StringReader(model.getContent()), SpecoutEntity.class);
+        //LOG.debug(XUML_1002, "unmarshal", System.currentTimeMillis() - st);
         layout()
             .put("header", text(model.getTitle()))
             .put("meta", meta())
@@ -56,6 +64,7 @@ public class SpecoutView extends DocumentView {
             .put("right", text("右側ペイン"))
             .put("footer", text("Powered by shorindo.com"))
             .render(os);
+        LOG.debug(XUML_1002, "render", System.currentTimeMillis() - st);
     }
     
     private Element meta() {

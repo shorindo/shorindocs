@@ -59,12 +59,12 @@ public class DataGridEdit extends DocumentView {
             .put("menubar-left", button()
                 .add(text("保存")))
             //.put("left", recents(model.getDocumentId()))
-            .put("main", editform())
+            .put("main", editor())
             .render(os);
         LOG.debug(XUML_1002, "render", System.currentTimeMillis() - st);
     }
 
-    private Element editform() {
+    private Element editor() {
         return form()
             .attr("action", model.getDocumentId())
             .attr("method", "post")

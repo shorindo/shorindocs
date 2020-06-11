@@ -23,6 +23,11 @@ import com.shorindo.docs.action.ActionPlugin;
 public class DbmntPlugin extends ActionPlugin {
 
     @Override
+    public String getId() {
+        return "dbmnt";
+    }
+
+    @Override
     public void initialize() {
     }
 

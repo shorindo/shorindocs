@@ -35,9 +35,9 @@ public class PluginContainer {
         if (container == null) {
             container = new PluginContainer();
             threadContainer.set(container);
-            LOG.debug("initContainer() - new");
+            //LOG.debug("initContainer() - new");
         } else {
-            LOG.debug("initContainer() - curr");
+            //LOG.debug("initContainer() - curr");
         }
         return container;
     }

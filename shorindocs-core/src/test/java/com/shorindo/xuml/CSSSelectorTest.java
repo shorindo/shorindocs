@@ -15,8 +15,7 @@
  */
 package com.shorindo.xuml;
 
-import static com.shorindo.xuml.DOMBuilder.document;
-import static com.shorindo.xuml.DOMBuilder.marker;
+import static com.shorindo.xuml.DOMBuilder.*;
 import static com.shorindo.xuml.HTMLBuilder.*;
 import static org.junit.Assert.*;
 
@@ -28,6 +27,60 @@ import com.shorindo.xuml.CSSSelector.CSSException;
 import com.shorindo.xuml.DOMBuilder.Element;
 
 /**
+ * U .. Universal Selector
+ * E .. Element Selector
+ * C .. Class Selector
+ * I .. Id Selector
+ * 
+ * U
+ * E
+ * C
+ * I
+ * UU x
+ * UE
+ * UC
+ * UI
+ * EU x
+ * EE x
+ * EC
+ * EI
+ * CU x
+ * CE x
+ * CC
+ * CI
+ * IU x
+ * IE x
+ * IC
+ * II
+ * 
+ * 
+ * DESCENDANT_COMBINATOR
+ * U U
+ * U E
+ * U C
+ * U I
+ * E U
+ * E E
+ * E C
+ * E I
+ * I U
+ * I E
+ * I C
+ * I I
+ * 
+ * CHILD COMBINATOR
+ * U > U
+ * U > E
+ * U > C
+ * U > I
+ * E > U
+ * E > E
+ * E > C
+ * E > I
+ * I > U
+ * I > E
+ * I > C
+ * I > I
  * 
  */
 public class CSSSelectorTest {
@@ -116,6 +169,9 @@ public class CSSSelectorTest {
         assertSelector("link", "[rel^='style']");
         assertSelector("link", "link[rel$='sheet']");
         assertSelector("link", "*[rel*='les']");
+        assertSelector("html", "*");
+        assertSelector("div", "div");
+        assertSelector("body", "* > body");
     }
     
     @Test
@@ -131,8 +187,8 @@ public class CSSSelectorTest {
 
     @Test
     public void testAdjacent() throws Exception {
-        assertSelector("script", "#left-pane + #main-pane");
-        assertNotSelector("script", "#left-pane + #right-pane");
+        assertSelector("div", "#left-pane + #main-pane");
+        assertNotSelector("div", "#left-pane + #right-pane");
     }
 
     @Test
@@ -147,7 +203,7 @@ public class CSSSelectorTest {
         return document().add(html()
             .add(head()
                 .add(meta()
-                    .attr("htt-equiv", "Content-Type")
+                    .attr("http-equiv", "Content-Type")
                     .attr("content", "text/html; charset=UTF-8"))
                 .add(title()
                     .add(marker("title")))
@@ -216,9 +272,6 @@ public class CSSSelectorTest {
     private void assertSelector(String tagName, String selector) {
         Element document = createDocument();
         List<Element> result = document.findByCssSelector(selector);
-//        for (Element e : result) {
-//            System.out.println(e.toString());
-//        }
         if (result.size() == 0) {
             fail("No match!");
         }

@@ -23,6 +23,11 @@ import com.shorindo.docs.action.ActionPlugin;
 public class SpecoutPlugin extends ActionPlugin {
 
     @Override
+    public String getId() {
+        return "specout";
+    }
+
+    @Override
     public void initialize() {
         addController(SpecoutController.class);
     }

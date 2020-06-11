@@ -384,7 +384,7 @@ public class CSSSelector {
         } catch (UnmatchException e) {
             throw new CSSException(e);
         }
-        //System.out.println(result.getSource() + " -> " + result.toString());
+
         if (reader.available() > 0) {
             StringBuffer sb = new StringBuffer();
             int c = 0;
@@ -560,7 +560,7 @@ public class CSSSelector {
         }
     }
 
-    protected enum CSSTokens implements RuleTypes {
+    public enum CSSTokens implements RuleTypes {
         CSS_SELECTOR, ALL_SELECTOR, UNIVERSAL_SELECTOR, ELEMENT_SELECTOR,
         CLASS_SELECTOR, ID_SELECTOR, ATTR_SELECTOR, ATTR_NAME, ATTR_VALUE,
         ATTR_COMPARATOR, ALL_COMBINATOR, CHILD_COMBINATOR, DESCENDANT_COMBINATOR,

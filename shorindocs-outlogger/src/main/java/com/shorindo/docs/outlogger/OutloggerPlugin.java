@@ -23,6 +23,11 @@ import com.shorindo.docs.action.ActionPlugin;
 public class OutloggerPlugin extends ActionPlugin {
 
     @Override
+    public String getId() {
+        return "outlogger";
+    }
+
+    @Override
     public void initialize() {
         addSchema(getClass().getResourceAsStream("Outlogger.dsdl"));
         addService(OutloggerService.class, OutloggerServiceImpl.class);

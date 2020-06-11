@@ -23,6 +23,11 @@ import com.shorindo.docs.action.ActionPlugin;
 public class AuthenticatePlugin extends ActionPlugin {
 
     @Override
+    public String getId() {
+        return "auth";
+    }
+
+    @Override
     public void initialize() {
         addSchema(getClass().getResourceAsStream("Authenticate.dsdl"));
         addController(LoginController.class);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.util;
 
 import static com.shorindo.docs.document.DocumentMessages.*;
 
@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionLogger;
 
 /**

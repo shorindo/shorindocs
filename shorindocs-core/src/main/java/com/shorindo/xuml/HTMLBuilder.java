@@ -761,9 +761,6 @@ public class HTMLBuilder extends DOMBuilder {
         public HtmlElement() {
             super(HTML.tag());
         }
-        public String toString() {
-            return "<!doctype html>\n" + super.toString();
-        }
     }
 
     public static class IElement extends Element {

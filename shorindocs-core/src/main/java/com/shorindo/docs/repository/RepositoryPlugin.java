@@ -24,6 +24,11 @@ import com.shorindo.docs.action.ActionPlugin;
 public class RepositoryPlugin extends ActionPlugin {
 
     @Override
+    public String getId() {
+        return "repository";
+    }
+
+    @Override
     public void initialize() {
         ServiceFactory.addService(RepositoryService.class, RepositoryServiceImpl.class);
     }

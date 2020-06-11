@@ -27,6 +27,11 @@ public class DataGridPlugin extends ActionPlugin {
     private static final ActionLogger LOG = ActionLogger.getLogger(DataGridPlugin.class);
 
     @Override
+    public String getId() {
+        return "datagrid";
+    }
+
+    @Override
     public void initialize() {
         addSchema(getClass().getResourceAsStream("DataGrid.dsdl"));
         addController(DataGridController.class);

@@ -42,6 +42,14 @@ public class ActionLogger {
         logger.trace(msg);
     }
 
+    public void trace(String message, Object...args) {
+        if (args.length > 0) {
+            logger.trace(MessageFormat.format(message, args));
+        } else {
+            logger.trace(message);
+        }
+    }
+
     public void debug(String msg) {
         logger.debug(msg);
     }

@@ -23,6 +23,11 @@ import com.shorindo.docs.action.ActionPlugin;
 public class DocumentPlugin extends ActionPlugin {
 
     @Override
+    public String getId() {
+        return "document";
+    }
+
+    @Override
     public void initialize() {
         addSchema(getClass().getResourceAsStream("Document.dsdl"));
         addController(DocumentController.class);

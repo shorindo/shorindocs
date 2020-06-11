@@ -34,6 +34,7 @@ public abstract class ActionPlugin {
             ActionLogger.getLogger(ActionPlugin.class);
 
     public abstract void initialize();
+    public abstract String getId();
 
     public static final void addPlugin(Class<? extends ActionPlugin> clazz) {
         try {

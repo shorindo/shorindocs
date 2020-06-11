@@ -55,6 +55,8 @@
     <module>shorindocs-snapboard</module>
     <module>shorindocs-spreadsheet</module>
     <module>shorindocs-docbook</module>
+    <module>shorindocs-wiki</module>
+    <module>shorindocs-markdown</module>
   </modules>
   <name>shorindocs</name>
   <dependencyManagement>

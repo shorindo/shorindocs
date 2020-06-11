@@ -29,6 +29,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.util.PEGCombinator.UnmatchException;
@@ -40,7 +41,7 @@ import com.shorindo.xuml.CSSSelector.CSSException;
 public abstract class DOMBuilder {
     private static String encoding = "UTF-8";
     private static ActionLogger LOG = ActionLogger.getLogger(DOMBuilder.class);
-    
+        
     public static Element document() {
         return new DocumentElement();
     }
@@ -59,6 +60,7 @@ public abstract class DOMBuilder {
 
     public static abstract class Element {
         private String tagName;
+        private Element parent;
         private Map<String,String> attrs;
         private List<Element> childList;
         private Map<String,List<Predicate<Event>>> eventHandler;
@@ -71,6 +73,10 @@ public abstract class DOMBuilder {
         
         public final String getTagName() {
             return tagName;
+        }
+
+        private void setParent(Element parent) {
+            this.parent = parent;
         }
 
         public final Element attr(String name, String value) {
@@ -86,6 +92,7 @@ public abstract class DOMBuilder {
         public final Element add(Element child) {
             if (child != null) {
                 childList.add(child);
+                child.setParent(this);
             }
             return this;
         }
@@ -101,7 +108,7 @@ public abstract class DOMBuilder {
 
         public final Element put(String name, Element...elements) {
             for (Element marker : this.findByCssSelector("marker[name='" + name + "']")) {
-                LOG.debug("marker[name=" + marker.getAttr("name") + "] <- " + name);
+                //LOG.debug("marker[name=" + marker.getAttr("name") + "] <- " + name);
                 for (Element element : elements) {
                     marker.add(element);
                 }
@@ -156,54 +163,78 @@ public abstract class DOMBuilder {
             return resultList;
         }
 
-        public List<Element> findByCssSelector(String selector) {
+        public List<Element> findByCssSelector(String text) {
             List<Element> resultList = new ArrayList<>();
-            long st = System.currentTimeMillis();
+            //long st = System.currentTimeMillis();
             try {
-                List<List<CSSSelector>> list = CSSSelector.parse(selector);
+                List<List<CSSSelector>> list = CSSSelector.parse(text);
                 for (List<CSSSelector> groupList : list) {
-                    resultList.addAll(findByCssSelector(groupList));
+                    List<Element> filteredResult = new ArrayList<>();
+                    filteredResult.add(this);
+                    for (CSSSelector selector : groupList) {
+                        filteredResult = filteredResult.stream()
+                            .flatMap(e -> {
+                                return e.findByCssSelector(selector).stream();
+                            })
+                            .collect(Collectors.toList());
+                    }
+                    resultList.addAll(filteredResult);
                 }
             } catch (CSSException e) {
-                LOG.error(e.getMessage(), e, selector);
+                LOG.error(e.getMessage(), e, text);
             } finally {
-                LOG.debug("findByCssSelector({0}) - {1}ms", selector, (System.currentTimeMillis() - st));
+                //LOG.debug("findByCssSelector({0}) => count:{1} time:{2}ms",
+                //    text, resultList.size(), (System.currentTimeMillis() - st));
             }
             return resultList;
         }
         
-        private List<Element> findByCssSelector(List<CSSSelector> selectorList) {
+        private List<Element> findByCssSelector(CSSSelector selector) {
             List<Element> result = new ArrayList<>();
-            CSSSelector selector = selectorList.get(0);
             switch (selector.getCombinator()) {
             case DESCENDANT:
                 for (Element child : getChildList()) {
-                    //LOG.debug("match:" + child + " <=> " + selector);
                     if (selector.match(child)) {
-                        if (selectorList.size() > 1) {
-                            result.addAll(child.findByCssSelector(selectorList.subList(1, selectorList.size())));
-                        } else {
-                            result.add(child);
-                        }
-                    } else {
-                        result.addAll(child.findByCssSelector(selectorList));
+                        result.add(child);
                     }
+                    result.addAll(child.findByCssSelector(selector));
                 }
                 break;
             case CHILD:
                 for (Element child : getChildList()) {
                     if (selector.match(child)) {
-                        //LOG.debug("match:" + child + " <=> " + selector);
-                        if (selectorList.size() > 1) {
-                            result.addAll(child.findByCssSelector(selectorList.subList(1, selectorList.size())));
-                        } else {
-                            result.add(child);
-                        }
+                        result.add(child);
                     }
                 }
                 break;
             case SIBLING:
+                Element parent = this.parent;
+                for (int i = 0; i < parent.getChildList().size() - 1; i++) {
+                    Element curr = parent.childList.get(i);
+                    Element next = parent.childList.get(i + 1);
+                    if (curr == this) {
+                        OUT:for (int j = i + 1; j < parent.childList.size(); j++) {
+                            next = parent.childList.get(j);
+                            if (selector.match(next)) {
+                                result.add(next);
+                                break OUT;
+                            }
+                        }
+                        
+                    }
+                }
+                break;
             case ADJACENT:
+                parent = this.parent;
+                for (int i = 0; i < parent.getChildList().size() - 1; i++) {
+                    Element curr = parent.childList.get(i);
+                    Element next = parent.childList.get(i + 1);
+                    if (curr == this && selector.match(next)) {
+                        result.add(next);
+                        break;
+                    }
+                }
+                break;
             }
             return result;
         }
@@ -274,7 +305,7 @@ public abstract class DOMBuilder {
             }
             doEvent("RENDER_AFTER");
         }
-
+        
         protected String lf(boolean useIndent) {
             return useIndent ? "\n" : "";
         }

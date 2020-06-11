@@ -61,7 +61,7 @@ public class XumlView extends AbstractView {
         return document().add(html()
             .add(head()
                 .add(meta()
-                    .attr("htt-equiv", "Content-Type")
+                    .attr("http-equiv", "Content-Type")
                     .attr("content", CONTENT_TYPE))
                 .add(title()
                     .add(marker("title")))

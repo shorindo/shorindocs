@@ -35,6 +35,8 @@ import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentPlugin;
 import com.shorindo.docs.outlogger.OutloggerPlugin;
 import com.shorindo.docs.plaintext.PlainTextPlugin;
+import com.shorindo.docs.plugin.PluginService;
+import com.shorindo.docs.plugin.PluginServiceImpl;
 import com.shorindo.docs.repository.RepositoryPlugin;
 import com.shorindo.docs.specout.SpecoutPlugin;
 
@@ -79,19 +81,14 @@ public class ActionListener implements ServletContextListener {
         ActionPlugin.addPlugin(SpecoutPlugin.class);
         ActionPlugin.addPlugin(PlainTextPlugin.class);
 
-        scan(new File(event.getServletContext().getRealPath("/WEB-INF/classes")));
-        scan(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
         //XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
-    }
-    
-    private void scan(File file) {
-        if (file.isDirectory()) {
-            for (File child : file.listFiles()) {
-                scan(child);
-            }
-        } else {
-            LOG.debug("file:" + file.getAbsolutePath());
-        }
+        
+        ServiceFactory.addService(PluginService.class, PluginServiceImpl.class);
+        PluginService pluginService = ServiceFactory.getService(PluginService.class);
+//        for (Class<? extends ActionPlugin> clazz : pluginService.findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/classes")))) {
+//            ActionPlugin.addPlugin(clazz);
+//        }
+        pluginService.findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
     }
 
     /**

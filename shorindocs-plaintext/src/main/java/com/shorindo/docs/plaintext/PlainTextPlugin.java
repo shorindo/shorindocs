@@ -23,6 +23,11 @@ import com.shorindo.docs.action.ActionPlugin;
 public class PlainTextPlugin extends ActionPlugin {
 
     @Override
+    public String getId() {
+        return "plaintext";
+    }
+
+    @Override
     public void initialize() {
         addController(PlainTextController.class);
     }
