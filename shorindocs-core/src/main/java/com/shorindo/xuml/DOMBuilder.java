@@ -46,6 +46,10 @@ public abstract class DOMBuilder {
         return new DocumentElement();
     }
 
+    public static Element cdata(String text) {
+        return new CDATA(text);
+    }
+
     public static Element text(String text, Object...args) {
         return new TextElement(text, args);
     }
@@ -342,6 +346,28 @@ public abstract class DOMBuilder {
             for (Element child : getChildList()) {
                 child.render(os);
             }
+        }
+    }
+
+    protected static class CDATA extends Element {
+        public static final String TAG = "#CDATA";
+        private String text;
+
+        protected CDATA(String text) {
+            super(TAG);
+            this.text = text;
+        }
+
+        @Override
+        public void render(OutputStream os, boolean useIndent, int level)
+            throws IOException {
+            StringBuffer sb = new StringBuffer(indent(useIndent, level));
+            sb.append(text);
+            os.write(sb.toString().getBytes(getEncoding()));
+        }
+
+        public String toString() {
+            return text;
         }
     }
 

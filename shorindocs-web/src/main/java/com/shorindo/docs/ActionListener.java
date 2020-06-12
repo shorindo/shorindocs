@@ -33,6 +33,7 @@ import com.shorindo.docs.auth.AuthenticatePlugin;
 import com.shorindo.docs.datagrid.DataGridPlugin;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentPlugin;
+import com.shorindo.docs.markdown.MarkdownPlugin;
 import com.shorindo.docs.outlogger.OutloggerPlugin;
 import com.shorindo.docs.plaintext.PlainTextPlugin;
 import com.shorindo.docs.plugin.PluginService;
@@ -80,6 +81,7 @@ public class ActionListener implements ServletContextListener {
         ActionPlugin.addPlugin(OutloggerPlugin.class);
         ActionPlugin.addPlugin(SpecoutPlugin.class);
         ActionPlugin.addPlugin(PlainTextPlugin.class);
+        ActionPlugin.addPlugin(MarkdownPlugin.class);
 
         //XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
         

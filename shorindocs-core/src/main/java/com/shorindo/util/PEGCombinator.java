@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,12 +32,36 @@ import com.shorindo.docs.action.ActionLogger;
 public class PEGCombinator {
     private static ActionLogger LOG = ActionLogger.getLogger(PEGCombinator.class);
     private Map<RuleTypes,Rule> ruleMap;
+    private Map<RuleTypes,Statistics> statsMap;
 
     /**
      * 
      */
     public PEGCombinator() {
-        ruleMap = new HashMap<RuleTypes,Rule>();
+        ruleMap = new HashMap<>();
+        statsMap = new HashMap<>();
+    }
+    
+    public Map<RuleTypes,Statistics> getStatistics() {
+        return statsMap;
+    }
+
+    private void count(RuleTypes type) {
+        Statistics stats = statsMap.get(type);
+        if (stats == null) {
+            stats = new Statistics();
+            statsMap.put(type, stats);
+        }
+        stats.called();
+    }
+
+    private void countSuccess(RuleTypes type) {
+        Statistics stats = statsMap.get(type);
+        if (stats == null) {
+            stats = new Statistics();
+            statsMap.put(type, stats);
+        }
+        stats.success();
     }
 
     public Rule rule(final RuleTypes ruleType) {
@@ -44,6 +69,7 @@ public class PEGCombinator {
             ruleMap.put(ruleType, new Rule(ruleType) {
                 @Override
                 public PEGNode accept(BacktrackReader is) throws UnmatchException {
+                    count(ruleType);
                     PEGNode $$ = new PEGNode(ruleType);
                     int curr = is.position();
                     $$.setType(ruleType);
@@ -54,6 +80,7 @@ public class PEGCombinator {
                     $$.setSource(is.subString(curr));
                     LOG.trace("rule({0})[{1}] accept <- {2}",
                         ruleType, curr, $$.getSource());
+                    countSuccess(ruleType);
                     return action.apply($$);
                 }
             });
@@ -65,6 +92,7 @@ public class PEGCombinator {
         return new Rule(Types.ANY) {
             @Override
             public PEGNode accept(BacktrackReader is) throws UnmatchException {
+                count(type);
                 int curr = is.position();
                 int c = is.read();
                 if (c == -1) {
@@ -74,17 +102,18 @@ public class PEGCombinator {
                     PEGNode $$ = new PEGNode(Types.ANY);
                     $$.setSource(String.valueOf((char)c));
                     $$.setValue(String.valueOf((char)c));
+                    countSuccess(type);
                     return action.apply($$);
                 }
             }
         };
     }
 
-    // FIXME カーソルが移動しないので、EOF判定のときくらいしか使えない
     public Rule rule$Not(final Rule rule) {
         return new Rule(Types.NOT) {
             @Override
             public PEGNode accept(BacktrackReader is) throws UnmatchException {
+                count(type);
                 int pos = is.position();
                 try {
                     rule.accept(is);
@@ -92,6 +121,7 @@ public class PEGCombinator {
                     LOG.trace("rule$Not()[{0}] accept <- {1}", pos, rule);
                     PEGNode $$ = new PEGNode(Types.NOT);
                     $$.setSource("");
+                    countSuccess(type);
                     return action.apply($$);
                 }
                 is.reset(pos);
@@ -104,6 +134,7 @@ public class PEGCombinator {
         return new Rule(Types.LITERAL) {
             @Override
             public PEGNode accept(BacktrackReader is) throws UnmatchException {
+                count(type);
                 int mark = is.position();
                 for (int i = 0; i < literal.length(); i++) {
                     char c = literal.charAt(i);
@@ -117,6 +148,7 @@ public class PEGCombinator {
                 PEGNode $$ = new PEGNode(Types.LITERAL);
                 $$.setSource(literal);
                 $$.setValue(literal);
+                countSuccess(type);
                 return action.apply($$);
             }
         };
@@ -128,6 +160,7 @@ public class PEGCombinator {
 
             @Override
             public PEGNode accept(BacktrackReader is) throws UnmatchException {
+                count(type);
                 int curr = is.position();
                 int c = is.read();
                 if (c == -1) {
@@ -141,6 +174,7 @@ public class PEGCombinator {
                     PEGNode $$ = new PEGNode(Types.CLASS);
                     $$.setSource(String.valueOf((char)c));
                     $$.setValue(String.valueOf((char)c));
+                    countSuccess(type);
                     return action.apply($$);
                 } else {
                     is.reset(curr);
@@ -149,10 +183,42 @@ public class PEGCombinator {
             }
         };
     }
+//    public Rule rule$Range(final int min, final Rule...rules) {
+//        return new Rule(Types.RANGE) {
+//            @Override
+//            public PEGNode accept(BacktrackReader is) throws UnmatchException {
+//                count(type);
+//                PEGNode $$ = new PEGNode(Types.RANGE);
+//                int start = is.position();
+//                for (int i = 0; i < min; i++) {
+//                    PEGNode seq = new PEGNode(Types.SEQUENCE);
+//                    int curr = is.position();
+//                    try {
+//                        for (Rule child : rules) {
+//                            seq.add(child.accept(is));
+//                        }
+//                    } catch (UnmatchException e) {
+//                        is.reset(curr);
+//                        break;
+//                    } finally {
+//                        if (seq.length() == rules.length) {
+//                            $$.add(seq);
+//                        }
+//                    }
+//                }
+//                $$.setSource(is.subString(start));
+//                LOG.trace("rule$Range accept <- " + $$.getSource());
+//                countSuccess(type);
+//                return action.apply($$);
+//            }
+//            
+//        };
+//    }
     public Rule rule$ZeroOrMore(final Rule...rules) {
         return new Rule(Types.ZERO_OR_MORE) {
             @Override
             public PEGNode accept(BacktrackReader is) throws UnmatchException {
+                count(type);
                 PEGNode $$ = new PEGNode(Types.ZERO_OR_MORE);
                 int start = is.position();
                 while (true) {
@@ -173,6 +239,7 @@ public class PEGCombinator {
                 }
                 $$.setSource(is.subString(start));
                 LOG.trace("rule$zeroOrMore accept <- " + $$.getSource());
+                countSuccess(type);
                 return action.apply($$);
             }
         };
@@ -181,6 +248,7 @@ public class PEGCombinator {
         return new Rule(Types.ONE_OR_MORE) {
             @Override
             public PEGNode accept(BacktrackReader is) throws UnmatchException {
+                count(type);
                 int count = 0;
                 PEGNode $$ = new PEGNode(Types.ONE_OR_MORE);
                 int start = is.position();
@@ -204,6 +272,7 @@ public class PEGCombinator {
                 if (count > 0) {
                     $$.setSource(is.subString(start));
                     LOG.trace("rule$zeroOrMore accept <- " + $$.getSource());
+                    countSuccess(type);
                     return action.apply($$);
                 } else {
                     throw new UnmatchException();
@@ -216,6 +285,7 @@ public class PEGCombinator {
             @Override
             public PEGNode accept(BacktrackReader is) throws UnmatchException {
                 //LOG.trace(toString());
+                count(type);
                 int curr = is.position();
                 PEGNode $$ = new PEGNode(Types.SEQUENCE);
                 try {
@@ -229,6 +299,7 @@ public class PEGCombinator {
                 }
                 $$.setSource(is.subString(curr));
                 LOG.trace("rule$Sequence accept <- " + $$.getSource());
+                countSuccess(type);
                 return action.apply($$);
             }
         };
@@ -239,12 +310,14 @@ public class PEGCombinator {
             @Override
             public PEGNode accept(BacktrackReader is) throws UnmatchException {
                 //LOG.trace(toString());
+                count(type);
                 int curr = is.position();
                 for (Rule child : rules) {
                     try {
                         PEGNode $$ = child.accept(is);
                         $$.setSource(is.subString(curr));
                         LOG.trace("rule$Choice accept <- " + $$.getSource());
+                        countSuccess(type);
                         return action.apply($$);
                     } catch (UnmatchException e) {
                         is.reset(curr);
@@ -259,6 +332,7 @@ public class PEGCombinator {
         return new Rule(Types.OPTIONAL) {
             @Override
             public PEGNode accept(BacktrackReader is) throws UnmatchException {
+                count(type);
                 for (Rule child : rules) {
                     childRules.add(child);
                 }
@@ -276,6 +350,7 @@ public class PEGCombinator {
                 }
                 $$.setSource(is.subString(curr));
                 LOG.trace("rule$Optional accept <- " + $$.getSource());
+                countSuccess(type);
                 return action.apply($$);
             }
         };
@@ -396,14 +471,6 @@ public class PEGCombinator {
         }
         public String getSource() {
             return escape(source);
-//            StringBuilder sb = new StringBuilder();
-//            if (value != null) {
-//                sb.append(value);
-//            }
-//            for (PEGNode child : childList) {
-//                sb.append(child.getSource());
-//            }
-//            return sb.toString();
         }
         public String toString() {
             if (this.isEmpty()) {
@@ -466,8 +533,33 @@ public class PEGCombinator {
         }
     }
     
+    public static class Statistics {
+        private AtomicInteger called;
+        private AtomicInteger success;
+
+        public Statistics() {
+            called = new AtomicInteger();
+            success = new AtomicInteger();
+        }
+        public void success() {
+            success.incrementAndGet();
+        }
+        
+        public void called() {
+            called.incrementAndGet();
+        }
+        
+        public int getSuccess() {
+            return success.get();
+        }
+        
+        public int getCalled() {
+            return called.get();
+        }
+    }
+
     private enum Types implements RuleTypes {
-        ANY, NOT, LITERAL, CLASS, ZERO_OR_MORE, ONE_OR_MORE, SEQUENCE,
+        ANY, NOT, LITERAL, CLASS, RANGE, ZERO_OR_MORE, ONE_OR_MORE, SEQUENCE,
         CHOICE, OPTIONAL;
     }
 

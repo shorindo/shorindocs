@@ -37,6 +37,18 @@ public class ActionLogger {
     private ActionLogger(Class<?> clazz) {
         logger = LogManager.getLogger(clazz);
     }
+    
+    public boolean isInfoEnabled() {
+        return logger.isInfoEnabled();
+    }
+
+    public boolean isDebugEnabled() {
+        return logger.isDebugEnabled();
+    }
+
+    public boolean isTraceEnabled() {
+        return logger.isTraceEnabled();
+    }
 
     public void trace(String msg) {
         logger.trace(msg);
