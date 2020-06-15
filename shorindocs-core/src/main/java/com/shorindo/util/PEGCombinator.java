@@ -64,6 +64,10 @@ public class PEGCombinator {
         stats.success();
     }
 
+    public Rule define(RuleTypes ruleType, Rule...rules) {
+        return null;
+    }
+
     public Rule rule(final RuleTypes ruleType) {
         if (!ruleMap.containsKey(ruleType)) {
             ruleMap.put(ruleType, new Rule(ruleType) {
@@ -72,6 +76,7 @@ public class PEGCombinator {
                     count(ruleType);
                     PEGNode $$ = new PEGNode(ruleType);
                     int curr = is.position();
+                    //LOG.trace("rule({0})[{1}] start", ruleType, curr);
                     $$.setType(ruleType);
                     for (Rule rule : childRules) {
                         PEGNode childNode = rule.accept(is);
@@ -316,7 +321,8 @@ public class PEGCombinator {
                     try {
                         PEGNode $$ = child.accept(is);
                         $$.setSource(is.subString(curr));
-                        LOG.trace("rule$Choice accept <- " + $$.getSource());
+                        LOG.trace("rule$Choice()[{0}] accept <- ''{1}''",
+                            curr, $$.getSource());
                         countSuccess(type);
                         return action.apply($$);
                     } catch (UnmatchException e) {
@@ -343,7 +349,7 @@ public class PEGCombinator {
                     for (Rule child : rules) {
                         $$.add(child.accept(is));
                     }
-                    LOG.trace("rule$optional() <= " + toString(rules));
+                    //LOG.trace("rule$Optional() <= " + toString(rules));
                 } catch (UnmatchException e) {
                     $$.clear();
                     is.reset(curr);
@@ -395,7 +401,7 @@ public class PEGCombinator {
             return childRules.get(i);
         }
         
-        public Rule pack(Function<PEGNode,PEGNode> action) {
+        public Rule action(Function<PEGNode,PEGNode> action) {
             this.action = action;
             return this;
         }

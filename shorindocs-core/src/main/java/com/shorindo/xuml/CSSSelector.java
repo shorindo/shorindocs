@@ -44,7 +44,7 @@ public class CSSSelector {
                 PEG.rule$ZeroOrMore(
                     PEG.rule(CSS_GROUP_DELIMITER),
                     PEG.rule(CSS_GROUP)))
-            .pack($$ -> {
+            .action($$ -> {
                 PEGNode $0 = $$.get(0);
                 PEGNode $1 = $$.get(1);
                 $$.clear();
@@ -60,7 +60,7 @@ public class CSSSelector {
                 PEG.rule$ZeroOrMore(
                     PEG.rule(ALL_COMBINATOR),
                     PEG.rule(ALL_SELECTOR)))
-            .pack($$ -> {
+            .action($$ -> {
                 // (ALL_SELECTOR (ALL_COMBINATOR ALL_SELECTOR)*)
                 // ↓
                 // (DESCENDANT_COMBINATOR (ALL_SELECTOR)) (ALL_COMBINATOR (ALL_SELECTOR))*)
@@ -88,7 +88,7 @@ public class CSSSelector {
                 PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")),
                 PEG.rule$Literal(","),
                 PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")))
-            .pack($$ -> {
+            .action($$ -> {
                 return $$.get(1);
             });
         PEG.rule(ALL_SELECTOR)
@@ -105,7 +105,7 @@ public class CSSSelector {
                         PEG.rule(ID_SELECTOR),
                         PEG.rule(ATTR_SELECTOR)
                     )))
-            .pack($$ -> {
+            .action($$ -> {
                 PEGNode $0 = $$.get(0);
                 PEGNode $1 = $$.get(1);
                 $$.clear();
@@ -118,7 +118,7 @@ public class CSSSelector {
         PEG.rule(UNIVERSAL_SELECTOR)
             .define(
                 PEG.rule$Literal("*"))
-            .pack($$ -> {
+            .action($$ -> {
                 PEGNode $0 = $$.get(0);
                 $$.clear();
                 $$.setValue($0.getValue());
@@ -129,7 +129,7 @@ public class CSSSelector {
                 PEG.rule$Class("a-zA-Z"),
                 PEG.rule$ZeroOrMore(
                     PEG.rule$Class("a-zA-Z0-9")))
-            .pack($$ -> {
+            .action($$ -> {
                 StringBuffer sb = new StringBuffer($$.get(0).getValue().toString());
                 PEGNode $1 = $$.get(1);
                 //PEGNode $2 = $$.get(2);
@@ -146,7 +146,7 @@ public class CSSSelector {
                 PEG.rule$Class("a-zA-Z"),
                 PEG.rule$ZeroOrMore(
                     PEG.rule$Class("a-zA-Z0-9\\-")))
-            .pack($$ -> {
+            .action($$ -> {
                 StringBuffer sb = new StringBuffer($$.get(1).getValue().toString());
                 PEGNode $2 = $$.get(2);
                 for (int i = 0; i < $2.length(); i++) {
@@ -162,7 +162,7 @@ public class CSSSelector {
                 PEG.rule$Class("a-zA-Z"),
                 PEG.rule$ZeroOrMore(
                     PEG.rule$Class("a-zA-Z0-9\\-")))
-            .pack($$ -> {
+            .action($$ -> {
                 StringBuffer sb = new StringBuffer($$.get(1).getValue().toString());
                 PEGNode $2 = $$.get(2);
                 for (int i = 0; i < $2.length(); i++) {
@@ -186,7 +186,7 @@ public class CSSSelector {
                     ),
                 PEG.rule$Literal("]")
                 )
-            .pack($$ -> {
+            .action($$ -> {
                 PEGNode $1 = $$.get(1);
                 PEGNode $2 = $$.get(2);
                 PEGNode $3 = $$.get(3);
@@ -206,7 +206,7 @@ public class CSSSelector {
                 PEG.rule$Class("a-zA-Z"),
                 PEG.rule$ZeroOrMore(
                     PEG.rule$Class("a-zA-Z\\-")))
-            .pack($$ -> {
+            .action($$ -> {
                 StringBuffer sb = new StringBuffer($$.get(0).getValue().toString());
                 PEGNode $1 = $$.get(1);
                 for (int i = 0; i < $1.length(); i++) {
@@ -225,7 +225,7 @@ public class CSSSelector {
                     PEG.rule$Literal("^="),
                     PEG.rule$Literal("$="),
                     PEG.rule$Literal("*=")))
-            .pack($$ -> {
+            .action($$ -> {
                 PEGNode $0 = $$.get(0);
                 $$.clear();
                 $$.setValue($0.getValue());
@@ -238,7 +238,7 @@ public class CSSSelector {
                         PEG.rule$Literal("\""),
                         PEG.rule$ZeroOrMore(PEG.rule$Class("^\"")),
                         PEG.rule$Literal("\""))
-                    .pack($$ -> {
+                    .action($$ -> {
                         StringBuffer sb = new StringBuffer();
                         PEGNode $1 = $$.get(1);
                         for (int i = 0; i < $1.length(); i++) {
@@ -252,7 +252,7 @@ public class CSSSelector {
                         PEG.rule$Literal("'"),
                         PEG.rule$ZeroOrMore(PEG.rule$Class("^'")),
                         PEG.rule$Literal("'"))
-                    .pack($$ -> {
+                    .action($$ -> {
                         StringBuffer sb = new StringBuffer();
                         PEGNode $1 = $$.get(1);
                         for (int i = 0; i < $1.length(); i++) {
@@ -262,7 +262,7 @@ public class CSSSelector {
                         $$.setValue(sb.toString());
                         return $$;
                     })))
-                .pack($$ -> {
+                .action($$ -> {
                     PEGNode $0 = $$.get(0);
                     $$.clear();
                     $$.setValue($0.getValue());
@@ -275,7 +275,7 @@ public class CSSSelector {
                     PEG.rule(SIBLING_COMBINATOR),
                     PEG.rule(ADJACENT_COMBINATOR),
                     PEG.rule(DESCENDANT_COMBINATOR)))
-            .pack($$ -> {
+            .action($$ -> {
                 return $$.get(0);
             });
         PEG.rule(CHILD_COMBINATOR)
@@ -283,7 +283,7 @@ public class CSSSelector {
                 PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")),
                 PEG.rule$Literal(">"),
                 PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")))
-            .pack($$ -> {
+            .action($$ -> {
                 PEGNode $1 = $$.get(1);
                 $1.setType(CHILD_COMBINATOR);
                 return $1;
@@ -292,7 +292,7 @@ public class CSSSelector {
             .define(
                 PEG.rule$OneOrMore(
                     PEG.rule$Literal(" ")))
-            .pack($$ -> {
+            .action($$ -> {
                 PEGNode $0 = $$.get(0).get(0);
                 $0.setType(DESCENDANT_COMBINATOR);
                 return $0;
@@ -302,7 +302,7 @@ public class CSSSelector {
                 PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")),
                 PEG.rule$Literal("~"),
                 PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")))
-            .pack($$ -> {
+            .action($$ -> {
                 PEGNode $1 = $$.get(1);
                 $1.setType(SIBLING_COMBINATOR);
                 return $1;
@@ -312,7 +312,7 @@ public class CSSSelector {
                 PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")),
                 PEG.rule$Literal("+"),
                 PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")))
-            .pack($$ -> {
+            .action($$ -> {
                 PEGNode $1 = $$.get(1);
                 $1.setType(ADJACENT_COMBINATOR);
                 return $1;
