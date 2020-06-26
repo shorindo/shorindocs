@@ -17,6 +17,8 @@ package com.shorindo.docs.markdown;
 
 import static org.junit.Assert.*;
 
+import java.util.regex.Pattern;
+
 import org.junit.Test;
 
 /**
@@ -48,18 +50,18 @@ public class GFMTest {
     @Test
     public void example005() throws Exception {
         GFM("- foo\n\n\t\tbar",
-            "<ul><li><p>foo</p><pre><code>  bar</code></pre></li></ul>");
+            "<ul><li><p>foo</p><pre><code>  bar\n</code></pre></li></ul>");
     }
 
     @Test
     public void example006() throws Exception {
         GFM(">\t\tfoo",
-            "<blockquote><pre><code>  foo\n</code</pre></blockquote>");
+            "<blockquote><pre><code>  foo\n</code></pre></blockquote>");
     }
 
     @Test
     public void example007() throws Exception {
-        GFM("-\t\tfoo", "<ul><li><pre><code>  foo\n</code</pre></li></ul>");
+        GFM("-\t\tfoo", "<ul><li><pre><code>  foo\n</code></pre></li></ul>");
     }
 
     @Test
@@ -491,12 +493,12 @@ public class GFMTest {
 
     @Test
     public void example089() throws Exception {
-        GFM("```\n<\n >```\n", "<pre><code>&lt;\n &gt;\n</code></pre>");
+        GFM("```\n<\n >\n```\n", "<pre><code>&lt;\n &gt;\n</code></pre>");
     }
 
     @Test
     public void example090() throws Exception {
-        GFM("~~~\n<\n >~~~\n", "<pre><code>&lt;\n &gt;\n</code></pre>");
+        GFM("~~~\n<\n >\n~~~\n", "<pre><code>&lt;\n &gt;\n</code></pre>");
     }
 
     @Test
@@ -2794,7 +2796,7 @@ public class GFMTest {
     @Test
     public void example513() throws Exception {
         GFM("[link](/url \"title\")\n[link](/url 'title')\n[link](/url (title))\n",
-            "<p><a href=\"/url\" title=\"title\">link</a><a href=\"/url\" title=\"title\">link</a><a href=\"/url\" title=\"title\">link</a></p>");
+            "<p><a href=\"/url\" title=\"title\">link</a>\n<a href=\"/url\" title=\"title\">link</a>\n<a href=\"/url\" title=\"title\">link</a></p>");
     }
 
     @Test
@@ -3518,7 +3520,7 @@ public class GFMTest {
 
     @Test
     public void example640() throws Exception {
-        GFM("< a><\nfoo><bar/ ><foo bar=baz\nbim!bop />",
+        GFM("< a><\nfoo><bar/ >\n<foo bar=baz\nbim!bop />",
             "<p>&lt; a&gt;&lt;\nfoo&gt;&lt;bar/ &gt;\n&lt;foo bar=baz\nbim!bop /&gt;</p>");
     }
 
@@ -3594,37 +3596,37 @@ public class GFMTest {
 
     @Test
     public void example654() throws Exception {
-        GFM("foo  \nbaz\n", "<p>foo<br />baz</p>");
+        GFM("foo  \nbaz\n", "<p>foo<br />\nbaz</p>");
     }
 
     @Test
     public void example655() throws Exception {
-        GFM("foo\\\nbaz\n", "<p>foo<br />baz</p>");
+        GFM("foo\\\nbaz\n", "<p>foo<br />\nbaz</p>");
     }
 
     @Test
     public void example656() throws Exception {
-        GFM("foo       \nbaz\n", "<p>foo<br />baz</p>");
+        GFM("foo       \nbaz\n", "<p>foo<br />\nbaz</p>");
     }
 
     @Test
     public void example657() throws Exception {
-        GFM("foo  \n     bar\n", "<p>foo<br />bar</p>");
+        GFM("foo  \n     bar\n", "<p>foo<br />\nbar</p>");
     }
 
     @Test
     public void example658() throws Exception {
-        GFM("foo\\\n     bar\n", "<p>foo<br />bar</p>");
+        GFM("foo\\\n     bar\n", "<p>foo<br />\nbar</p>");
     }
 
     @Test
     public void example659() throws Exception {
-        GFM("*foo  \nbar*\n", "<p><em>foo<br />bar</em></p>");
+        GFM("*foo  \nbar*\n", "<p><em>foo<br />\nbar</em></p>");
     }
 
     @Test
     public void example660() throws Exception {
-        GFM("*foo\\\nbar*\n", "<p><em>foo<br />bar</em></p>");
+        GFM("*foo\\\nbar*\n", "<p><em>foo<br />\bar</em></p>");
     }
 
     @Test

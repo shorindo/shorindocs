@@ -201,6 +201,60 @@ public class MarkdownParserTest {
             );
     }
 
+    @Test
+    public void testMD() throws Exception {
+        MD.parse(
+            "# 見出し１\n" +
+            "\n" +
+            "* * *\n" +
+            "\n" +
+            "見出し１\n" +
+            "========\n" +
+            "\n" +
+            "## 見出し２\n" +
+            "\n" +
+            "見出し２\n" +
+            "--------\n" +
+            "\n" +
+            "***\n" +
+            "\n" +
+            "## 番号なしリスト\n" +
+            "* リスト1\n" +
+            "  * リスト1-1\n" +
+            "  * リスト1-2\n" +
+            "* リスト2\n" +
+            "  * リスト2-1\n" +
+            "    * リスト2-1-1\n" +
+            "\n" +
+            "---\n" +
+            "\n" +
+            "## 整形済みテキスト\n" +
+            "    山のあなたの空遠く\n" +
+            "    さいわひすむと\n" +
+            "    ひとのいう\n" +
+            "\n" +
+            "## コード\n" +
+            "```public static class Foo {\n" +
+            "    private String text;\n" +
+            "}\n" +
+            "```\n" +
+            "\n" +
+            "## 引用\n" +
+            "\n" +
+            "> ここは\n" +
+            ">> 引用\n" +
+            "> です。\n" +
+            "\n" +
+            "## パラグラフ\n" +
+            "\n" +
+            "あいうえお\n" +
+            "かきくけこ\n" +
+            "さしすせそ\n" +
+            "\n" +
+            "## URL\n" +
+            "<http://localhost:8080/docs/markdown?action=edit>\n"
+            );
+    }
     private void assertMarkdown(String expect, String markdown) throws Exception {
         assertEquals(expect, MD.parse(markdown));
     }
