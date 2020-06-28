@@ -105,6 +105,9 @@ public class GFMTest {
         GFM("===", "<p>===</p>");
     }
 
+    /**
+     * FIXME これがh2にならない根拠がわからないなー
+     */
     @Test
     public void example016() throws Exception {
         GFM("--\n**\n--", "<p>--\n**\n--</p>");
@@ -648,7 +651,7 @@ public class GFMTest {
     @Test
     public void example118() throws Exception {
         GFM("<table><tr><td><pre>**Hello**,\n\n_world_.\n</pre></td></tr></table>",
-            "<table><tr><td><pre>**Hello**,\n<p><em>world</em>.\n</pre></p></td></tr></table>");
+            "<table><tr><td><pre>**Hello**,<p><em>world</em>.</pre></p></td></tr></table>");
     }
 
     @Test
@@ -665,7 +668,7 @@ public class GFMTest {
 
     @Test
     public void example121() throws Exception {
-        GFM("</div>*foo*\n", "</div>*foo*\n");
+        GFM("</div>*foo*\n", "</div>*foo*");
     }
 
     @Test
@@ -688,7 +691,7 @@ public class GFMTest {
 
     @Test
     public void example125() throws Exception {
-        GFM("<div>*foo*\n\n*bar*\n", "<div>*foo*\n<p><em>bar</em></p>");
+        GFM("<div>*foo*\n\n*bar*\n", "<div>*foo*<p><em>bar</em></p>");
     }
 
     @Test
@@ -715,7 +718,7 @@ public class GFMTest {
     @Test
     public void example130() throws Exception {
         GFM("<table><tr><td>foo\n</td></tr></table>",
-            "<table><tr><td>foo\n</td></tr></table>");
+            "<table><tr><td>foo</td></tr></table>");
     }
 
     @Test
@@ -726,27 +729,27 @@ public class GFMTest {
 
     @Test
     public void example132() throws Exception {
-        GFM("<a href=\"foo\">*bar*\n</a>", "<a href=\"foo\">*bar*\n</a>");
+        GFM("<a href=\"foo\">*bar*\n</a>", "<a href=\"foo\">*bar*</a>");
     }
 
     @Test
     public void example133() throws Exception {
-        GFM("<Warning>*bar*\n</Warning>", "<Warning>*bar*\n</Warning>");
+        GFM("<Warning>*bar*\n</Warning>", "<Warning>*bar*</Warning>");
     }
 
     @Test
     public void example134() throws Exception {
-        GFM("<i class=\"foo\">*bar*\n</i>", "<i class=\"foo\">*bar*\n</i>");
+        GFM("<i class=\"foo\">*bar*\n</i>", "<i class=\"foo\">*bar*</i>");
     }
 
     @Test
     public void example135() throws Exception {
-        GFM("</ins>*bar*\n", "</ins>*bar*\n");
+        GFM("</ins>*bar*\n", "</ins>*bar*");
     }
 
     @Test
     public void example136() throws Exception {
-        GFM("<del>*foo*\n</del>", "<del>*foo*\n</del>");
+        GFM("<del>*foo*\n</del>", "<del>*foo*</del>");
     }
 
     @Test
@@ -838,13 +841,13 @@ public class GFMTest {
     @Test
     public void example152() throws Exception {
         GFM("  <!-- foo -->\n    <!-- foo -->",
-            "  <!-- foo --><pre><code>&lt;!-- foo --&gt;\n</code></pre>");
+            "  <!-- foo -->\n<pre><code>&lt;!-- foo --&gt;\n</code></pre>");
     }
 
     @Test
     public void example153() throws Exception {
         GFM("  <div>\n    <div>",
-            "  <div><pre><code>&lt;div&gt;\n</code></pre>");
+            "  <div>\n<pre><code>&lt;div&gt;\n</code></pre>");
     }
 
     @Test
@@ -1792,7 +1795,7 @@ public class GFMTest {
     @Test
     public void example321() throws Exception {
         GFM("&nbsp; &amp; &copy; &AElig; &Dcaron;\n&frac34; &HilbertSpace; &DifferentialD;\n&ClockwiseContourIntegral; &ngE;\n",
-            "<p>  &amp; © Æ Ď\n¾ ℋ ⅆ\n∲ ≧̸</p>");
+            "<p>\u00A0 &amp; © Æ Ď\n¾ ℋ ⅆ\n∲ ≧̸</p>");
     }
 
     @Test

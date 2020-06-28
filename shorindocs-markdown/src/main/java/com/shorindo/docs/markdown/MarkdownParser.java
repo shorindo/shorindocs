@@ -17,8 +17,6 @@ package com.shorindo.docs.markdown;
 
 import static com.shorindo.docs.markdown.MarkdownParser.MarkdownRules.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,9 +33,10 @@ import com.shorindo.util.PEGCombinator.RuleTypes;
  * 
  */
 public class MarkdownParser {
-    private static ActionLogger LOG = ActionLogger.getLogger(MarkdownParser.class);
-    private static PEGCombinator PEG = new PEGCombinator();
-    private static Map<String,Character> REFERENCE_MAP = new HashMap<>();
+    private static final String PUNCTUATION = "!\"#$%&'\\(\\)\\*\\+\\,\\-./:;<=>?@\\[\\\\\\]^_`{|}~";
+    private static final ActionLogger LOG = ActionLogger.getLogger(MarkdownParser.class);
+    private static final PEGCombinator PEG = new PEGCombinator();
+
     static {
 
         PEG.define(MARKDOWN,
@@ -51,7 +50,7 @@ public class MarkdownParser {
                     PEG.rule(MD_PRE),
                     PEG.rule(MD_CODE_BLOCK),
                     PEG.rule(MD_QUOTE),
-                    PEG.rule(MD_HTML),
+                    PEG.rule(MD_HTML_BLOCK),
                     PEG.rule(MD_PARA),
                     PEG.rule(MD_EMPTY),
                     PEG.rule(MD_EOL)
@@ -91,7 +90,7 @@ public class MarkdownParser {
                     sb.append("\n");
                     sb.append($$.get(3).pack().getValue());
                 }
-                $$.setValue("<h1>" + sb.toString().trim() + "</h1>");
+                $$.setValue(H1(sb.toString().trim()));
                 return $$;
             });
         PEG.define(MD_STX_H1_UNDER,
@@ -120,7 +119,7 @@ public class MarkdownParser {
                     sb.append("\n");
                     sb.append($$.get(3).pack().getValue());
                 }
-                $$.setValue("<h2>" + sb.toString().trim() + "</h2>");
+                $$.setValue(H2(sb.toString().trim()));
                 return $$;
             });
         PEG.define(MD_STX_H2_UNDER,
@@ -143,7 +142,9 @@ public class MarkdownParser {
             PEG.rule$Choice(
                 PEG.rule$Sequence(
                     PEG.rule$OneOrMore(PEG.rule$Class("\\s")),
-                    PEG.rule(MD_INLINE),
+                    //PEG.rule(MD_INLINE),
+                    PEG.rule$ZeroOrMore(
+                        PEG.rule$Class("^\n")),
                     PEG.rule(MD_EOL_OR_EOF))
                     .action($$ -> {
                         return $$.get(1);
@@ -153,19 +154,25 @@ public class MarkdownParser {
                 int depth = $$.get(1).getValue().length();
                 PEGNode $2 = $$.get(2);
                 if (depth <= 6) {
-                    String title = $2.getValue()
+                    String title = $2.pack().getValue()
                         .trim()
                         .replaceAll(" +((?!\\\\)#)+$", "")
                         .replaceAll("\\\\#", "#");
-                    $$.setValue(
-                        "<h" + depth + ">" +
-                        title +
-                        "</h" + depth + ">");
+                    switch(depth) {
+                    case 1: $$.setValue(H1(title)); break;
+                    case 2: $$.setValue(H2(title)); break;
+                    case 3: $$.setValue(H3(title)); break;
+                    case 4: $$.setValue(H4(title)); break;
+                    case 5: $$.setValue(H5(title)); break;
+                    case 6: $$.setValue(H6(title)); break;
+                    default: $$.setValue($$.getSource());
+                    }
                 } else {
                     $$.setValue($$.getSource());
                 }
                 return $$;
             });
+
         // 整形済
         PEG.define(MD_PRE,
             PEG.rule$OneOrMore(
@@ -191,33 +198,19 @@ public class MarkdownParser {
             });
         // コード
         PEG.define(MD_CODE_BLOCK,
-            PEG.rule$Choice(
+            PEG.rule$Choice( // ださい...
+                createCodeBlock("``````"),
+                createCodeBlock("`````"),
+                createCodeBlock("````"),
                 createCodeBlock("```"),
+                createCodeBlock("~~~~~~"),
+                createCodeBlock("~~~~~"),
+                createCodeBlock("~~~~"),
                 createCodeBlock("~~~")))
             .action($$ -> {
                 return $$.pack();
             });
-        // コンテナ
-//        PEG.define(MD_CONTAINER,
-//            PEG.rule$ZeroOrMore(
-//                PEG.rule$Choice(
-//                    PEG.rule(MD_HR),
-//                    PEG.rule(MD_LIST),
-//                    PEG.rule(MD_HEAD),
-//                    PEG.rule(MD_STX_H1),
-//                    PEG.rule(MD_STX_H2),
-//                    PEG.rule(MD_PRE),
-//                    PEG.rule(MD_CODE_BLOCK),
-//                    PEG.rule(MD_QUOTE),
-//                    PEG.rule(MD_HTML),
-//                    PEG.rule(MD_PARA),
-//                    PEG.rule(MD_EMPTY),
-//                    PEG.rule(MD_EOL)
-//                        .action($$ -> {
-//                            $$.setValue("");
-//                            return $$;
-//                        }))),
-//            PEG.rule(MD_EOF));
+
         // 引用
         PEG.define(MD_QUOTE,
             PEG.rule$Sequence(
@@ -573,7 +566,7 @@ public class MarkdownParser {
         PEG.define(MD_LINE,
             PEG.rule$Not(
                 PEG.rule$Choice(
-//                    PEG.rule(MD_HR),
+                    PEG.rule(MD_HR),
                     PEG.rule(MD_LIST),
                     PEG.rule(MD_HEAD),
 //                    PEG.rule(MD_STX_H1),
@@ -605,15 +598,18 @@ public class MarkdownParser {
                     PEG.rule(MD_LINK),
                     PEG.rule(MD_CODE_SPAN),
                     PEG.rule(MD_AUTO_LINK),
-                    PEG.rule(MD_BOLD),
-                    PEG.rule(MD_ITALIC),
+//                    PEG.rule(MD_BOLD),
+//                    PEG.rule(MD_ITALIC),
+                    PEG.rule(MD_STRONG),
+                    PEG.rule(MD_EMPHASIS),
                     PEG.rule(MD_NUMERIC_REF),
                     PEG.rule(MD_ENTITY_REF),
-                    PEG.rule(MD_ESCAPED),
+//                    PEG.rule(MD_ESCAPED),
                     PEG.rule(MD_SPECIAL),
                     PEG.rule(MD_CHAR))))
             .action($$ -> {
-                return $$.pack();
+                $$.setValue(unescape($$.pack().getValue()));
+                return $$;
             });
 
         /*
@@ -629,6 +625,42 @@ public class MarkdownParser {
          *  or a sequence of one or more _ characters 
          *  that is not preceded or followed by a non-backslash-escaped _ character.
          */
+        PEG.define(MD_EMPHASIS,
+            PEG.rule$Choice(
+                createNotModification("_"),
+                createModification("*"),
+                createModification("_")));
+        
+        PEG.define(MD_STRONG,
+            PEG.rule$Choice(
+                createNotModification("__"),
+                createModification("**"),
+                createModification("__")));
+
+//            PEG.rule$Choice(
+//                PEG.rule$Sequence(
+//                    PEG.rule$Choice(
+//                        PEG.rule$Not(
+//                            PEG.rule(MD_NOT_PUNCTUATION)),
+//                        PEG.rule$Literal("*"),
+//                        PEG.rule(MD_PUNCTUATION)
+//                        ),
+//                    PEG.rule$Choice(
+//                        PEG.rule(MD_STRONG),
+//                        PEG.rule(MD_EMPH),
+//                        PEG.rule$ZeroOrMore(
+//                            PEG.rule$Class("^*"))),
+//                    PEG.rule$Literal("*")
+//                    ),
+//                PEG.rule$Sequence(
+//                    PEG.rule$Literal("*"),
+//                    PEG.rule$Choice(
+//                        PEG.rule(MD_STRONG),
+//                        PEG.rule(MD_EMPH),
+//                        PEG.rule$ZeroOrMore(
+//                            PEG.rule$Class("^*"))),
+//                    PEG.rule$Literal("*"))));
+
         PEG.define(MD_ITALIC,
             PEG.rule$Choice(
                 PEG.rule$Sequence(
@@ -763,20 +795,22 @@ public class MarkdownParser {
                     PEG.rule$OneOrMore(
                         PEG.rule$Not(
                             PEG.rule$Literal("``")),
-                        PEG.rule$Class("^\n")),
+                        PEG.rule$Any()),
                     PEG.rule$Literal("``"))
                     .action($$ -> {
-                        return $$.get(1).pack();
+                        $$.setValue($$.get(1).pack().getValue().trim());
+                        return $$;
                     }),
                 PEG.rule$Sequence(
                     PEG.rule$Literal("`"),
                     PEG.rule$OneOrMore(
                         PEG.rule$Not(
                             PEG.rule$Literal("`")),
-                            PEG.rule$Class("^\n")),
+                            PEG.rule$Any()),
                     PEG.rule$Literal("`"))
                     .action($$ -> {
-                        return $$.get(1).pack();
+                        $$.setValue($$.get(1).pack().getValue().trim());
+                        return $$;
                     })))
             .action($$ -> {
                 $$.setValue("<code>" + $$.pack().getValue().trim() + "</code>");
@@ -869,7 +903,7 @@ public class MarkdownParser {
                         PEG.rule$Class("^<>\n")),
                     PEG.rule$Literal(">)"))
                     .action($$ -> {
-                        $$.setValue(a($$.get(0).pack().getValue(),
+                        $$.setValue(A($$.get(0).pack().getValue(),
                             $$.get(2).pack().getValue().trim(),
                             null));
                         return $$;
@@ -885,36 +919,36 @@ public class MarkdownParser {
                             PEG.rule$ZeroOrMore(PEG.rule$Class("^\\s\\)")),
                             PEG.rule$Optional(
                                 PEG.rule$OneOrMore(
-                                    PEG.rule$Class("\\s")).action($$ -> {
-                                        $$.setValue("");
-                                        return $$;
-                                    }),
-                            PEG.rule$Choice(
-                                PEG.rule$Sequence(
-                                    PEG.rule$Literal("\""),
-                                    PEG.rule$ZeroOrMore(PEG.rule$Class("^\"")),
-                                    PEG.rule$Literal("\""))
-                                    .action($$ -> {
-                                        return $$.get(1).pack();
-                                    }),
-                                PEG.rule$Sequence(
-                                    PEG.rule$Literal("'"),
-                                    PEG.rule$ZeroOrMore(PEG.rule$Class("^'")),
-                                    PEG.rule$Literal("'"))
-                                    .action($$ -> {
-                                        return $$.get(1).pack();
-                                    }))),
+                                    PEG.rule$Class("\\s")),
+                                PEG.rule$Choice(
+                                    PEG.rule$Sequence(
+                                        PEG.rule$Literal("\""),
+                                        PEG.rule$ZeroOrMore(PEG.rule$Class("^\"")),
+                                        PEG.rule$Literal("\""))
+                                        .action($$ -> {
+                                            return $$.get(1).pack();
+                                        }),
+                                    PEG.rule$Sequence(
+                                        PEG.rule$Literal("'"),
+                                        PEG.rule$ZeroOrMore(PEG.rule$Class("^'")),
+                                        PEG.rule$Literal("'"))
+                                        .action($$ -> {
+                                            return $$.get(1).pack();
+                                        }))),
                                 PEG.rule$ZeroOrMore(PEG.rule$Class("\\s")),
                                 PEG.rule$Literal(")"))))
                     .action($$ -> {
                         String target = $$.get(0).pack().getValue();
-                        String url = urlEncode($$.get(1).pack().getValue().trim().replaceAll("\n", ""));
                         if ($$.get(1).getType() == MD_LINK_PAREN) {
-                            $$.setValue(a(target, url.replaceAll("^\\((.*?)\\)$", "$1"), null));
-                        } else if ($$.get(1).get(4).length() > 0) {
-                            $$.setValue(a(target, url, $$.get(1).get(4).pack().getValue()));
+                            String url = urlEncode(filterReferences($$.get(1).pack().getValue().trim().replaceAll("\n", "")));
+                            $$.setValue(A(target, url.replaceAll("^\\((.*?)\\)$", "$1"), null));
+                        } else if ($$.get(1).get(3).length() > 0) {
+                            String url = urlEncode(filterReferences($$.get(1).get(2).pack().getValue().trim().replaceAll("\n", "")));
+                            String title = filterReferences($$.get(1).get(3).get(1).pack().getValue());
+                            $$.setValue(A(target, url, title));
                         } else {
-                            $$.setValue(a(target, url, null));
+                            String url = urlEncode(filterReferences($$.get(1).get(2).pack().getValue().trim().replaceAll("\n", "")));
+                            $$.setValue(A(target, url, null));
                         }
                         return $$;
                     })))
@@ -930,7 +964,8 @@ public class MarkdownParser {
                         PEG.rule$Literal("\\"),
                         PEG.rule$Class("\\(\\)"))
                         .action($$ -> {
-                            return $$.get(1).pack();
+                            $$.setValue($$.get(1).pack().getValue());
+                            return $$;
                         }),
                     PEG.rule(MD_LINK_PAREN),
                     PEG.rule$Class("^ \\)\n"))),
@@ -953,7 +988,7 @@ public class MarkdownParser {
                 String url = $1.pack()
                     .getValue()
                     .replaceAll("&", "&amp;");
-                $$.setValue(a(url, url, null));
+                $$.setValue(A(url, url, null));
                 return $$;
             });
 
@@ -1036,8 +1071,15 @@ public class MarkdownParser {
                 return $$;
             });
 
+        PEG.define(MD_NOT_PUNCTUATION,
+            PEG.rule$Class("^!\"#$%&'\\(\\)\\*\\+\\,\\-./:;<=>?@\\[\\\\\\]^_`{|}~"))
+            .action($$ -> {
+                $$.setValue($$.get(0).getValue());
+                return $$;
+            });
+
         PEG.define(MD_PUNCTUATION,
-            PEG.rule$Class("!\"#$%&'\\(\\)\\*\\+\\,\\-./:;<=>?@\\[\\\\\\]^_`{|}~"))
+            PEG.rule$Class(PUNCTUATION))
             .action($$ -> {
                 $$.setValue($$.get(0).getValue());
                 return $$;
@@ -1059,7 +1101,9 @@ public class MarkdownParser {
                     PEG.rule$Class("0-9"))
                     .action($$ -> {
                         int c = Integer.parseInt($$.pack().getValue(), 10);
-                        if (c < 0xFFFF) {
+                        if (c == 0) {
+                            $$.setValue(String.valueOf((char)0xFFFD));
+                        } else if (c < 0xFFFF) {
                             $$.setValue(String.valueOf((char)c));
                         } else {
                             $$.setValue("&#" + $$.pack().getValue() + ";");
@@ -1072,7 +1116,9 @@ public class MarkdownParser {
                         PEG.rule$Class("0-9a-fA-F")))
                     .action($$ -> {
                         int c = Integer.parseInt($$.get(1).pack().getValue(), 16);
-                        if (c < 0xFFFF) {
+                        if (c == 0) {
+                            $$.setValue(String.valueOf((char)0xFFFD));
+                        } else if (c < 0xFFFF) {
                             $$.setValue(String.valueOf((char)c));
                         } else {
                             $$.setValue("&#" + $$.pack().getValue() + ";");
@@ -1093,11 +1139,15 @@ public class MarkdownParser {
             PEG.rule$Literal(";"))
             .action($$ -> {
                 String name = $$.get(1).pack().getValue();
-                Character c = REFERENCE_MAP.get(name);
-                if (c != null) {
-                    $$.setValue(String.valueOf(c));
+                if ("amp".equals(name)) {
+                    $$.setValue("&amp;");
                 } else {
-                    $$.setValue("&amp;" + name + $$.get(2).getValue());
+                    String c = EntityReference.get(name);
+                    if (c != null) {
+                        $$.setValue(c);
+                    } else {
+                        $$.setValue("&amp;" + name + $$.get(2).getValue());
+                    }
                 }
                 return $$;
             });
@@ -1131,6 +1181,7 @@ public class MarkdownParser {
             });
         PEG.define(MD_EOF,
             PEG.rule$Not(PEG.rule$Any()));
+
         PEG.define(MD_PRESPACES,
             PEG.rule$Optional(
                 PEG.rule$Choice(
@@ -1139,6 +1190,7 @@ public class MarkdownParser {
                     PEG.rule$Literal(" "))),
             PEG.rule$Not(
                 PEG.rule$Class(" \t")));
+
         PEG.define(MD_WS,
             PEG.rule$Class(" \t\t\n"));
 
@@ -1164,6 +1216,7 @@ public class MarkdownParser {
                 $$.setValue($$.getSource());
                 return $$;
             });
+
         PEG.define(HTML_OPEN_TAG,
             PEG.rule$Literal("<"),
             PEG.rule(HTML_TAG_NAME),
@@ -1174,16 +1227,19 @@ public class MarkdownParser {
             PEG.rule$Optional(
                 PEG.rule$Literal("/")),
             PEG.rule$Literal(">"));
+
         PEG.define(HTML_CLOSING_TAG,
             PEG.rule$Literal("</"),
             PEG.rule(HTML_TAG_NAME),
             PEG.rule$ZeroOrMore(
                 PEG.rule(MD_WS)),
             PEG.rule$Literal(">"));
+
         PEG.define(HTML_TAG_NAME,
             PEG.rule$Class("a-zA-Z"),
             PEG.rule$ZeroOrMore(
                 PEG.rule$Class("a-zA-Z0-9\\-")));
+
         PEG.define(HTML_ATTR,
             PEG.rule$OneOrMore(PEG.rule(MD_WS)),
             PEG.rule(HTML_ATTR_NAME),
@@ -1192,10 +1248,12 @@ public class MarkdownParser {
                 PEG.rule$Literal("="),
                 PEG.rule$ZeroOrMore(PEG.rule(MD_WS)),
                 PEG.rule(HTML_ATTR_VALUE)));
+
         PEG.define(HTML_ATTR_NAME,
             PEG.rule$Class("a-zA-Z_:"),
             PEG.rule$ZeroOrMore(
                 PEG.rule$Class("a-zA-Z0-9_\\.:\\-")));
+
         PEG.define(HTML_ATTR_VALUE,
             PEG.rule$Choice(
                 PEG.rule$OneOrMore(
@@ -1210,6 +1268,7 @@ public class MarkdownParser {
                     PEG.rule$ZeroOrMore(
                         PEG.rule$Class("^'\n")),
                     PEG.rule$Literal("'"))));
+
         PEG.define(HTML_COMMENT,
             PEG.rule$Literal("<!--"),
             PEG.rule$Not(PEG.rule$Literal(">")),
@@ -1219,12 +1278,14 @@ public class MarkdownParser {
                 PEG.rule$Any()),
             //TODO PEG.rule$Not(PEG.rule$Literal("-")),
             PEG.rule$Literal("-->"));
+
         PEG.define(HTML_INSTRUCTION,
             PEG.rule$Literal("<?"),
             PEG.rule$ZeroOrMore(
                 PEG.rule$Not(PEG.rule$Literal("?>")),
                 PEG.rule$Any()),
             PEG.rule$Literal("?>"));
+
         PEG.define(HTML_DECLARATION,
             PEG.rule$Literal("<!"),
             PEG.rule$OneOrMore(
@@ -1235,6 +1296,7 @@ public class MarkdownParser {
                 PEG.rule$Not(PEG.rule$Literal(">")),
                 PEG.rule$Any()),
             PEG.rule$Literal(">"));
+
         PEG.define(HTML_CDATA,
             PEG.rule$Literal("<![CDATA"),
             PEG.rule$ZeroOrMore(
@@ -1249,258 +1311,70 @@ public class MarkdownParser {
                 PEG.rule$Any()),
             PEG.rule$Literal("*"));
         
-        // 実体参照定義
-        REFERENCE_MAP.put("nbsp", (char)(char)160);
-        REFERENCE_MAP.put("iexcl", (char)161);
-        REFERENCE_MAP.put("cent", (char)162);
-        REFERENCE_MAP.put("pound", (char)163);
-        REFERENCE_MAP.put("curren", (char)164);
-        REFERENCE_MAP.put("yen", (char)165);
-        REFERENCE_MAP.put("brvbar", (char)166);
-        REFERENCE_MAP.put("sect", (char)167);
-        REFERENCE_MAP.put("uml", (char)168);
-        REFERENCE_MAP.put("copy", (char)169);
-        REFERENCE_MAP.put("ordf", (char)170);
-        REFERENCE_MAP.put("laquo", (char)171);
-        REFERENCE_MAP.put("not", (char)172);
-        REFERENCE_MAP.put("shy", (char)173);
-        REFERENCE_MAP.put("reg", (char)174);
-        REFERENCE_MAP.put("macr", (char)175);
-        REFERENCE_MAP.put("deg", (char)176);
-        REFERENCE_MAP.put("plusmn", (char)177);
-        REFERENCE_MAP.put("sup2", (char)178);
-        REFERENCE_MAP.put("sup3", (char)179);
-        REFERENCE_MAP.put("acute", (char)180);
-        REFERENCE_MAP.put("micro", (char)181);
-        REFERENCE_MAP.put("para", (char)182);
-        REFERENCE_MAP.put("middot", (char)183);
-        REFERENCE_MAP.put("cedil", (char)184);
-        REFERENCE_MAP.put("sup1", (char)185);
-        REFERENCE_MAP.put("ordm", (char)186);
-        REFERENCE_MAP.put("raquo", (char)187);
-        REFERENCE_MAP.put("frac14", (char)188);
-        REFERENCE_MAP.put("frac12", (char)189);
-        REFERENCE_MAP.put("frac34", (char)190);
-        REFERENCE_MAP.put("iquest", (char)191);
-        REFERENCE_MAP.put("Agrave", (char)192);
-        REFERENCE_MAP.put("Aacute", (char)193);
-        REFERENCE_MAP.put("Acirc", (char)194);
-        REFERENCE_MAP.put("Atilde", (char)195);
-        REFERENCE_MAP.put("Auml", (char)196);
-        REFERENCE_MAP.put("Aring", (char)197);
-        REFERENCE_MAP.put("AElig", (char)198);
-        REFERENCE_MAP.put("Ccedil", (char)199);
-        REFERENCE_MAP.put("Egrave", (char)200);
-        REFERENCE_MAP.put("Eacute", (char)201);
-        REFERENCE_MAP.put("Ecirc", (char)202);
-        REFERENCE_MAP.put("Euml", (char)203);
-        REFERENCE_MAP.put("Igrave", (char)204);
-        REFERENCE_MAP.put("Iacute", (char)205);
-        REFERENCE_MAP.put("Icirc", (char)206);
-        REFERENCE_MAP.put("Iuml", (char)207);
-        REFERENCE_MAP.put("ETH", (char)208);
-        REFERENCE_MAP.put("Ntilde", (char)209);
-        REFERENCE_MAP.put("Ograve", (char)210);
-        REFERENCE_MAP.put("Oacute", (char)211);
-        REFERENCE_MAP.put("Ocirc", (char)212);
-        REFERENCE_MAP.put("Otilde", (char)213);
-        REFERENCE_MAP.put("Ouml", (char)214);
-        REFERENCE_MAP.put("times", (char)215);
-        REFERENCE_MAP.put("Oslash", (char)216);
-        REFERENCE_MAP.put("Ugrave", (char)217);
-        REFERENCE_MAP.put("Uacute", (char)218);
-        REFERENCE_MAP.put("Ucirc", (char)219);
-        REFERENCE_MAP.put("Uuml", (char)220);
-        REFERENCE_MAP.put("Yacute", (char)221);
-        REFERENCE_MAP.put("THORN", (char)222);
-        REFERENCE_MAP.put("szlig", (char)223);
-        REFERENCE_MAP.put("agrave", (char)224);
-        REFERENCE_MAP.put("aacute", (char)225);
-        REFERENCE_MAP.put("acirc", (char)226);
-        REFERENCE_MAP.put("atilde", (char)227);
-        REFERENCE_MAP.put("auml", (char)228);
-        REFERENCE_MAP.put("aring", (char)229);
-        REFERENCE_MAP.put("aelig", (char)230);
-        REFERENCE_MAP.put("ccedil", (char)231);
-        REFERENCE_MAP.put("egrave", (char)232);
-        REFERENCE_MAP.put("eacute", (char)233);
-        REFERENCE_MAP.put("ecirc", (char)234);
-        REFERENCE_MAP.put("euml", (char)235);
-        REFERENCE_MAP.put("igrave", (char)236);
-        REFERENCE_MAP.put("iacute", (char)237);
-        REFERENCE_MAP.put("icirc", (char)238);
-        REFERENCE_MAP.put("iuml", (char)239);
-        REFERENCE_MAP.put("eth", (char)240);
-        REFERENCE_MAP.put("ntilde", (char)241);
-        REFERENCE_MAP.put("ograve", (char)242);
-        REFERENCE_MAP.put("oacute", (char)243);
-        REFERENCE_MAP.put("ocirc", (char)244);
-        REFERENCE_MAP.put("otilde", (char)245);
-        REFERENCE_MAP.put("ouml", (char)246);
-        REFERENCE_MAP.put("divide", (char)247);
-        REFERENCE_MAP.put("oslash", (char)248);
-        REFERENCE_MAP.put("ugrave", (char)249);
-        REFERENCE_MAP.put("uacute", (char)250);
-        REFERENCE_MAP.put("ucirc", (char)251);
-        REFERENCE_MAP.put("uuml", (char)252);
-        REFERENCE_MAP.put("yacute", (char)253);
-        REFERENCE_MAP.put("thorn", (char)254);
-        REFERENCE_MAP.put("yuml", (char)255);
-        REFERENCE_MAP.put("fnof", (char)402);
-        REFERENCE_MAP.put("Alpha", (char)913);
-        REFERENCE_MAP.put("Beta", (char)914);
-        REFERENCE_MAP.put("Gamma", (char)915);
-        REFERENCE_MAP.put("Delta", (char)916);
-        REFERENCE_MAP.put("Epsilon", (char)917);
-        REFERENCE_MAP.put("Zeta", (char)918);
-        REFERENCE_MAP.put("Eta", (char)919);
-        REFERENCE_MAP.put("Theta", (char)920);
-        REFERENCE_MAP.put("Iota", (char)921);
-        REFERENCE_MAP.put("Kappa", (char)922);
-        REFERENCE_MAP.put("Lambda", (char)923);
-        REFERENCE_MAP.put("Mu", (char)924);
-        REFERENCE_MAP.put("Nu", (char)925);
-        REFERENCE_MAP.put("Xi", (char)926);
-        REFERENCE_MAP.put("Omicron", (char)927);
-        REFERENCE_MAP.put("Pi", (char)928);
-        REFERENCE_MAP.put("Rho", (char)929);
-        REFERENCE_MAP.put("Sigma", (char)931);
-        REFERENCE_MAP.put("Tau", (char)932);
-        REFERENCE_MAP.put("Upsilon", (char)933);
-        REFERENCE_MAP.put("Phi", (char)934);
-        REFERENCE_MAP.put("Chi", (char)935);
-        REFERENCE_MAP.put("Psi", (char)936);
-        REFERENCE_MAP.put("Omega", (char)937);
-        REFERENCE_MAP.put("alpha", (char)945);
-        REFERENCE_MAP.put("beta", (char)946);
-        REFERENCE_MAP.put("gamma", (char)947);
-        REFERENCE_MAP.put("delta", (char)948);
-        REFERENCE_MAP.put("epsilon", (char)949);
-        REFERENCE_MAP.put("zeta", (char)950);
-        REFERENCE_MAP.put("eta", (char)951);
-        REFERENCE_MAP.put("theta", (char)952);
-        REFERENCE_MAP.put("iota", (char)953);
-        REFERENCE_MAP.put("kappa", (char)954);
-        REFERENCE_MAP.put("lambda", (char)955);
-        REFERENCE_MAP.put("mu", (char)956);
-        REFERENCE_MAP.put("nu", (char)957);
-        REFERENCE_MAP.put("xi", (char)958);
-        REFERENCE_MAP.put("omicron", (char)959);
-        REFERENCE_MAP.put("pi", (char)960);
-        REFERENCE_MAP.put("rho", (char)961);
-        REFERENCE_MAP.put("sigmaf", (char)962);
-        REFERENCE_MAP.put("sigma", (char)963);
-        REFERENCE_MAP.put("tau", (char)964);
-        REFERENCE_MAP.put("upsilon", (char)965);
-        REFERENCE_MAP.put("phi", (char)966);
-        REFERENCE_MAP.put("chi", (char)967);
-        REFERENCE_MAP.put("psi", (char)968);
-        REFERENCE_MAP.put("omega", (char)969);
-        REFERENCE_MAP.put("thetasym", (char)977);
-        REFERENCE_MAP.put("upsih", (char)978);
-        REFERENCE_MAP.put("piv", (char)982);
-        REFERENCE_MAP.put("bull", (char)8226);
-        REFERENCE_MAP.put("hellip", (char)8230);
-        REFERENCE_MAP.put("prime", (char)8242);
-        REFERENCE_MAP.put("Prime", (char)8243);
-        REFERENCE_MAP.put("oline", (char)8254);
-        REFERENCE_MAP.put("frasl", (char)8260);
-        REFERENCE_MAP.put("weierp", (char)8472);
-        REFERENCE_MAP.put("image", (char)8465);
-        REFERENCE_MAP.put("real", (char)8476);
-        REFERENCE_MAP.put("trade", (char)8482);
-        REFERENCE_MAP.put("alefsym", (char)8501);
-        REFERENCE_MAP.put("larr", (char)8592);
-        REFERENCE_MAP.put("uarr", (char)8593);
-        REFERENCE_MAP.put("rarr", (char)8594);
-        REFERENCE_MAP.put("darr", (char)8595);
-        REFERENCE_MAP.put("harr", (char)8596);
-        REFERENCE_MAP.put("crarr", (char)8629);
-        REFERENCE_MAP.put("lArr", (char)8656);
-        REFERENCE_MAP.put("uArr", (char)8657);
-        REFERENCE_MAP.put("rArr", (char)8658);
-        REFERENCE_MAP.put("dArr", (char)8659);
-        REFERENCE_MAP.put("hArr", (char)8660);
-        REFERENCE_MAP.put("forall", (char)8704);
-        REFERENCE_MAP.put("part", (char)8706);
-        REFERENCE_MAP.put("exist", (char)8707);
-        REFERENCE_MAP.put("empty", (char)8709);
-        REFERENCE_MAP.put("nabla", (char)8711);
-        REFERENCE_MAP.put("isin", (char)8712);
-        REFERENCE_MAP.put("notin", (char)8713);
-        REFERENCE_MAP.put("ni", (char)8715);
-        REFERENCE_MAP.put("prod", (char)8719);
-        REFERENCE_MAP.put("sum", (char)8721);
-        REFERENCE_MAP.put("minus", (char)8722);
-        REFERENCE_MAP.put("lowast", (char)8727);
-        REFERENCE_MAP.put("radic", (char)8730);
-        REFERENCE_MAP.put("prop", (char)8733);
-        REFERENCE_MAP.put("infin", (char)8734);
-        REFERENCE_MAP.put("ang", (char)8736);
-        REFERENCE_MAP.put("and", (char)8743);
-        REFERENCE_MAP.put("or", (char)8744);
-        REFERENCE_MAP.put("cap", (char)8745);
-        REFERENCE_MAP.put("cup", (char)8746);
-        REFERENCE_MAP.put("int", (char)8747);
-        REFERENCE_MAP.put("there4", (char)8756);
-        REFERENCE_MAP.put("sim", (char)8764);
-        REFERENCE_MAP.put("cong", (char)8773);
-        REFERENCE_MAP.put("asymp", (char)8776);
-        REFERENCE_MAP.put("ne", (char)8800);
-        REFERENCE_MAP.put("equiv", (char)8801);
-        REFERENCE_MAP.put("le", (char)8804);
-        REFERENCE_MAP.put("ge", (char)8805);
-        REFERENCE_MAP.put("sub", (char)8834);
-        REFERENCE_MAP.put("sup", (char)8835);
-        REFERENCE_MAP.put("nsub", (char)8836);
-        REFERENCE_MAP.put("sube", (char)8838);
-        REFERENCE_MAP.put("supe", (char)8839);
-        REFERENCE_MAP.put("oplus", (char)8853);
-        REFERENCE_MAP.put("otimes", (char)8855);
-        REFERENCE_MAP.put("perp", (char)8869);
-        REFERENCE_MAP.put("sdot", (char)8901);
-        REFERENCE_MAP.put("lceil", (char)8968);
-        REFERENCE_MAP.put("rceil", (char)8969);
-        REFERENCE_MAP.put("lfloor", (char)8970);
-        REFERENCE_MAP.put("rfloor", (char)8971);
-        REFERENCE_MAP.put("lang", (char)9001);
-        REFERENCE_MAP.put("rang", (char)9002);
-        REFERENCE_MAP.put("loz", (char)9674);
-        REFERENCE_MAP.put("spades", (char)9824);
-        REFERENCE_MAP.put("clubs", (char)9827);
-        REFERENCE_MAP.put("hearts", (char)9829);
-        REFERENCE_MAP.put("diams", (char)9830);
-        REFERENCE_MAP.put("OElig", (char)338);
-        REFERENCE_MAP.put("oelig", (char)339);
-        REFERENCE_MAP.put("Scaron", (char)352);
-        REFERENCE_MAP.put("scaron", (char)353);
-        REFERENCE_MAP.put("Yuml", (char)376);
-        REFERENCE_MAP.put("circ", (char)710);
-        REFERENCE_MAP.put("tilde", (char)732);
-        REFERENCE_MAP.put("ensp", (char)8194);
-        REFERENCE_MAP.put("emsp", (char)8195);
-        REFERENCE_MAP.put("thinsp", (char)8201);
-        REFERENCE_MAP.put("zwnj", (char)8204);
-        REFERENCE_MAP.put("zwj", (char)8205);
-        REFERENCE_MAP.put("lrm", (char)8206);
-        REFERENCE_MAP.put("rlm", (char)8207);
-        REFERENCE_MAP.put("ndash", (char)8211);
-        REFERENCE_MAP.put("mdash", (char)8212);
-        REFERENCE_MAP.put("lsquo", (char)8216);
-        REFERENCE_MAP.put("rsquo", (char)8217);
-        REFERENCE_MAP.put("sbquo", (char)8218);
-        REFERENCE_MAP.put("ldquo", (char)8220);
-        REFERENCE_MAP.put("rdquo", (char)8221);
-        REFERENCE_MAP.put("bdquo", (char)8222);
-        REFERENCE_MAP.put("dagger", (char)8224);
-        REFERENCE_MAP.put("Dagger", (char)8225);
-        REFERENCE_MAP.put("permil", (char)8240);
-        REFERENCE_MAP.put("lsaquo", (char)8249);
-        REFERENCE_MAP.put("rsaquo", (char)8250);
-        REFERENCE_MAP.put("euro", (char)8364);
+        PEG.define(MD_HTML_BLOCK,
+            PEG.rule(MD_PRESPACES),
+            PEG.rule$Choice(
+                PEG.rule$Sequence(
+                    PEG.rule$Choice(
+                        PEG.rule(HTML_COMMENT),
+                        PEG.rule(HTML_INSTRUCTION),
+                        PEG.rule(HTML_DECLARATION),
+                        PEG.rule(HTML_CDATA)),
+                    PEG.rule$ZeroOrMore(
+                        PEG.rule$Class("^\n")),
+                    PEG.rule(MD_EOL_OR_EOF))
+                    .action($$ -> {
+                        String comment = $$.get(0).pack().getValue();
+                        String after = $$.get(1).pack().getValue();
+                        if(comment.contains("\n")) {
+                            PEGContext ctx = new PEGContext(after);
+                            try {
+                                $$.setValue(comment +
+                                    PEG.rule(MARKDOWN).accept(ctx).pack().getValue());
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        return $$;
+                    }),
+                PEG.rule$Choice(
+                    createHtmlBlock("script"),
+                    createHtmlBlock("pre"),
+                    createHtmlBlock("style"))))
+            .action($$ -> {
+                return $$.pack();
+            });
+    }
+    
+    private static String H1(String text) {
+        return "<h1>" + text + "</h1>";
     }
 
-    private static String a(String linkText, String url, String title) {
+    private static String H2(String text) {
+        return "<h2>" + text + "</h2>";
+    }
+
+    private static String H3(String text) {
+        return "<h3>" + text + "</h3>";
+    }
+
+    private static String H4(String text) {
+        return "<h4>" + text + "</h4>";
+    }
+
+    private static String H5(String text) {
+        return "<h5>" + text + "</h5>";
+    }
+
+    private static String H6(String text) {
+        return "<h6>" + text + "</h6>";
+    }
+
+    private static String P(String text) {
+        return "<p>" + text + "</p>";
+    }
+
+    private static String A(String linkText, String url, String title) {
         if (title != null) {
             title = " title=\"" + escapeHTML(title) + "\"";
         } else {
@@ -1509,8 +1383,20 @@ public class MarkdownParser {
         return "<a href=\"" + urlEncode(url) + "\"" + title + ">" + linkText + "</a>";
     }
     
-    private static String img(String alt, String url, String title) {
+    private static String IMG(String alt, String url, String title) {
         return null;
+    }
+    
+    private static String EM(String text) {
+        return "<em>" + text + "</em>";
+    }
+
+    private static String STRONG(String text) {
+        return "<strong>" + text + "</strong>";
+    }
+
+    private static String unescape(String text) {
+        return text.replaceAll("\\\\(.)", "$1");
     }
 
     private static String escapeHTML(String text) {
@@ -1560,8 +1446,11 @@ public class MarkdownParser {
                         PEG.rule$Class("^\n")))),
             PEG.rule$OneOrMore(
                 PEG.rule$Not(PEG.rule$Literal(fence)),
-                PEG.rule$Any()),
-            PEG.rule$Literal(fence),
+                PEG.rule$ZeroOrMore(PEG.rule$Class("^\n")),
+                PEG.rule(MD_EOL)),
+            PEG.rule$Optional(
+                PEG.rule(MD_PRESPACES),
+                PEG.rule$Literal(fence)),
             PEG.rule$ZeroOrMore(
                 PEG.rule$Literal(fc)))
             .action($$ -> {
@@ -1569,14 +1458,10 @@ public class MarkdownParser {
                     ? $$.get(3).get(1).pack().getValue()
                     : "";
                 if (!"".equals(lang)) {
-                    lang = " class=\"language-" + lang + "\"";
+                    lang = " class=\"language-" + unescape(lang) + "\"";
                 }
-                StringBuffer sb = new StringBuffer();
-                PEGNode $4 = $$.get(4);
-                for (int i = 0; i < $4.length(); i++) {
-                    sb.append($4.get(i).get(1).getValue());
-                }
-                $$.setValue("<pre><code" + lang + ">"+ escapeHTML(sb.toString().replaceAll("^\\s+",  "")) + "</code></pre>");
+                String code = $$.get(4).pack().getValue();
+                $$.setValue("<pre><code" + lang + ">"+ escapeHTML(code.replaceAll("^\\s+",  "")) + "</code></pre>");
                 return $$;
             });
     }
@@ -1716,17 +1601,110 @@ public class MarkdownParser {
         }
     }
 
-    private Rule createListItemX(String marker) {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j <= 4; j++) {
-                String prefix = spaces(i) + marker + spaces(j);
-            }
-        }
-        return null;
+    /**
+     * em / strong
+     */
+    private static Rule createModification(String marker) {
+        Rule start = PEG.rule$Choice(
+            PEG.rule$Sequence(
+                PEG.rule$Not(PEG.rule$Class("^" + PUNCTUATION)),
+                PEG.rule$Literal(marker),
+                PEG.rule$Class(PUNCTUATION))
+                .action($$ -> {
+                    $$.setValue(escapeHTML($$.get(2).getValue()));
+                    return $$;
+                }),
+            PEG.rule$Sequence(
+                PEG.rule$Literal(marker),
+                PEG.rule$Not(PEG.rule$Literal(" ")))
+                .action($$ -> {
+                    $$.setValue("");
+                    return $$;
+                }));
+        
+        Rule end = PEG.rule$Choice(
+            PEG.rule$Sequence(
+                PEG.rule$Class(PUNCTUATION),
+                PEG.rule$Literal(marker),
+                PEG.rule$Not(PEG.rule$Class("^" + PUNCTUATION)))
+                .action($$ -> {
+                    $$.setValue(escapeHTML($$.get(0).getValue()));
+                    return $$;
+                }),
+            PEG.rule$Sequence(
+                PEG.rule$Not(PEG.rule$Literal(" ")),
+                PEG.rule$Literal(marker))
+                .action($$ -> {
+                    $$.setValue("");
+                    return $$;
+                }));
+
+        return PEG.rule$Sequence(
+            start,
+            PEG.rule$OneOrMore(
+                PEG.rule$Choice(
+                    PEG.rule(MD_STRONG),
+                    PEG.rule(MD_EMPHASIS),
+                    PEG.rule$Sequence(
+                        PEG.rule$OneOrMore(
+                            PEG.rule$Not(PEG.rule$Literal(marker)),
+                            PEG.rule$Class("^ ")),
+                        PEG.rule$ZeroOrMore(
+                            PEG.rule$OneOrMore(
+                                PEG.rule$Class(" ")),
+                            PEG.rule$OneOrMore(
+                                PEG.rule$Not(PEG.rule$Literal(marker)),
+                                PEG.rule$Class("^ ")))))),
+            end)
+            .action($$ -> {
+                if (marker.length() == 1) {
+                    $$.setValue(EM($$.pack().getValue()));
+                } else {
+                    $$.setValue(STRONG($$.pack().getValue()));
+                }
+                return $$;
+            });
     }
-    
-    private Rule createListItemXX(String prefix) {
-        return null;
+
+    private static Rule createNotModification(String marker) {
+        return PEG.rule$Choice(
+            PEG.rule$Sequence(
+                PEG.rule$Class("^" + PUNCTUATION),
+                createModification(marker),
+                PEG.rule$Class("^" + PUNCTUATION)),
+            PEG.rule$Sequence(
+                PEG.rule$Class("^" + PUNCTUATION),
+                createModification(marker)),
+            PEG.rule$Sequence(
+                createModification(marker),
+                PEG.rule$Class("^" + PUNCTUATION)))
+            .action($$ -> {
+                $$.setValue(escapeHTML($$.getSource()));
+                return $$;
+            });
+    }
+
+    private static Rule createHtmlBlock(String tagName) {
+        return PEG.rule$Choice(
+            PEG.rule$Sequence(
+                PEG.rule$Literal("<" + tagName, true),
+                PEG.rule$ZeroOrMore(
+                    PEG.rule$Not(PEG.rule$Literal("</" + tagName + ">", true)),
+                    PEG.rule$Class("^\n")),
+                PEG.rule$Choice(
+                    PEG.rule$Literal("</" + tagName + ">", true),
+                    PEG.rule(MD_EOF))),
+            PEG.rule$Sequence(
+                PEG.rule$Literal("<" + tagName, true),
+                PEG.rule$ZeroOrMore(
+                    PEG.rule$Class("^\n")),
+                PEG.rule(MD_EOL),
+                PEG.rule$ZeroOrMore(
+                    PEG.rule$Not(PEG.rule$Literal("</" + tagName + ">", true)),
+                    PEG.rule$Any()),
+                PEG.rule$Choice(
+                    PEG.rule$Literal("</" + tagName + ">", true),
+                    PEG.rule(MD_EOF))));
     }
 
     private static String spaces(int count) {
@@ -1776,7 +1754,7 @@ public class MarkdownParser {
         }
     }
 
-    private String filterReferences(String text) {
+    private static String filterReferences(String text) {
         StringBuffer decoded = new StringBuffer();
         Pattern pattern = Pattern.compile(
             "(" +
@@ -1797,11 +1775,16 @@ public class MarkdownParser {
                 int c = Integer.valueOf(matcher.group(6), 10);
                 decoded.append((char)c);
             } else if (matcher.group(7) != null) {
-                Character c = REFERENCE_MAP.get(matcher.group(8));
-                if (c != null) {
-                    decoded.append((char)c);
+                String name = matcher.group(8);
+                if ("amp".equals(name)) {
+                    decoded.append("&amp;");
                 } else {
-                    decoded.append(matcher.group());
+                    String c = EntityReference.get(name);
+                    if (c != null) {
+                        decoded.append(c);
+                    } else {
+                        decoded.append(matcher.group());
+                    }
                 }
             }
             start = matcher.end();
@@ -1818,14 +1801,15 @@ public class MarkdownParser {
         MARKDOWN, MD_STX_H1, MD_STX_H2, MD_HEAD, MD_H1, MD_H2, MD_H3, MD_H4, MD_H5, MD_H6,
         MD_PRE, MD_CODE_BLOCK, MD_CODE_SPAN, MD_QUOTE, MD_LIST, MD_PARA, MD_LINE, MD_INLINE, MD_ITALIC, MD_BOLD,
         MD_HR, MD_LINK, MD_AUTO_LINK, MD_IMAGE, MD_URL, MD_URL_PCHARS, MD_ESCAPED, MD_SPECIAL,
-        MD_PUNCTUATION, MD_CHAR, MD_WS, MD_EMPTY, MD_EOL, MD_EOF, MD_EOL_OR_EOF, MD_PRESPACES,
+        MD_PUNCTUATION, MD_NOT_PUNCTUATION, MD_CHAR, MD_WS, MD_EMPTY, MD_EOL, MD_EOF, MD_EOL_OR_EOF, MD_PRESPACES,
         MD_HTML, HTML_TAG_NAME, HTML_ATTR, HTML_ATTR_NAME, HTML_ATTR_VALUE,
         HTML_OPEN_TAG, HTML_CLOSING_TAG, HTML_COMMENT, HTML_INSTRUCTION, HTML_DECLARATION,
         HTML_CDATA,
         MD_AST, MD_ASTAST, MD_BAR, MD_BARBAR, MD_AUTO_LINK_INNER, MD_LINK_TEXT, MD_LINK_PAREN,
         MD_LIST_AST, MD_LIST_PLUS, MD_LIST_BAR, MD_TABLE, MD_BLANK_LINE,
-        MD_NUMERIC_REF, MD_ENTITY_REF/*, MD_PCDATA*/
-        ,MD_STX_H1_UNDER, MD_STX_H2_UNDER
+        MD_NUMERIC_REF, MD_ENTITY_REF, MD_STX_H1_UNDER, MD_STX_H2_UNDER,
+        MD_EMPHASIS, MD_STRONG, MD_EMPH_AST, MD_EMPHASIS_HYPHHEN, MD_STRONG_AST, MD_STRONG_HYPHHEN,
+        MD_HTML_BLOCK,
         ;
     }
     
@@ -1839,4 +1823,5 @@ public class MarkdownParser {
             super(e);
         }
     }
+    
 }

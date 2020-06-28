@@ -237,7 +237,12 @@ public class PEGCombinator {
         return rule;
     }
 
+        
     public Rule rule$Literal(final String literal) {
+        return rule$Literal(literal, false);
+    }
+
+    public Rule rule$Literal(final String literal, boolean ignoreCase) {
         Rule rule = new Rule(Types.PEG_LITERAL) {
             @Override
             public PEGNode accept(PEGContext ctx) throws PEGException {
@@ -246,8 +251,12 @@ public class PEGCombinator {
                 }
                 int curr = ctx.position();
                 for (int i = 0; i < literal.length(); i++) {
-                    char c = literal.charAt(i);
-                    int r = ctx.read();
+                    char c = ignoreCase
+                        ? Character.toLowerCase(literal.charAt(i))
+                        : literal.charAt(i);
+                    int r = ignoreCase
+                        ? Character.toLowerCase(ctx.read())
+                        : ctx.read();
                     if (c != r) {
                         //LOG.trace("rule$Literal()[{0}] deny <- {1}", curr, escape(literal));
                         ctx.reset(curr);
@@ -307,6 +316,51 @@ public class PEGCombinator {
         };
         return rule;
     }
+    
+    // FIXME これはうまくいかない
+    public Rule rule$RegExp(final String regexp) {
+        Rule rule = new Rule(Types.PEG_REGEXP) {
+            Pattern pattern = Pattern.compile(regexp);
+
+            @Override
+            public PEGNode accept(PEGContext ctx) throws PEGException {
+                if (ctx.hasMemo(this)) {
+                    return ctx.getMemo(this);
+                }
+                int start = ctx.position();
+                int end = start + 1;
+                while (true) {
+                    String target = ctx.subString(start, end);
+                    Matcher matcher = pattern.matcher(target);
+                    if (matcher.matches()) {
+                        end += 1;
+                    } else {
+                        break;
+                    }
+                }
+                if (start < end) {
+                    PEGNode $$ = new PEGNode(Types.PEG_REGEXP);
+                    String source = ctx.subString(start, end - 1);
+                    ctx.reset(end - 1);
+                    $$.setSource(source);
+                    $$.setValue(source);
+                    LOG.trace("rule$RegExp({0})[{1}] accept <- {2}",
+                        escape(regexp), start, escape(source));
+                    return ctx.success(this, action.apply($$), start, ctx.position());
+                } else {
+                    ctx.failure(start, this);
+                    ctx.reset(start);
+                    throw new UnmatchException();
+                }
+            }
+            
+            public String toString(int depth, Set<RuleTypes> visited) {
+                return indent(depth) + "/" + escape(regexp) + "/\n";
+            }
+        };
+        return rule;
+    }
+
     public Rule rule$ZeroOrMore(final Rule...rules) {
         Rule rule = new Rule(Types.PEG_ZERO_OR_MORE) {
             @Override
@@ -713,6 +767,7 @@ public class PEGCombinator {
             case "PEG_AND": sb.append("&"); break;
             case "PEG_NOT": sb.append("!"); break;
             case "PEG_CLASS": sb.append("[" + escape(getValue()) + "]"); break;
+            case "PEG_REGEXP": sb.append("/" + escape(getValue()) + "/"); break;
             case "PEG_LITERAL": sb.append("'" + getValue() + "'"); break;
             default:
                 sb.append(getType().name());
@@ -848,6 +903,10 @@ public class PEGCombinator {
         public String subString(int start) {
             return source.substring(start, this.position);
         }
+
+        public String subString(int start, int end) {
+            return source.substring(start, end);
+        }
     }
     
     protected static class Memo {
@@ -897,8 +956,8 @@ public class PEGCombinator {
     }
 
     private enum Types implements RuleTypes {
-        PEG_ANY, PEG_AND, PEG_NOT, PEG_LITERAL, PEG_CLASS, PEG_ZERO_OR_MORE,
-        PEG_ONE_OR_MORE, PEG_SEQUENCE, PEG_CHOICE, PEG_OPTIONAL;
+        PEG_ANY, PEG_AND, PEG_NOT, PEG_LITERAL, PEG_CLASS, PEG_REGEXP,
+        PEG_ZERO_OR_MORE, PEG_ONE_OR_MORE, PEG_SEQUENCE, PEG_CHOICE, PEG_OPTIONAL;
     }
 
     public interface RuleTypes {
