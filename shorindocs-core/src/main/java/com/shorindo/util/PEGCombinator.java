@@ -54,7 +54,7 @@ public class PEGCombinator {
                 if (ctx.hasMemo(this)) {
                     return ctx.getMemo(this);
                 }
-                PEGNode $$ = new PEGNode(ruleType);
+                PEGNode $$ = new PEGNode(ctx, ruleType);
                 int curr = ctx.position();
                 try {
                     $$.setType(ruleType);
@@ -62,7 +62,7 @@ public class PEGCombinator {
                         PEGNode childNode = rule.accept(ctx);
                         $$.add(childNode);
                     }
-                    String sub = ctx.subString(curr);
+                    String sub = ctx.subString(curr, ctx.position);
                     $$.setSource(sub);
                     LOG.trace("rule({0})[{1}] accept <- {2}",
                         ruleType, curr, $$.getSource());
@@ -145,7 +145,7 @@ public class PEGCombinator {
                     //LOG.trace("rule$Any()[{0}] deny <- {1}", curr, (char)c);
                     throw new UnmatchException();
                 } else {
-                    PEGNode $$ = new PEGNode(Types.PEG_ANY);
+                    PEGNode $$ = new PEGNode(ctx, Types.PEG_ANY);
                     $$.setSource(String.valueOf((char)c));
                     $$.setValue(String.valueOf((char)c));
                     LOG.trace("rule$Any()[{0}] accept <- {1}", curr, (char)c);
@@ -178,7 +178,7 @@ public class PEGCombinator {
                         throw new UnmatchException();
                     }
                     childRule.accept(ctx);
-                    PEGNode $$ = new PEGNode(Types.PEG_AND);
+                    PEGNode $$ = new PEGNode(ctx, Types.PEG_AND);
                     $$.setSource("");
                     LOG.trace("rule$And()[{0}] accept <- {1}", curr, childRule.getType());
                     return ctx.success(this, action.apply($$), curr, ctx.position());
@@ -218,7 +218,7 @@ public class PEGCombinator {
                     ctx.reset(curr + preceeding);
                     childRule.accept(ctx);
                 } catch (UnmatchException e) {
-                    PEGNode $$ = new PEGNode(Types.PEG_NOT);
+                    PEGNode $$ = new PEGNode(ctx, Types.PEG_NOT);
                     $$.setSource("");
                     LOG.trace("rule$Not()[{0}] accept <- {1}", curr, childRule.getType());
                     return ctx.success(this, action.apply($$), curr, ctx.position());
@@ -264,7 +264,7 @@ public class PEGCombinator {
                         throw new UnmatchException();
                     }
                 }
-                PEGNode $$ = new PEGNode(Types.PEG_LITERAL);
+                PEGNode $$ = new PEGNode(ctx, Types.PEG_LITERAL);
                 $$.setSource(literal);
                 $$.setValue(literal);
                 LOG.trace("rule$Literal()[{0}] accept <- {1}", curr, escape(literal));
@@ -298,7 +298,7 @@ public class PEGCombinator {
                 }
                 Matcher m = pattern.matcher(String.valueOf((char)c));
                 if (m.matches()) {
-                    PEGNode $$ = new PEGNode(Types.PEG_CLASS);
+                    PEGNode $$ = new PEGNode(ctx, Types.PEG_CLASS);
                     $$.setSource(String.valueOf((char)c));
                     $$.setValue(String.valueOf((char)c));
                     LOG.trace("rule$Class({0})[{1}] accept <- {2}",
@@ -316,11 +316,14 @@ public class PEGCombinator {
         };
         return rule;
     }
-    
-    // FIXME これはうまくいかない
+
     public Rule rule$RegExp(final String regexp) {
+        return rule$RegExp(regexp, null);
+    }
+
+    public Rule rule$RegExp(final String regexp, String result) {
         Rule rule = new Rule(Types.PEG_REGEXP) {
-            Pattern pattern = Pattern.compile(regexp);
+            Pattern pattern = Pattern.compile("^" + regexp);
 
             @Override
             public PEGNode accept(PEGContext ctx) throws PEGException {
@@ -328,22 +331,17 @@ public class PEGCombinator {
                     return ctx.getMemo(this);
                 }
                 int start = ctx.position();
-                int end = start + 1;
-                while (true) {
-                    String target = ctx.subString(start, end);
-                    Matcher matcher = pattern.matcher(target);
-                    if (matcher.matches()) {
-                        end += 1;
-                    } else {
-                        break;
-                    }
-                }
-                if (start < end) {
-                    PEGNode $$ = new PEGNode(Types.PEG_REGEXP);
-                    String source = ctx.subString(start, end - 1);
-                    ctx.reset(end - 1);
+                Matcher matcher = pattern.matcher(ctx.source.substring(start));
+                if (matcher.find()) {
+                    PEGNode $$ = new PEGNode(ctx, Types.PEG_REGEXP);
+                    String source = matcher.group();
+                    ctx.reset(start + source.length());
                     $$.setSource(source);
-                    $$.setValue(source);
+                    if (result != null) {
+                        $$.setValue(matcher.group(1)); // FIXME
+                    } else {
+                        $$.setValue(source);
+                    }
                     LOG.trace("rule$RegExp({0})[{1}] accept <- {2}",
                         escape(regexp), start, escape(source));
                     return ctx.success(this, action.apply($$), start, ctx.position());
@@ -368,10 +366,10 @@ public class PEGCombinator {
                 if (ctx.hasMemo(this)) {
                     return ctx.getMemo(this);
                 }
-                PEGNode $$ = new PEGNode(Types.PEG_ZERO_OR_MORE);
+                PEGNode $$ = new PEGNode(ctx, Types.PEG_ZERO_OR_MORE);
                 int start = ctx.position();
                 while (true) {
-                    PEGNode seq = new PEGNode(Types.PEG_SEQUENCE);
+                    PEGNode seq = new PEGNode(ctx, Types.PEG_SEQUENCE);
                     int curr = ctx.position();
                     try {
                         for (Rule child : rules) {
@@ -388,7 +386,7 @@ public class PEGCombinator {
                         }
                     }
                 }
-                $$.setSource(ctx.subString(start));
+                $$.setSource(ctx.subString(start, ctx.position()));
                 LOG.trace("rule$ZeroOrMore[{0}] accept <- ''{1}''", start, $$.getSource());
                 return ctx.success(this, action.apply($$), start, ctx.position());
             }
@@ -414,10 +412,10 @@ public class PEGCombinator {
                     return ctx.getMemo(this);
                 }
                 int count = 0;
-                PEGNode $$ = new PEGNode(Types.PEG_ONE_OR_MORE);
+                PEGNode $$ = new PEGNode(ctx, Types.PEG_ONE_OR_MORE);
                 int start = ctx.position();
                 while (true) {
-                    PEGNode seq = new PEGNode(Types.PEG_SEQUENCE);
+                    PEGNode seq = new PEGNode(ctx, Types.PEG_SEQUENCE);
                     int curr = ctx.position();
                     try {
                         for (Rule child : rules) {
@@ -434,7 +432,7 @@ public class PEGCombinator {
                     }
                 }
                 if (count > 0) {
-                    $$.setSource(ctx.subString(start));
+                    $$.setSource(ctx.subString(start, ctx.position()));
                     LOG.trace("rule$OneOrMore[{0}] accept <- ''{1}''", start, $$.getSource());
                     return ctx.success(this, action.apply($$), start, ctx.position());
                 } else {
@@ -472,7 +470,7 @@ public class PEGCombinator {
                 }
                 //LOG.trace(toString());
                 int curr = ctx.position();
-                PEGNode $$ = new PEGNode(Types.PEG_SEQUENCE);
+                PEGNode $$ = new PEGNode(ctx, Types.PEG_SEQUENCE);
                 try {
                     for (Rule child : rules) {
                         PEGNode $n = (PEGNode)child.accept(ctx);
@@ -484,7 +482,7 @@ public class PEGCombinator {
                     ctx.reset(curr);
                     throw e;
                 }
-                $$.setSource(ctx.subString(curr));
+                $$.setSource(ctx.subString(curr, ctx.position()));
                 LOG.trace("rule$Sequence accept <- " + $$.getSource());
                 return ctx.success(this, action.apply($$), curr, ctx.position());
             }
@@ -518,7 +516,7 @@ public class PEGCombinator {
                 for (Rule child : childRules) {
                     try {
                         PEGNode $$ = child.accept(ctx);
-                        $$.setSource(ctx.subString(curr));
+                        $$.setSource(ctx.subString(curr, ctx.position()));
                         LOG.trace("rule$Choice()[{0}] accept", curr);
                         return ctx.success(this, action.apply($$), curr, ctx.position());
                     } catch (UnmatchException e) {
@@ -554,12 +552,9 @@ public class PEGCombinator {
                 if (ctx.hasMemo(this)) {
                     return ctx.getMemo(this);
                 }
-//                for (Rule child : childRules) {
-//                    childRules.add(child);
-//                }
 
                 int curr = ctx.position();
-                PEGNode $$ = new PEGNode(Types.PEG_OPTIONAL);
+                PEGNode $$ = new PEGNode(ctx, Types.PEG_OPTIONAL);
                 try {
                     for (Rule child : childRules) {
                         $$.add(child.accept(ctx));
@@ -571,7 +566,7 @@ public class PEGCombinator {
                     $$.clear();
                     ctx.reset(curr);
                 }
-                $$.setSource(ctx.subString(curr));
+                $$.setSource(ctx.subString(curr, ctx.position()));
                 LOG.trace("rule$Optional accept <- " + $$.getSource());
                 return ctx.success(this, action.apply($$), curr, ctx.position());
             }
@@ -689,13 +684,15 @@ public class PEGCombinator {
      * 
      */
     public static class PEGNode {
+        private PEGContext ctx;
         private RuleTypes type;
         private String source;
         private String value;
         private boolean empty = false;
         private List<PEGNode> childList = new ArrayList<PEGNode>();
 
-        public PEGNode(RuleTypes type) {
+        public PEGNode(PEGContext ctx, RuleTypes type) {
+            this.ctx = ctx;
             this.type = type;
         }
         public RuleTypes getType() {
@@ -710,12 +707,12 @@ public class PEGCombinator {
         public void setValue(String value) {
             this.value = value;
         }
-        public boolean isEmpty() {
-            return empty;
-        }
-        public void setEmpty(boolean empty) {
-            this.empty = empty;
-        }
+//        public boolean isEmpty() {
+//            return empty;
+//        }
+//        public void setEmpty(boolean empty) {
+//            this.empty = empty;
+//        }
         public void add(PEGNode child) {
             childList.add(child);
         }
@@ -727,6 +724,9 @@ public class PEGCombinator {
         }
         public void clear() {
             childList.clear();
+        }
+        public PEGContext getContext() {
+            return ctx;
         }
         public void setSource(String source) {
             this.source = source;
@@ -753,7 +753,7 @@ public class PEGCombinator {
             }
         }
         public String toString() {
-            if (this.isEmpty()) {
+            if (value == null && childList.size() == 0) {
                 return "";
             }
             StringBuffer sb = new StringBuffer();
@@ -785,19 +785,16 @@ public class PEGCombinator {
      */
     public static class PEGContext {
         private String source;
-        private List<Character> buffer;
         private int position = 0;
+        private Map<String,String> attrMap;
         private Map<RuleTypes,Statistics> statsMap;
         private Map<Rule,Map<Integer,Memo>> memoMap;
 
         public PEGContext(String text) {
+            attrMap = new HashMap<>();
             statsMap = new HashMap<>();
             memoMap = new HashMap<>();
             source = text;
-            buffer = new ArrayList<>();
-            for (int i = 0; i < text.length(); i++) {
-                buffer.add(text.charAt(i));
-            }
         }
 
         public void reset(int position) {
@@ -810,19 +807,26 @@ public class PEGCombinator {
 
         public void clear() {
             position = 0;
-            buffer = new ArrayList<>();
         }
 
         public int read() {
             if (available() > 0) {
-                return buffer.get(position++);
+                return source.charAt(position++);
             } else {
                 return -1;
             }
         }
 
         public int available() {
-            return buffer.size() - position;
+            return source.length() - position;
+        }
+        
+        public void setAttr(String key, String value) {
+            attrMap.put(key, value);
+        }
+        
+        public String getAttr(String key) {
+            return attrMap.get(key);
         }
         
         /**
@@ -901,7 +905,7 @@ public class PEGCombinator {
         }
 
         public String subString(int start) {
-            return source.substring(start, this.position);
+            return source.substring(start);
         }
 
         public String subString(int start, int end) {

@@ -650,48 +650,48 @@ public class GFMTest {
 
     @Test
     public void example118() throws Exception {
-        GFM("<table><tr><td><pre>**Hello**,\n\n_world_.\n</pre></td></tr></table>",
-            "<table><tr><td><pre>**Hello**,<p><em>world</em>.</pre></p></td></tr></table>");
+        GFM("<table><tr><td>\n<pre>\n**Hello**,\n\n_world_.\n</pre>\n</td></tr></table>",
+            "<table><tr><td>\n<pre>\n**Hello**,\n<p><em>world</em>.\n</pre></p>\n</td></tr></table>");
     }
 
     @Test
     public void example119() throws Exception {
-        GFM("<table>  <tr>    <td>           hi\n    </td>  </tr></table>\nokay.\n",
-            "<table>  <tr>    <td>           hi\n    </td>  </tr></table><p>okay.</p>");
+        GFM("<table>\n  <tr>\n    <td>\n           hi\n    </td>\n  </tr>\n</table>\n\nokay.\n",
+            "<table>\n  <tr>\n    <td>\n           hi\n    </td>\n  </tr>\n</table>\n<p>okay.</p>");
     }
 
     @Test
     public void example120() throws Exception {
-        GFM(" <div>  *hello*\n         <foo><a>",
-            " <div>  *hello*\n         <foo><a>");
+        GFM(" <div>\n  *hello*\n         <foo><a>",
+            " <div>\n  *hello*\n         <foo><a>");
     }
 
     @Test
     public void example121() throws Exception {
-        GFM("</div>*foo*\n", "</div>*foo*");
+        GFM("</div>\n*foo*\n", "</div>\n*foo*");
     }
 
     @Test
     public void example122() throws Exception {
-        GFM("<DIV CLASS=\"foo\">\n*Markdown*\n\n</DIV>",
-            "<DIV CLASS=\"foo\"><p><em>Markdown</em></p></DIV>");
+        GFM("<DIV CLASS=\"foo\">\n\n*Markdown*\n\n</DIV>",
+            "<DIV CLASS=\"foo\">\n<p><em>Markdown</em></p>\n</DIV>");
     }
 
     @Test
     public void example123() throws Exception {
-        GFM("<div id=\"foo\"\n  class=\"bar\"></div>",
-            "<div id=\"foo\"\n  class=\"bar\"></div>");
+        GFM("<div id=\"foo\"\n  class=\"bar\">\n</div>",
+            "<div id=\"foo\"\n  class=\"bar\">\n</div>");
     }
 
     @Test
     public void example124() throws Exception {
-        GFM("<div id=\"foo\" class=\"bar\n  baz\"></div>",
-            "<div id=\"foo\" class=\"bar\n  baz\"></div>");
+        GFM("<div id=\"foo\" class=\"bar\n  baz\">\n</div>",
+            "<div id=\"foo\" class=\"bar\n  baz\">\n</div>");
     }
 
     @Test
     public void example125() throws Exception {
-        GFM("<div>*foo*\n\n*bar*\n", "<div>*foo*<p><em>bar</em></p>");
+        GFM("<div>\n*foo*\n\n*bar*\n", "<div>\n*foo*\n<p><em>bar</em></p>");
     }
 
     @Test
@@ -717,44 +717,44 @@ public class GFMTest {
 
     @Test
     public void example130() throws Exception {
-        GFM("<table><tr><td>foo\n</td></tr></table>",
-            "<table><tr><td>foo</td></tr></table>");
+        GFM("<table><tr><td>\nfoo\n</td></tr></table>",
+            "<table><tr><td>\nfoo\n</td></tr></table>");
     }
 
     @Test
     public void example131() throws Exception {
-        GFM("<div></div>``` c\nint x = 33;\n```\n",
-            "<div></div>``` c\nint x = 33;\n```\n");
+        GFM("<div></div>\n``` c\nint x = 33;\n```\n",
+            "<div></div>\n``` c\nint x = 33;\n```\n");
     }
 
     @Test
     public void example132() throws Exception {
-        GFM("<a href=\"foo\">*bar*\n</a>", "<a href=\"foo\">*bar*</a>");
+        GFM("<a href=\"foo\">\n*bar*\n</a>", "<a href=\"foo\">\n*bar*\n</a>");
     }
 
     @Test
     public void example133() throws Exception {
-        GFM("<Warning>*bar*\n</Warning>", "<Warning>*bar*</Warning>");
+        GFM("<Warning>\n*bar*\n</Warning>", "<Warning>\n*bar*\n</Warning>");
     }
 
     @Test
     public void example134() throws Exception {
-        GFM("<i class=\"foo\">*bar*\n</i>", "<i class=\"foo\">*bar*</i>");
+        GFM("<i class=\"foo\">\n*bar*\n</i>", "<i class=\"foo\">\n*bar*\n</i>");
     }
 
     @Test
     public void example135() throws Exception {
-        GFM("</ins>*bar*\n", "</ins>*bar*");
+        GFM("</ins>\n*bar*", "</ins>\n*bar*");
     }
 
     @Test
     public void example136() throws Exception {
-        GFM("<del>*foo*\n</del>", "<del>*foo*</del>");
+        GFM("<del>\n*foo*\n</del>", "<del>\n*foo*\n</del>");
     }
 
     @Test
     public void example137() throws Exception {
-        GFM("<del>\n*foo*\n\n</del>", "<del><p><em>foo</em></p></del>");
+        GFM("<del>\n\n*foo*\n\n</del>", "<del><p><em>foo</em></p></del>");
     }
 
     @Test

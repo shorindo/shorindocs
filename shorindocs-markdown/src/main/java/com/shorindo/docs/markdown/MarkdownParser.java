@@ -17,6 +17,8 @@ package com.shorindo.docs.markdown;
 
 import static com.shorindo.docs.markdown.MarkdownParser.MarkdownRules.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,9 +38,9 @@ public class MarkdownParser {
     private static final String PUNCTUATION = "!\"#$%&'\\(\\)\\*\\+\\,\\-./:;<=>?@\\[\\\\\\]^_`{|}~";
     private static final ActionLogger LOG = ActionLogger.getLogger(MarkdownParser.class);
     private static final PEGCombinator PEG = new PEGCombinator();
+    //private static final Map<String,String> varMap = new HashMap<>();
 
     static {
-
         PEG.define(MARKDOWN,
             PEG.rule$ZeroOrMore(
                 PEG.rule$Choice(
@@ -51,6 +53,7 @@ public class MarkdownParser {
                     PEG.rule(MD_CODE_BLOCK),
                     PEG.rule(MD_QUOTE),
                     PEG.rule(MD_HTML_BLOCK),
+                    PEG.rule(MD_LINK_DEF),
                     PEG.rule(MD_PARA),
                     PEG.rule(MD_EMPTY),
                     PEG.rule(MD_EOL)
@@ -598,6 +601,7 @@ public class MarkdownParser {
                     PEG.rule(MD_LINK),
                     PEG.rule(MD_CODE_SPAN),
                     PEG.rule(MD_AUTO_LINK),
+                    PEG.rule(MD_LINK_REF),
 //                    PEG.rule(MD_BOLD),
 //                    PEG.rule(MD_ITALIC),
                     PEG.rule(MD_STRONG),
@@ -1085,15 +1089,6 @@ public class MarkdownParser {
                 return $$;
             });
 
-//        PEG.define(MD_PCDATA,
-//            PEG.rule$Choice(
-//                PEG.rule(MD_NUMERIC_REF),
-//                PEG.rule(MD_ENTITY_REF),
-//                PEG.rule$Class("^\r\n")))
-//            .action($$ -> {
-//                return $$.pack();
-//            });
-        
         PEG.define(MD_NUMERIC_REF,
             PEG.rule$Literal("&#"),
             PEG.rule$Choice(
@@ -1314,6 +1309,10 @@ public class MarkdownParser {
         PEG.define(MD_HTML_BLOCK,
             PEG.rule(MD_PRESPACES),
             PEG.rule$Choice(
+                PEG.rule$Choice(
+                    createHtmlBlock("script"),
+                    createHtmlBlock("pre"),
+                    createHtmlBlock("style")),
                 PEG.rule$Sequence(
                     PEG.rule$Choice(
                         PEG.rule(HTML_COMMENT),
@@ -1337,14 +1336,75 @@ public class MarkdownParser {
                         }
                         return $$;
                     }),
-                PEG.rule$Choice(
-                    createHtmlBlock("script"),
-                    createHtmlBlock("pre"),
-                    createHtmlBlock("style"))))
+                PEG.rule$Sequence(
+                    PEG.rule$RegExp("</?(address|article|aside|base|basefont|blockquote|body|" +
+                        "caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|" +
+                        "figcaption|figure|footer|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|" +
+                        "header|hr|html|iframe|legend|li|link|main|menu|menuitem|nav|noframes|ol|" +
+                        "optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|" +
+                        "th|thead|title|tr|track|ul)( |\n|/?>)"),
+                    PEG.rule$ZeroOrMore(
+                        PEG.rule$OneOrMore(
+                            PEG.rule$Class("^\n")),
+                        PEG.rule(MD_EOL_OR_EOF))),
+                PEG.rule$Sequence(
+                    PEG.rule$RegExp("<\\/?([^ >]+)( [^>]+)?>[^\n]*"),
+                    PEG.rule(MD_EOL_OR_EOF),
+                    PEG.rule$ZeroOrMore(
+                        PEG.rule$OneOrMore(
+                            PEG.rule$Class("^\n")),
+                        PEG.rule(MD_EOL_OR_EOF)))
+                ))
             .action($$ -> {
                 return $$.pack();
             });
+
+        PEG.define(MD_LINK_REF,
+            PEG.rule$Literal("["),
+            PEG.rule$RegExp("[^ \\]]*"),
+            PEG.rule$Literal("]"),
+            PEG.rule$Not(
+                PEG.rule$Class("\\[\\(:"))
+            )
+            .action($$ -> {
+                // FIXME 何か他に良い手はないか？
+                $$.setValue("${{" + $$.get(1).pack().getValue() + "}}");
+                return $$;
+            });
+
+        PEG.define(MD_LINK_DEF,
+            PEG.rule(MD_PRESPACES),
+            PEG.rule$Literal("["),
+            PEG.rule$RegExp("[^ \\]]+"),
+            PEG.rule$Literal("]:"),
+            PEG.rule$RegExp("( *\n *| +)").action($$ -> {
+                return $$;
+            }),
+            PEG.rule$Choice(
+                PEG.rule$RegExp("[^ \n]+"),
+                PEG.rule$RegExp("<[^>\n]+>")),
+            PEG.rule$Optional(
+                PEG.rule$RegExp("( *\n *| +)"),
+                PEG.rule$Choice(
+                    PEG.rule$RegExp("\"(((?!\n\n)[^\"])*)\"", "$1"),
+                    PEG.rule$RegExp("'(((?!\n\n)[^'])*)'", "$1")),
+                PEG.rule$RegExp(" *")),
+            PEG.rule(MD_EOL_OR_EOF))
+            .action($$ -> {
+                String title = null;
+                if ($$.get(6).length() > 0) {
+                    title = $$.get(6).get(1).getValue();
+                }
+                String result = A(
+                    $$.get(2).pack().getValue(),
+                    $$.get(5).pack().getValue(),
+                    title);
+                $$.getContext().setAttr($$.get(2).pack().getValue(), result);
+                $$.setValue("");
+                return $$; 
+            });
     }
+    
     
     private static String H1(String text) {
         return "<h1>" + text + "</h1>";
@@ -1725,6 +1785,8 @@ public class MarkdownParser {
             if (ctx.available() > 0) {
                 throw new MarkdownException(ctx.subString(ctx.position()));
             }
+            Map<String,String> map = new HashMap<>();
+            findLinks(map, node);
             if (LOG.isTraceEnabled()) {
                 AtomicInteger total = new AtomicInteger();
                 AtomicInteger success = new AtomicInteger();
@@ -1748,10 +1810,48 @@ public class MarkdownParser {
                     });
                 LOG.debug("Total: {0} / {1}", success, total);
             }
-            return node.getValue();
+            
+            return applyLinks(ctx, node.pack().getValue());
         } catch (PEGException e) {
             throw new MarkdownException(e);
         }
+    }
+
+    private static void findLinks(Map<String,String> map, PEGNode node) {
+        String type = node.getType().name();
+        if ("MD_LINK_DEF".equals(type)) {
+            String linkText = node.getValue()
+                .replaceAll("<a [^>]*>([^<]*)</a>", "$1");
+            map.put(linkText, node.getValue());
+            node.setValue("");
+        }
+        for (int i = 0; i < node.length(); i++) {
+            PEGNode child = node.get(i);
+            findLinks(map, child);
+        }
+    }
+
+    private static String applyLinks(PEGContext ctx, String source) {
+        Pattern p = Pattern.compile("\\$\\{\\{(.*?)}}");
+        Matcher m = p.matcher(source);
+        StringBuffer sb = new StringBuffer();
+        int start = 0;
+        while (m.find(start)) {
+            if (start < m.start()) {
+                sb.append(source.substring(start, m.start()));
+            }
+            String val = ctx.getAttr(m.group(1));
+            if (val != null) {
+                sb.append(val);
+            } else {
+                sb.append("[" + m.group(1) + "]");
+            }
+            start = m.end();
+        }
+        if (start < source.length()) {
+            sb.append(source.substring(start));
+        }
+        return sb.toString();
     }
 
     private static String filterReferences(String text) {
@@ -1809,7 +1909,7 @@ public class MarkdownParser {
         MD_LIST_AST, MD_LIST_PLUS, MD_LIST_BAR, MD_TABLE, MD_BLANK_LINE,
         MD_NUMERIC_REF, MD_ENTITY_REF, MD_STX_H1_UNDER, MD_STX_H2_UNDER,
         MD_EMPHASIS, MD_STRONG, MD_EMPH_AST, MD_EMPHASIS_HYPHHEN, MD_STRONG_AST, MD_STRONG_HYPHHEN,
-        MD_HTML_BLOCK,
+        MD_HTML_BLOCK, MD_LINK_REF, MD_LINK_DEF
         ;
     }
     
