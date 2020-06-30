@@ -879,8 +879,8 @@ public class GFMTest {
 
     @Test
     public void example159() throws Exception {
-        GFM("<table>\n<tr>\n<td>Hi\n</td>\n</tr>\n</table>",
-            "<table><tr><td>Hi\n</td></tr></table>");
+        GFM("<table>\n\n<tr>\n\n<td>\nHi\n</td>\n\n</tr>\n\n</table>",
+            "<table>\n<tr>\n<td>\nHi\n</td>\n</tr>\n</table>");
     }
 
     @Test
@@ -1085,7 +1085,7 @@ public class GFMTest {
 
     @Test
     public void example196() throws Exception {
-        GFM("aaa     \nbbb     \n", "<p>aaa<br />bbb</p>");
+        GFM("aaa     \nbbb     \n", "<p>aaa<br />\nbbb</p>");
     }
 
     @Test

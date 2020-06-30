@@ -318,10 +318,6 @@ public class PEGCombinator {
     }
 
     public Rule rule$RegExp(final String regexp) {
-        return rule$RegExp(regexp, null);
-    }
-
-    public Rule rule$RegExp(final String regexp, String result) {
         Rule rule = new Rule(Types.PEG_REGEXP) {
             Pattern pattern = Pattern.compile("^" + regexp);
 
@@ -337,10 +333,14 @@ public class PEGCombinator {
                     String source = matcher.group();
                     ctx.reset(start + source.length());
                     $$.setSource(source);
-                    if (result != null) {
-                        $$.setValue(matcher.group(1)); // FIXME
-                    } else {
-                        $$.setValue(source);
+                    $$.setValue(source);
+                    PEGNode $i = new PEGNode(ctx, Types.PEG_REGEXP);
+                    $i.setValue(matcher.group(0));
+                    $$.add($i);
+                    for (int i = 0; i < matcher.groupCount(); i++) {
+                        $i = new PEGNode(ctx, Types.PEG_REGEXP);
+                        $i.setValue(matcher.group(i + 1));
+                        $$.add($i);
                     }
                     LOG.trace("rule$RegExp({0})[{1}] accept <- {2}",
                         escape(regexp), start, escape(source));

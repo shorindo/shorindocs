@@ -17,7 +17,6 @@ package com.shorindo.docs.markdown;
 
 import static com.shorindo.docs.markdown.MarkdownParser.MarkdownRules.*;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -46,12 +45,13 @@ public class MarkdownParser {
                 PEG.rule$Choice(
                     PEG.rule(MD_HR),
                     PEG.rule(MD_LIST),
+                    PEG.rule(MD_OLIST),
                     PEG.rule(MD_HEAD),
+                    PEG.rule(MD_QUOTE),
                     PEG.rule(MD_STX_H1),
                     PEG.rule(MD_STX_H2),
                     PEG.rule(MD_PRE),
                     PEG.rule(MD_CODE_BLOCK),
-                    PEG.rule(MD_QUOTE),
                     PEG.rule(MD_HTML_BLOCK),
                     PEG.rule(MD_LINK_DEF),
                     PEG.rule(MD_PARA),
@@ -144,8 +144,7 @@ public class MarkdownParser {
                 PEG.rule$Literal("#")),
             PEG.rule$Choice(
                 PEG.rule$Sequence(
-                    PEG.rule$OneOrMore(PEG.rule$Class("\\s")),
-                    //PEG.rule(MD_INLINE),
+                    PEG.rule$OneOrMore(PEG.rule$Class("[ \t]")),
                     PEG.rule$ZeroOrMore(
                         PEG.rule$Class("^\n")),
                     PEG.rule(MD_EOL_OR_EOF))
@@ -160,7 +159,17 @@ public class MarkdownParser {
                     String title = $2.pack().getValue()
                         .trim()
                         .replaceAll(" +((?!\\\\)#)+$", "")
-                        .replaceAll("\\\\#", "#");
+                        .replaceAll("\\\\#", "#")
+                        .replaceAll("^#+$", "");
+                    if (!"".equals(title)) {
+                        PEGContext ctx = new PEGContext(title);
+                        try {
+                            title = PEG.rule(MD_INLINE).accept(ctx).getValue();
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
                     switch(depth) {
                     case 1: $$.setValue(H1(title)); break;
                     case 2: $$.setValue(H2(title)); break;
@@ -178,27 +187,45 @@ public class MarkdownParser {
 
         // 整形済
         PEG.define(MD_PRE,
-            PEG.rule$OneOrMore(
+            PEG.rule$Choice(
+                PEG.rule$Literal("    "),
+                PEG.rule$Literal("\t"),
+                PEG.rule$Literal(" \t"),
+                PEG.rule$Literal("  \t"),
+                PEG.rule$Literal("   \t")),
+            PEG.rule(MD_INLINE),
+            PEG.rule(MD_EOL_OR_EOF),
+            PEG.rule$ZeroOrMore(
                 PEG.rule$Choice(
-                    PEG.rule$Literal("    "),
-                    PEG.rule$Literal("\t"),
-                    PEG.rule$Literal(" \t"),
-                    PEG.rule$Literal("  \t"),
-                    PEG.rule$Literal("   \t")),
-                PEG.rule(MD_INLINE),
-                PEG.rule(MD_EOL_OR_EOF)))
+                    PEG.rule(MD_EOL),
+                    PEG.rule$Sequence(
+                        PEG.rule$Choice(
+                            PEG.rule$Literal("    "),
+                            PEG.rule$Literal("\t"),
+                            PEG.rule$Literal(" \t"),
+                            PEG.rule$Literal("  \t"),
+                            PEG.rule$Literal("   \t")),
+                        PEG.rule(MD_INLINE),
+                        PEG.rule(MD_EOL_OR_EOF)))))
             .action($$ -> {
                 StringBuffer sb = new StringBuffer();
-                PEGNode $0 = $$.get(0);
-                for (int i = 0; i < $0.length(); i++) {
-                    PEGNode $001 = $0.get(i).get(1);
-                    sb.append($001.getValue());
-                    sb.append("\n");
+                sb.append($$.get(1).getValue());
+                sb.append("\n");
+                PEGNode zeroOrMore = $$.get(3);
+                for (int i = 0; i < zeroOrMore.length(); i++) {
+                    PEGNode choice = zeroOrMore.get(i).get(0);
+                    if (choice.getType() == MD_EOL) {
+                        sb.append("\n");
+                    } else {
+                        sb.append(choice.get(1).getValue());
+                        sb.append("\n");
+                    }
                 }
                 $$.clear();
                 $$.setValue("<pre><code>" + sb.toString() + "</code></pre>");
                 return $$;
             });
+
         // コード
         PEG.define(MD_CODE_BLOCK,
             PEG.rule$Choice( // ださい...
@@ -218,21 +245,35 @@ public class MarkdownParser {
         PEG.define(MD_QUOTE,
             PEG.rule$Sequence(
                 PEG.rule(MD_PRESPACES),
-                PEG.rule$Literal(">"),
+                PEG.rule$RegExp(">([ \t])")
+                    .action($$ -> {
+                        if ("\t".equals($$.get(1).getValue())) {
+                            $$.setValue("   ");
+                        } else {
+                            $$.setValue("");
+                        }
+                        return $$;
+                    }),
                 PEG.rule$ZeroOrMore(
                     PEG.rule(MD_CHAR)),
                 PEG.rule(MD_EOL_OR_EOF))
                 .action($$ -> {
-                    String line = $$.get(2).pack().getValue() +
+                    String line = $$.get(1).getValue() + 
+                        $$.get(2).pack().getValue().replaceAll("(?=\\s)\t", "   ") +
                         $$.get(3).pack().getValue();
-                    $$.setValue(line.replaceAll("(?=\\s)\t", "   "));
+                    $$.setValue(line);
                     return $$;
                 }),
             PEG.rule$ZeroOrMore(
+                PEG.rule$Not(
+                    PEG.rule$Choice(
+                        PEG.rule(MD_STX_H1),
+                        PEG.rule(MD_STX_H2),
+                        PEG.rule(MD_HR))),
                 PEG.rule(MD_PRESPACES),
                 PEG.rule$Choice(
                     PEG.rule$Sequence(
-                        PEG.rule$Literal(">"),
+                        PEG.rule$Literal("> "),
                         PEG.rule$ZeroOrMore(
                             PEG.rule(MD_CHAR)))
                         .action($$ -> {
@@ -245,8 +286,8 @@ public class MarkdownParser {
                     StringBuffer sb = new StringBuffer();
                     for (int i = 0; i < $$.length(); i++) {
                         PEGNode $i = $$.get(i);
-                        sb.append($i.get(1).pack().getValue());
                         sb.append($i.get(2).pack().getValue());
+                        sb.append($i.get(3).pack().getValue());
                     }
                     return $$;
                 }))
@@ -265,141 +306,10 @@ public class MarkdownParser {
                 }
                 return $$;
             });
-//        PEG.define(MD_QUOTE,
-//            PEG.rule$Sequence(
-//                PEG.rule$OneOrMore(PEG.rule$Literal(">")),
-//                PEG.rule(MD_INLINE),
-//                PEG.rule(MD_EOL_OR_EOF)),
-//            PEG.rule$ZeroOrMore(
-//                PEG.rule$ZeroOrMore(PEG.rule$Literal(">")),
-//                PEG.rule(MD_INLINE),
-//                PEG.rule(MD_EOL_OR_EOF)))
-//            .action($$ -> {
-//                StringBuffer sb = new StringBuffer("<blockquote>");
-//                Stack<String> closer = new Stack<>();
-//                closer.push("</blockquote>");
-//
-//                StringBuffer prefix = new StringBuffer();
-//                PEGNode $0 = $$.get(0).get(0).get(0);
-//                for (int i = 0; i < $0.length(); i++) {
-//                    prefix.append($0.get(i).getValue());
-//                }
-//                sb.append($$.get(0).get(1).getValue().trim());
-//
-//                PEGNode $1 = $$.get(1);
-//                for (int i = 0; i < $1.length(); i++) {
-//                    StringBuffer nextPrefix = new StringBuffer();
-//                    PEGNode $10 = $1.get(i).get(0);
-//                    for (int j = 0; j < $10.length(); j++) {
-//                        nextPrefix.append($10.get(j).get(0).getValue());
-//                    }
-//                    if (nextPrefix.length() > prefix.length()) {
-//                        sb.append("<blockquote>");
-//                        closer.push("</blockquote>");
-//                    } else if (nextPrefix.length() < prefix.length() && nextPrefix.length() != 0) {
-//                        sb.append(closer.pop());
-//                    }
-//                    sb.append($1.get(i).get(1).getValue().trim());
-//                    prefix = nextPrefix;
-//                }
-//                sb.append(closer.pop());
-//                $$.setValue(sb.toString());
-//                return $$;
-//            });
-        // リスト
-//        PEG.define(MD_LIST,
-//            PEG.rule$Sequence(
-//                PEG.rule(MD_PRESPACES),
-//                PEG.rule$Choice(
-//                    PEG.rule$Class("-*")
-//                        .action($$ -> {
-//                            $$.setValue("ul");
-//                            return $$;
-//                        }),
-//                    PEG.rule$Sequence(
-//                        PEG.rule$OneOrMore(
-//                            PEG.rule$Class("0-9")),
-//                        PEG.rule$Literal("."))
-//                        .action($$ -> {
-//                            $$.setValue("ol");
-//                            return $$;
-//                        })),
-//                PEG.rule$OneOrMore(
-//                    PEG.rule$Class("\\s")),
-//                PEG.rule(MARKDOWN),
-//                PEG.rule(MD_EOL_OR_EOF)),
-//            PEG.rule$ZeroOrMore(
-//                PEG.rule$ZeroOrMore(PEG.rule$Class(" \t"))
-//                    .action($$ -> {
-//                        StringBuffer sb = new StringBuffer();
-//                        for (int i = 0; i < $$.length(); i++) {
-//                            String value = $$.get(i).get(0).getValue();
-//                            if ("\t".equals(value)) {
-//                                sb.append("    ");
-//                            } else {
-//                                sb.append(value);
-//                            }
-//                        }
-//                        $$.setValue(sb.toString());
-//                        return $$;
-//                    }),
-//                PEG.rule$Choice(
-//                    PEG.rule$Class("-*")
-//                        .action($$ -> {
-//                            $$.setValue("ul");
-//                            return $$;
-//                        }),
-//                    PEG.rule$Sequence(
-//                        PEG.rule$OneOrMore(
-//                            PEG.rule$Class("0-9")),
-//                        PEG.rule$Literal("."))
-//                            .action($$ -> {
-//                                $$.setValue("ol");
-//                                return $$;
-//                            })),
-//                PEG.rule$OneOrMore(
-//                    PEG.rule$Class("\\s")),
-//                PEG.rule(MARKDOWN),
-//                PEG.rule(MD_EOL_OR_EOF)))
-//            .action($$ -> {
-//                int depth = 0;
-//                StringBuffer sb = new StringBuffer();
-//                String marker = $$.get(0).get(1).getValue();
-//                PEGNode $1 = $$.get(1);
-//                Stack<String> stack = new Stack<>();
-//                sb.append("<" + marker + ">");
-//                stack.push("</" + marker + ">");
-//                sb.append("<li>" + $$.get(0).get(3).getValue().trim());
-//                stack.push("</li>");
-//                for (int i = 0; i < $1.length(); i++) {
-//                    String childMarker = $1.get(i).get(1).getValue();
-//                    int spaces = $1.get(i).get(0).getValue().length();
-//                    if (spaces >= depth + 2) {
-//                        sb.append("<" + childMarker + ">");
-//                        stack.push("</" + childMarker + ">");
-//                    } else if (spaces <= depth - 2) {
-//                        sb.append(stack.pop());
-//                    } else if (!marker.equals(childMarker)) {
-//                        sb.append(stack.pop());
-//                        sb.append("<" + childMarker + ">");
-//                        stack.push("</" + childMarker + ">");
-//                    } else {
-//                        sb.append(stack.pop());
-//                    }
-//                    sb.append("<li>" + $1.get(i).get(3).getValue().trim());
-//                    stack.push("</li>");
-//                    depth = spaces;
-//                    marker = childMarker;
-//                }
-//                while (stack.size() > 0) {
-//                    sb.append(stack.pop());
-//                }
-//
-//                $$.setValue(sb.toString());
-//                return $$;
-//            });
+
         PEG.define(MD_LIST,
             PEG.rule$OneOrMore(
+                PEG.rule$Not(PEG.rule(MD_HR)),
                 PEG.rule$Choice(
                     PEG.rule(MD_LIST_AST),
                     PEG.rule(MD_LIST_PLUS),
@@ -412,7 +322,7 @@ public class MarkdownParser {
                 PEGNode $0 = $$.get(0);
                 sb.append("<ul>");
                 for (int i = 0; i < $0.length(); i++) {
-                    String item = $0.get(i).get(0).getValue();
+                    String item = $0.get(i).get(1).getValue();
                     if (!loose) {
                         // FIXME
                         item = item.replaceAll("^<li><p>(.*?)</p>", "<li>$1");
@@ -423,6 +333,7 @@ public class MarkdownParser {
                 $$.setValue(sb.toString());
                 return $$;
             });
+
         PEG.define(MD_LIST_AST,
             PEG.rule$Choice(
                 createListItem("   *    "),
@@ -510,34 +421,81 @@ public class MarkdownParser {
                 $$.setValue(sb.toString());
                 return $$;
             });
+
+        // 番号付きリスト
+        PEG.define(MD_OLIST,
+            PEG.rule$RegExp("( {0,3})(\\d+)\\.( *)"),
+            PEG.rule$RegExp("[^\n]+"),
+            PEG.rule(MD_EOL_OR_EOF),
+            PEG.rule$ZeroOrMore(
+                PEG.rule$Not(PEG.rule(MD_EOL)),
+                PEG.rule$RegExp(" *(?!\\d+\\.)[^\n]+"),
+                PEG.rule(MD_EOL_OR_EOF))
+                .action($$ -> {
+                    $$.setValue("");
+                    return $$;
+                }),
+            PEG.rule$ZeroOrMore(
+                PEG.rule$Not(PEG.rule(MD_EOL)),
+                PEG.rule$Choice(
+                    PEG.rule$RegExp("(\\s*)(\\d+)\\.( *)([^\n]*)"),
+                    PEG.rule$RegExp("[^\n]+")),
+                PEG.rule(MD_EOL_OR_EOF)))
+            .action($$ -> {
+                StringBuffer sb = new StringBuffer();
+                String start = $$.get(0).get(2).getValue();
+                sb.append("<ol");
+                if (!"1".equals(start)) {
+                    sb.append(" start=\"" + start + "\"");
+                }
+                sb.append("><li>");
+                sb.append(
+                    ($$.get(1).pack().getValue() +
+                     $$.get(2).pack().getValue()).trim());
+                for (int i = 0; i < $$.get(3).length(); i++) {
+                    sb.append("\n" + $$.get(3).get(i).pack().getValue().trim());
+                }
+                sb.append("</li>");
+                for (int i = 0; i < $$.get(4).length(); i++) {
+                    PEGNode $i = $$.get(4).get(i).get(1);
+                    if ($i.length() > 4) {
+                        sb.append("<li>" + $i.get(4).pack().getValue() + "</li>");
+                    } else {
+                        sb.append($i.pack().getValue()); // TODO
+                    }
+                }
+                sb.append("</ol>");
+                $$.setValue(sb.toString());
+                return $$;
+            });
+
+        PEG.define(MD_OLIST_ITEM,
+            PEG.rule$RegExp(" {0,3}(\\d+)\\. *"),
+            PEG.rule$RegExp("[^\n]+"),
+            PEG.rule(MD_EOL_OR_EOF),
+            PEG.rule$ZeroOrMore(
+                PEG.rule$Not(
+                    PEG.rule$Choice(
+                        PEG.rule(MD_OLIST_ITEM),
+                        PEG.rule(MD_EOF))),
+                PEG.rule$RegExp("[^\n]+"),
+                PEG.rule(MD_EOL_OR_EOF)))
+            .action($$ -> {
+                String item =
+                    $$.get(1).pack().getValue() +
+                    $$.get(2).pack().getValue() +
+                    $$.get(3).pack().getValue();
+                $$.setValue("<li>" + item.trim() + "</li>");
+                return $$;
+            });
+
         // 水平線
         PEG.define(MD_HR,
             PEG.rule(MD_PRESPACES),
             PEG.rule$Choice(
-                PEG.rule$Sequence(
-                    PEG.rule$Literal("*"),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class(" \t")),
-                    PEG.rule$Literal("*"),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class(" \t")),
-                    PEG.rule$Literal("*"),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class(" \t")),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class("* \t"))),
-                PEG.rule$Sequence(
-                    PEG.rule$Literal("-"),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class(" \t")),
-                    PEG.rule$Literal("-"),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class(" \t")),
-                    PEG.rule$Literal("-"),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class(" \t")),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class("- \t"))),
-                PEG.rule$Sequence(
-                    PEG.rule$Literal("_"),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class(" \t")),
-                    PEG.rule$Literal("_"),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class(" \t")),
-                    PEG.rule$Literal("_"),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class(" \t")),
-                    PEG.rule$ZeroOrMore(PEG.rule$Class("_ \t")))),
+                PEG.rule$RegExp("\\*[ \t]*\\*[ \t]*\\*[ \t\\*]*"),
+                PEG.rule$RegExp("\\-[ \t]*\\-[ \t]*\\-[ \t\\-]*"),
+                PEG.rule$RegExp("\\_[ \t]*\\_[ \t]*\\_[ \t\\_]*")),
             PEG.rule(MD_EOL_OR_EOF))
             .action($$ -> {
                 $$.setValue("<hr>");
@@ -553,6 +511,10 @@ public class MarkdownParser {
         PEG.define(MD_PARA,
             PEG.rule(MD_LINE),
             PEG.rule$ZeroOrMore(
+                PEG.rule$Not(
+                    PEG.rule$Choice(
+                        PEG.rule(MD_HR),
+                        PEG.rule(MD_HEAD))),
                 PEG.rule$Sequence(
                     PEG.rule$ZeroOrMore(
                         PEG.rule$Class(" \t")),
@@ -561,7 +523,7 @@ public class MarkdownParser {
                         return $$.get(1).pack();
                     })))
             .action($$ -> {
-                $$.setValue("<p>" + $$.pack().getValue().trim() + "</p>");
+                $$.setValue(P($$.pack().getValue().trim().replaceAll("<br />$", "")));
                 return $$;
             });
 
@@ -569,9 +531,9 @@ public class MarkdownParser {
         PEG.define(MD_LINE,
             PEG.rule$Not(
                 PEG.rule$Choice(
-                    PEG.rule(MD_HR),
+//                    PEG.rule(MD_HR),
                     PEG.rule(MD_LIST),
-                    PEG.rule(MD_HEAD),
+//                    PEG.rule(MD_HEAD),
 //                    PEG.rule(MD_STX_H1),
 //                    PEG.rule(MD_STX_H2),
 //                    PEG.rule(MD_PRE),
@@ -584,7 +546,8 @@ public class MarkdownParser {
                 String line = $$.get(2).pack()
                     .getValue()
                     .replaceAll("^\\s+", "")
-                    .replaceAll("  +$", "<br />");
+                    .replaceAll("  +$", "<br />")
+                    .replaceAll(" $", "");
                 if ($$.get(3).length() > 0) {
                     line += $$.get(3).get(0).getValue();
                 }
@@ -875,7 +838,7 @@ public class MarkdownParser {
 
         PEG.define(MD_LINK_TEXT,
             PEG.rule$Literal("["),
-            PEG.rule$OneOrMore(
+            PEG.rule$ZeroOrMore(
                 PEG.rule$Choice(
                     PEG.rule(MD_LINK_TEXT)
                         .action($$ -> {
@@ -1256,12 +1219,12 @@ public class MarkdownParser {
                 PEG.rule$Sequence(
                     PEG.rule$Literal("\""),
                     PEG.rule$ZeroOrMore(
-                        PEG.rule$Class("^\"\n")),
+                        PEG.rule$Class("^\"")),
                     PEG.rule$Literal("\"")),
                 PEG.rule$Sequence(
                     PEG.rule$Literal("'"),
                     PEG.rule$ZeroOrMore(
-                        PEG.rule$Class("^'\n")),
+                        PEG.rule$Class("^'")),
                     PEG.rule$Literal("'"))));
 
         PEG.define(HTML_COMMENT,
@@ -1348,20 +1311,21 @@ public class MarkdownParser {
                             PEG.rule$Class("^\n")),
                         PEG.rule(MD_EOL_OR_EOF))),
                 PEG.rule$Sequence(
-                    PEG.rule$RegExp("<\\/?([^ >]+)( [^>]+)?>[^\n]*"),
-                    PEG.rule(MD_EOL_OR_EOF),
-                    PEG.rule$ZeroOrMore(
-                        PEG.rule$OneOrMore(
-                            PEG.rule$Class("^\n")),
-                        PEG.rule(MD_EOL_OR_EOF)))
+                    PEG.rule$RegExp("<\\/?([^ >]+)( [^>]+)?>[ \t]*"),
+                    PEG.rule(MD_EOL),
+                    PEG.rule(MD_EOL))
                 ))
             .action($$ -> {
                 return $$.pack();
             });
 
+        // 参照リンク
         PEG.define(MD_LINK_REF,
             PEG.rule$Literal("["),
-            PEG.rule$RegExp("[^ \\]]*"),
+            PEG.rule$RegExp("(\\\\]|[^\\]])*").action($$ -> {
+                $$.setValue($$.getValue().replaceAll("\\\\]", "]"));
+                return $$;
+            }),
             PEG.rule$Literal("]"),
             PEG.rule$Not(
                 PEG.rule$Class("\\[\\(:"))
@@ -1372,22 +1336,33 @@ public class MarkdownParser {
                 return $$;
             });
 
+        // 参照リンク定義
         PEG.define(MD_LINK_DEF,
             PEG.rule(MD_PRESPACES),
             PEG.rule$Literal("["),
-            PEG.rule$RegExp("[^ \\]]+"),
-            PEG.rule$Literal("]:"),
-            PEG.rule$RegExp("( *\n *| +)").action($$ -> {
+            PEG.rule$RegExp("(\\\\]|[^\\]])+").action($$ -> {
+                $$.setValue($$.getValue().replaceAll("\\\\]", "]"));
                 return $$;
             }),
+            PEG.rule$Literal("]:"),
+            PEG.rule$RegExp("( *\n *| *)"),
             PEG.rule$Choice(
-                PEG.rule$RegExp("[^ \n]+"),
-                PEG.rule$RegExp("<[^>\n]+>")),
+                PEG.rule$RegExp("<([^>\n]*)>").action($$ -> {
+                    $$.setValue($$.get(1).getValue());
+                    return $$;
+                }),
+                PEG.rule$RegExp("[^ \n]+")),
             PEG.rule$Optional(
-                PEG.rule$RegExp("( *\n *| +)"),
+                PEG.rule$RegExp("( *\n *| *)"),
                 PEG.rule$Choice(
-                    PEG.rule$RegExp("\"(((?!\n\n)[^\"])*)\"", "$1"),
-                    PEG.rule$RegExp("'(((?!\n\n)[^'])*)'", "$1")),
+                    PEG.rule$RegExp("\"(((?!\n\n)[^\"])*)\"").action($$ -> {
+                        $$.setValue($$.get(1).getValue());
+                        return $$;
+                    }),
+                    PEG.rule$RegExp("'(((?!\n\n)[^'])*)'")).action($$ -> {
+                        $$.setValue($$.get(1).getValue());
+                        return $$;
+                    }),
                 PEG.rule$RegExp(" *")),
             PEG.rule(MD_EOL_OR_EOF))
             .action($$ -> {
@@ -1399,7 +1374,10 @@ public class MarkdownParser {
                     $$.get(2).pack().getValue(),
                     $$.get(5).pack().getValue(),
                     title);
-                $$.getContext().setAttr($$.get(2).pack().getValue(), result);
+                String linkText = $$.get(2).pack().getValue().toLowerCase();
+                if ($$.getContext().getAttr(linkText) == null) {
+                    $$.getContext().setAttr(linkText, result);
+                }
                 $$.setValue("");
                 return $$; 
             });
@@ -1578,9 +1556,11 @@ public class MarkdownParser {
             // 空行を挟まない継続行
             PEG.rule$ZeroOrMore(
                 PEG.rule$Not(
-                    PEG.rule$Sequence(
-                        PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")),
-                        PEG.rule$Literal(marker.toString()))),
+                    PEG.rule$Choice(
+                        PEG.rule(MD_HR),
+                        PEG.rule$Sequence(
+                            PEG.rule$ZeroOrMore(PEG.rule$Literal(" ")),
+                            PEG.rule$Literal(marker.toString())))),
                 PEG.rule$OneOrMore(
                     PEG.rule$Class("^\n"))
                     .action($$ -> {
@@ -1785,8 +1765,8 @@ public class MarkdownParser {
             if (ctx.available() > 0) {
                 throw new MarkdownException(ctx.subString(ctx.position()));
             }
-            Map<String,String> map = new HashMap<>();
-            findLinks(map, node);
+//            Map<String,String> map = new HashMap<>();
+//            findLinks(map, node);
             if (LOG.isTraceEnabled()) {
                 AtomicInteger total = new AtomicInteger();
                 AtomicInteger success = new AtomicInteger();
@@ -1822,7 +1802,7 @@ public class MarkdownParser {
         if ("MD_LINK_DEF".equals(type)) {
             String linkText = node.getValue()
                 .replaceAll("<a [^>]*>([^<]*)</a>", "$1");
-            map.put(linkText, node.getValue());
+            map.put(linkText.toLowerCase(), node.getValue());
             node.setValue("");
         }
         for (int i = 0; i < node.length(); i++) {
@@ -1840,11 +1820,13 @@ public class MarkdownParser {
             if (start < m.start()) {
                 sb.append(source.substring(start, m.start()));
             }
-            String val = ctx.getAttr(m.group(1));
+            String linkText = m.group(1);
+            String val = ctx.getAttr(linkText.toLowerCase());
             if (val != null) {
+                val = val.replaceAll(">(.*?)<", ">" + linkText + "<");
                 sb.append(val);
             } else {
-                sb.append("[" + m.group(1) + "]");
+                sb.append("[" + linkText + "]");
             }
             start = m.end();
         }
@@ -1909,7 +1891,8 @@ public class MarkdownParser {
         MD_LIST_AST, MD_LIST_PLUS, MD_LIST_BAR, MD_TABLE, MD_BLANK_LINE,
         MD_NUMERIC_REF, MD_ENTITY_REF, MD_STX_H1_UNDER, MD_STX_H2_UNDER,
         MD_EMPHASIS, MD_STRONG, MD_EMPH_AST, MD_EMPHASIS_HYPHHEN, MD_STRONG_AST, MD_STRONG_HYPHHEN,
-        MD_HTML_BLOCK, MD_LINK_REF, MD_LINK_DEF
+        MD_HTML_BLOCK, MD_LINK_REF, MD_LINK_DEF,
+        MD_OLIST, MD_OLIST_ITEM
         ;
     }
     
