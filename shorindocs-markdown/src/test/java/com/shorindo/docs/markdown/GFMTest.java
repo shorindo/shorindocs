@@ -105,12 +105,9 @@ public class GFMTest {
         GFM("===", "<p>===</p>");
     }
 
-    /**
-     * FIXME これがh2にならない根拠がわからないなー
-     */
     @Test
     public void example016() throws Exception {
-        GFM("--\n**\n--", "<p>--\n**\n--</p>");
+        GFM("--\n**\n__", "<p>--\n**\n__</p>");
     }
 
     @Test
