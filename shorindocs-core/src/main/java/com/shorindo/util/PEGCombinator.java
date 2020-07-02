@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -38,12 +39,14 @@ import com.shorindo.docs.action.ActionLogger;
 public class PEGCombinator {
     private static ActionLogger LOG = ActionLogger.getLogger(PEGCombinator.class);
     private Map<RuleTypes,Rule> ruleMap;
+    private Stack<Rule> ruleStack;
 
     /**
      * 
      */
     public PEGCombinator() {
         ruleMap = new HashMap<>();
+        ruleStack = new Stack<>();
     }
 
     public Rule define(RuleTypes ruleType, Rule...rules) {
@@ -51,11 +54,12 @@ public class PEGCombinator {
 
             @Override
             public PEGNode accept(PEGContext ctx) throws PEGException {
-                if (ctx.hasMemo(this)) {
-                    return ctx.getMemo(this);
-                }
+//                if (ctx.hasMemo(this)) {
+//                    return ctx.getMemo(this);
+//                }
                 PEGNode $$ = new PEGNode(ctx, ruleType);
                 int curr = ctx.position();
+                ruleStack.push(this);
                 try {
                     $$.setType(ruleType);
                     for (Rule rule : rules) {
@@ -64,14 +68,22 @@ public class PEGCombinator {
                     }
                     String sub = ctx.subString(curr, ctx.position);
                     $$.setSource(sub);
-                    LOG.trace("rule({0})[{1}] accept <- {2}",
-                        ruleType, curr, $$.getSource());
+                    StringBuffer trace = new StringBuffer();
+                    String prefix = "";
+                    for (int i = 0; i < ruleStack.size(); i++) {
+                        trace.append(prefix + ruleStack.get(i).getType());
+                        prefix = "->";
+                    }
+                    LOG.trace("rule({0})[{1}] accept <- {2} : {3}",
+                        ruleType, curr, $$.getSource(), trace.toString());
                     return ctx.success(this, action.apply($$), curr, ctx.position());
                 } catch (UnmatchException e) {
                     ctx.failure(curr, this);
-                    //LOG.trace("rule({0})[{1}] deny <- {2}",
-                    //    ruleType, curr, ctx.subString(curr));
+//                    LOG.trace("rule({0})[{1}] deny <- {2}",
+//                        ruleType, curr, ctx.subString(curr));
                     throw e;
+                } finally {
+                    ruleStack.pop();
                 }
             }
 

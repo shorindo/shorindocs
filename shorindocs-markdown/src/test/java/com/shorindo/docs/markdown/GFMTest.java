@@ -444,7 +444,7 @@ public class GFMTest {
 
     @Test
     public void example080() throws Exception {
-        GFM("    <a/>    *hi*\n\n    - one\n",
+        GFM("    <a/>\n    *hi*\n\n    - one\n",
             "<pre><code>&lt;a/&gt;\n*hi*\n\n- one\n</code></pre>");
     }
 
@@ -592,7 +592,7 @@ public class GFMTest {
 
     @Test
     public void example108() throws Exception {
-        GFM("``` ```\naaa\n", "<p><code> </code>aaa</p>");
+        GFM("``` ```\naaa\n", "<p><code> </code>\naaa</p>");
     }
 
     @Test
@@ -631,7 +631,7 @@ public class GFMTest {
 
     @Test
     public void example115() throws Exception {
-        GFM("``` aa ```\nfoo\n", "<p><code>aa</code>foo</p>");
+        GFM("``` aa ```\nfoo\n", "<p><code>aa</code>\nfoo</p>");
     }
 
     @Test
@@ -665,13 +665,13 @@ public class GFMTest {
 
     @Test
     public void example121() throws Exception {
-        GFM("</div>\n*foo*\n", "</div>\n*foo*");
+        GFM("</div>\n*foo*\n", "</div>\n*foo*\n");
     }
 
     @Test
     public void example122() throws Exception {
         GFM("<DIV CLASS=\"foo\">\n\n*Markdown*\n\n</DIV>",
-            "<DIV CLASS=\"foo\">\n<p><em>Markdown</em></p>\n</DIV>");
+            "<DIV CLASS=\"foo\">\n<p><em>Markdown</em></p></DIV>");
     }
 
     @Test
@@ -751,7 +751,7 @@ public class GFMTest {
 
     @Test
     public void example137() throws Exception {
-        GFM("<del>\n\n*foo*\n\n</del>", "<del><p><em>foo</em></p></del>");
+        GFM("<del>\n\n*foo*\n\n</del>", "<del>\n<p><em>foo</em></p></del>");
     }
 
     @Test
@@ -791,7 +791,7 @@ public class GFMTest {
 
     @Test
     public void example144() throws Exception {
-        GFM("- <div>- foo\n", "<ul><li><div></li><li>foo</li></ul>");
+        GFM("- <div>\n- foo\n", "<ul><li><div></li><li>foo</li></ul>");
     }
 
     @Test
@@ -882,8 +882,8 @@ public class GFMTest {
 
     @Test
     public void example160() throws Exception {
-        GFM("<table>\n  <tr>\n    <td>      Hi\n    </td>\n  </tr>\n</table>",
-            "<table>  <tr><pre><code>&lt;td&gt;\n  Hi\n&lt;/td&gt;\n</code></pre>  </tr></table>");
+        GFM("<table>\n\n  <tr>\n\n    <td>\n      Hi\n    </td>\n\n  </tr>\n\n</table>",
+            "<table>\n  <tr>\n<pre><code>&lt;td&gt;\n  Hi\n&lt;/td&gt;\n</code></pre>  </tr>\n</table>");
     }
 
     @Test
@@ -1509,7 +1509,7 @@ public class GFMTest {
     @Test
     public void example272() throws Exception {
         GFM("- foo\n  - bar\n    - baz\n      - boo\n",
-            "<ul><li>foo\n<ul><li>bar\n<ul><li>baz\n<ul><li>boo</li></ul></li></ul></li></ul></li></ul>");
+            "<ul><li>foo<ul><li>bar<ul><li>baz<ul><li>boo</li></ul></li></ul></li></ul></li></ul>");
     }
 
     @Test
