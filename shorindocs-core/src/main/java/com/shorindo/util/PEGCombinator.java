@@ -49,14 +49,18 @@ public class PEGCombinator {
         ruleStack = new Stack<>();
     }
 
+    public PEGContext createContext(String text) {
+        return new PEGContext(text);
+    }
+
     public Rule define(RuleTypes ruleType, Rule...rules) {
         Rule rule = new Rule(ruleType) {
 
             @Override
             public PEGNode accept(PEGContext ctx) throws PEGException {
-//                if (ctx.hasMemo(this)) {
-//                    return ctx.getMemo(this);
-//                }
+                if (ctx.hasMemo(this)) {
+                    return ctx.getMemo(this);
+                }
                 PEGNode $$ = new PEGNode(ctx, ruleType);
                 int curr = ctx.position();
                 ruleStack.push(this);
@@ -798,15 +802,20 @@ public class PEGCombinator {
     public static class PEGContext {
         private String source;
         private int position = 0;
+        private boolean useMemo = true;
         private Map<String,String> attrMap;
         private Map<RuleTypes,Statistics> statsMap;
         private Map<Rule,Map<Integer,Memo>> memoMap;
 
-        public PEGContext(String text) {
+        protected PEGContext(String text) {
             attrMap = new HashMap<>();
             statsMap = new HashMap<>();
             memoMap = new HashMap<>();
             source = text;
+        }
+
+        public PEGContext createContext(String text) {
+            return new PEGContext(text);
         }
 
         public void reset(int position) {
@@ -859,13 +868,15 @@ public class PEGCombinator {
                 statsMap.put(rule.getType(), stat);
             }
             stat.success();
-            
-            Map<Integer,Memo> memo = memoMap.get(rule);
-            if (memo == null) {
-                memo = new HashMap<>();
-                memoMap.put(rule, memo);
+
+            if (useMemo) {
+                Map<Integer,Memo> memo = memoMap.get(rule);
+                if (memo == null) {
+                    memo = new HashMap<>();
+                    memoMap.put(rule, memo);
+                }
+                memo.put(start, new Memo(start, end, $$));
             }
-            memo.put(start, new Memo(start, end, $$));
             return $$;
         }
         
@@ -880,21 +891,27 @@ public class PEGCombinator {
             }
             stat.failure();
             
-            Map<Integer,Memo> memo = memoMap.get(rule);
-            if (memo == null) {
-                memo = new HashMap<>();
-                memoMap.put(rule, memo);
+            if (useMemo) {
+                Map<Integer,Memo> memo = memoMap.get(rule);
+                if (memo == null) {
+                    memo = new HashMap<>();
+                    memoMap.put(rule, memo);
+                }
+                memo.put(position, null);
             }
-            memo.put(position, null);
         }
 
         public boolean hasMemo(Rule rule) {
-            Map<Integer,Memo> memo = memoMap.get(rule);
-            if (memo == null) {
-                return false;
-            }
-            if (memo.containsKey(position())) {
-                return true;
+            if (useMemo) {
+                Map<Integer,Memo> memo = memoMap.get(rule);
+                if (memo == null) {
+                    return false;
+                }
+                if (memo.containsKey(position())) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
