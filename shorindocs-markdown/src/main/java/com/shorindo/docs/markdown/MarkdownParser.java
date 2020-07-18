@@ -49,7 +49,6 @@ public class MarkdownParser {
             PEG.rule$ZeroOrMore(
                 PEG.rule$Choice(
                     PEG.rule(MD_HR),
-                    PEG.rule(MD_LIST),
                     PEG.rule(MD_OLIST),
                     PEG.rule(MD_HEAD),
                     PEG.rule(MD_QUOTE),
@@ -84,7 +83,6 @@ public class MarkdownParser {
         PEG.define(MD_BLOCK,
             PEG.rule$Choice(
                 PEG.rule(MD_HR),
-                PEG.rule(MD_LIST),
                 PEG.rule(MD_OLIST),
                 PEG.rule(MD_HEAD),
                 PEG.rule(MD_QUOTE),
@@ -101,12 +99,9 @@ public class MarkdownParser {
             PEG.rule$OneOrMore(
                 PEG.rule$Choice(
                     PEG.rule(MD_HR),
-                    PEG.rule(MD_LIST),
                     PEG.rule(MD_OLIST),
                     PEG.rule(MD_HEAD),
                     PEG.rule(MD_QUOTE),
-//                PEG.rule(MD_STX_H1),
-//                PEG.rule(MD_STX_H2),
                     PEG.rule(MD_PRE),
                     PEG.rule(MD_CODE_BLOCK),
                     PEG.rule(MD_HTML_BLOCK),
@@ -358,167 +353,261 @@ public class MarkdownParser {
                 return $$;
             });
 
-        PEG.define(MD_LIST,
-            PEG.rule$OneOrMore(
-                PEG.rule$Not(PEG.rule(MD_HR)),
-                PEG.rule$Choice(
-                    PEG.rule(MD_LIST_AST),
-                    PEG.rule(MD_LIST_PLUS),
-                    PEG.rule(MD_LIST_BAR))))
-            .action($$ -> {
-                // 各アイテムが空行を含むかどうか
-                boolean loose = isLoose($$);
-                StringBuffer sb = new StringBuffer();
-                PEGNode $0 = $$.get(0);
-                sb.append("<ul>");
-                for (int i = 0; i < $0.length(); i++) {
-                    String item = $0.get(i).get(1).getValue();
-                    if (!loose) {
-                        // FIXME
-                        item = item.replaceAll("^<li><p>(.*?)</p>", "<li>$1");
-                    }
-                    sb.append(item);
-                }
-                sb.append("</ul>");
-                $$.setValue(sb.toString());
-                return $$;
-            });
-
-        PEG.define(MD_LIST_AST,
-            PEG.rule$Choice(
-                createListItem("   *    "),
-                createListItem("   *   "),
-                createListItem("   *  "),
-                createListItem("   * "),
-                createListItem("   *\t"),
-                createListItem("  *    "),
-                createListItem("  *   "),
-                createListItem("  *  "),
-                createListItem("  * "),
-                createListItem("  *\t"),
-                createListItem(" *    "),
-                createListItem(" *   "),
-                createListItem(" *  "),
-                createListItem(" * "),
-                createListItem(" *\t"),
-                createListItem("*    "),
-                createListItem("*   "),
-                createListItem("*  "),
-                createListItem("* "),
-                createListItem("*\t")
-            ))
-            .action($$ -> {
-                StringBuffer sb = new StringBuffer();
-                sb.append("<li>" + $$.get(0).get(1).getValue().trim() + "</li>");
-                $$.setValue(sb.toString());
-                return $$;
-            });
-        PEG.define(MD_LIST_PLUS,
-            PEG.rule$Choice(
-                createListItem("   +    "),
-                createListItem("   +   "),
-                createListItem("   +  "),
-                createListItem("   + "),
-                createListItem("   +\t"),
-                createListItem("  +    "),
-                createListItem("  +   "),
-                createListItem("  +  "),
-                createListItem("  + "),
-                createListItem("  +\t"),
-                createListItem(" +    "),
-                createListItem(" +   "),
-                createListItem(" +  "),
-                createListItem(" + "),
-                createListItem(" +\t"),
-                createListItem("+    "),
-                createListItem("+   "),
-                createListItem("+  "),
-                createListItem("+ "),
-                createListItem("+\t")
-            ))
-            .action($$ -> {
-                StringBuffer sb = new StringBuffer();
-                sb.append("<li>" + $$.get(0).getValue().trim() + "</li>");
-                $$.setValue(sb.toString());
-                return $$;
-            });
-        PEG.define(MD_LIST_BAR,
-            PEG.rule$Choice(
-                createListItem("   -    "),
-                createListItem("   -   "),
-                createListItem("   -  "),
-                createListItem("   - "),
-                createListItem("   -\t"),
-                createListItem("  -    "),
-                createListItem("  -   "),
-                createListItem("  -  "),
-                createListItem("  - "),
-                createListItem("  -\t"),
-                createListItem(" -    "),
-                createListItem(" -   "),
-                createListItem(" -  "),
-                createListItem(" - "),
-                createListItem(" -\t"),
-                createListItem("-    "),
-                createListItem("-   "),
-                createListItem("-  "),
-                createListItem("- "),
-                createListItem("-\t")
-            ))
-            .action($$ -> {
-                StringBuffer sb = new StringBuffer();
-                sb.append("<li>" + $$.get(0).getValue().trim() + "</li>");
-                $$.setValue(sb.toString());
-                return $$;
-            });
+//        PEG.define(MD_LIST,
+//            PEG.rule$OneOrMore(
+//                PEG.rule$Not(PEG.rule(MD_HR)),
+//                PEG.rule$Choice(
+//                    PEG.rule(MD_LIST_AST),
+//                    PEG.rule(MD_LIST_PLUS),
+//                    PEG.rule(MD_LIST_BAR))))
+//            .action($$ -> {
+//                // 各アイテムが空行を含むかどうか
+//                boolean loose = isLoose($$);
+//                StringBuffer sb = new StringBuffer();
+//                PEGNode $0 = $$.get(0);
+//                sb.append("<ul>");
+//                for (int i = 0; i < $0.length(); i++) {
+//                    String item = $0.get(i).get(1).getValue();
+//                    if (!loose) {
+//                        // FIXME
+//                        item = item.replaceAll("^<li><p>(.*?)</p>", "<li>$1");
+//                    }
+//                    sb.append(item);
+//                }
+//                sb.append("</ul>");
+//                $$.setValue(sb.toString());
+//                return $$;
+//            });
+//
+//        PEG.define(MD_LIST_AST,
+//            PEG.rule$Choice(
+//                createListItem("   *    "),
+//                createListItem("   *   "),
+//                createListItem("   *  "),
+//                createListItem("   * "),
+//                createListItem("   *\t"),
+//                createListItem("  *    "),
+//                createListItem("  *   "),
+//                createListItem("  *  "),
+//                createListItem("  * "),
+//                createListItem("  *\t"),
+//                createListItem(" *    "),
+//                createListItem(" *   "),
+//                createListItem(" *  "),
+//                createListItem(" * "),
+//                createListItem(" *\t"),
+//                createListItem("*    "),
+//                createListItem("*   "),
+//                createListItem("*  "),
+//                createListItem("* "),
+//                createListItem("*\t")
+//            ))
+//            .action($$ -> {
+//                StringBuffer sb = new StringBuffer();
+//                sb.append("<li>" + $$.get(0).get(1).getValue().trim() + "</li>");
+//                $$.setValue(sb.toString());
+//                return $$;
+//            });
+//        PEG.define(MD_LIST_PLUS,
+//            PEG.rule$Choice(
+//                createListItem("   +    "),
+//                createListItem("   +   "),
+//                createListItem("   +  "),
+//                createListItem("   + "),
+//                createListItem("   +\t"),
+//                createListItem("  +    "),
+//                createListItem("  +   "),
+//                createListItem("  +  "),
+//                createListItem("  + "),
+//                createListItem("  +\t"),
+//                createListItem(" +    "),
+//                createListItem(" +   "),
+//                createListItem(" +  "),
+//                createListItem(" + "),
+//                createListItem(" +\t"),
+//                createListItem("+    "),
+//                createListItem("+   "),
+//                createListItem("+  "),
+//                createListItem("+ "),
+//                createListItem("+\t")
+//            ))
+//            .action($$ -> {
+//                StringBuffer sb = new StringBuffer();
+//                sb.append("<li>" + $$.get(0).getValue().trim() + "</li>");
+//                $$.setValue(sb.toString());
+//                return $$;
+//            });
+//        PEG.define(MD_LIST_BAR,
+//            PEG.rule$Choice(
+//                createListItem("   -    "),
+//                createListItem("   -   "),
+//                createListItem("   -  "),
+//                createListItem("   - "),
+//                createListItem("   -\t"),
+//                createListItem("  -    "),
+//                createListItem("  -   "),
+//                createListItem("  -  "),
+//                createListItem("  - "),
+//                createListItem("  -\t"),
+//                createListItem(" -    "),
+//                createListItem(" -   "),
+//                createListItem(" -  "),
+//                createListItem(" - "),
+//                createListItem(" -\t"),
+//                createListItem("-    "),
+//                createListItem("-   "),
+//                createListItem("-  "),
+//                createListItem("- "),
+//                createListItem("-\t")
+//            ))
+//            .action($$ -> {
+//                StringBuffer sb = new StringBuffer();
+//                sb.append("<li>" + $$.get(0).getValue().trim() + "</li>");
+//                $$.setValue(sb.toString());
+//                return $$;
+//            });
 
         PEG.define(MD_OLIST,
             PEG.rule$OneOrMore(
                 PEG.rule(MD_OLIST_ITEM)))
             .action($$ -> {
-                StringBuffer sb = new StringBuffer("<ol");
-                if ($$.get(0).get(0).get(0).length() > 3) {
+                String type;
+                StringBuffer sb = new StringBuffer();
+                String markerType = $$.get(0).get(0).get(0).get(1).getValue();
+                if (".".equals(markerType) || ")".equals(markerType)) { // 番号付き
+                    type = "ol";
+                    sb.append("<" + type);
                     PEGNode $start = $$.get(0).get(0).get(0).get(3);
                     int start = Integer.parseInt($start.getValue());
                     if (start == 0 || start > 1) {
                         sb.append(" start=\"" + start + "\"");
                     }
+                } else { // 番号なし
+                    type = "ul";
+                    sb.append("<" + type);
                 }
                 sb.append(">");
+                String marker = "";
                 for (int i = 0; i < $$.get(0).length(); i++) {
-                    PEGNode $i = $$.get(0).get(i);
+                    PEGNode $i = $$.get(0).get(i).get(0);
+                    if (i > 0 && !marker.equals($i.get(1).getValue())) {
+                        sb.append("</" + type + ">");
+                        markerType = $i.get(1).getValue();
+                        if (".".equals(markerType) || ")".equals(markerType)) { // 番号付き
+                            type = "ol";
+                            sb.append("<" + type);
+                            PEGNode $start = $i.get(3);
+                            int start = Integer.parseInt($start.getValue());
+                            if (start == 0 || start > 1) {
+                                sb.append(" start=\"" + start + "\"");
+                            }
+                            sb.append(">");
+                        } else { // 番号なし
+                            type = "ul";
+                            sb.append("<" + type + ">");
+                        }
+                    }
                     sb.append($i.pack().getValue());
+                    marker = $i.get(1).getValue();
                 }
-                sb.append("</ol>");
+                sb.append("</" + type + ">");
                 $$.setValue(sb.toString());
                 return $$;
             });
 
         PEG.define(MD_OLIST_ITEM,
-            PEG.rule$RegExp("( {0,3})(\\d{1,9})([\\.\\)])[ \n]( {0,3})"),
-            PEG.rule$RegExp("[^\n]+"),
+            PEG.rule$Not(
+                PEG.rule$Choice(
+                    PEG.rule(MD_HR))),
+            PEG.rule$RegExp("( {0,3})(\\d{1,9}\\.|\\d{1,9}\\)|\\*|\\-|\\+)([ \t\n])( {0,3}|\t)?"),
+            //PEG.rule$RegExp("( {0,3})(\\d{1,9}\\.|\\d{1,9}\\))[ \n]( {0,3})"),
+            PEG.rule$RegExp("[^\n]*"),
             PEG.rule(MD_EOL_OR_EOF))
             .action($$ -> {
-                int depth = $$.get(0).get(1).getValue().length();
-                String start = $$.get(0).get(2).getValue();
-                String marker = $$.get(0).get(2).getValue() +
-                    $$.get(0).get(3).getValue();
-                String offset = spaces($$.get(0).getValue().length());
-                String first = $$.get(1).pack().getValue();
+                int depth = $$.get(1).get(1).getValue().length();
+                String start = $$.get(1).get(2).getValue().replaceAll("^(\\d+).*$", "$1");
+                String marker = $$.get(1).get(2).getValue().replaceAll("\\d+", "");
+                String offset = spaces($$.get(1).getValue().length());
+                String first =
+                    $$.get(1).get(3).getValue() +
+                    $$.get(1).get(4).getValue() +
+                    $$.get(2).pack().getValue();
+                first = first
+                    .replaceAll("\n", "")
+                    .replaceAll("\t", "   ");
                 depth = depth > 1 ? depth - 1 : 0;
+                
+                // 子要素を入れ替える
+                $$.setValue($$.get(2).getValue());
+                $$.clear();
+                PEGNode $indent = new PEGNode($$.getContext(), MD_OLIST_ITEM);
+                $indent.setValue(spaces(depth));
+                $$.add($indent);
+                PEGNode $marker = new PEGNode($$.getContext(), MD_OLIST_ITEM);
+                $marker.setValue(marker);
+                $$.add($marker);
+                PEGNode $offset = new PEGNode($$.getContext(), MD_OLIST_ITEM);
+                $offset.setValue(offset);
+                $$.add($offset);
+                PEGNode $start = new PEGNode($$.getContext(), MD_OLIST_ITEM);
+                if (start.matches("^\\d+$")) {
+                    $start.setValue(start);
+                } else {
+                    $start.setValue("0");
+                }
+                $$.add($start);
+
+                StringBuffer offsetExpr = new StringBuffer("(" + offset);
+                switch (offset.length()) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    offsetExpr.append("|\t");
+                    break;
+                case 5:
+                    offsetExpr.append("| \t");
+                    offsetExpr.append("|\t ");
+                    break;
+                case 6:
+                    offsetExpr.append("|  \t");
+                    offsetExpr.append("| \t ");
+                    offsetExpr.append("|  \t");
+                    break;
+                case 7:
+                    offsetExpr.append("|   \t");
+                    offsetExpr.append("|  \t ");
+                    offsetExpr.append("| \t  ");
+                    offsetExpr.append("|\t   ");
+                    break;
+                case 8:
+                    offsetExpr.append("|    \t");
+                    offsetExpr.append("|   \t ");
+                    offsetExpr.append("|  \t  ");
+                    offsetExpr.append("| \t   ");
+                    offsetExpr.append("|\t    ");
+                    offsetExpr.append("|\t\t");
+                    break;
+                }
+                offsetExpr.append(")");
+                
                 Rule nextRule = 
                     PEG.rule$Sequence(
-                        // 同一レベル以下のリストは含まない
+                        // 同一レベルより浅いリストは含まない
                         PEG.rule$Not(
-                            PEG.rule$RegExp(" {0," + (depth + 1) + "}" +
-                                "(\\*|\\-|\\+|\\d+\\.|\\d\\))" +
-                                " {1,3}" +
-                                "[^\n]*")),
+                            PEG.rule$Choice(
+                                PEG.rule(MD_HR),
+                                PEG.rule$RegExp(" {0," + (depth + 1) + "}" +
+                                    "(\\*|\\-|\\+|\\d+\\.|\\d\\))" +
+                                    " {1,3}" +
+                                    "[^\n]*"))),
                         // 空行を含まない継続行
                         PEG.rule$ZeroOrMore(
                             PEG.rule$RegExp("[^\n]+").action($a -> {
-                                $a.setValue(
-                                    $a.pack().getValue().replaceAll("^ +", ""));
+                                $a.setValue($a.pack().getValue()
+                                    .replaceAll("(?!\\S)\t", "    ")
+                                    .replaceAll("^" + offset, ""));
                                 return $a;
                             }),
                             PEG.rule(MD_EOL_OR_EOF)),
@@ -526,50 +615,48 @@ public class MarkdownParser {
                         PEG.rule$ZeroOrMore(
                             PEG.rule$Choice(
                                 PEG.rule$Sequence(
-                                    PEG.rule$Literal(offset),
-                                    PEG.rule$RegExp("[^\n]+"),
+                                    PEG.rule$RegExp(offsetExpr.toString())
+                                        .action($o -> {
+                                            $o.setValue($o.getValue().replaceAll("\t", "    "));
+                                            return $o;
+                                        }),
+                                    PEG.rule$RegExp("[^\n]+")
+                                        .action($s -> {
+                                            $s.setValue($s.pack().getValue().replaceAll("(?!\\S)\t", "    "));
+                                            return $s;
+                                        }),
                                     PEG.rule(MD_EOL_OR_EOF))
                                     .action($i -> {
-                                        $i.setValue(
-                                            $i.get(1).pack().getValue() +
-                                            $i.get(2).pack().getValue());
+                                        String value = $i.get(0).pack().getValue() +
+                                            $i.get(1).pack().getValue();
+                                        value = value.replaceAll("^" + offset, "");
+                                        $i.setValue(value);
                                         return $i;
                                     }),
                                 PEG.rule(MD_EOL))));
-                try {
-                    // 子要素を入れ替える
-                    $$.clear();
-                    PEGNode $indent = new PEGNode($$.getContext(), MD_OLIST_ITEM);
-                    $indent.setValue(spaces(depth));
-                    $$.add($indent);
-                    PEGNode $marker = new PEGNode($$.getContext(), MD_OLIST_ITEM);
-                    $marker.setValue(marker);
-                    $$.add($marker);
-                    PEGNode $offset = new PEGNode($$.getContext(), MD_OLIST_ITEM);
-                    $offset.setValue(offset);
-                    $$.add($offset);
-                    PEGNode $start = new PEGNode($$.getContext(), MD_OLIST_ITEM);
-                    $start.setValue(start);
-                    $$.add($start);
 
-                    // 継続行があるときは<p></p>
+                try {
+                    // FIXME カッコ悪い。継続行があるときは<p></p>？パラグラフとそうでない場合の区別がつかない。
                     String next = nextRule.accept($$.getContext()).pack().getValue();
                     PEGNode node = null;
-                    if ("".equals(next)) {
-                        PEGContext ctx = $$.getContext().createContext(first);
-                        node = PEG.rule(MD_INLINE).accept(ctx);
-                    } else {
-                        PEGContext ctx = $$.getContext().createContext(first + "\n" + next);
-                        node = PEG.rule(MARKDOWN).accept(ctx);
-                    }
+                    PEGContext ctx = $$.getContext().createContext(first + "\n" + next);
+                    node = PEG.rule(MARKDOWN).accept(ctx);
+                    String item = node.pack()
+                        .getValue()
+//                        .replaceAll("^<p>(((?!</p>)[^\n])*)</p>(?=<[ou]l)", "$1");
+                        .replaceAll("^<p>(((?!</p>)[^\n])*)</p>$", "$1");
                     StringBuffer sb = new StringBuffer();
                     sb.append("<li>");
-                    sb.append(node.pack().getValue());
+                    sb.append(item);
                     sb.append("</li>");
                     $$.setValue(sb.toString());
                 } catch (Exception e) {
-                    //throw new RuntimeException(e);
-                    //LOG.info(code, args);
+                    // 継続行はない
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("<li>");
+                    sb.append($$.getValue());
+                    sb.append("</li>");
+                    $$.setValue(sb.toString());
                 }
                 return $$.pack();
             });
@@ -675,6 +762,7 @@ public class MarkdownParser {
                 PEG.rule$Not(
                     PEG.rule$Choice(
                         PEG.rule(MD_CODE_BLOCK),
+                        PEG.rule(MD_OLIST),
                         PEG.rule(MD_HR),
                         PEG.rule(MD_HEAD))),
                 PEG.rule$Sequence(
@@ -695,7 +783,7 @@ public class MarkdownParser {
             PEG.rule$Not(
                 PEG.rule$Choice(
 //                    PEG.rule(MD_HR),
-                    PEG.rule(MD_LIST),
+//                    PEG.rule(MD_LIST),
 //                    PEG.rule(MD_HEAD),
 //                    PEG.rule(MD_STX_H1),
 //                    PEG.rule(MD_STX_H2),
@@ -964,9 +1052,10 @@ public class MarkdownParser {
                     })))
             .action($$ -> {
                 String result = $$.pack().getValue();
-                if (!" ".equals(result)) {
-                    result = result.trim(); // FIXME
-                }
+                result = result
+                    .replaceAll("^\n*", "")
+                    .replaceAll("[ \n]+", " ")
+                    .replaceAll("^ (.*?) $", "$1");
                 $$.setValue("<code>" + result + "</code>");
                 return $$;
             });
@@ -1675,11 +1764,19 @@ public class MarkdownParser {
     }
     
     private static String EM(String text) {
-        return "<em>" + text + "</em>";
+        return "<em>" +
+            text
+            .replaceAll("  +\n", "<br />\n")
+            .replaceAll("\\\\\n", "<br />\n")
+            + "</em>";
     }
 
     private static String STRONG(String text) {
-        return "<strong>" + text + "</strong>";
+        return "<strong>" +
+            text
+            .replaceAll("  +\n", "<br />\n")
+            .replaceAll("\\\\\n", "<br />\n")
+            + "</strong>";
     }
 
     private static String unescape(String text) {
@@ -1875,6 +1972,9 @@ public class MarkdownParser {
                 try {
                     if ("".equals(s)) {
                         $$.setValue("");
+//                    } else if ($$.get(3).length() == 0 && $$.get(4).length() <= 1) {
+//                        PEGNode result = PEG.rule(MD_INLINE).accept(ctx);
+//                        $$.setValue(result.pack().getValue());
                     } else {
                         PEGNode result = PEG.rule(MARKDOWN).accept(ctx);
                         $$.setValue(result.pack().getValue());

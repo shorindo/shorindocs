@@ -1204,12 +1204,12 @@ public class GFMTest {
 
     @Test
     public void example217() throws Exception {
-        GFM(">", "<blockquote></blockquote>");
+        GFM(">", "<blockquote>\n</blockquote>");
     }
 
     @Test
     public void example218() throws Exception {
-        GFM(">>  \n> \n", "<blockquote></blockquote>");
+        GFM(">>  \n> \n", "<blockquote>\n</blockquote>");
     }
 
     @Test
@@ -1520,13 +1520,15 @@ public class GFMTest {
 
     @Test
     public void example274() throws Exception {
-        GFM("10) foo\n    - bar\n",
+        GFM("10) foo\n" +
+            "    - bar\n",
             "<ol start=\"10\"><li>foo\n<ul><li>bar</li></ul></li></ol>");
     }
 
     @Test
     public void example275() throws Exception {
-        GFM("10) foo\n   - bar\n",
+        GFM("10) foo\n" +
+            "   - bar\n",
             "<ol start=\"10\"><li>foo</li></ol><ul><li>bar</li></ul>");
     }
 
@@ -1591,7 +1593,12 @@ public class GFMTest {
 
     @Test
     public void example286() throws Exception {
-        GFM("- foo\n\n- bar\n\n\n- baz\n",
+        GFM("- foo\n" +
+            "\n" +
+            "- bar\n" +
+            "\n" +
+            "\n" +
+            "- baz\n",
             "<ul><li><p>foo</p></li><li><p>bar</p></li><li><p>baz</p></li></ul>");
     }
 
@@ -1912,7 +1919,7 @@ public class GFMTest {
 
     @Test
     public void example344() throws Exception {
-        GFM("` `\n`  `\n", "<p><code> </code><code>  </code></p>");
+        GFM("` `\n`  `\n", "<p><code> </code>\n<code>  </code></p>");
     }
 
     @Test
