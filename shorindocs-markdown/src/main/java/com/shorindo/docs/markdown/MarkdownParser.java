@@ -1289,7 +1289,6 @@ public class MarkdownParser {
         
         PEG.define(MD_PLAIN_LINK,
             PEG.rule$Choice(
-                //[^?!.,:*_~]$
                 PEG.rule$RegExp("https?://[a-zA-Z0-9-_]+(\\.[a-zA-Z0-9-_]+)+(/((?!&[a-zA-Z0-9]{1,8};)[^ \t\r\n<])*)?")
                     .action($$ -> {
                         $$.pack();
@@ -1298,7 +1297,7 @@ public class MarkdownParser {
                             "<a href=\"" + url + "\">" + url + "</a>");
                         return $$;
                     }),
-                PEG.rule$RegExp("www(\\.[a-zA-Z0-9-_]+)+(/((?!&[a-zA-Z0-9]{1,8};)[^ \t\r\n<])*)?")
+                PEG.rule$RegExp("www(\\.[a-zA-Z0-9-_]+)+(/((?!&[a-zA-Z0-9]{1,8};)(?![\\\\?\\\\!\\\\.\\\\,\\\\:\\\\*\\\\_\\\\~]$)[^ \t\r\n<])*)?") // example623
                     .action($$ -> {
                         $$.pack();
                         String url = escapeHTML($$.getValue());
