@@ -27,8 +27,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.shorindo.util.BeanUtil;
-import com.shorindo.util.BeanUtil.BeanNotFoundException;
+import com.shorindo.tools.BeanUtil;
+import com.shorindo.tools.BeanUtil.BeanNotFoundException;
 
 /**
  * 

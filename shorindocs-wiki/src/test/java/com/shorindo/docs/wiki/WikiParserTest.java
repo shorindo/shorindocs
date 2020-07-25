@@ -17,14 +17,7 @@ package com.shorindo.docs.wiki;
 
 import static org.junit.Assert.*;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.junit.Test;
-
-import com.shorindo.util.PEGCombinator.BacktrackReader;
-import com.shorindo.util.PEGCombinator.PEGNode;
-import com.shorindo.util.PEGCombinator.UnmatchException;
 
 /**
  * 

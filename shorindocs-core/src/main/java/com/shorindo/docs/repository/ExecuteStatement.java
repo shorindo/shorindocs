@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.util.BeanUtil;
+import com.shorindo.tools.BeanUtil;
 
 /**
  * 

@@ -27,13 +27,13 @@ import java.util.regex.Pattern;
 
 
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.util.PEGCombinator;
-import com.shorindo.util.PEGCombinator.PEGContext;
-import com.shorindo.util.PEGCombinator.PEGException;
-import com.shorindo.util.PEGCombinator.PEGNode;
-import com.shorindo.util.PEGCombinator.Rule;
-import com.shorindo.util.PEGCombinator.RuleTypes;
-import com.shorindo.util.PEGCombinator.UnmatchException;
+import com.shorindo.tools.PEGCombinator;
+import com.shorindo.tools.PEGCombinator.PEGContext;
+import com.shorindo.tools.PEGCombinator.PEGException;
+import com.shorindo.tools.PEGCombinator.PEGNode;
+import com.shorindo.tools.PEGCombinator.Rule;
+import com.shorindo.tools.PEGCombinator.RuleTypes;
+import com.shorindo.tools.PEGCombinator.UnmatchException;
 
 /**
  * 
@@ -107,6 +107,25 @@ public class MarkdownParser {
                     PEG.rule(MD_HTML_BLOCK),
                     PEG.rule(MD_LINK_DEF),
                     PEG.rule(MD_PARA),
+                    PEG.rule(MD_EMPTY),
+                    PEG.rule(MD_EOL)
+                    )))
+            .action($$ -> {
+                return $$.pack();
+            });
+
+        PEG.define(MD_LIST_BLOCK,
+            PEG.rule$OneOrMore(
+                PEG.rule$Choice(
+                    PEG.rule(MD_HR),
+                    PEG.rule(MD_OLIST),
+                    PEG.rule(MD_HEAD),
+                    PEG.rule(MD_QUOTE),
+                    PEG.rule(MD_PRE),
+                    PEG.rule(MD_CODE_BLOCK),
+                    PEG.rule(MD_HTML_BLOCK),
+                    PEG.rule(MD_LINK_DEF),
+                    PEG.rule(MD_INLINE),
                     PEG.rule(MD_EMPTY),
                     PEG.rule(MD_EOL)
                     )))
@@ -487,6 +506,17 @@ public class MarkdownParser {
                     sb.append("<" + type);
                 }
                 sb.append(">");
+                
+                boolean laziness = false;
+                for (int i = 0; i < $$.get(0).length(); i++) {
+                    PEGNode $i = $$.get(0).get(i).get(0);
+                    if ($i.getValue().contains("\n\n")) {
+                    	//System.err.println("LAZY:" + $i.getValue());
+                    	laziness = true;
+                    	break;
+                    }
+                }
+                
                 String marker = "";
                 for (int i = 0; i < $$.get(0).length(); i++) {
                     PEGNode $i = $$.get(0).get(i).get(0);
@@ -507,7 +537,19 @@ public class MarkdownParser {
                             sb.append("<" + type + ">");
                         }
                     }
-                    sb.append($i.pack().getValue());
+                    //sb.append($i.pack().getValue());
+					try {
+	                    PEGContext ctx = $$.getContext().createContext($i.getValue());
+	                    if (laziness) {
+	                    	PEGNode node = PEG.rule(MARKDOWN).accept(ctx);
+		                    sb.append("<li>" + node.getValue() + "</li>");
+	                    } else {
+	                    	PEGNode node = PEG.rule(MD_LIST_BLOCK).accept(ctx);
+		                    sb.append("<li>" + node.getValue().trim() + "</li>");
+	                    }
+					} catch (PEGException e) {
+						e.printStackTrace();
+					}
                     marker = $i.get(1).getValue();
                 }
                 sb.append("</" + type + ">");
@@ -636,6 +678,14 @@ public class MarkdownParser {
                                 PEG.rule(MD_EOL))));
 
                 try {
+                	String next = nextRule.accept($$.getContext()).pack().getValue();
+                	next = next.replaceAll("\n+$", "");
+                	$$.setValue(first + "\n" + next);
+                } catch (PEGException e) {
+                	$$.setValue(first);
+                }
+                /*
+                try {
                     // FIXME カッコ悪い。継続行があるときは<p></p>？パラグラフとそうでない場合の区別がつかない。
                     String next = nextRule.accept($$.getContext()).pack().getValue();
                     PEGNode node = null;
@@ -658,6 +708,7 @@ public class MarkdownParser {
                     sb.append("</li>");
                     $$.setValue(sb.toString());
                 }
+                */
                 return $$.pack();
             });
 
@@ -1054,6 +1105,7 @@ public class MarkdownParser {
                 String result = $$.pack().getValue();
                 result = result
                     .replaceAll("^\n*", "")
+                    //.replaceAll("[ \n]+$", "")
                     .replaceAll("[ \n]+", " ")
                     .replaceAll("^ (.*?) $", "$1");
                 $$.setValue("<code>" + result + "</code>");
@@ -1237,6 +1289,7 @@ public class MarkdownParser {
         
         PEG.define(MD_PLAIN_LINK,
             PEG.rule$Choice(
+                //[^?!.,:*_~]$
                 PEG.rule$RegExp("https?://[a-zA-Z0-9-_]+(\\.[a-zA-Z0-9-_]+)+(/((?!&[a-zA-Z0-9]{1,8};)[^ \t\r\n<])*)?")
                     .action($$ -> {
                         $$.pack();
@@ -2257,7 +2310,7 @@ public class MarkdownParser {
         MD_NUMERIC_REF, MD_ENTITY_REF, MD_STX_H1_UNDER, MD_STX_H2_UNDER,
         MD_EMPHASIS, MD_STRONG, MD_EMPH_AST, MD_EMPHASIS_HYPHHEN, MD_STRONG_AST, MD_STRONG_HYPHHEN,
         MD_HTML_BLOCK, MD_LINK_REF, MD_LINK_REFREF, MD_LINK_DEF,
-        MD_OLIST, MD_OLIST_ITEM, MD_PLAIN_LINK, MD_BLOCK, MD_QUOTE_BLOCK
+        MD_OLIST, MD_OLIST_ITEM, MD_PLAIN_LINK, MD_BLOCK, MD_QUOTE_BLOCK, MD_LIST_BLOCK
         ;
     }
     

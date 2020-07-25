@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.util.PEGCombinator.UnmatchException;
+import com.shorindo.tools.PEGCombinator.UnmatchException;
 import com.shorindo.xuml.CSSSelector.CSSException;
 
 /**

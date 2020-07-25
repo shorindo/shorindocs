@@ -18,11 +18,12 @@ package com.shorindo.docs.wiki;
 import static com.shorindo.docs.wiki.WikiParser.WikiRules.*;
 
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.util.PEGCombinator;
-import com.shorindo.util.PEGCombinator.BacktrackReader;
-import com.shorindo.util.PEGCombinator.PEGNode;
-import com.shorindo.util.PEGCombinator.RuleTypes;
-import com.shorindo.util.PEGCombinator.UnmatchException;
+import com.shorindo.tools.PEGCombinator;
+import com.shorindo.tools.PEGCombinator.PEGContext;
+import com.shorindo.tools.PEGCombinator.PEGException;
+import com.shorindo.tools.PEGCombinator.PEGNode;
+import com.shorindo.tools.PEGCombinator.RuleTypes;
+import com.shorindo.tools.PEGCombinator.UnmatchException;
 
 /**
  * 
@@ -31,8 +32,7 @@ public class WikiParser {
     private static ActionLogger LOG = ActionLogger.getLogger(WikiParser.class);
     private static PEGCombinator PEG = new PEGCombinator();
     static {
-        PEG.rule(WIKI_DOCUMENT)
-            .define(
+        PEG.define(WIKI_DOCUMENT,
                 PEG.rule$ZeroOrMore(
                     PEG.rule$Choice(
                         PEG.rule(HEAD1),
@@ -42,7 +42,7 @@ public class WikiParser {
                         PEG.rule(HEAD5),
                         PEG.rule(HEAD6),
                         PEG.rule$Any())))
-            .pack($$ -> {
+            .action($$ -> {
                 StringBuffer sb = new StringBuffer();
                 PEGNode $0 = $$.get(0);
                 for (int i = 0; i < $0.length(); i++) {
@@ -51,48 +51,38 @@ public class WikiParser {
                 $$.setValue(sb.toString());
                 return $$;
             });
-        PEG.rule(HEAD1)
-            .define(
+        PEG.define(HEAD1,
                 PEG.rule$Literal("======"),
                 PEG.rule$OneOrMore(PEG.rule$Class("^=")),
                 PEG.rule$Literal("======"),
-                PEG.rule$ZeroOrMore(PEG.rule$Class("\r\n")))
-            .pack(WikiParser::header1);
-        PEG.rule(HEAD2)
-            .define(
+                PEG.rule$ZeroOrMore(PEG.rule$Class("\r\n")));
+        PEG.define(HEAD2,
                 PEG.rule$Literal("====="),
                 PEG.rule$OneOrMore(PEG.rule$Class("^=")),
                 PEG.rule$Literal("====="),
-                PEG.rule$ZeroOrMore(PEG.rule$Class("\r\n")))
-            .pack(WikiParser::header2);
-        PEG.rule(HEAD3)
-            .define(
+                PEG.rule$ZeroOrMore(PEG.rule$Class("\r\n")));
+        PEG.define(HEAD3,
                 PEG.rule$Literal("===="),
                 PEG.rule$OneOrMore(PEG.rule$Class("^=")),
                 PEG.rule$Literal("===="),
                 PEG.rule$ZeroOrMore(PEG.rule$Class("\r\n")))
-            .pack(WikiParser::header3);
-        PEG.rule(HEAD4)
-            .define(
+            .action(WikiParser::header3);
+        PEG.define(HEAD4,
                 PEG.rule$Literal("==="),
                 PEG.rule$OneOrMore(PEG.rule$Class("^=")),
                 PEG.rule$Literal("==="),
                 PEG.rule$ZeroOrMore(PEG.rule$Class("\r\n")))
-            .pack(WikiParser::header4);
-        PEG.rule(HEAD5)
-            .define(
+            .action(WikiParser::header4);
+        PEG.define(HEAD5,
                 PEG.rule$Literal("=="),
                 PEG.rule$OneOrMore(PEG.rule$Class("^=")),
                 PEG.rule$Literal("=="),
-                PEG.rule$ZeroOrMore(PEG.rule$Class("\r\n")))
-            .pack(WikiParser::header5);
-        PEG.rule(HEAD6)
-            .define(
+                PEG.rule$ZeroOrMore(PEG.rule$Class("\r\n")));
+        PEG.define(HEAD6,
                 PEG.rule$Literal("="),
                 PEG.rule$OneOrMore(PEG.rule$Class("^=")),
                 PEG.rule$Literal("="),
-                PEG.rule$ZeroOrMore(PEG.rule$Class("\r\n")))
-            .pack(WikiParser::header6);
+                PEG.rule$ZeroOrMore(PEG.rule$Class("\r\n")));
     }
     
     private static PEGNode header1(PEGNode $$) {
@@ -131,12 +121,14 @@ public class WikiParser {
     }
     public void parse(String text) {
         try {
-            PEGNode node = PEG.rule(WIKI_DOCUMENT).accept(new BacktrackReader(text));
+            PEGNode node = PEG.rule(WIKI_DOCUMENT).accept(PEG.createContext(text));
             LOG.debug(node.toString());
             LOG.debug(node.getValue());
         } catch (UnmatchException e) {
             e.printStackTrace();
-        }
+        } catch (PEGException e) {
+			e.printStackTrace();
+		}
     }
 
     public enum WikiRules implements RuleTypes {

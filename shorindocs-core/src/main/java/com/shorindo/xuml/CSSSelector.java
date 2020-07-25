@@ -25,12 +25,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.shorindo.docs.action.ActionMessages;
-import com.shorindo.util.PEGCombinator;
-import com.shorindo.util.PEGCombinator.PEGContext;
-import com.shorindo.util.PEGCombinator.PEGException;
-import com.shorindo.util.PEGCombinator.PEGNode;
-import com.shorindo.util.PEGCombinator.RuleTypes;
-import com.shorindo.util.PEGCombinator.UnmatchException;
+import com.shorindo.tools.PEGCombinator;
+import com.shorindo.tools.PEGCombinator.PEGContext;
+import com.shorindo.tools.PEGCombinator.PEGException;
+import com.shorindo.tools.PEGCombinator.PEGNode;
+import com.shorindo.tools.PEGCombinator.RuleTypes;
+import com.shorindo.tools.PEGCombinator.UnmatchException;
 import com.shorindo.xuml.DOMBuilder.Element;
 
 /**
@@ -66,7 +66,7 @@ public class CSSSelector {
                 PEGNode $0 = $$.get(0);
                 PEGNode $1 = $$.get(1);
                 $$.clear();
-                PEGNode combinator = new PEGNode(DESCENDANT_COMBINATOR);
+                PEGNode combinator = new PEGNode($$.getContext(), DESCENDANT_COMBINATOR);
                 for (int i = 0; i < $0.length(); i++) {
                     combinator.add($0.get(i));
                 }
@@ -359,7 +359,7 @@ public class CSSSelector {
     }
 
     protected static PEGNode parseCSS(String selector) throws CSSException {
-        PEGContext reader = new PEGContext(selector);
+        PEGContext reader = PEG.createContext(selector);
         PEGNode result;
         try {
             result = PEG.rule(CSS_SELECTOR).accept(reader);
