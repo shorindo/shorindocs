@@ -33,7 +33,6 @@ import com.shorindo.tools.PEGCombinator.PEGException;
 import com.shorindo.tools.PEGCombinator.PEGNode;
 import com.shorindo.tools.PEGCombinator.Rule;
 import com.shorindo.tools.PEGCombinator.RuleTypes;
-import com.shorindo.tools.PEGCombinator.UnmatchException;
 
 /**
  * 

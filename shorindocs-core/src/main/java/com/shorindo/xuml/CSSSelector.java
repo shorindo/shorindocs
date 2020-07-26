@@ -30,7 +30,6 @@ import com.shorindo.tools.PEGCombinator.PEGContext;
 import com.shorindo.tools.PEGCombinator.PEGException;
 import com.shorindo.tools.PEGCombinator.PEGNode;
 import com.shorindo.tools.PEGCombinator.RuleTypes;
-import com.shorindo.tools.PEGCombinator.UnmatchException;
 import com.shorindo.xuml.DOMBuilder.Element;
 
 /**
