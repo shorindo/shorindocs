@@ -202,7 +202,7 @@ public class MarkdownParser {
                 PEG.rule$Sequence(
                     PEG.rule$OneOrMore(PEG.rule$Class(" \t")),
                     PEG.rule$ZeroOrMore(
-                        PEG.rule$Class("^\n")),
+                        PEG.rule(MD_CHAR)),
                     PEG.rule(MD_EOL_OR_EOF))
                     .action($$ -> {
                         return $$.get(1);
@@ -249,7 +249,8 @@ public class MarkdownParser {
                 PEG.rule$Literal(" \t"),
                 PEG.rule$Literal("  \t"),
                 PEG.rule$Literal("   \t")),
-            PEG.rule$RegExp("[^\n]*"),
+            PEG.rule$ZeroOrMore(
+                PEG.rule(MD_CHAR)),
             PEG.rule(MD_EOL_OR_EOF),
             PEG.rule$ZeroOrMore(
                 PEG.rule$Choice(
@@ -268,11 +269,14 @@ public class MarkdownParser {
                             PEG.rule$Literal(" \t"),
                             PEG.rule$Literal("  \t"),
                             PEG.rule$Literal("   \t")),
-                        PEG.rule$RegExp("[^\n]*"),
+                        PEG.rule$ZeroOrMore(
+                            PEG.rule(MD_CHAR)),
                         PEG.rule(MD_EOL_OR_EOF)))))
             .action($$ -> {
                 StringBuffer sb = new StringBuffer();
-                sb.append($$.get(1).getValue());
+                for (int i = 0; i < $$.get(1).length(); i++) {
+                    sb.append($$.get(1).get(i).get(0).getValue());
+                }
                 sb.append("\n");
                 PEGNode zeroOrMore = $$.get(3);
                 for (int i = 0; i < zeroOrMore.length(); i++) {
@@ -280,13 +284,15 @@ public class MarkdownParser {
                     if (choice.getType() == MD_EOL) {
                         sb.append(choice.getValue());
                     } else {
-                        sb.append(choice.get(1).getValue());
+                        for (int j = 0; j < choice.get(1).length(); j++) {
+                            sb.append(choice.get(1).get(j).get(0).getValue());
+                        }
                         sb.append("\n");
                     }
                 }
                 String code = escapeHTML(sb.toString()
-                    .replaceAll("^\n+", "")
-                    .replaceAll("\n+$", "\n"));
+                    .replaceAll("^(\r?\n)+", "")
+                    .replaceAll("\r?\n+$", "\n"));
                 $$.clear();
                 $$.setValue("<pre><code>" + code + "</code></pre>");
                 return $$;
@@ -537,18 +543,18 @@ public class MarkdownParser {
                         }
                     }
                     //sb.append($i.pack().getValue());
-					try {
-	                    PEGContext ctx = $$.getContext().createContext($i.getValue());
-	                    if (laziness) {
-	                    	PEGNode node = PEG.rule(MARKDOWN).accept(ctx);
-		                    sb.append("<li>" + node.getValue() + "</li>");
-	                    } else {
-	                    	PEGNode node = PEG.rule(MD_LIST_BLOCK).accept(ctx);
-		                    sb.append("<li>" + node.getValue().trim() + "</li>");
-	                    }
-					} catch (PEGException e) {
-						e.printStackTrace();
-					}
+                    try {
+                        PEGContext ctx = $$.getContext().createContext($i.getValue());
+                        if (laziness) {
+                            PEGNode node = PEG.rule(MARKDOWN).accept(ctx);
+                            sb.append("<li>" + node.getValue() + "</li>");
+                        } else {
+                            PEGNode node = PEG.rule(MD_LIST_BLOCK).accept(ctx);
+                            sb.append("<li>" + node.getValue().trim() + "</li>");
+                        }
+                    } catch (PEGException e) {
+                        e.printStackTrace();
+                    }
                     marker = $i.get(1).getValue();
                 }
                 sb.append("</" + type + ">");
@@ -560,9 +566,10 @@ public class MarkdownParser {
             PEG.rule$Not(
                 PEG.rule$Choice(
                     PEG.rule(MD_HR))),
-            PEG.rule$RegExp("( {0,3})(\\d{1,9}\\.|\\d{1,9}\\)|\\*|\\-|\\+)([ \t\n])( {0,3}|\t)?"),
+            PEG.rule$RegExp("( {0,3})(\\d{1,9}\\.|\\d{1,9}\\)|\\*|\\-|\\+)([ \t\r\n])( {0,3}|\t)?"),
             //PEG.rule$RegExp("( {0,3})(\\d{1,9}\\.|\\d{1,9}\\))[ \n]( {0,3})"),
-            PEG.rule$RegExp("[^\n]*"),
+            PEG.rule$ZeroOrMore(
+                PEG.rule(MD_CHAR)),
             PEG.rule(MD_EOL_OR_EOF))
             .action($$ -> {
                 int depth = $$.get(1).get(1).getValue().length();
@@ -642,10 +649,12 @@ public class MarkdownParser {
                                 PEG.rule$RegExp(" {0," + (depth + 1) + "}" +
                                     "(\\*|\\-|\\+|\\d+\\.|\\d\\))" +
                                     " {1,3}" +
-                                    "[^\n]*"))),
+                                    "[^\r\n]*"))),
                         // 空行を含まない継続行
                         PEG.rule$ZeroOrMore(
-                            PEG.rule$RegExp("[^\n]+").action($a -> {
+                            PEG.rule$OneOrMore(
+                                PEG.rule(MD_CHAR))
+                            .action($a -> {
                                 $a.setValue($a.pack().getValue()
                                     .replaceAll("(?!\\S)\t", "    ")
                                     .replaceAll("^" + offset, ""));
@@ -661,7 +670,8 @@ public class MarkdownParser {
                                             $o.setValue($o.getValue().replaceAll("\t", "    "));
                                             return $o;
                                         }),
-                                    PEG.rule$RegExp("[^\n]+")
+                                    PEG.rule$OneOrMore(
+                                        PEG.rule(MD_CHAR))
                                         .action($s -> {
                                             $s.setValue($s.pack().getValue().replaceAll("(?!\\S)\t", "    "));
                                             return $s;
@@ -677,11 +687,11 @@ public class MarkdownParser {
                                 PEG.rule(MD_EOL))));
 
                 try {
-                	String next = nextRule.accept($$.getContext()).pack().getValue();
-                	next = next.replaceAll("\n+$", "");
-                	$$.setValue(first + "\n" + next);
+                    String next = nextRule.accept($$.getContext()).pack().getValue();
+                    next = next.replaceAll("\r?\n+$", "");
+                    $$.setValue(first + "\n" + next);
                 } catch (PEGException e) {
-                	$$.setValue(first);
+                    $$.setValue(first);
                 }
                 /*
                 try {
@@ -1457,7 +1467,7 @@ public class MarkdownParser {
             });
         
         PEG.define(MD_CHAR,
-            PEG.rule$Class("^\r\n"))
+            PEG.rule$RegExp("[^\r\n]"))
             .action($$ -> {
                 $$.setValue($$.get(0).getValue());
                 return $$;
@@ -1477,8 +1487,7 @@ public class MarkdownParser {
             });
 
         PEG.define(MD_EOL,
-            PEG.rule$Optional(PEG.rule$Literal("\r")),
-            PEG.rule$Literal("\n"))
+            PEG.rule$RegExp("\r?\n"))
             .action($$ -> {
                 $$.setValue("\n");
                 return $$;

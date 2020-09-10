@@ -547,6 +547,10 @@ public class CSSSelector {
         ATTR_COMPARATOR, ALL_COMBINATOR, CHILD_COMBINATOR, DESCENDANT_COMBINATOR,
         ADJACENT_COMBINATOR, SIBLING_COMBINATOR, CSS_GROUP, CSS_GROUP_DELIMITER
         ;
+        
+        public String getName() {
+            return name();
+        }
     }
     
     public enum CombinatorTypes {

@@ -17,12 +17,17 @@ package com.shorindo.docs.markdown;
 
 import static org.junit.Assert.*;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 /**
  * 
  */
 public class MarkdownParserTest {
+    private static final Logger LOG = Logger.getLogger(MarkdownParserTest.class);
     private static MarkdownParser MD = new MarkdownParser();
 
     @Test
@@ -129,16 +134,21 @@ public class MarkdownParserTest {
     @Test
     public void testList() throws Exception {
         assertMarkdown("<ul><li>リスト１</li></ul>", "- リスト１");
-        assertMarkdown("<ul><li><b>リスト１</b></li></ul>", "- **リスト１**");
-        assertMarkdown("<ul><li>リスト１</li><li>リスト２</li></ul>", "* リスト１\n*リスト２");
-        assertMarkdown("<ul><li>リスト１</li><ul><li>リスト２</li></ul></ul>", "* リスト１\n  *リスト２");
-        assertMarkdown("<ul><li>リスト１</li><ul><li>リスト２</li><ul><li>リスト３</li></ul></ul></ul>", "* リスト１\n  *リスト２\n    *リスト３");
-        assertMarkdown("<ul><li>リスト１</li><ul><li>リスト２</li></ul><li>リスト３</li></ul>", "* リスト１\n  *リスト２\n*リスト３");
+        assertMarkdown("<ul><li><strong>リスト１</strong></li></ul>", "- **リスト１**");
+        assertMarkdown("<ul><li>リスト１</li><li>リスト２</li></ul>", "* リスト１\n* リスト２");
+        assertMarkdown("<ul><li>リスト１\n<ul><li>リスト２</li></ul></li></ul>", "* リスト１\n  * リスト２");
+        assertMarkdown("<ul><li>リスト１\n<ul><li>リスト２\n<ul><li>リスト３</li></ul></li></ul></li></ul>", "* リスト１\n  * リスト２\n    * リスト３");
+        assertMarkdown("<ul><li>リスト１\n<ul><li>リスト２</li><li>リスト３</li></ul></li></ul>", "* リスト１\n  * リスト２\n* リスト３");
 
-        assertMarkdown("<ol><li>番号１</li></ol>", "100. 番号１");
+        assertMarkdown("<ol start=\"100\"><li>番号１</li></ol>", "100. 番号１");
         assertMarkdown("<ol><li>番号１</li></ol><ul><li>リスト１</li></ul>", "1. 番号１\n* リスト１");
-        assertMarkdown("<ol><li>番号１</li><ul><li>リスト１</li></ul></ol>", "1. 番号１\n  * リスト１");
-        assertMarkdown("<ol><li>番号１</li><ul><li>リスト１</li></ul><li>番号２</li></ol>", "1. 番号１\n  * リスト１\n1. 番号２");
+        assertMarkdown("<ol><li>番号１\n<ul><li>リスト１</li></ul></li></ol>", "1. 番号１\n  * リスト１");
+        assertMarkdown("<ol><li>番号１\n<ul><li>リスト１</li></ul><ol><li>番号２</li></ol></li></ol>", "1. 番号１\n  * リスト１\n1. 番号２");
+    }
+    
+    @Test
+    public void testListHeader() throws Exception {
+        assertMarkdown("<ul><li>リスト１</li></ul>", "# 見出し\r\n\r\n- リスト１\r\n\r\n## 見出し２");
     }
 
     @Test
@@ -255,6 +265,22 @@ public class MarkdownParserTest {
             "<http://localhost:8080/docs/markdown?action=edit>\n"
             );
     }
+    
+    @Test
+    public void testReadme() throws Exception {
+        StringBuffer sb = new StringBuffer();
+        FileReader reader = new FileReader("README.md");
+        char cbuf[] = new char[2048];
+        int len;
+        while ((len = reader.read(cbuf)) > 0) {
+            sb.append(cbuf, 0, len);
+        }
+        reader.close();
+        FileWriter writer = new FileWriter("target/README.html");
+        writer.write(MD.parse(sb.toString()));
+        writer.close();
+    }
+
     private void assertMarkdown(String expect, String markdown) throws Exception {
         assertEquals(expect, MD.parse(markdown));
     }
