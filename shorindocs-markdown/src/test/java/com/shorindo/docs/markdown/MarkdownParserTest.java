@@ -145,11 +145,6 @@ public class MarkdownParserTest {
         assertMarkdown("<ol><li>番号１\n<ul><li>リスト１</li></ul></li></ol>", "1. 番号１\n  * リスト１");
         assertMarkdown("<ol><li>番号１\n<ul><li>リスト１</li></ul><ol><li>番号２</li></ol></li></ol>", "1. 番号１\n  * リスト１\n1. 番号２");
     }
-    
-    @Test
-    public void testListHeader() throws Exception {
-        assertMarkdown("<ul><li>リスト１</li></ul>", "# 見出し\r\n\r\n- リスト１\r\n\r\n## 見出し２");
-    }
 
     @Test
     public void testHorizontal() throws Exception {
