@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs.markdown;
 
-import com.shorindo.docs.markdown.MarkdownParser.MarkdownException;
+import com.shorindo.tools.MarkdownParser.MarkdownException;
 
 /**
  * 

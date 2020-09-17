@@ -26,8 +26,8 @@ import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentView;
-import com.shorindo.docs.markdown.MarkdownParser.MarkdownException;
 import com.shorindo.docs.model.DocumentModel;
+import com.shorindo.tools.MarkdownParser.MarkdownException;
 
 /**
  * 

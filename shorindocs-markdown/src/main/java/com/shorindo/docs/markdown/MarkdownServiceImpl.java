@@ -18,7 +18,8 @@ package com.shorindo.docs.markdown;
 import static com.shorindo.docs.markdown.MarkdownMessages.*;
 
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.markdown.MarkdownParser.MarkdownException;
+import com.shorindo.tools.MarkdownParser;
+import com.shorindo.tools.MarkdownParser.MarkdownException;
 
 /**
  * 

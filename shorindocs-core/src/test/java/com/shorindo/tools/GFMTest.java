@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.markdown;
+package com.shorindo.tools;
 
 import static org.junit.Assert.*;
 
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+
+import com.shorindo.tools.MarkdownParser;
 
 /**
  * https://github.github.com/gfm/
@@ -72,7 +74,7 @@ public class GFMTest {
     @Test
     public void example009() throws Exception {
         GFM(" - foo\n   - bar\n\t - baz",
-            "<ul><li>foo<ul><li>bar<ul><li>baz</li></ul></li></ul></li></ul>");
+            "<ul><li>foo\n<ul><li>bar\n<ul><li>baz</li></ul></li></ul></li></ul>");
     }
 
     @Test
@@ -1749,7 +1751,7 @@ public class GFMTest {
 
     @Test
     public void example312() throws Exception {
-        GFM("foo\\\nbar\n", "<p>foo<br />bar</p>");
+        GFM("foo\\\nbar\n", "<p>foo<br />bar\n</p>");
     }
 
     @Test

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.markdown;
+package com.shorindo.tools;
 
-import static com.shorindo.docs.markdown.MarkdownParser.MarkdownRules.*;
+import static com.shorindo.tools.MarkdownParser.MarkdownRules.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.tools.PEGCombinator;
+import com.shorindo.tools.EntityReference;
 import com.shorindo.tools.PEGCombinator.PEGContext;
 import com.shorindo.tools.PEGCombinator.PEGException;
 import com.shorindo.tools.PEGCombinator.PEGNode;
