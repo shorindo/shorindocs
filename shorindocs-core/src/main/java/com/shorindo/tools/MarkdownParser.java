@@ -1112,9 +1112,9 @@ public class MarkdownParser {
                 String result = $$.pack().getValue();
                 result = result
                     .replaceAll("^\n*", "")
-                    //.replaceAll("[ \n]+$", "")
                     .replaceAll("[ \n]+", " ")
-                    .replaceAll("^ (.*?) $", "$1");
+                    .replaceAll("^ ([^\\s]+)", "$1")
+                    .replaceAll("([^\\s]+?) $", "$1");
                 $$.setValue("<code>" + result + "</code>");
                 return $$;
             });
@@ -1886,12 +1886,14 @@ public class MarkdownParser {
                 PEG.rule$Not(
                     PEG.rule$Sequence(
                         PEG.rule$RegExp(" {0,3}"),
-                        PEG.rule$Literal(fence))),
+                        PEG.rule$RegExp(fence + "`*[ \t\b\f\r]*\n"))),
                 PEG.rule$RegExp("[^\n]*"),
                 PEG.rule(MD_EOL)),
             PEG.rule$Optional(
                 PEG.rule$RegExp(" {0,3}"),
-                PEG.rule$Literal(fence)),
+                PEG.rule$Sequence(
+                    PEG.rule$RegExp(fence + "`*"),
+                    PEG.rule$Not(PEG.rule$RegExp("[ \t\b\f\r]*\\S+")))),
             PEG.rule$ZeroOrMore(
                 PEG.rule$Literal(fc)))
             .action($$ -> {
