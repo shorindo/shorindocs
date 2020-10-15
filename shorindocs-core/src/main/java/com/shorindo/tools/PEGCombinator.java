@@ -988,7 +988,7 @@ public class PEGCombinator {
         }
     }
 
-    private enum Types implements RuleTypes {
+    private enum Types implements PEGCombinator.RuleTypes {
         PEG_ANY, PEG_AND, PEG_NOT, PEG_LITERAL, PEG_CLASS, PEG_REGEXP,
         PEG_ZERO_OR_MORE, PEG_ONE_OR_MORE, PEG_SEQUENCE, PEG_CHOICE, PEG_OPTIONAL;
     }

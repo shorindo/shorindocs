@@ -30,6 +30,11 @@ public class ActionContextTest {
     public void test() {
         fail("Not yet implemented");
     }
+    
+    @Test
+    public void testGetpath() {
+        ApplicationContext.getClassPath();
+    }
 
     public static class MyContext extends ActionContext {
 //        private RepositoryServiceImpl repository = getService(RepositoryServiceImpl.class);

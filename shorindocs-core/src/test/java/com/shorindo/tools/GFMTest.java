@@ -787,8 +787,8 @@ public class GFMTest {
 
     @Test
     public void example143() throws Exception {
-        GFM("> <div>> foo\n\nbar\n",
-            "<blockquote><div>foo\n</blockquote><p>bar</p>");
+        GFM("> <div>\n> foo\n\nbar\n",
+            "<blockquote><div>\nfoo\n</blockquote><p>bar</p>");
     }
 
     @Test
@@ -810,8 +810,8 @@ public class GFMTest {
 
     @Test
     public void example147() throws Exception {
-        GFM("<script>foo\n</script>1. *bar*\n",
-            "<script>foo\n</script>1. *bar*\n");
+        GFM("<script>\nfoo\n</script>1. *bar*\n",
+            "<script>\nfoo\n</script>1. *bar*\n");
     }
 
     @Test

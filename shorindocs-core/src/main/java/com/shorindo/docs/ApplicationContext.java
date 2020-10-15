@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -62,5 +63,13 @@ public class ApplicationContext {
 
     public static Locale getLang() {
         return DEFAULT_LANG;
+    }
+    
+    public static void getClassPath() {
+        LOG.info("context path=" + Thread.currentThread().getContextClassLoader().getResource("").getPath());
+        String[] paths = System.getProperty("java.class.path").split(File.pathSeparator);
+        for (String path : paths) {
+            LOG.info("path=" + path);
+        }
     }
 }

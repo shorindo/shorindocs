@@ -29,7 +29,6 @@ import com.shorindo.tools.PEGCombinator;
 import com.shorindo.tools.PEGCombinator.PEGContext;
 import com.shorindo.tools.PEGCombinator.PEGException;
 import com.shorindo.tools.PEGCombinator.PEGNode;
-import com.shorindo.tools.PEGCombinator.RuleTypes;
 import com.shorindo.xuml.DOMBuilder.Element;
 
 /**
@@ -541,7 +540,7 @@ public class CSSSelector {
         }
     }
 
-    public enum CSSTokens implements RuleTypes {
+    public enum CSSTokens implements com.shorindo.tools.PEGCombinator.RuleTypes {
         CSS_SELECTOR, ALL_SELECTOR, UNIVERSAL_SELECTOR, ELEMENT_SELECTOR,
         CLASS_SELECTOR, ID_SELECTOR, ATTR_SELECTOR, ATTR_NAME, ATTR_VALUE,
         ATTR_COMPARATOR, ALL_COMBINATOR, CHILD_COMBINATOR, DESCENDANT_COMBINATOR,

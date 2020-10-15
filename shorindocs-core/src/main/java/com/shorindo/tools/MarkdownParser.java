@@ -30,7 +30,7 @@ import com.shorindo.tools.PEGCombinator.PEGContext;
 import com.shorindo.tools.PEGCombinator.PEGException;
 import com.shorindo.tools.PEGCombinator.PEGNode;
 import com.shorindo.tools.PEGCombinator.Rule;
-import com.shorindo.tools.PEGCombinator.RuleTypes;
+//import com.shorindo.tools.RuleTypes;
 
 /**
  * 
@@ -1886,13 +1886,13 @@ public class MarkdownParser {
                 PEG.rule$Not(
                     PEG.rule$Sequence(
                         PEG.rule$RegExp(" {0,3}"),
-                        PEG.rule$RegExp(fence + "`*[ \t\b\f\r]*\n"))),
+                        PEG.rule$RegExp(fence + fc + "*[ \t\b\f\r]*\n"))),
                 PEG.rule$RegExp("[^\n]*"),
                 PEG.rule(MD_EOL)),
             PEG.rule$Optional(
                 PEG.rule$RegExp(" {0,3}"),
                 PEG.rule$Sequence(
-                    PEG.rule$RegExp(fence + "`*"),
+                    PEG.rule$RegExp(fence + fc + "*"),
                     PEG.rule$Not(PEG.rule$RegExp("[ \t\b\f\r]*\\S+")))),
             PEG.rule$ZeroOrMore(
                 PEG.rule$Literal(fc)))
@@ -2304,7 +2304,7 @@ public class MarkdownParser {
         return decoded.toString();
     }
 
-    public enum MarkdownRules implements RuleTypes {
+    public enum MarkdownRules implements PEGCombinator.RuleTypes {
         MARKDOWN, MD_STX_H1, MD_STX_H2, MD_HEAD, MD_H1, MD_H2, MD_H3, MD_H4, MD_H5, MD_H6,
         MD_PRE, MD_CODE_BLOCK, MD_CODE_SPAN, MD_QUOTE, MD_LIST, MD_PARA, MD_LINE, MD_INLINE, MD_ITALIC, MD_BOLD,
         MD_HR, MD_LINK, MD_AUTO_LINK, MD_IMAGE, MD_URL, MD_URL_PCHARS, MD_ESCAPED, MD_SPECIAL,

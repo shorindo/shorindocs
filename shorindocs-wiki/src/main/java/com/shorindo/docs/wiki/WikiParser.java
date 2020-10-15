@@ -131,7 +131,7 @@ public class WikiParser {
 		}
     }
 
-    public enum WikiRules implements RuleTypes {
+    public enum WikiRules implements com.shorindo.tools.PEGCombinator.RuleTypes {
         WIKI_DOCUMENT, HEAD1, HEAD2, HEAD3, HEAD4, HEAD5, HEAD6
         ;
     }

@@ -30,7 +30,7 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionPlugin;
 import com.shorindo.docs.admin.AdminPlugin;
 import com.shorindo.docs.auth.AuthenticatePlugin;
-import com.shorindo.docs.datagrid.DataGridPlugin;
+//import com.shorindo.docs.datagrid.DataGridPlugin;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentPlugin;
 import com.shorindo.docs.markdown.MarkdownPlugin;
@@ -60,6 +60,7 @@ public class ActionListener implements ServletContextListener {
             siteProperties.load(is);
             PropertyConfigurator.configure(siteProperties);
 
+            ApplicationContext.getClassPath(); // TODO
             ApplicationContext.init(siteProperties);
         } catch (IOException e) {
             LOG.error(DocumentMessages.DOCS_9000, e);
@@ -75,7 +76,7 @@ public class ActionListener implements ServletContextListener {
         ActionPlugin.addPlugin(RepositoryPlugin.class);
         ActionPlugin.addPlugin(AuthenticatePlugin.class);
         ActionPlugin.addPlugin(DocumentPlugin.class);
-        ActionPlugin.addPlugin(DataGridPlugin.class);
+//        ActionPlugin.addPlugin(DataGridPlugin.class);
         ActionPlugin.addPlugin(AdminPlugin.class);
 
         ActionPlugin.addPlugin(OutloggerPlugin.class);
