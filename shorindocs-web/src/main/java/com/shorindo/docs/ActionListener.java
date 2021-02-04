@@ -92,6 +92,7 @@ public class ActionListener implements ServletContextListener {
 //            ActionPlugin.addPlugin(clazz);
 //        }
         pluginService.findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
+
     }
 
     /**

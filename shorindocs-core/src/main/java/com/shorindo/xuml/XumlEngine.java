@@ -57,7 +57,40 @@ public class XumlEngine {
     private String template;
     private Mustache mustache;
     public static final String POSTFIX = ".xuml";
+    private XumlNode node;
 
+    private XumlEngine(Document xuml) {
+    }
+
+    public static XumlEngine compile(String name) {
+        InputStream is = XumlEngine.class.getClassLoader().getResourceAsStream(name);
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);
+        try {
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            Document document = builder.parse(is);
+            return new XumlEngine(document);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void render(OutputStream os, Object...params) {
+        
+    }
+
+    public interface XumlNode {
+        
+    }
+
+    /*
+     * 以降不要
+     */
     public static XumlExecutor compile(Class<?> clazz) throws XumlException {
         String name = clazz.getName().replaceAll("\\.", "/") + POSTFIX;
         InputStream is = clazz.getClassLoader().getResourceAsStream(name);

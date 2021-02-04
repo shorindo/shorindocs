@@ -1,0 +1,8 @@
+<xuml:xuml>
+    <xuml:template name="sample">
+        <div class="body">
+          <div class="left">LEFT</div>
+          <div class="right">RIGHT</div>
+        </div>
+    </xuml:template>
+</xuml:xuml>

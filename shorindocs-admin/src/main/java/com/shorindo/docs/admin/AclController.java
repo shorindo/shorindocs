@@ -36,5 +36,5 @@ public class AclController extends ActionController {
     public AbstractView action(ActionContext context) {
         return null;
     }
-    
+
 }

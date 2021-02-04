@@ -74,7 +74,7 @@ public abstract class DOMBuilder {
             this.attrs = new LinkedHashMap<>();
             this.childList = new ArrayList<>();
         }
-        
+
         public final String getTagName() {
             return tagName;
         }

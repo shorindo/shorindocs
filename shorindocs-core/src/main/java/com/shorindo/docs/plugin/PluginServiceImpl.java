@@ -86,7 +86,7 @@ public class PluginServiceImpl implements PluginService {
                     if (manifest != null) {
                         Attributes attrs = manifest.getMainAttributes();
                         for (Entry<Object, Object> e : attrs.entrySet()) {
-                            LOG.debug(e.getKey() + " ==> " + e.getValue());
+                            //LOG.debug(e.getKey() + " ==> " + e.getValue());
                         }
                     }
                     //LOG.debug(manifest.getMainAttributes().getValue("Plugin-Class"));
@@ -115,6 +115,8 @@ public class PluginServiceImpl implements PluginService {
                 }
             }
         }
+        String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+        LOG.info("PATH = " + path);
         return result;
     }
     

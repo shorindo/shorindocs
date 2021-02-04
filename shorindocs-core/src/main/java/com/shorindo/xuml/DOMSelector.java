@@ -15,7 +15,7 @@
  */
 package com.shorindo.xuml;
 
-import static com.shorindo.xuml.CSSSelector.CSSTokens.*;
+import static com.shorindo.xuml.DOMSelector.CSSTokens.*;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -23,18 +23,24 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionMessages;
 import com.shorindo.tools.PEGCombinator;
 import com.shorindo.tools.PEGCombinator.PEGContext;
 import com.shorindo.tools.PEGCombinator.PEGException;
 import com.shorindo.tools.PEGCombinator.PEGNode;
-import com.shorindo.xuml.DOMBuilder.Element;
+//import com.shorindo.xuml.DOMBuilder.Element;
 
 /**
  * 
  */
-public class CSSSelector {
+public class DOMSelector {
+    private static final ActionLogger LOG = ActionLogger.getLogger(DOMSelector.class);
     protected static PEGCombinator PEG = new PEGCombinator();
     static {
         PEG.define(CSS_SELECTOR,
@@ -299,109 +305,186 @@ public class CSSSelector {
             });
     }
 
-    public static List<List<CSSSelector>> parse(String selector) throws CSSException {
-        List<List<CSSSelector>> resultList = new ArrayList<>();
+    public List<Node> find(Node node, String text) {
+        List<Node> resultList = new ArrayList<>();
+        //long st = System.currentTimeMillis();
+        try {
+            List<List<DOMSelector>> list = parse(text);
+            for (List<DOMSelector> groupList : list) {
+                List<Node> filteredResult = new ArrayList<>();
+                filteredResult.add(node);
+                for (DOMSelector selector : groupList) {
+                    filteredResult = filteredResult.stream()
+                        .flatMap(n -> {
+                            return find(n, selector).stream();
+                        })
+                        .collect(Collectors.toList());
+                }
+                resultList.addAll(filteredResult);
+            }
+        } catch (DOMSelectorException e) {
+            LOG.error(e.getMessage(), e, text);
+        } finally {
+            //LOG.debug("findByCssSelector({0}) => count:{1} time:{2}ms",
+            //    text, resultList.size(), (System.currentTimeMillis() - st));
+        }
+        return resultList;
+    }
+
+    private List<Node> find(Node node, DOMSelector selector) {
+        List<Node> result = new ArrayList<>();
+        switch (selector.getCombinator()) {
+        case DESCENDANT:
+            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                Node child = node.getChildNodes().item(i);
+                if (selector.match(child)) {
+                    result.add(child);
+                }
+                result.addAll(find(child, selector));
+            }
+            break;
+        case CHILD:
+            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                Node child = node.getChildNodes().item(i);
+                if (selector.match(child)) {
+                    result.add(child);
+                }
+            }
+            break;
+        case SIBLING:
+            Node parent = node.getParentNode();
+            for (int i = 0; i < parent.getChildNodes().getLength() - 1; i++) {
+                Node curr = parent.getChildNodes().item(i);
+                Node next = parent.getChildNodes().item(i + 1);
+                if (curr == this) {
+                    OUT:for (int j = i + 1; j < parent.getChildNodes().getLength(); j++) {
+                        next = parent.getChildNodes().item(j);
+                        if (selector.match(next)) {
+                            result.add(next);
+                            break OUT;
+                        }
+                    }
+                }
+            }
+            break;
+        case ADJACENT:
+            parent = node.getParentNode();
+            for (int i = 0; i < parent.getChildNodes().getLength() - 1; i++) {
+                Node curr = parent.getChildNodes().item(i);
+                Node next = parent.getChildNodes().item(i + 1);
+                if (curr == this && selector.match(next)) {
+                    result.add(next);
+                    break;
+                }
+            }
+            break;
+        }
+        return result;
+    }
+
+    public static List<List<DOMSelector>> parse(String selector) throws DOMSelectorException {
+        List<List<DOMSelector>> resultList = new ArrayList<>();
         PEGNode node = parseCSS(selector);
         for (int i = 0; i < node.length(); i++) {
             PEGNode groupNode = node.get(i);
-            List<CSSSelector> groupList = new ArrayList<>();
+            List<DOMSelector> groupList = new ArrayList<>();
             for (int j = 0; j < groupNode.length(); j++) {
                 PEGNode combNode = groupNode.get(j);
-                CSSSelector cssSelector = new CSSSelector();
+                DOMSelector domSelector = new DOMSelector();
 
                 for (int k = 0; k < combNode.length(); k++) {
                     PEGNode mainNode = combNode.get(k);
                     switch ((CSSTokens)mainNode.getType()) {
                     case UNIVERSAL_SELECTOR:
-                        cssSelector.addSelector(new UniversalSelector());
+                        domSelector.addSelector(new UniversalSelector());
                         break;
                     case ELEMENT_SELECTOR:
-                        cssSelector.addSelector(new ElementSelector(mainNode.getValue()));
+                        domSelector.addSelector(new ElementSelector(mainNode.getValue()));
                         break;
                     case CLASS_SELECTOR:
-                        cssSelector.addSelector(new ClassSelector(mainNode.getValue()));
+                        domSelector.addSelector(new ClassSelector(mainNode.getValue()));
                         break;
                     case ID_SELECTOR:
-                        cssSelector.addSelector(new IdSelector(mainNode.getValue()));
+                        domSelector.addSelector(new IdSelector(mainNode.getValue()));
                         break;
                     case ATTR_SELECTOR:
-                        cssSelector.addSelector(new AttrSelector(mainNode));
+                        domSelector.addSelector(new AttrSelector(mainNode));
                         break;
                     default:
-                        throw new CSSException(CSSMessages.CSS_0001, node.getType());
+                        throw new DOMSelectorException(DOMMessages.CSS_0001, node.getType());
                     }
                 }
-                
+
                 switch ((CSSTokens)combNode.getType()) {
                 case DESCENDANT_COMBINATOR:
-                    cssSelector.setCombinator(CombinatorTypes.DESCENDANT);
+                    domSelector.setCombinator(CombinatorTypes.DESCENDANT);
                     break;
                 case CHILD_COMBINATOR:
-                    cssSelector.setCombinator(CombinatorTypes.CHILD);
+                    domSelector.setCombinator(CombinatorTypes.CHILD);
                     break;
                 case ADJACENT_COMBINATOR:
-                    cssSelector.setCombinator(CombinatorTypes.ADJACENT);
+                    domSelector.setCombinator(CombinatorTypes.ADJACENT);
                     break;
                 case SIBLING_COMBINATOR:
-                    cssSelector.setCombinator(CombinatorTypes.SIBLING);
+                    domSelector.setCombinator(CombinatorTypes.SIBLING);
                     break;
                 default:
-                    throw new CSSException(CSSMessages.CSS_0001, combNode.getType());
+                    throw new DOMSelectorException(DOMMessages.CSS_0001, combNode.getType());
                 }
 
-                groupList.add(cssSelector);
+                groupList.add(domSelector);
             }
             resultList.add(groupList);
         }
         return resultList;
     }
 
-    protected static PEGNode parseCSS(String selector) throws CSSException {
+    protected static PEGNode parseCSS(String selector) throws DOMSelectorException {
         PEGContext reader = PEG.createContext(selector);
         PEGNode result;
         try {
             result = PEG.rule(CSS_SELECTOR).accept(reader);
         } catch (PEGException e) {
-            throw new CSSException(e);
+            throw new DOMSelectorException(e);
         }
 
-        int c = reader.read();
-        if (c > 0) {
-            StringBuffer sb = new StringBuffer((char)c);
+        if (reader.available() > 0) {
+            StringBuffer sb = new StringBuffer();
+            int c = 0;
             while ((c = reader.read()) > 0) {
                 sb.append((char)c);
             }
-            throw new CSSException(CSSMessages.CSS_9999, sb.toString());
+            throw new DOMSelectorException(DOMMessages.CSS_9999, sb.toString());
         }
         return result;
     }
     
     private CombinatorTypes combinator;
-    private List<CSSSelector> selectors;
+    private List<DOMSelector> selectors;
 
-    protected CSSSelector() {
+    protected DOMSelector() {
         selectors = new ArrayList<>();
     }
     
     public CombinatorTypes getCombinator() {
         return combinator;
     }
-    
+
     public void setCombinator(CombinatorTypes combinator) {
         this.combinator = combinator;
     }
 
-    public List<CSSSelector> getSelectors() {
+    public List<DOMSelector> getSelectors() {
         return selectors;
     }
 
-    public void addSelector(CSSSelector selector) {
+    public void addSelector(DOMSelector selector) {
         this.selectors.add(selector);
     }
 
-    public boolean match(Element element) {
-        for (CSSSelector child : getSelectors()) {
-            if (!child.match(element)) {
+    public boolean match(Node node) {
+        for (DOMSelector child : getSelectors()) {
+            if (!child.match(node)) {
                 return false;
             }
         }
@@ -410,14 +493,14 @@ public class CSSSelector {
 
     public String toString() {
         StringBuffer sb = new StringBuffer("(" + getCombinator());
-        for (CSSSelector child : selectors) {
+        for (DOMSelector child : selectors) {
             sb.append(" " + child.toString());
         }
         sb.append(")");
         return sb.toString();
     }
 
-    public static class UniversalSelector extends CSSSelector {
+    public static class UniversalSelector extends DOMSelector {
         public UniversalSelector() {
         }
 
@@ -430,7 +513,7 @@ public class CSSSelector {
         }
     }
 
-    public static class ElementSelector extends CSSSelector {
+    public static class ElementSelector extends DOMSelector {
         private String name;
 
         public ElementSelector(String name) {
@@ -449,7 +532,7 @@ public class CSSSelector {
         }
     }
 
-    public static class ClassSelector extends CSSSelector {
+    public static class ClassSelector extends DOMSelector {
         private String clazz;
 
         public ClassSelector(String clazz) {
@@ -457,7 +540,7 @@ public class CSSSelector {
         }
         
         public boolean match(Element element) {
-            String classes = " " + element.getAttr("class") + " ";
+            String classes = " " + element.getAttribute("class") + " ";
             if (!classes.contains(" " + clazz + " ")) {
                 return false;
             }
@@ -468,28 +551,28 @@ public class CSSSelector {
             return "(CLASST " + clazz + ")";
         }
     }
-    
-    public static class IdSelector extends CSSSelector {
+
+    public static class IdSelector extends DOMSelector {
         private String id;
 
         public IdSelector(String id) {
             this.id = id;
         }
-        
+
         public boolean match(Element element) {
-            String id = element.getAttr("id");
+            String id = element.getAttribute("id");
             if (!this.id.equals(id)) {
                 return false;
             }
             return super.match(element);
         }
-        
+
         public String toString() {
             return "(ID " + id + ")";
         }
     }
 
-    public static class AttrSelector extends CSSSelector {
+    public static class AttrSelector extends DOMSelector {
         private String attrName;
         private String attrValue;
         private String comparator;
@@ -506,17 +589,18 @@ public class CSSSelector {
                 ignoreCase = true;
             }
         }
+
         @Override
-        public boolean match (Element element) {
+        public boolean match (Node node) {
             if (!useExpr) {
-                if (element.getAttrs().containsKey(attrName)) {
-                    return true;
-                } else {
+                if ("".equals(getAttribute(node, attrName))) {
                     return false;
+                } else {
+                    return true;
                 }
             }
 
-            String value = element.getAttr(attrName);
+            String value = getAttribute(node, attrName);
             switch (comparator) {
             case "=":
                 return Objects.equals(attrValue, value);
@@ -534,7 +618,16 @@ public class CSSSelector {
                 throw new RuntimeException(comparator + " is not valid comparator.");
             }
         }
-        
+
+        private String getAttribute(Node node, String attrName) {
+            Node attrValue = node.getAttributes().getNamedItem(attrName);
+            if (attrValue == null) {
+                return null;
+            } else {
+                return attrValue.getNodeValue();
+            }
+        }
+
         public String toString() {
             return "(ATTR " + attrName + ", " + comparator + ", " + attrValue + ")";
         }
@@ -556,19 +649,19 @@ public class CSSSelector {
         DESCENDANT, CHILD, SIBLING, ADJACENT;
     }
     
-    public static class CSSException extends Exception {
+    public static class DOMSelectorException extends Exception {
         private static final long serialVersionUID = -2932706850240045484L;
 
-        public CSSException(Throwable th) {
+        public DOMSelectorException(Throwable th) {
             super(th);
         }
 
-        public CSSException(ActionMessages msg, Object...params) {
+        public DOMSelectorException(ActionMessages msg, Object...params) {
             super(msg.getMessage(params));
         }
     }
     
-    public static enum CSSMessages implements ActionMessages {
+    public static enum DOMMessages implements ActionMessages {
         @Message(ja = "{0}はここでは使えません")
         CSS_0001,
         @Message(ja = "構文エラーです:{0}")
@@ -577,7 +670,7 @@ public class CSSSelector {
 
         private Map<String,MessageFormat> bundle;
 
-        private CSSMessages() {
+        private DOMMessages() {
             bundle = ActionMessages.Util.bundle(this);
         }
 

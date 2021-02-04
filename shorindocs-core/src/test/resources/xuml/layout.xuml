@@ -1,0 +1,28 @@
+<xuml:xuml>
+    <xuml:template name="layout.full">
+        &lt;!doctype html&gt;
+        <html>
+            <head>
+                <title>${title}</title>
+                <link ref="stylesheet" type="text/css" href="/docs/css/xuml.css"></link>
+                <script type="text/javascript" src="/docs/js/xuml.js"></script>
+            </head>
+            <body class="xuml-width-fill xuml-height-fill">
+                <div class="xuml-vbox"></div>
+                <div class="xuml-menubar">
+                    <div class="xuml-menubar-left"></div>
+                    <div class="xuml-menubar-right">
+                        <input type="text"/>
+                        <button>検索</button>
+                    </div>
+                </div>
+                <div class="xuml-hbox">
+                    <div id="left" class="xuml-vbox"></div>
+                    <div id="center" class="xuml-vbox" flex="1" style="overflow:auto"></div>
+                    <div id="right" class="xuml-vbox"></div>
+                </div>
+                <div id="footer" class="xuml-vbox"></div>
+            </body>
+        </html>
+    </xuml:template>
+</xuml:xuml>

@@ -151,7 +151,7 @@ public class ActionServlet extends HttpServlet {
             String name = e.nextElement();
             context.setHeader(name, req.getHeader(name));
         }
-        
+
         try {
             DocumentEntity key = new DocumentEntity();
             String path = req.getServletPath();
@@ -180,7 +180,6 @@ public class ActionServlet extends HttpServlet {
             doRpc(context, req.getInputStream(), res.getOutputStream());
         } else {
             //LOG.warn(DOCS_5009);
-            
         }
         LOG.info(DOCS_1106, "POST " + req.getServletPath(),
                 (System.currentTimeMillis() - st));

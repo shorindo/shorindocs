@@ -60,6 +60,21 @@ public class XumlEngineTest {
     ActionLogger LOG = ActionLogger.getLogger(XumlEngineTest.class);
 
     @Test
+    public void testLiteral() throws Exception {
+        Document actual = parseXuml("xuml/test-literal.xuml");
+        assertDom(actual, "//body/text()", "Hello, World!");
+    }
+
+    private Document parseXuml(String name) throws Exception {
+        XumlEngine engine = XumlEngine.compile(name);
+        OutputStream bos = new ByteArrayOutputStream();
+        engine.render(bos);
+        Document document = parseHtml(bos.toString());
+        printDom(document);
+        return document;
+    }
+
+    @Test
     public void testXuml() throws Exception {
         Document actual = render(getMethodName(), "<xuml title='title' style='background:white;'>foo</xuml>", new ScopeDog());
         assertDom(actual, "//head/link/@href", "/css/xuml.css");
@@ -155,7 +170,7 @@ public class XumlEngineTest {
     }
 
     private void assertDom(Document document, String path, String expect) throws XPathExpressionException, TransformerException, ParserConfigurationException {
-        document = cloneDocument(document);
+        //document = cloneDocument(document);
         XPathFactory factory = XPathFactory.newInstance();
         XPath xpath = factory.newXPath();
         assertEquals(expect, xpath.evaluate(path, document));

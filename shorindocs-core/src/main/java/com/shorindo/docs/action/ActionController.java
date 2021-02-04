@@ -40,6 +40,8 @@ public abstract class ActionController {
     @ActionMethod
     public abstract View action(ActionContext context);
 
+//    public abstract String view(ActionContext context);
+
     public String getAction(ActionContext context) {
         String[] params = context.getParameters("action");
         if (params == null) {

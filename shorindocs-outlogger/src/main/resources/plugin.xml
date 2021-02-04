@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<plugin>
+    <services>
+        <service name=""
+                 class=""/>
+    </services>
+
+    <actions>
+        <action path="/aaa"
+                class="">
+        </action>
+    </actions>
+
+    <repository>
+    </repository>
+
+    <document type="outlogger"
+              class="OutLoggerHandler"/>
+</plugin>
