@@ -16,15 +16,11 @@
 package com.shorindo.docs;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
-import org.apache.log4j.PropertyConfigurator;
+import javax.sql.DataSource;
 
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionPlugin;
@@ -38,6 +34,7 @@ import com.shorindo.docs.outlogger.OutloggerPlugin;
 import com.shorindo.docs.plaintext.PlainTextPlugin;
 import com.shorindo.docs.plugin.PluginService;
 import com.shorindo.docs.plugin.PluginServiceImpl;
+import com.shorindo.docs.repository.RepositoryDataSource;
 import com.shorindo.docs.repository.RepositoryPlugin;
 import com.shorindo.docs.specout.SpecoutPlugin;
 
@@ -51,28 +48,18 @@ public class ActionListener implements ServletContextListener {
      * 
      */
     public void contextInitialized(ServletContextEvent event) {
-        LOG.trace("contextInitialized()");
-        InputStream is = null;
         try {
-            Properties siteProperties = new Properties();
-            String path = event.getServletContext().getRealPath("/WEB-INF/site.properties");
-            is = new FileInputStream(path);
-            siteProperties.load(is);
-            PropertyConfigurator.configure(siteProperties);
-
-            ApplicationContext.getClassPath(); // TODO
-            ApplicationContext.init(siteProperties);
+        	File base = new File(event.getServletContext().getRealPath("/WEB-INF"));
+            File xml = new File(base, "application-config.xml");
+            ApplicationContext.init(xml);
         } catch (IOException e) {
             LOG.error(DocumentMessages.DOCS_9000, e);
-        } finally {
-            try {
-                if (is != null) is.close();
-            } catch (IOException e) {
-                LOG.error(DocumentMessages.DOCS_9000, e);
-            }
         }
 
         // FIXME
+        ApplicationContext.addBean(DataSource.class, RepositoryDataSource.class);
+        ApplicationContext.addBean(PluginService.class, PluginServiceImpl.class);
+
         ActionPlugin.addPlugin(RepositoryPlugin.class);
         ActionPlugin.addPlugin(AuthenticatePlugin.class);
         ActionPlugin.addPlugin(DocumentPlugin.class);
@@ -85,14 +72,9 @@ public class ActionListener implements ServletContextListener {
         ActionPlugin.addPlugin(MarkdownPlugin.class);
 
         //XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
-        
-        ServiceFactory.addService(PluginService.class, PluginServiceImpl.class);
-        PluginService pluginService = ServiceFactory.getService(PluginService.class);
-//        for (Class<? extends ActionPlugin> clazz : pluginService.findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/classes")))) {
-//            ActionPlugin.addPlugin(clazz);
-//        }
-        pluginService.findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
 
+        PluginService pluginService = ApplicationContext.getBean(PluginService.class);
+        pluginService.findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
     }
 
     /**

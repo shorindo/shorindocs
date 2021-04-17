@@ -662,37 +662,10 @@ public class DOMSelector {
     }
     
     public static enum DOMMessages implements ActionMessages {
-        @Message(ja = "{0}はここでは使えません")
+        @Message(lang="ja", content="{0}はここでは使えません")
         CSS_0001,
-        @Message(ja = "構文エラーです:{0}")
+        @Message(lang="ja", content="構文エラーです:{0}")
         CSS_9999
         ;
-
-        private Map<String,MessageFormat> bundle;
-
-        private DOMMessages() {
-            bundle = ActionMessages.Util.bundle(this);
-        }
-
-        @Override
-        public Map<String, MessageFormat> getBundle() {
-            return bundle;
-        }
-
-        @Override
-        public String getCode() {
-            return ActionMessages.Util.getCode(this);
-        }
-
-        @Override
-        public String getMessage(Object... params) {
-            return ActionMessages.Util.getMessage(this, params);
-        }
-
-        @Override
-        public String getMessage(Locale locale, Object... params) {
-            return ActionMessages.Util.getMessage(this, params);
-        }
-        
     }
 }

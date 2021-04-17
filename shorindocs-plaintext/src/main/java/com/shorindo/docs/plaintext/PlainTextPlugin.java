@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.plaintext;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionPlugin;
 
 /**
@@ -29,7 +30,7 @@ public class PlainTextPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {
-        addController(PlainTextController.class);
+        ApplicationContext.addBean(PlainTextController.class);
     }
 
 }

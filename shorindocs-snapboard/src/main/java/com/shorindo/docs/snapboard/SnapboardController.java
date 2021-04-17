@@ -15,31 +15,23 @@
  */
 package com.shorindo.docs.snapboard;
 
-import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionContext;
-import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.document.DocumentController;
-import com.shorindo.docs.view.AbstractView;
+import com.shorindo.docs.action.ActionController;
+import com.shorindo.docs.view.View;
 
 /**
  * 
  */
-public class SnapboardController extends DocumentController {
-    private SnapboardService snapboardService =
-            ServiceFactory.getService(SnapboardService.class);
+public class SnapboardController extends ActionController {
+	private SnapboardService snapboardService;
 
-    @Override
-    public AbstractView action(ActionContext context) {
-        return null;
-    }
+	public SnapboardController(SnapboardService snapboardService) {
+		this.snapboardService = snapboardService;
+	}
 
-    @ActionMethod
-    public void save() {
-        snapboardService.save(null);
-    }
-
-    @ActionMethod
-    public void load() {
-        snapboardService.load(null);
-    }
+	@Override
+	public View action(ActionContext context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

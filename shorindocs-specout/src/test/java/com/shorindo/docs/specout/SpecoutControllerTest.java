@@ -27,7 +27,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.repository.RepositoryService;
@@ -44,7 +43,7 @@ public class SpecoutControllerTest {
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
         ApplicationContext.loadProperties(is);
-        repositoryService = ServiceFactory.getService(RepositoryService.class);
+        repositoryService = ApplicationContext.getBean(RepositoryService.class);
     }
 
     @Test

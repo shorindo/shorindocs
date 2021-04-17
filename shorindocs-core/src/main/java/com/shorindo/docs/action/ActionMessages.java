@@ -16,14 +16,14 @@
 package com.shorindo.docs.action;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * For example:
@@ -62,59 +62,74 @@ import java.util.Map;
  */
 public interface ActionMessages {
     public String name();
-    public Map<String,MessageFormat> getBundle();
-    public String getCode();
-    public String getMessage(Object...args);
-    public String getMessage(Locale locale, Object...args);
 
     /**
      * 
+     * @return
      */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.FIELD)
-    public static @interface Message {
-        String ja();
-        String en() default "undefined";
+    default public String getCode() {
+        return name();
     }
 
     /**
      * 
+     * @param locale
+     * @param args
+     * @return
      */
-    public static abstract class Util {
+    default public String getMessage(Locale locale, Object...args) {
+        MessageFormat format = getFormat(locale);
+        if (format != null) {
+            return format.format(args);
+        } else {
+            return null;
+        }
+    }
 
-        public static Map<String,MessageFormat> bundle(ActionMessages m) {
-            Map<String,MessageFormat> bundle = new LinkedHashMap<String,MessageFormat>();
-            try {
-                Field field = m.getClass().getField(m.name());
-                Message message = field.getAnnotation(Message.class);
-                if (message != null) {
-                    bundle.put(Locale.JAPANESE.getLanguage(), new MessageFormat(message.ja()));
-                    bundle.put(Locale.ENGLISH.getLanguage(), new MessageFormat(message.en()));
+    default public MessageFormat getFormat() {
+        return getFormat(Locale.getDefault());
+    }
+
+    default public MessageFormat getFormat(Locale locale) {
+        try {
+            Field field = getClass().getField(name());
+            Message[] messages = field.getAnnotationsByType(Message.class);
+            for (int i = 0; messages != null && i < messages.length; i++) {
+                Message message = messages[i];
+                if (Objects.equals(message.lang(), locale.getLanguage())) {
+                    MessageFormat format = new MessageFormat(message.content());
+                    return format;
                 }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
-            return bundle;
+        } catch (Exception e) {
         }
+        return null;
+    }
 
-        public static String getCode(ActionMessages m) {
-            return m.name();
-        }
+    /**
+     * デフォルトLocaleのメッセージを取得する
+     *
+     * @param args メッセージパラメータ
+     * @return パラメータ解決したメッセージ
+     */
+    default public String getMessage(Object...args) {
+        return getMessage(Locale.getDefault(), args);
+    }
 
-        public static String getMessage(ActionMessages m, Object...params) {
-            return getMessage(Locale.getDefault(), m, params);
-        }
+    /**
+     * Messageアノテーションの定義
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @Repeatable(MessageHolder.class)
+    public static @interface Message {
+        String lang();
+        String content();
+    }
 
-        public static String getMessage(Locale locale, ActionMessages m, Object...params) {
-            MessageFormat format = m.getBundle().get(locale.getLanguage());
-            if (format != null)
-                return format.format(params);
-            else
-                return null;
-        }
-
-        public static String getString(ActionMessages m) {
-            return m.name() + ":" + m.getBundle();
-        }
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface MessageHolder {
+        public Message[] value();
     }
 }

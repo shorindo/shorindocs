@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs.repository;
 
-import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionPlugin;
 
 /**
@@ -30,7 +30,7 @@ public class RepositoryPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {
-        ServiceFactory.addService(RepositoryService.class, RepositoryServiceImpl.class);
+        ApplicationContext.addBean(RepositoryService.class, RepositoryServiceImpl.class);
     }
 
 }

@@ -25,37 +25,11 @@ import com.shorindo.docs.action.ActionMessages;
  * 
  */
 public enum MarkdownMessages implements ActionMessages {
-    @Message(ja = "マークダウンの解析開始")
+    @Message(lang="ja", content="マークダウンの解析開始")
     MKDN_1000,
-    @Message(ja = "マークダウンの解析終了:{0}ms")
+    @Message(lang="ja", content="マークダウンの解析終了:{0}ms")
     MKDN_1001,
-    @Message(ja = "ドキュメントの解析に失敗しました。")
+    @Message(lang="ja", content="ドキュメントの解析に失敗しました。")
     MKDN_9000
     ;
-
-    private Map<String,MessageFormat> bundle;
-
-    private MarkdownMessages() {
-        bundle = ActionMessages.Util.bundle(this);
-    }
-
-    @Override
-    public Map<String, MessageFormat> getBundle() {
-        return bundle;
-    }
-
-    @Override
-    public String getCode() {
-        return ActionMessages.Util.getCode(this);
-    }
-
-    @Override
-    public String getMessage(Object... params) {
-        return ActionMessages.Util.getMessage(this, params);
-    }
-
-    @Override
-    public String getMessage(Locale locale, Object... params) {
-        return ActionMessages.Util.getMessage(this, params);
-    }
 }

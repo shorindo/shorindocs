@@ -35,10 +35,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.repository.RepositoryException;
-import com.shorindo.docs.repository.RepositoryServiceImpl;
 import com.shorindo.docs.repository.ExecuteStatement.InsertStatement;
 import com.shorindo.docs.repository.ExecuteStatement.UpdateStatement;
 import com.shorindo.docs.repository.ExecuteStatement.DeleteStatement;
@@ -57,10 +54,13 @@ public class RepositoryServiceTest {
         InputStream is = new FileInputStream("src/test/resources/site.properties");
         ApplicationContext.loadProperties(is);
 
-        ServiceFactory.addService(
+        ApplicationContext.addBean(
+        		DataSource.class,
+        		RepositoryDataSource.class);
+        ApplicationContext.addBean(
                 RepositoryService.class,
                 RepositoryServiceImpl.class);
-        repositoryService = ServiceFactory.getService(RepositoryService.class);
+        repositoryService = ApplicationContext.getBean(RepositoryService.class);
         repositoryService.execute(
                 "DROP TABLE IF EXISTS SAMPLE");
         repositoryService.execute(
@@ -178,9 +178,9 @@ public class RepositoryServiceTest {
 
     @Test
     public void testSucceed() throws Exception {
-        ServiceFactory.addService(TxTestService.class, TxTestServiceImpl.class);
-        ServiceFactory.addService(TxNestedService.class, TxNestedServiceImpl.class);
-        TxTestService txService = ServiceFactory.getService(TxTestService.class);
+    	ApplicationContext.addBean(TxTestService.class, TxTestServiceImpl.class);
+    	ApplicationContext.addBean(TxNestedService.class, TxNestedServiceImpl.class);
+        TxTestService txService = ApplicationContext.getBean(TxTestService.class);
         SampleEntity expect = generateSampleEntity();
         txService.succeed(expect);
         SampleEntity actual = repositoryService.get(expect);
@@ -189,9 +189,9 @@ public class RepositoryServiceTest {
 
     @Test
     public void testFailOnDelete() throws Exception {
-        ServiceFactory.addService(TxTestService.class, TxTestServiceImpl.class);
-        ServiceFactory.addService(TxNestedService.class, TxNestedServiceImpl.class);
-        TxTestService txService = ServiceFactory.getService(TxTestService.class);
+    	ApplicationContext.addBean(TxTestService.class, TxTestServiceImpl.class);
+        ApplicationContext.addBean(TxNestedService.class, TxNestedServiceImpl.class);
+        TxTestService txService = ApplicationContext.getBean(TxTestService.class);
         SampleEntity expect = generateSampleEntity();
         try {
             txService.failOnDelete(expect);
@@ -204,9 +204,9 @@ public class RepositoryServiceTest {
 
     @Test
     public void testFailOnUpdate() throws Exception {
-        ServiceFactory.addService(TxTestService.class, TxTestServiceImpl.class);
-        ServiceFactory.addService(TxNestedService.class, TxNestedServiceImpl.class);
-        TxTestService txService = ServiceFactory.getService(TxTestService.class);
+    	ApplicationContext.addBean(TxTestService.class, TxTestServiceImpl.class);
+    	ApplicationContext.addBean(TxNestedService.class, TxNestedServiceImpl.class);
+        TxTestService txService = ApplicationContext.getBean(TxTestService.class);
         SampleEntity expect = generateSampleEntity();
         try {
             txService.failOnUpdate(expect);
@@ -234,7 +234,7 @@ public class RepositoryServiceTest {
 
     public static class TxTestServiceImpl implements TxTestService {
         private TxNestedService nestedService =
-                 ServiceFactory.getService(TxNestedService.class);
+        		ApplicationContext.getBean(TxNestedService.class);
 
         @Override
         @Transactional

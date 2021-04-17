@@ -20,16 +20,15 @@ import static org.junit.Assert.*;
 import java.io.FileReader;
 import java.io.FileWriter;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.shorindo.tools.MarkdownParser;
+import com.shorindo.docs.action.ActionLogger;
 
 /**
  * 
  */
 public class MarkdownParserTest {
-    private static final Logger LOG = Logger.getLogger(MarkdownParserTest.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(MarkdownParserTest.class);
     private static MarkdownParser MD = new MarkdownParser();
 
     @Test

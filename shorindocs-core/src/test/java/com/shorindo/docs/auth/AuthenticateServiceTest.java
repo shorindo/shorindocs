@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.IdentityManager;
-import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.auth.AuthenticateService;
 import com.shorindo.docs.auth.entity.UserEntity;
 import com.shorindo.docs.model.SessionModel;
@@ -45,9 +44,9 @@ public class AuthenticateServiceTest {
                 .getResourceAsStream("site.properties");
         try {
             ApplicationContext.loadProperties(is);
-            ServiceFactory.addService(RepositoryService.class, RepositoryServiceImpl.class);
-            ServiceFactory.addService(AuthenticateService.class, AuthenticateServiceImpl.class);
-            authenticateService = ServiceFactory.getService(AuthenticateService.class);
+            ApplicationContext.addBean(RepositoryService.class, RepositoryServiceImpl.class);
+            ApplicationContext.addBean(AuthenticateService.class, AuthenticateServiceImpl.class);
+            authenticateService = ApplicationContext.getBean(AuthenticateService.class);
         } finally {
             is.close();
         }

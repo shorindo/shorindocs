@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs.auth;
 
-import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.view.AbstractView;
@@ -24,15 +24,13 @@ import com.shorindo.docs.view.AbstractView;
  * 
  */
 public class AuthenticateController extends ActionController {
-    @SuppressWarnings("unused")
-    private static AuthenticateService service =
-        ServiceFactory.getService(AuthenticateService.class);
+    private AuthenticateService service;
 
     /**
      * 
      */
-    public AuthenticateController() {
-        // TODO Auto-generated constructor stub
+    public AuthenticateController(AuthenticateService service) {
+    	this.service = service;
     }
 
     @Override

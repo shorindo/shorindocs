@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;
@@ -36,13 +36,13 @@ import com.shorindo.docs.repository.Transactional;
 public class DocumentServiceImpl implements DocumentService {
     private static ActionLogger LOG =
             ActionLogger.getLogger(DocumentServiceImpl.class);
-    protected RepositoryService repositoryService =
-            ServiceFactory.getService(RepositoryService.class);
+    protected RepositoryService repositoryService;
 
     /**
      * 
      */
-    public DocumentServiceImpl() {
+    public DocumentServiceImpl(RepositoryService repositoryService) {
+    	this.repositoryService = repositoryService;
     }
 
     public void validate() {

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config>
+  <bean interface=""
+        class=""/>
+  <mapping path="/"
+        class=""/>
+</config>
+

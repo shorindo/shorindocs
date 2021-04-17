@@ -50,8 +50,14 @@ import com.shorindo.docs.view.View;
 public class ActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionServlet.class);
-    private static final RepositoryService repositoryService =
-        ServiceFactory.getService(RepositoryService.class);
+    private static RepositoryService repositoryService;
+    static {
+        try {
+			repositoryService = ApplicationContext.getBean(RepositoryService.class);
+		} catch (BeanNotFoundException e) {
+			LOG.error(e.getMessage(), e);
+		}
+    }
 
     /**
      * 

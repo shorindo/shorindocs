@@ -62,20 +62,8 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
     /**
      * 
      */
-    public RepositoryServiceImpl() {
-        try {
-            Properties props = new Properties();
-            for (Entry<Object,Object> e : ApplicationContext.getProperties().entrySet()) {
-                String key = (String)e.getKey();
-                String val = (String)e.getValue();
-                if (key.startsWith("datasource.") && val != null) {
-                    props.setProperty(key.substring(11), val);
-                }
-            }
-            dataSource = BasicDataSourceFactory.createDataSource(props);
-        } catch (Exception e) {
-            LOG.error(DBMS_5100, e);
-        }
+    public RepositoryServiceImpl(DataSource dataSource) {
+    	this.dataSource = dataSource;
     }
 
     /**

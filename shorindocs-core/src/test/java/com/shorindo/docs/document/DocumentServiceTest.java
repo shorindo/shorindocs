@@ -24,9 +24,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.ServiceFactory;
-import com.shorindo.docs.document.DocumentService;
-import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceImpl;
@@ -39,24 +36,23 @@ public class DocumentServiceTest {
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/test/resources/site.properties");
         ApplicationContext.loadProperties(is);
-
-        ServiceFactory.addService(
+        ApplicationContext.addBean(
                 RepositoryService.class,
                 RepositoryServiceImpl.class);
-        ServiceFactory.addService(
+        ApplicationContext.addBean(
                 DocumentService.class,
                 DocumentServiceImpl.class);
     }
 
     @Test
     public void testValidate() throws Exception {
-        DocumentService service = ServiceFactory.getService(DocumentService.class);
+        DocumentService service = ApplicationContext.getBean(DocumentService.class);
         service.validate();
     }
 
     @Test
     public void testLoad() throws Exception {
-        DocumentService service = ServiceFactory.getService(DocumentService.class);
+        DocumentService service = ApplicationContext.getBean(DocumentService.class);
         DocumentModel model = service.load("index");
         assertNotNull(model);
     }

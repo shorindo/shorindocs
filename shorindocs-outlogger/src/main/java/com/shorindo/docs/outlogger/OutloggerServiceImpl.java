@@ -27,18 +27,19 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentServiceImpl;
-import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;
+import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.Transactional;
 
 /**
  * 
  */
 public class OutloggerServiceImpl extends DocumentServiceImpl implements OutloggerService {
-    private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerServiceImpl.class);
+	private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerServiceImpl.class);
 
-    public OutloggerServiceImpl() {
-    }
+	public OutloggerServiceImpl(RepositoryService repositoryService) {
+		super(repositoryService);
+	}
 
     /**=========================================================================
      * 

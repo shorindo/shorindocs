@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.snapboard;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionPlugin;
 
 /**
@@ -29,7 +30,7 @@ public class SnapboardPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {
-        addService(SnapboardService.class, SnapboardServiceImpl.class);
+        ApplicationContext.addBean(SnapboardService.class, SnapboardServiceImpl.class);
     }
 
 }

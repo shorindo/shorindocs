@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.outlogger;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionPlugin;
 
 /**
@@ -30,7 +31,8 @@ public class OutloggerPlugin extends ActionPlugin {
     @Override
     public void initialize() {
         addSchema(getClass().getResourceAsStream("Outlogger.dsdl"));
-        addService(OutloggerService.class, OutloggerServiceImpl.class);
+        ApplicationContext.addBean(OutloggerService.class, OutloggerServiceImpl.class);
+        ApplicationContext.addBean(OutloggerController.class);
     }
 
 }

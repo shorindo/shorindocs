@@ -15,7 +15,7 @@
  */
 package com.shorindo.docs.datagrid;
 
-import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentController;
@@ -30,7 +30,7 @@ import com.shorindo.docs.view.View;
  */
 public class DataGridController extends DocumentController {
     private static ActionLogger LOG = ActionLogger.getLogger(DataGridController.class);
-    private DocumentService service = ServiceFactory.getService(DocumentService.class);
+    private DocumentService service = ApplicationContext.getBean(DocumentService.class);
 
     @Override
     public View action(ActionContext context) {

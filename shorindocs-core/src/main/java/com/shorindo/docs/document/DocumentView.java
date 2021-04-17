@@ -19,7 +19,7 @@ import static com.shorindo.xuml.HTMLBuilder.*;
 
 import java.util.List;
 
-import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.xuml.DOMBuilder.Element;
 import com.shorindo.xuml.XumlView;
@@ -28,7 +28,7 @@ import com.shorindo.xuml.XumlView;
  * 
  */
 public class DocumentView extends XumlView {
-    private DocumentService service = ServiceFactory.getService(DocumentService.class);
+    private DocumentService service = ApplicationContext.getBean(DocumentService.class);
 
     protected Element recents(String docId) {
         return div()

@@ -20,8 +20,8 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.IdentityManager;
-import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionError;
@@ -42,13 +42,13 @@ public abstract class DocumentController extends ActionController
     private static final ActionLogger LOG =
             ActionLogger.getLogger(DocumentController.class);
     private final DocumentService documentService =
-           ServiceFactory.getService(DocumentService.class);
+    	ApplicationContext.getBean(DocumentService.class);
 
-    public static void setup(List<Class<?>> clazzList) {
-        for (Class<?> clazz : clazzList) {
-            LOG.info(DOCS_1120, clazz.getName());
-        }
-    }
+//    public static void setup(List<Class<?>> clazzList) {
+//        for (Class<?> clazz : clazzList) {
+//            LOG.info(DOCS_1120, clazz.getName());
+//        }
+//    }
 
     /**
      * 

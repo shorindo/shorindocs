@@ -17,22 +17,17 @@ package com.shorindo.docs.outlogger;
 
 import static com.shorindo.docs.outlogger.OutloggerMessages.*;
 
-import java.io.StringReader;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
-
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentType;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentException;
-import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
-import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -41,10 +36,10 @@ import com.shorindo.xuml.XumlView;
 public class OutloggerController extends DocumentController {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(OutloggerController.class);
-    private OutloggerServiceImpl outloggerService =
-            OutloggerFactory.outloggerService();
+    private OutloggerService outloggerService;
 
-    public OutloggerController() {
+    public OutloggerController(OutloggerService outloggerService) {
+    	this.outloggerService = outloggerService;
     }
 
     /**

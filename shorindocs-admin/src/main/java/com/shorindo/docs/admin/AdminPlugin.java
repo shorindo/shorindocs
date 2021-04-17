@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.admin;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionPlugin;
 
 /**
@@ -24,10 +25,10 @@ public class AdminPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {
-        addController(AclController.class);
-        addController(GroupController.class);
-        addController(MappingController.class);
-        addController(UserController.class);
+    	ApplicationContext.addBean(AclController.class);
+    	ApplicationContext.addBean(GroupController.class);
+    	ApplicationContext.addBean(MappingController.class);
+    	ApplicationContext.addBean(UserController.class);
     }
 
     @Override

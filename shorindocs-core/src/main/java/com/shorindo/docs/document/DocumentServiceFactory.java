@@ -20,13 +20,11 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionError;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.model.DocumentModel;
-import com.shorindo.docs.repository.RepositoryException;
-import com.shorindo.docs.repository.RepositoryService;
 
 /**
  * 
@@ -34,27 +32,18 @@ import com.shorindo.docs.repository.RepositoryService;
 public abstract class DocumentServiceFactory {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(DocumentServiceFactory.class);
-    private static final Map<String,ActionController> controllerMap =
-            new HashMap<String,ActionController>();
-    private static final Map<String,ActionController> classMap =
-            new HashMap<String,ActionController>();
-    private static final RepositoryService repositoryService =
-            ServiceFactory.getService(RepositoryService.class);
+    private static final Map<String,ActionController> controllerMap = new HashMap<>();
+    private static final Map<String,ActionController> classMap = new HashMap<>();
 
     /**
      * 
      * @param path
      * @param clazz
      */
-    public static synchronized void addController(String path, Class<? extends ActionController> clazz) {
-        try {
-            controllerMap.put(path, clazz.newInstance());
-        } catch (InstantiationException e) {
-            LOG.error(DOCS_9004, e, path);
-        } catch (IllegalAccessException e) {
-            LOG.error(DOCS_9004, e, path);
-        }
-    }
+//    public static synchronized void addController(String path, Class<? extends ActionController> clazz) {
+//    	ApplicationContext.addBean(clazz);
+//    	controllerMap.put(path, ApplicationContext.getBean(clazz));
+//    }
 
     public static synchronized ActionController getController(DocumentModel model) throws ActionError {
         if (classMap.containsKey(model.getController())) {
@@ -62,11 +51,10 @@ public abstract class DocumentServiceFactory {
         } else {
             try {
                 Class<?> clazz = Class.forName(model.getController());
-                ActionController controller = (ActionController)clazz.newInstance();
-                classMap.put(model.getController(), controller);
+                ActionController controller = (ActionController)ApplicationContext.getBean(clazz);
                 return controller;
             } catch (Exception e) {
-                throw new ActionError(DocumentMessages.DOCS_9999, e);
+                throw new ActionError(DOCS_9999, e);
             }
         }
     }
@@ -77,30 +65,6 @@ public abstract class DocumentServiceFactory {
      * @return
      */
     public static synchronized ActionController getController(String path) {
-        ActionController controller = controllerMap.get(path);
-//        if (controller == null) {
-//            try {
-//                DocumentEntity key = new DocumentEntity();
-//                key.setDocumentId(path.substring(1));
-//                key.setVersion(0);
-//                DocumentEntity entity = repositoryService.get(key);
-//                if (classMap.containsKey(entity.getController())) {
-//                    controller = classMap.get(entity.getController());    
-//                } else {
-//                    Class<?> clazz = Class.forName(entity.getController());
-//                    controller = (ActionController)clazz.newInstance();
-//                    classMap.put(entity.getController(), controller);
-//                }
-//            } catch (RepositoryException e) {
-//                LOG.error(DOCS_9999, e);
-//            } catch (ClassNotFoundException e) {
-//                LOG.error(DOCS_9999, e);
-//            } catch (InstantiationException e) {
-//                LOG.error(DOCS_9999, e);
-//            } catch (IllegalAccessException e) {
-//                LOG.error(DOCS_9999, e);
-//            }
-//        }
-        return controller;
+    	return controllerMap.get(path);
     }
 }

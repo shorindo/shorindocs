@@ -24,18 +24,17 @@ import java.util.List;
 
 import javax.xml.bind.JAXB;
 
-import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentView;
 import com.shorindo.docs.model.DocumentModel;
-import com.shorindo.docs.view.View;
 
 /**
  * 
  */
 public class OutloggerView extends DocumentView {
-    private OutloggerService service = ServiceFactory.getService(OutloggerService.class);
+    private OutloggerService service = ApplicationContext.getBean(OutloggerService.class);
 
     @Override
     public void render(ActionContext ctx, OutputStream os) throws IOException {

@@ -24,8 +24,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.IdentityManager;
-import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.auth.entity.GroupEntity;
 import com.shorindo.docs.auth.entity.SessionEntity;
@@ -43,10 +43,10 @@ import com.shorindo.docs.repository.Transactional;
  */
 public class AuthenticateServiceImpl implements AuthenticateService {
     private static final ActionLogger LOG = ActionLogger.getLogger(AuthenticateServiceImpl.class);
-    private RepositoryService repositoryService =
-            ServiceFactory.getService(RepositoryService.class);
+    private RepositoryService repositoryService;
 
-    public AuthenticateServiceImpl() {
+    public AuthenticateServiceImpl(RepositoryService repositoryService) {
+    	this.repositoryService = repositoryService;
         validate();
     }
 

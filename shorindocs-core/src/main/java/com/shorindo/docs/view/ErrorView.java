@@ -60,18 +60,16 @@ public class ErrorView extends XumlView {
     }
 
     public enum ErrorViewMessages implements ActionMessages {
-        @Message(ja = "OK")
+        @Message(lang="ja", content="OK")
         STATUS_OK(200),
-        @Message(ja = "見つかりません")
+        @Message(lang="ja", content="見つかりません")
         STATUS_NOT_FOUND(404),
-        @Message(ja = "未知のエラーです")
+        @Message(lang="ja", content="未知のエラーです")
         STATUS_ERROR(500);
 
-        private Map<String,MessageFormat> bundle;
         private int status;
 
         private ErrorViewMessages(int status) {
-            bundle = ActionMessages.Util.bundle(this);
             this.status = status;
         }
         
@@ -84,26 +82,6 @@ public class ErrorView extends XumlView {
             return STATUS_ERROR;
         }
 
-        @Override
-        public Map<String, MessageFormat> getBundle() {
-            return bundle;
-        }
-
-        @Override
-        public String getCode() {
-            return ActionMessages.Util.getCode(this);
-        }
-
-        @Override
-        public String getMessage(Object... params) {
-            return ActionMessages.Util.getMessage(this, params);
-        }
-
-        @Override
-        public String getMessage(Locale locale, Object... params) {
-            return ActionMessages.Util.getMessage(this, params);
-        }
-        
         public int getStatus() {
             return status;
         }

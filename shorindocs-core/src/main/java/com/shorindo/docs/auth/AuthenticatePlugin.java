@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.auth;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionPlugin;
 
 /**
@@ -30,8 +31,8 @@ public class AuthenticatePlugin extends ActionPlugin {
     @Override
     public void initialize() {
         addSchema(getClass().getResourceAsStream("Authenticate.dsdl"));
-        addController(LoginController.class);
-        addController(LogoutController.class);
+        ApplicationContext.addBean(LoginController.class);
+        ApplicationContext.addBean(LogoutController.class);
     }
 
 }

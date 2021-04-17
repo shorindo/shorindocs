@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.document;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionPlugin;
 
 /**
@@ -30,8 +31,8 @@ public class DocumentPlugin extends ActionPlugin {
     @Override
     public void initialize() {
         addSchema(getClass().getResourceAsStream("Document.dsdl"));
-        addController(DocumentController.class);
-        addService(DocumentService.class, DocumentServiceImpl.class);
+        ApplicationContext.addBean(DocumentController.class);
+        ApplicationContext.addBean(DocumentService.class, DocumentServiceImpl.class);
     }
 
 }

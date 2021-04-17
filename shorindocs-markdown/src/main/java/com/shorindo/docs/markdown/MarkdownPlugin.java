@@ -15,6 +15,7 @@
  */
 package com.shorindo.docs.markdown;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionPlugin;
 
 /**
@@ -29,8 +30,10 @@ public class MarkdownPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {
-        addService(MarkdownService.class, MarkdownServiceImpl.class);
-        addController(MarkdownController.class);
+    	ApplicationContext.addBean(MarkdownService.class, MarkdownServiceImpl.class);
+    	ApplicationContext.addBean(MarkdownController.class);
+//        addService(MarkdownService.class, MarkdownServiceImpl.class);
+//        addController(MarkdownController.class);
     }
 
 }

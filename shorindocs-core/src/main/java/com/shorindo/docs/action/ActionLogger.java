@@ -15,13 +15,21 @@
  */
 package com.shorindo.docs.action;
 
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Locale;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.shorindo.docs.ApplicationContext;
+
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.FileAppender;
 
 /**
  * 
@@ -29,13 +37,31 @@ import com.shorindo.docs.ApplicationContext;
 public class ActionLogger {
     private Logger logger;
     private Locale lang = ApplicationContext.getLang();
+    private static Appender<ILoggingEvent> appender = createAppender();
 
     public static ActionLogger getLogger(Class<?> clazz) {
         return new ActionLogger(clazz);
     }
 
+    private static Appender<ILoggingEvent> createAppender() {
+    	LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+    	PatternLayoutEncoder ple = new PatternLayoutEncoder();
+    	ple.setPattern("%d %5p %c{0} - %msg%n");
+    	ple.setContext(lc);
+    	ple.setCharset(StandardCharsets.UTF_8);
+    	ple.start();
+
+    	ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
+    	appender.setEncoder(ple);
+    	appender.setContext(lc);
+    	appender.start();
+    	return appender;
+    }
+
     private ActionLogger(Class<?> clazz) {
-        logger = LogManager.getLogger(clazz);
+        logger = (Logger)LoggerFactory.getLogger(clazz);
+        logger.addAppender(appender);
+        logger.setAdditive(false);
     }
     
     public boolean isInfoEnabled() {

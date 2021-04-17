@@ -22,7 +22,7 @@ import static com.shorindo.docs.markdown.MarkdownMessages.*;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.shorindo.docs.ServiceFactory;
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentView;
@@ -43,7 +43,7 @@ public class MarkdownView extends DocumentView {
     @Override
     public void render(ActionContext context, OutputStream os)
         throws IOException {
-        MarkdownService service = ServiceFactory.getService(MarkdownService.class);
+        MarkdownService service = ApplicationContext.getBean(MarkdownService.class);
         try {
             String html = service.parse(model.getContent());
             layout()

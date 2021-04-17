@@ -15,12 +15,15 @@
  */
 package com.shorindo.docs.specout;
 
+import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionPlugin;
 
 /**
  * 
  */
 public class SpecoutPlugin extends ActionPlugin {
+	private static final ActionLogger LOG = ActionLogger.getLogger(SpecoutPlugin.class);
 
     @Override
     public String getId() {
@@ -29,7 +32,7 @@ public class SpecoutPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {
-        addController(SpecoutController.class);
+        ApplicationContext.addBean(SpecoutController.class);
     }
 
 }

@@ -15,18 +15,16 @@
  */
 package com.shorindo.docs.plugin;
 
-import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
+import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionPlugin;
@@ -36,18 +34,7 @@ import com.shorindo.docs.action.ActionPlugin;
  */
 public class PluginServiceImpl implements PluginService {
     private final static ActionLogger LOG = ActionLogger.getLogger(PluginServiceImpl.class);
-    private final static String SEPARATOR = File.separator.replaceAll("\\\\", "\\\\\\\\");
-
-    public final void addPlugin(Class<? extends ActionPlugin> clazz) {
-        try {
-            ActionPlugin plugin = clazz.newInstance();
-            plugin.initialize();
-        } catch (InstantiationException e) {
-            LOG.error(DOCS_9999, e);
-        } catch (IllegalAccessException e) {
-            LOG.error(DOCS_9999, e);
-        }
-    }
+    private final static String PLUGIN_FILE = "META-INF/plugin.xml";
 
     /*
      *
@@ -63,60 +50,27 @@ public class PluginServiceImpl implements PluginService {
             for (File child : file.listFiles()) {
                 result.addAll(findPlugin(loader, base, child));
             }
-        } else {
-            if (file.getName().endsWith(".class")) {
-                String className = file.getAbsolutePath()
-                    .substring(base.getAbsolutePath().length())
-                    .replaceAll("\\.class$", "")
-                    .replaceAll("^" + SEPARATOR, "")
-                    .replaceAll(SEPARATOR, ".");
-                try {
-                    Class<?> clazz = Class.forName(className);
-                    if (ActionPlugin.class.isAssignableFrom(clazz) && clazz != ActionPlugin.class) {
-                        LOG.info("Plugin {0} found.", className);
-                        result.add((Class<ActionPlugin>)clazz);
-                    }
-                } catch (Throwable e1) {
-                    //LOG.debug(e1.getMessage());
-                }
-            } else if (file.getName().endsWith(".jar")) {
-                LOG.debug("Start scan : " + file.getName());
-                try (JarFile jarFile = new JarFile(file)) {
-                    Manifest manifest = jarFile.getManifest();
-                    if (manifest != null) {
-                        Attributes attrs = manifest.getMainAttributes();
-                        for (Entry<Object, Object> e : attrs.entrySet()) {
-                            //LOG.debug(e.getKey() + " ==> " + e.getValue());
-                        }
-                    }
-                    //LOG.debug(manifest.getMainAttributes().getValue("Plugin-Class"));
-                    //LOG.debug(manifest.getMainAttributes().getValue("Plugin-Alias"));
-//                    for (Enumeration<JarEntry> e = jarFile.entries(); e.hasMoreElements();) {
-//                        JarEntry entry = e.nextElement();
-//                        String name = entry.getName();
-//                        if (!name.endsWith(".class") || name.startsWith("java")) {
-//                            continue;
-//                        }
-//                        String className = name
-//                            .replaceAll("\\.class$", "")
-//                            .replaceAll("/", ".");
-//                        try {
-//                            Class<?> clazz = Class.forName(className);
-//                            if (ActionPlugin.class.isAssignableFrom(clazz) && clazz != ActionPlugin.class) {
-//                                LOG.info("Plugin {0} found.", className);
-//                                result.add((Class<ActionPlugin>)clazz);
-//                            }
-//                        } catch (Throwable e1) {
-//                            //LOG.debug(e1.getMessage());
-//                        }
-//                    }
-                } catch (IOException e) {
-                    LOG.error(e.getMessage(), e);
-                }
-            }
+        } else if (file.getName().endsWith(".jar")) {
+        	try (JarFile jarFile = new JarFile(file)) {
+        		for (Enumeration<JarEntry> e = jarFile.entries(); e.hasMoreElements();) {
+        			JarEntry entry = e.nextElement();
+        			String name = entry.getName();
+        			if (PLUGIN_FILE.equals(name)) {
+        				LOG.info(file.getName() + " has plugin.xml");
+        				InputStream zis = jarFile.getInputStream(entry);
+        				byte b[] = new byte[2048];
+        				int len = 0;
+        				while ((len = zis.read(b)) > 0) {
+        					System.out.write(b, 0, len);
+        				}
+        				break;
+        			}
+        		}
+        	} catch (IOException e) {
+        		LOG.error(e.getMessage(), e);
+        	}
         }
         String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        LOG.info("PATH = " + path);
         return result;
     }
     

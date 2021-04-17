@@ -26,30 +26,4 @@ import com.shorindo.docs.action.ActionMessages;
  */
 public enum AuthenticateMessages implements ActionMessages {
     ;
-
-    private Map<String,MessageFormat> bundle;
-
-    private AuthenticateMessages() {
-        bundle = ActionMessages.Util.bundle(this);
-    }
-
-    @Override
-    public Map<String, MessageFormat> getBundle() {
-        return bundle;
-    }
-
-    @Override
-    public String getCode() {
-        return ActionMessages.Util.getCode(this);
-    }
-
-    @Override
-    public String getMessage(Object... params) {
-        return ActionMessages.Util.getMessage(this, params);
-    }
-
-    @Override
-    public String getMessage(Locale locale, Object... params) {
-        return ActionMessages.Util.getMessage(this, params);
-    }
 }

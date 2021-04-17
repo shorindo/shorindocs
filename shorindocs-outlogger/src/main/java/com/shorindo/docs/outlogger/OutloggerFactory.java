@@ -23,7 +23,7 @@ public class OutloggerFactory {
 
     public static synchronized OutloggerServiceImpl outloggerService() {
         if (outloggerService == null) {
-            outloggerService = new OutloggerServiceImpl();
+            outloggerService = new OutloggerServiceImpl(null);
         }
         return outloggerService;
     }

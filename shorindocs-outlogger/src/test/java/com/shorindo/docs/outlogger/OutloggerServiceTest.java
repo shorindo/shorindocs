@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.IdentityManager;
-import com.shorindo.docs.ServiceFactory;
 import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.document.DocumentServiceImpl;
@@ -44,10 +43,10 @@ public class OutloggerServiceTest {
     public static void setUpBefore() throws Exception {
         InputStream is = OutloggerServiceTest.class.getClassLoader().getResourceAsStream("site.properties");
         ApplicationContext.loadProperties(is);
-        ServiceFactory.addService(RepositoryService.class, RepositoryServiceImpl.class);
-        ServiceFactory.addService(DocumentService.class, DocumentServiceImpl.class);
-        ServiceFactory.addService(OutloggerService.class, OutloggerServiceImpl.class);
-        outloggerService = ServiceFactory.getService(OutloggerService.class);
+        ApplicationContext.addBean(RepositoryService.class, RepositoryServiceImpl.class);
+        ApplicationContext.addBean(DocumentService.class, DocumentServiceImpl.class);
+        ApplicationContext.addBean(OutloggerService.class, OutloggerServiceImpl.class);
+        outloggerService = ApplicationContext.getBean(OutloggerService.class);
     }
 
     @Test

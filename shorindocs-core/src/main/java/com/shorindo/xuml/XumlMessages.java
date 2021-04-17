@@ -25,57 +25,32 @@ import com.shorindo.docs.action.ActionMessages;
  * 
  */
 public enum XumlMessages implements ActionMessages {
-    @Message(ja = "コンポーネント[{0}]をロードしました。")
+    @Message(lang="ja", content="コンポーネント[{0}]をロードしました。")
     XUML_1000,
-    @Message(ja = "レンダリング開始：{0}")
+    @Message(lang="ja", content="レンダリング開始：{0}")
     XUML_1001,
-    @Message(ja = "レンダリング終了：{0} : {1} ms")
+    @Message(lang="ja", content="レンダリング終了：{0} : {1} ms")
     XUML_1002,
-    @Message(ja = "XUMLテンプレート[{0}]のクローズに失敗しました。")
+    @Message(lang="ja", content="XUMLテンプレート[{0}]のクローズに失敗しました。")
     XUML_3001,
-    @Message(ja = "属性[{0}]は不明です。")
+    @Message(lang="ja", content="属性[{0}]は不明です。")
     XUML_3002,
-    @Message(ja = "コンポーネント[{0}]の指定ができませんでした。")
+    @Message(lang="ja", content="コンポーネント[{0}]の指定ができませんでした。")
     XUML_5001,
-    @Message(ja = "XUMLエンジンの初期化に失敗しました。")
+    @Message(lang="ja", content="XUMLエンジンの初期化に失敗しました。")
     XUML_5010,
-    @Message(ja = "XUMLのレンダリングに失敗しました。")
+    @Message(lang="ja", content="XUMLのレンダリングに失敗しました。")
     XUML_5020,
-    @Message(ja = "ルート要素が'xuml'ではありません。")
+    @Message(lang="ja", content="ルート要素が'xuml'ではありません。")
     XUML_5030,
-    @Message(ja = "[{0}]の生成に失敗したため、Generalコンポーネントを使用します。")
+    @Message(lang="ja", content="[{0}]の生成に失敗したため、Generalコンポーネントを使用します。")
     XUML_5125,
-    @Message(ja = "データ出力に失敗しました。")
+    @Message(lang="ja", content="データ出力に失敗しました。")
     XUML_5200,
-    @Message(ja = "CSSセレクタの構文が不正です")
+    @Message(lang="ja", content="CSSセレクタの構文が不正です")
     XUML_6000,
-    @Message(ja = "予期せぬエラーが発生しました：{0}")
+    @Message(lang="ja", content="予期せぬエラーが発生しました：{0}")
     XUML_9999
     ;
 
-    private Map<String,MessageFormat> bundle;
-
-    private XumlMessages() {
-        bundle = ActionMessages.Util.bundle(this);
-    }
-
-    @Override
-    public Map<String, MessageFormat> getBundle() {
-        return bundle;
-    }
-
-    @Override
-    public String getCode() {
-        return ActionMessages.Util.getCode(this);
-    }
-
-    @Override
-    public String getMessage(Object... params) {
-        return ActionMessages.Util.getMessage(this, params);
-    }
-
-    @Override
-    public String getMessage(Locale locale, Object... params) {
-        return ActionMessages.Util.getMessage(this, params);
-    }
 }
