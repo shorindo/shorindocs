@@ -15,17 +15,7 @@
  */
 package com.shorindo.docs.action;
 
-import static com.shorindo.docs.document.DocumentMessages.*;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.arnx.jsonic.JSON;
-
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.annotation.BeanParameter;
 import com.shorindo.docs.view.View;
 
 /**
@@ -34,13 +24,8 @@ import com.shorindo.docs.view.View;
 public abstract class ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionController.class);
 
-//    public ActionController() {
-//    }
-
     @ActionMethod
-    public abstract View action(ActionContext context);
-
-//    public abstract String view(ActionContext context);
+    public abstract View action(ActionContext context, Object...args);
 
     public String getAction(ActionContext context) {
         String[] params = context.getParameters("action");
@@ -52,62 +37,6 @@ public abstract class ActionController {
             return "view";
         }
     }
-
-//    public Object action(ActionContext context) {
-//        LOG.debug(DOCS_1107, getClass().getSimpleName() + ".action()");
-//        try {
-//            String actionName = context.getAction();
-//            Object reqParams = context.getParameter();
-//            if (List.class.isAssignableFrom(reqParams.getClass())) {
-//                List<?> paramList = (List<?>)reqParams;
-//                Class<?> clazz = getClass();
-//                while (clazz != null) {
-//                    for (Method method : clazz.getMethods()) {
-//                        if (!method.getName().equals(actionName) ||
-//                                paramList.size() != method.getParameterCount()) {
-//                            continue;
-//                        }
-//                        List<Object> callParams = new ArrayList<Object>();
-//                        for (int i = 0; i < method.getParameterCount(); i++) {
-//                            Parameter decParam = method.getParameters()[i];
-//                            BeanParameter paramClass = decParam.getAnnotation(BeanParameter.class);
-//                            Object param = paramList.get(i);
-//                            if (paramClass != null) {
-//                                callParams.add(JSON.decode(JSON.encode(param), paramClass.value()));
-//                            } else {
-//                                callParams.add(JSON.decode(JSON.encode(param), decParam.getType()));
-//                            }
-//                            
-//                        }
-//                        return method.invoke(this, callParams.toArray());
-//                    }
-//                    clazz = clazz.getSuperclass();
-//                }
-////            } else {
-////                Class<?> clazz = getClass();
-////                while (clazz != null) {
-////                    for (Method method : clazz.getMethods()) {
-////                        if (!method.getName().equals(actionName) ||
-////                                paramSize != method.getParameterCount()) {
-////                            continue;
-////                        }
-////                        List<Object> callParams = new ArrayList<Object>();
-////                        for (int i = 0; i < method.getParameterCount(); i++) {
-////                            Parameter decParam = method.getParameters()[i];
-////                            callParams.add(
-////                                    JSON.decode(JSON.encode(reqParams), decParam.getType()));
-////                        }
-////                        return method.invoke(this, callParams.toArray());
-////                    }
-////                    clazz = clazz.getSuperclass();
-////                }
-//            }
-//            LOG.warn(DOCS_3003, context.getAction());
-//        } catch (Throwable th) {
-//            LOG.error(DOCS_3003, th, context.getAction());
-//        }
-//        return null;
-//    }
 
     protected String createClassPath(String path) {
         StringBuffer result = new StringBuffer();

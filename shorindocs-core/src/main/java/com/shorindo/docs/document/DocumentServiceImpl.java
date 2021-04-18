@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;

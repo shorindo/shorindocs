@@ -46,17 +46,8 @@ public class OutloggerController extends DocumentController {
      * 
      */
     @Override @ActionMethod
-    public View action(ActionContext context) {
+    public View action(ActionContext context, Object...args) {
         try {
-//            DocumentModel model = getModel(context);
-//            String content = model.getContent() == null ? "" : model.getContent();
-//            OutloggerMetaData metaData = JAXB.unmarshal(new StringReader(content), OutloggerMetaData.class);
-//            context.setAttribute("document", model);
-//            context.setAttribute("outlogger", metaData);
-//            context.setAttribute("recents", recents(context));
-//            OutloggerEntity key = new OutloggerEntity();
-//            key.setDocumentId(model.getDocumentId());
-//            context.setAttribute("logs", outloggerService.listLog(key));
             return new OutloggerView();
         } catch (Exception e) {
             LOG.error(OLOG_9999, e);
@@ -68,7 +59,7 @@ public class OutloggerController extends DocumentController {
     public List<OutloggerEntity> listLog(ActionContext context) throws DocumentException {
         LOG.debug("listLog");
         OutloggerEntity entity = new OutloggerEntity();
-        entity.setDocumentId(context.getId());
+        entity.setDocumentId(context.getPath().substring(1));
         return outloggerService.listLog(entity);
     }
 

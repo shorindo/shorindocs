@@ -43,7 +43,7 @@ public class PlainTextController extends DocumentController {
      * 
      */
     @Override
-    public View action(ActionContext context) {
+    public View action(ActionContext context, Object...args) {
         //LOG.debug("action()->" + context.getParameter("action"));
         try {
             DocumentModel model = getModel(context);

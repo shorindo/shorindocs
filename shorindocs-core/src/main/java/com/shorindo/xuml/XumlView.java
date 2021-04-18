@@ -97,7 +97,7 @@ public class XumlView extends AbstractView {
                             .add(div()
                                 .attr("id", "left-pane")
                                 .attr("class", "xuml-vbox")
-                                .attr("style", "width:200px;")
+                                .attr("style", "width:25%;")
                                 .add(marker("left"))
                                 .on("RENDER_BEFORE", evt -> {
                                     for (Element e : evt.getTarget().findByCssSelector(MarkerElement.TAG + "[name='left']")) {
@@ -117,7 +117,7 @@ public class XumlView extends AbstractView {
                             .add(div()
                                 .attr("id", "right-pane")
                                 .attr("class", "xuml-vbox")
-                                .attr("style", "width:200px;")
+                                .attr("style", "width:25%;")
                                 .add(marker("right"))
                                 .on("RENDER_BEFORE", evt -> {
                                     for (Element e : evt.getTarget().findByCssSelector(MarkerElement.TAG + "[name='right']")) {

@@ -32,7 +32,7 @@ public class UserController extends ActionController {
      * 
      */
     @Override
-    public View action(ActionContext context) {
+    public View action(ActionContext context, Object...args) {
         return null;
     }
 

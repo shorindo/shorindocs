@@ -19,7 +19,6 @@ import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.JsonView;
-import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.AbstractView;
 
 /**
@@ -29,7 +28,7 @@ import com.shorindo.docs.view.AbstractView;
 public class RpcController extends ActionController {
 
     @Override
-    public AbstractView action(ActionContext context) {
+    public AbstractView action(ActionContext context, Object...args) {
         return new JsonView(null, context);
     }
 

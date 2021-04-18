@@ -15,12 +15,7 @@
  */
 package com.shorindo.docs.document;
 
-import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.Map;
-
 import com.shorindo.docs.action.ActionMessages;
-import com.shorindo.docs.action.ActionMessages.Message;
 
 /**
  * 

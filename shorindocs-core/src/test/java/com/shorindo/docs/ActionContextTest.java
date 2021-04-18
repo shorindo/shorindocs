@@ -36,13 +36,13 @@ public class ActionContextTest {
         ApplicationContext.getClassPath();
     }
 
-    public static class MyContext extends ActionContext {
-//        private RepositoryServiceImpl repository = getService(RepositoryServiceImpl.class);
-//
-//        public void run() throws NotFoundException, DatabaseException {
-//            getUser();
-//            UserEntity e = new UserEntity();
-//            e = repository.get(e);
-//        }
-    }
+//    public static class MyContext extends ActionContext {
+////        private RepositoryServiceImpl repository = getService(RepositoryServiceImpl.class);
+////
+////        public void run() throws NotFoundException, DatabaseException {
+////            getUser();
+////            UserEntity e = new UserEntity();
+////            e = repository.get(e);
+////        }
+//    }
 }

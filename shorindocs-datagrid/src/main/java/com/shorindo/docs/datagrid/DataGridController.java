@@ -33,12 +33,12 @@ public class DataGridController extends DocumentController {
     private DocumentService service = ApplicationContext.getBean(DocumentService.class);
 
     @Override
-    public View action(ActionContext context) {
+    public View action(ActionContext context, Object...args) {
         return view(context);
     }
 
-    private View view(ActionContext context) {
-        DocumentModel model = (DocumentModel)context.getAttribute("document");
+    private View view(ActionContext context, Object...args) {
+    	DocumentModel model = (DocumentModel)args[0];
         String action = context.getParameter("action");
 
         if ("edit".equals(action)) {

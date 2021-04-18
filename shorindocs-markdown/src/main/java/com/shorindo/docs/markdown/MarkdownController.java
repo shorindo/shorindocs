@@ -41,9 +41,9 @@ public class MarkdownController extends DocumentController {
      * 
      */
     @Override
-    public View action(ActionContext context) {
+    public View action(ActionContext context, Object...args) {
         try {
-            DocumentModel model = (DocumentModel)context.getAttribute("document");
+        	DocumentModel model = (DocumentModel)args[0];
             switch (getAction(context)) {
             case "edit":
                 return new MarkdownEdit(model);

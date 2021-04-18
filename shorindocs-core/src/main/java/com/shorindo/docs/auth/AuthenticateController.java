@@ -34,7 +34,7 @@ public class AuthenticateController extends ActionController {
     }
 
     @Override
-    public AbstractView action(ActionContext context) {
+    public AbstractView action(ActionContext context, Object...args) {
         return null;
     }
 

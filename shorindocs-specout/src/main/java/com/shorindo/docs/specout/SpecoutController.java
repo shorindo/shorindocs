@@ -26,15 +26,11 @@ import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentType;
-import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentEntity;
-import com.shorindo.docs.document.DocumentService;
-import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.JsonView;
 import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -50,17 +46,11 @@ public class SpecoutController extends ActionController {
      * 
      */
     @Override @ActionMethod
-    public View action(ActionContext context) {
+    public View action(ActionContext context, Object...args) {
         long st = System.currentTimeMillis();
         LOG.debug(SPEC_9003);
         try {
-            //DocumentModel model = getModel(context);
-            //String content = model.getContent() == null ? "" : model.getContent();
-            //SpecoutEntity specout = JAXB.unmarshal(new StringReader(content), SpecoutEntity.class);
-            //context.setAttribute("document", model);
-            //context.setAttribute("specout", specout);
-            //context.setAttribute("recents", recents(context));
-            DocumentModel model = (DocumentModel)context.getAttribute("document");
+        	DocumentEntity model = (DocumentEntity)args[0];
             return new SpecoutView(model);
         } catch (Exception e) {
             LOG.error(SPEC_9001, e);
@@ -76,8 +66,8 @@ public class SpecoutController extends ActionController {
      * @return
      */
     @ActionMethod
-    public AbstractView edit(ActionContext context) {
-        DocumentEntity model = (DocumentEntity)context.getAttribute("document");
+    public AbstractView edit(ActionContext context, Object...args) {
+    	DocumentEntity model = (DocumentEntity)args[0];
         SpecoutEntity specout = JAXB.unmarshal(new StringReader(model.getContent()), SpecoutEntity.class);
         return new JsonView(specout, context);
     }

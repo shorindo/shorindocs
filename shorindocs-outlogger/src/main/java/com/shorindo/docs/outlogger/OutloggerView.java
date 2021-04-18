@@ -36,16 +36,17 @@ import com.shorindo.docs.model.DocumentModel;
 public class OutloggerView extends DocumentView {
     private OutloggerService service = ApplicationContext.getBean(OutloggerService.class);
 
-    @Override
+    @SuppressWarnings("unused")
+	@Override
     public void render(ActionContext ctx, OutputStream os) throws IOException {
-        DocumentModel model = service.load(ctx.getId());
+        DocumentModel model = service.load(ctx.getPath().substring(1));
         OutloggerMetaData metaData = JAXB.unmarshal(new StringReader(model.getContent()), OutloggerMetaData.class);
         layout()
             .put("menubar-left", button("新規"))
             .put("menubar-left", button("編集"))
             .put("left", text("左"))
-            .put("left", recents(ctx.getId()))
-            .put("main", getLogs(ctx.getId()))
+            .put("left", recents(ctx.getPath().substring(1)))
+            .put("main", getLogs(ctx.getPath().substring(1)))
             .render(os);
     }
 

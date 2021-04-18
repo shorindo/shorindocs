@@ -30,7 +30,8 @@ import com.shorindo.docs.model.DocumentModel;
  * 
  */
 public abstract class DocumentServiceFactory {
-    private static final ActionLogger LOG =
+    @SuppressWarnings("unused")
+	private static final ActionLogger LOG =
             ActionLogger.getLogger(DocumentServiceFactory.class);
     private static final Map<String,ActionController> controllerMap = new HashMap<>();
     private static final Map<String,ActionController> classMap = new HashMap<>();

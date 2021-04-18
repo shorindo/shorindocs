@@ -60,8 +60,8 @@ public class ActionListener implements ServletContextListener {
 
         //XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
 
-        PluginService pluginService = ApplicationContext.getBean(PluginService.class);
-        pluginService.findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
+        ApplicationContext.getBean(PluginService.class)
+        	.findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
     }
 
     /**

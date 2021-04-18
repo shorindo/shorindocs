@@ -15,7 +15,6 @@
  */
 package com.shorindo.docs.document;
 
-import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionPlugin;
 
 /**

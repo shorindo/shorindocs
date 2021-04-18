@@ -15,127 +15,105 @@
  */
 package com.shorindo.docs.action;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
-import com.shorindo.docs.document.DocumentMessages;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 
  */
 public class ActionContext {
-    private static final ActionLogger LOG = ActionLogger.getLogger(ActionContext.class);
-    int status = 200;
-    private String requestPath;
+    @SuppressWarnings("unused")
+	private static final ActionLogger LOG = ActionLogger.getLogger(ActionContext.class);
+    private String path;
     private String contextPath;
-    private String action = "view";
-    private Locale locale;
-    private ResourceBundle bundle;
+    private String method;
+    private String contentType;
+    private Map<String,String[]> paramMap;
 
-    // URL
-    private String id;
-    private Map<String,String> requestHeader;
-    // RequestParameter
-    private Map<String,String[]> parameters;
-    private Map<String,String> responseHeader;
-    // ResponseResult
-    // Request属性
-    // Session属性
-
-    public ActionContext() {        
-        bundle = ResourceBundle.getBundle("messages", Locale.JAPANESE /*req.getLocale()*/);
-        Map<String,String> application = new HashMap<String,String>();
-        this.setAttribute("application", application);
-        requestHeader = new HashMap<>();
-        responseHeader = new HashMap<>();
+    private ActionContext() {
+    	paramMap = new HashMap<>();
     }
 
-//    public int getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(int status) {
-//        this.status = status;
-//    }
-
-    public String getRequestPath() {
-        return requestPath;
+    public static ActionContextBuilder builder() {
+    	return new ActionContextBuilder();
     }
 
-    public void setRequestPath(String requestPath) {
-        this.requestPath = requestPath;
-    }
+    public String getPath() {
+		return path;
+	}
 
     public String getContextPath() {
-        return contextPath;
+    	return contextPath;
     }
 
-    public void setContextPath(String contextPath) {
-        this.contextPath = contextPath;
-    }
+	public String getMethod() {
+		return method;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public String getContentType() {
+		return contentType;
+	}
 
-    public String getId() {
-        return id;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public String getMessage(String key) {
-        try {
-            return bundle.getString(key);
-        } catch (Exception e) {
-            LOG.error(DocumentMessages.DOCS_5001, e);
-            return key;
-        }
-    }
-
-    public String getHeader(String name) {
-        return requestHeader.get(name);
-    }
-
-    public void setHeader(String name, String value) {
-        requestHeader.put(name, value);
-    }
-
-    private Map<String,Object> attributes = new HashMap<String,Object>();
-    public Map<String,Object> getAttributes() {
-        return attributes;
-    }
-    public void setAttribute(String key, Object value) {
-        attributes.put(key, value);
-    }
-    public Object getAttribute(String key) {
-        return attributes.get(key);
-    }
-    public void setParameters(Map<String,String[]> params) {
-        this.parameters = params;
-    }
     public String getParameter(String name) {
-        String[] params = parameters.get(name);
-        if (params == null || params.length == 0) {
-            return null;
-        } else {
-            return params[0];
-        }
+    	return null;
     }
     public String[] getParameters(String name) {
-        return parameters.get(name);
+    	return null;
     }
 
+    public static class ActionContextBuilder {
+    	HttpServletRequest req;
+		ActionContext actionContext;
+    	private ActionContextBuilder() {
+    		actionContext = new ActionContext();
+    	}
+
+    	public ActionContext build() {
+    		return actionContext;
+    	}
+    	public ActionContextBuilder path(String path) {
+    		actionContext.path = path;
+    		return this;
+    	}
+    	public ActionContextBuilder contextPath(String contextPath) {
+    		actionContext.contextPath = contextPath;
+    		return this;
+    	}
+    	public ActionContextBuilder method(String method) {
+    		actionContext.method = method;
+    		return this;
+    	}
+    	public ActionContextBuilder queryString(String queryString) {
+    		if (queryString != null) {
+    			Map<String,List<String>> map = new HashMap<>();
+    			for (String param : queryString.split("&")) {
+    				String keyval[] = param.split("=", 2);
+    				if (keyval.length < 2) {
+    					continue;
+    				}
+    				List<String> vals = map.get(keyval[0]);
+    				if (vals == null) {
+    					vals = new ArrayList<>();
+    					map.put(keyval[0], vals);
+    				}
+    				vals.add(keyval[1]);
+    			}
+    			map.entrySet().stream()
+    				.forEach((e) -> {
+    					actionContext.paramMap.put(
+    							e.getKey(),
+    							e.getValue().toArray(new String[] {}));
+    				});
+    		}
+    		return this;
+    	}
+    	public ActionContextBuilder contentType(String contentType) {
+    		actionContext.contentType = contentType;
+    		return this;
+    	}
+    }
 }

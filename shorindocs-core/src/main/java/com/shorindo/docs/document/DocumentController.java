@@ -54,7 +54,7 @@ public abstract class DocumentController extends ActionController
      * 
      */
     protected DocumentModel getModel(ActionContext context) {
-        return documentService.load(context.getId());
+        return documentService.load(context.getPath().substring(1));
     }
 
     /**
@@ -141,7 +141,7 @@ public abstract class DocumentController extends ActionController
      * @throws SQLException
      */
     protected List<DocumentModel> recents(ActionContext context) throws RepositoryException {
-        return documentService.recents(context.getId());
+        return documentService.recents(context.getPath().substring(1));
     }
     
 }
