@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<plugin>
+<plugin namespace="outlogger">
+<!--
     <services>
         <service name=""
                  class=""/>
@@ -16,4 +17,5 @@
 
     <document type="outlogger"
               class="OutLoggerHandler"/>
+-->
 </plugin>

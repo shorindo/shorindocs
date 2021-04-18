@@ -1,2 +1,0 @@
-Plugin-Class: com.shorindo.docs.outlogger.OutloggerPlugin
-

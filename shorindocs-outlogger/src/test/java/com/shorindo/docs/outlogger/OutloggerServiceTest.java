@@ -41,8 +41,8 @@ public class OutloggerServiceTest {
 
     @BeforeClass
     public static void setUpBefore() throws Exception {
-        InputStream is = OutloggerServiceTest.class.getClassLoader().getResourceAsStream("site.properties");
-        ApplicationContext.loadProperties(is);
+        //InputStream is = OutloggerServiceTest.class.getClassLoader().getResourceAsStream("site.properties");
+        //ApplicationContext.load(is);
         ApplicationContext.addBean(RepositoryService.class, RepositoryServiceImpl.class);
         ApplicationContext.addBean(DocumentService.class, DocumentServiceImpl.class);
         ApplicationContext.addBean(OutloggerService.class, OutloggerServiceImpl.class);

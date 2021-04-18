@@ -29,15 +29,14 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
-import ch.qos.logback.core.FileAppender;
 
 /**
  * 
  */
 public class ActionLogger {
-    private Logger logger;
-    private Locale lang = ApplicationContext.getLang();
-    private static Appender<ILoggingEvent> appender = createAppender();
+	private static Appender<ILoggingEvent> appender = createAppender();
+	private Locale LANG = ApplicationContext.getLang();
+	private Logger logger;
 
     public static ActionLogger getLogger(Class<?> clazz) {
         return new ActionLogger(clazz);
@@ -101,11 +100,11 @@ public class ActionLogger {
     }
 
     public void debug(ActionMessages code, Object...args) {
-        logger.debug(code.getCode() + ":" + code.getMessage(lang, args));
+        logger.debug(code.getCode() + ":" + code.getMessage(LANG, args));
     }
 
     public void info(ActionMessages code, Object...args) {
-        logger.info(code.getCode() + ":" + code.getMessage(lang, args));
+        logger.info(code.getCode() + ":" + code.getMessage(LANG, args));
     }
 
     public void info(String message, Object...args) {
@@ -113,21 +112,25 @@ public class ActionLogger {
     }
 
     public void warn(ActionMessages code, Object...args) {
-        logger.warn(code.getCode() + ":" + code.getMessage(lang, args));
+        logger.warn(code.getCode() + ":" + code.getMessage(LANG, args));
     }
 
     public void warn(ActionMessages code, Throwable th, Object...args) {
-        logger.warn(code.getCode() + ":" + code.getMessage(lang, args), th);
+        logger.warn(code.getCode() + ":" + code.getMessage(LANG, args), th);
+    }
+
+    public void warn(String message, Object...args) {
+        logger.info(MessageFormat.format(message, args));
     }
 
     public String error(ActionMessages code, Object...args) {
-        String msg = code.getCode() + ":" + code.getMessage(lang, args);
+        String msg = code.getCode() + ":" + code.getMessage(LANG, args);
         logger.error(msg);
         return msg;
     }
 
     public String error(ActionMessages code, Throwable th, Object...args) {
-        String msg = code.getCode() + ":" + code.getMessage(lang, args);
+        String msg = code.getCode() + ":" + code.getMessage(LANG, args);
         logger.error(msg, th);
         return msg;
     }

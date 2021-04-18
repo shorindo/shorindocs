@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<config namespace="admin">
+<config namespace="dbmnt">
   <!-- bean interface="" class=""/-->
 </config>
 

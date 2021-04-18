@@ -35,7 +35,7 @@ public class DocumentServiceTest {
     @BeforeClass
     public static void setUpBefore() throws Exception {
         InputStream is = new FileInputStream("src/test/resources/site.properties");
-        ApplicationContext.loadProperties(is);
+//        ApplicationContext.load(is);
         ApplicationContext.addBean(
                 RepositoryService.class,
                 RepositoryServiceImpl.class);

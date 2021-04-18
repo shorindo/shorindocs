@@ -20,12 +20,16 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.ApplicationContextConfig;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionPlugin;
 
@@ -56,13 +60,14 @@ public class PluginServiceImpl implements PluginService {
         			JarEntry entry = e.nextElement();
         			String name = entry.getName();
         			if (PLUGIN_FILE.equals(name)) {
-        				LOG.info(file.getName() + " has plugin.xml");
-        				InputStream zis = jarFile.getInputStream(entry);
-        				byte b[] = new byte[2048];
+        				Reader reader = new InputStreamReader(jarFile.getInputStream(entry), "UTF-8");
+        				StringBuilder sb = new StringBuilder();
+        				char c[] = new char[2048];
         				int len = 0;
-        				while ((len = zis.read(b)) > 0) {
-        					System.out.write(b, 0, len);
+        				while ((len = reader.read(c)) > 0) {
+        					sb.append(c, 0, len);
         				}
+        				ApplicationContextConfig config = ApplicationContext.load(sb.toString());
         				break;
         			}
         		}

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config namespace="markdown">
+    <bean name="com.shorindo.docs.markdown.MarkdownService" class="com.shorindo.docs.markdown.MarkdownServiceImpl" />
+    <bean name="com.shorindo.docs.markdown.MarkdownController" />
+</config>
+

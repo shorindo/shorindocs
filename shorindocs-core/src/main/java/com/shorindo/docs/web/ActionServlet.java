@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.web;
 
 import static com.shorindo.docs.document.DocumentMessages.*;
 
@@ -33,6 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 import net.arnx.jsonic.JSON;
 import net.arnx.jsonic.JSONException;
 
+import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.ApplicationContextConfig.Action;
+import com.shorindo.docs.BeanNotFoundException;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
@@ -63,14 +66,8 @@ public class ActionServlet extends HttpServlet {
      * 
      */
     @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-    }
-
-    @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        PluginContainer.initContainer();
         super.service(req, res);
     }
 

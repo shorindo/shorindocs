@@ -34,8 +34,8 @@ import com.shorindo.docs.view.View;
 public abstract class ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionController.class);
 
-    public ActionController() {
-    }
+//    public ActionController() {
+//    }
 
     @ActionMethod
     public abstract View action(ActionContext context);

@@ -9,7 +9,7 @@
 
   <filter>
     <filter-name>authenticateFilter</filter-name>
-    <filter-class>com.shorindo.docs.AuthenticateFilter</filter-class>
+    <filter-class>com.shorindo.docs.web.AuthenticateFilter</filter-class>
     <init-param>
       <param-name>SESSION_KEY</param-name>
       <param-value>DOCSID</param-value>
@@ -18,7 +18,7 @@
 
   <filter>
     <filter-name>encodingFilter</filter-name>
-    <filter-class>com.shorindo.docs.EncodingFilter</filter-class>
+    <filter-class>com.shorindo.docs.web.EncodingFilter</filter-class>
     <init-param>
       <param-name>ENCODING</param-name>
       <param-value>UTF-8</param-value>
@@ -36,12 +36,12 @@
   </filter-mapping>
 
   <listener>
-    <listener-class>com.shorindo.docs.ActionListener</listener-class>
+    <listener-class>com.shorindo.docs.web.ActionListener</listener-class>
   </listener>
 
   <servlet>
     <servlet-name>ActionServlet</servlet-name>
-    <servlet-class>com.shorindo.docs.ActionServlet</servlet-class>
+    <servlet-class>com.shorindo.docs.web.ActionServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

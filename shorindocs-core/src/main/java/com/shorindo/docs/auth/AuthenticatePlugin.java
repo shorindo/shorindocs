@@ -31,8 +31,8 @@ public class AuthenticatePlugin extends ActionPlugin {
     @Override
     public void initialize() {
         addSchema(getClass().getResourceAsStream("Authenticate.dsdl"));
-        ApplicationContext.addBean(LoginController.class);
-        ApplicationContext.addBean(LogoutController.class);
+//        ApplicationContext.addBean(LoginController.class);
+//        ApplicationContext.addBean(LogoutController.class);
     }
 
 }

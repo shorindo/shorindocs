@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs;
+package com.shorindo.docs.web;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,27 +22,28 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionPlugin;
-import com.shorindo.docs.admin.AdminPlugin;
+//import com.shorindo.docs.admin.AdminPlugin;
 import com.shorindo.docs.auth.AuthenticatePlugin;
 //import com.shorindo.docs.datagrid.DataGridPlugin;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentPlugin;
-import com.shorindo.docs.markdown.MarkdownPlugin;
-import com.shorindo.docs.outlogger.OutloggerPlugin;
-import com.shorindo.docs.plaintext.PlainTextPlugin;
+//import com.shorindo.docs.markdown.MarkdownPlugin;
+//import com.shorindo.docs.outlogger.OutloggerPlugin;
+//import com.shorindo.docs.plaintext.PlainTextPlugin;
 import com.shorindo.docs.plugin.PluginService;
 import com.shorindo.docs.plugin.PluginServiceImpl;
 import com.shorindo.docs.repository.RepositoryDataSource;
 import com.shorindo.docs.repository.RepositoryPlugin;
-import com.shorindo.docs.specout.SpecoutPlugin;
+//import com.shorindo.docs.specout.SpecoutPlugin;
 
 /**
  * 
  */
 public class ActionListener implements ServletContextListener {
-    private static final ActionLogger LOG = ActionLogger.getLogger(ActionListener.class);
+	private static final ActionLogger LOG = ActionLogger.getLogger(ActionListener.class);
 
     /**
      * 
@@ -51,25 +52,11 @@ public class ActionListener implements ServletContextListener {
         try {
         	File base = new File(event.getServletContext().getRealPath("/WEB-INF"));
             File xml = new File(base, "application-config.xml");
-            ApplicationContext.init(xml);
+            ApplicationContext.load(xml);
         } catch (IOException e) {
+        	// FIXME 初期化に失敗したらうまくログが出ない
             LOG.error(DocumentMessages.DOCS_9000, e);
         }
-
-        // FIXME
-        ApplicationContext.addBean(DataSource.class, RepositoryDataSource.class);
-        ApplicationContext.addBean(PluginService.class, PluginServiceImpl.class);
-
-        ActionPlugin.addPlugin(RepositoryPlugin.class);
-        ActionPlugin.addPlugin(AuthenticatePlugin.class);
-        ActionPlugin.addPlugin(DocumentPlugin.class);
-//        ActionPlugin.addPlugin(DataGridPlugin.class);
-        ActionPlugin.addPlugin(AdminPlugin.class);
-
-        ActionPlugin.addPlugin(OutloggerPlugin.class);
-        ActionPlugin.addPlugin(SpecoutPlugin.class);
-        ActionPlugin.addPlugin(PlainTextPlugin.class);
-        ActionPlugin.addPlugin(MarkdownPlugin.class);
 
         //XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
 

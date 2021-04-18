@@ -30,7 +30,7 @@ public class RepositoryPlugin extends ActionPlugin {
 
     @Override
     public void initialize() {
-        ApplicationContext.addBean(RepositoryService.class, RepositoryServiceImpl.class);
+//        ApplicationContext.addBean(RepositoryService.class, RepositoryServiceImpl.class);
     }
 
 }

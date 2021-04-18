@@ -41,8 +41,8 @@ public class SpecoutControllerTest {
     
     @BeforeClass
     public static void setUpBefore() throws Exception {
-        InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
-        ApplicationContext.loadProperties(is);
+//        InputStream is = new FileInputStream("src/main/webapp/WEB-INF/site.properties");
+//        ApplicationContext.load(is);
         repositoryService = ApplicationContext.getBean(RepositoryService.class);
     }
 

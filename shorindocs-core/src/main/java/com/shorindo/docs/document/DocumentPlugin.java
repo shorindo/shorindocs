@@ -31,8 +31,8 @@ public class DocumentPlugin extends ActionPlugin {
     @Override
     public void initialize() {
         addSchema(getClass().getResourceAsStream("Document.dsdl"));
-        ApplicationContext.addBean(DocumentController.class);
-        ApplicationContext.addBean(DocumentService.class, DocumentServiceImpl.class);
+//        ApplicationContext.addBean(DocumentController.class);
+//        ApplicationContext.addBean(DocumentService.class, DocumentServiceImpl.class);
     }
 
 }

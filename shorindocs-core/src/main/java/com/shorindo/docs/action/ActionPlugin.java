@@ -35,16 +35,16 @@ public abstract class ActionPlugin {
     public abstract void initialize();
     public abstract String getId();
 
-    public static final void addPlugin(Class<? extends ActionPlugin> clazz) {
-        try {
-            ActionPlugin plugin = clazz.newInstance();
-            plugin.initialize();
-        } catch (InstantiationException e) {
-            LOG.error(DOCS_9999, e);
-        } catch (IllegalAccessException e) {
-            LOG.error(DOCS_9999, e);
-        }
-    }
+//    public static final void addPlugin(Class<? extends ActionPlugin> clazz) {
+//        try {
+//            ActionPlugin plugin = clazz.newInstance();
+//            plugin.initialize();
+//        } catch (InstantiationException e) {
+//            LOG.error(DOCS_9999, e);
+//        } catch (IllegalAccessException e) {
+//            LOG.error(DOCS_9999, e);
+//        }
+//    }
     
     protected final void addSchema(InputStream is) {
         try {

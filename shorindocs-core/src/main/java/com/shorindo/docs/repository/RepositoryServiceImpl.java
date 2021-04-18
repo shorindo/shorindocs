@@ -54,7 +54,6 @@ import com.shorindo.docs.repository.ExecuteStatement.*;
 public class RepositoryServiceImpl implements RepositoryService, TxEventListener {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(RepositoryServiceImpl.class);
-    private static final Locale LANG = ApplicationContext.getLang();
     private DataSource dataSource;
     private ThreadLocal<TxConnection> txMap =
             new ThreadLocal<TxConnection>();
@@ -184,7 +183,7 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
             if (column.getPrimaryKey() > 0) {
                 if (primaryMap.containsKey(column.getPrimaryKey())) {
                     throw new RepositoryException(DBMS_5122.getMessage(
-                            LANG,
+                            ApplicationContext.getLang(),
                             column.getName(),
                             column.getPrimaryKey()));
                 } else {

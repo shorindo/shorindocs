@@ -15,12 +15,12 @@
  */
 package com.shorindo.docs;
 
+import static com.shorindo.docs.ApplicationMessages.*;
 import static com.shorindo.docs.document.DocumentMessages.DOCS_9006;
 import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -33,57 +33,89 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import javax.sql.DataSource;
-
-import org.apache.commons.dbcp2.BasicDataSourceFactory;
-
+import com.shorindo.docs.ApplicationContextConfig.Action;
+import com.shorindo.docs.ApplicationContextConfig.Bean;
 import com.shorindo.docs.ApplicationContextConfig.Property;
 import com.shorindo.docs.TxEvent.TxEventType;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.repository.Transactional;
 
 /**
  * 
  */
 public class ApplicationContext {
+    private static final Locale DEFAULT_LANG = Locale.JAPANESE;
     private static final ActionLogger LOG = ActionLogger.getLogger(ApplicationContext.class);
     private static final Properties props = new Properties();
-    private static final Locale DEFAULT_LANG = Locale.JAPANESE;
     public static final String WEB_INF_CLASSES = "/WEB-INF/classes";
     public static final String WEB_INF_LIB = "/WEB-INF/lib";
-    private static Map<Class<?>,Class<?>> interfaceMap = new ConcurrentHashMap<Class<?>,Class<?>>();
-    private static Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<Class<?>,Object>();
+    private static Map<Class<?>,Class<?>> interfaceMap = new ConcurrentHashMap<>();
+    private static Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<>();
+    private static Map<String,Object> actionMap = new ConcurrentHashMap<>();
     private static Set<TxEventListener> listenerSet = new HashSet<TxEventListener>();
 
-    public ApplicationContext() {
+    private ApplicationContext() {
     }
 
-    public static void loadProperties(InputStream is) {
-        try {
-            props.load(is);
-        } catch (IOException e) {
-            try {
-                is.close();
-            } catch (IOException e1) {
-                LOG.error(DocumentMessages.DOCS_9999, e1);
-            }
-        }
-    }
-
-    public static void init(File file) throws IOException {
+    public static ApplicationContextConfig load(File file) throws IOException {
     	ApplicationContextConfig config = ApplicationContextConfig.load(file);
-    	for (Property p : config.getProperties()) {
-    		props.put(p.getName(), p.getValue());
-    	}
+    	evaluate(config);
+    	return config;
     }
 
-    public static void init(Properties p) {
-        props.putAll(p);
+    public static ApplicationContextConfig load(String xml) throws IOException {
+    	ApplicationContextConfig config = ApplicationContextConfig.load(xml);
+		LOG.info(APPL_004, config.getNamespace());
+    	evaluate(config);
+    	return config;
+    }
+
+	private static void evaluate(ApplicationContextConfig config) {
+    	for (Property prop : config.getProperties()) {
+    		props.put(prop.getName(), prop.getValue());
+    	}
+    	for (Bean bean : config.getBeans()) {
+    		try {
+    			String name = bean.getName();
+    			String clazz = bean.getClassName();
+    			if (clazz == null) {
+    				addBean(Class.forName(name));
+    			} else {
+    				Class<?> iface = Class.forName(name);
+    				Class<?> impl = Class.forName(clazz);
+    				if (iface.isAssignableFrom(impl)) {
+    					addBean(iface, impl);
+    				} else {
+    					// TODO ERROR
+    				}
+    			}
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	for (Action action : config.getActions()) {
+    		if (actionMap.containsKey(action.getPath())) {
+    			LOG.warn("duplication action path={0}", action.getPath());
+    		} else {
+    			try {
+    				LOG.info(APPL_003, action.getPath(), action.getName());
+					Class<?> clazz = Class.forName(action.getName());
+					Object impl = instanceMap.get(clazz);
+					if (impl != null) {
+						actionMap.put(action.getPath(), impl);
+					} else {
+						addBean(clazz);
+						actionMap.put(action.getPath(), getBean(clazz));
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    	}
     }
 
     public static Properties getProperties() {
@@ -110,6 +142,7 @@ public class ApplicationContext {
         if (interfaceMap.containsKey(impl)) {
             LOG.warn(DOCS_9006, impl.getName());
         } else {
+        	LOG.info(APPL_001, impl.getName());
             interfaceMap.put(impl, impl);
             instanceMap.remove(impl);
         }
@@ -121,10 +154,11 @@ public class ApplicationContext {
      * @param itfc beanのインタフェース
      * @param impl beanの実装クラス
      */
-    public static synchronized <T> void addBean(Class<T> itfc, Class<? extends T> impl) {
+    public static synchronized <T> void addBean(Class<T> itfc, Class<?> impl) {
         if (interfaceMap.containsKey(itfc)) {
             LOG.warn(DOCS_9006, itfc.getName());
         } else {
+        	LOG.info(APPL_002, itfc.getName(), impl.getName());
             interfaceMap.put(itfc, impl);
             instanceMap.remove(itfc);
         }
@@ -201,11 +235,15 @@ public class ApplicationContext {
                 	return instance;
                 }
             } else {
-                throw new RuntimeException("No implementation defined for '" + itfc + "'.");
+                throw new BeanNotFoundException("No implementation defined for '" + itfc + "'.");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void getAction(String path) {
+    	
     }
 
     /*

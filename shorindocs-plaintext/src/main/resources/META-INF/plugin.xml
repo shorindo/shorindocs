@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<config namespace="plaintext">
+    <bean name="com.shorindo.docs.plaintext.PlainTextController"/>
+</config>
+

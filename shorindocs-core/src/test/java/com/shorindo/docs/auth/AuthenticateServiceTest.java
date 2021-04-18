@@ -43,7 +43,7 @@ public class AuthenticateServiceTest {
                 .getClassLoader()
                 .getResourceAsStream("site.properties");
         try {
-            ApplicationContext.loadProperties(is);
+//            ApplicationContext.load(is);
             ApplicationContext.addBean(RepositoryService.class, RepositoryServiceImpl.class);
             ApplicationContext.addBean(AuthenticateService.class, AuthenticateServiceImpl.class);
             authenticateService = ApplicationContext.getBean(AuthenticateService.class);
