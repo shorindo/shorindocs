@@ -17,6 +17,12 @@
             <primaryKey>2</primaryKey>
         </column>
         <column>
+            <name>NAMESPACE</name>
+            <type>varchar</type>
+            <size>32</size>
+            <notNull>false</notNull>
+        </column
+        <column>
             <name>CONTENT_TYPE</name>
             <type>varchar</type>
             <size>256</size>

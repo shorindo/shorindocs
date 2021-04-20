@@ -16,28 +16,17 @@
 package com.shorindo.docs.web;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.sql.DataSource;
 
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.action.ActionPlugin;
-//import com.shorindo.docs.admin.AdminPlugin;
-import com.shorindo.docs.auth.AuthenticatePlugin;
-//import com.shorindo.docs.datagrid.DataGridPlugin;
-import com.shorindo.docs.document.DocumentMessages;
-import com.shorindo.docs.document.DocumentPlugin;
-//import com.shorindo.docs.markdown.MarkdownPlugin;
-//import com.shorindo.docs.outlogger.OutloggerPlugin;
-//import com.shorindo.docs.plaintext.PlainTextPlugin;
 import com.shorindo.docs.plugin.PluginService;
-import com.shorindo.docs.plugin.PluginServiceImpl;
-import com.shorindo.docs.repository.RepositoryDataSource;
-import com.shorindo.docs.repository.RepositoryPlugin;
-//import com.shorindo.docs.specout.SpecoutPlugin;
 
 /**
  * 
@@ -49,14 +38,29 @@ public class ActionListener implements ServletContextListener {
      * 
      */
     public void contextInitialized(ServletContextEvent event) {
-        try {
-        	File base = new File(event.getServletContext().getRealPath("/WEB-INF"));
-            File xml = new File(base, "application-config.xml");
-            ApplicationContext.load(xml);
-        } catch (IOException e) {
-        	// FIXME 初期化に失敗したらうまくログが出ない
-            LOG.error(DocumentMessages.DOCS_9000, e);
-        }
+    	String configFile = event.getServletContext().getInitParameter("config");
+    	LOG.debug("config = {0}", configFile);
+    	if (configFile.startsWith("classpath:")) {
+    		try {
+        		String path = configFile.substring("classpath:".length());
+        		InputStream is = getClass().getClassLoader().getResourceAsStream(path);
+        		ApplicationContext.load(is);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	} else {
+    		File file = new File(event.getServletContext().getRealPath(configFile));
+    		try (InputStream is = new FileInputStream(file)) {
+    			ApplicationContext.load(is);
+    		} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
 
         //XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
 

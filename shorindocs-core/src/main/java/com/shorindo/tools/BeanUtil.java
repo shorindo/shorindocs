@@ -318,7 +318,7 @@ public class BeanUtil {
                             method.getParameterCount() == 1 &&
                             !method.getParameters()[0].getType().isPrimitive()) {
                         try {
-                            method.invoke(bean, null);
+                            method.invoke(bean, value);
                         } catch (IllegalAccessException e) {
                             throw new BeanNotFoundException(DOCS_5005.getMessage(LANG, name), e);
                         } catch (IllegalArgumentException e) {

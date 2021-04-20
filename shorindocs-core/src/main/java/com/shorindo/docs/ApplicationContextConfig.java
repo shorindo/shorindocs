@@ -1,7 +1,7 @@
 package com.shorindo.docs;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,16 +103,25 @@ public class ApplicationContextConfig {
 	public static class Include {
 		@JacksonXmlProperty(localName = "file", isAttribute = true)
 		private String file;
+
+		public String getFile() {
+			return file;
+		}
 	}
 
-	public static ApplicationContextConfig load(File file) throws IOException {
+	public static ApplicationContextConfig load(InputStream is) throws IOException {
 		return new XmlMapper()
-				.readValue(file, ApplicationContextConfig.class);
+				.readValue(is, ApplicationContextConfig.class);
 	}
 
-	public static ApplicationContextConfig load(String config) throws IOException {
-		return new XmlMapper()
-				.readValue(config, ApplicationContextConfig.class);
-	}
+//	public static ApplicationContextConfig load(File file) throws IOException {
+//		return new XmlMapper()
+//				.readValue(file, ApplicationContextConfig.class);
+//	}
+//
+//	public static ApplicationContextConfig load(String config) throws IOException {
+//		return new XmlMapper()
+//				.readValue(config, ApplicationContextConfig.class);
+//	}
 
 }

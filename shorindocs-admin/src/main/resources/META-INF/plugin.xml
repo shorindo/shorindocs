@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <config namespace="admin">
-  <!-- bean interface="" class=""/-->
+  <action path="/admin/acl" name="com.shorindo.docs.admin.AclController" />
+  <action path="/admin/group" name="com.shorindo.docs.admin.GroupController" />
+  <action path="/admin/user" name="com.shorindo.docs.admin.UserController" />
 </config>
 

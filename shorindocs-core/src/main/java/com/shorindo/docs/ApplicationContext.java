@@ -21,6 +21,7 @@ import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -35,11 +36,14 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import com.shorindo.docs.ApplicationContextConfig.Action;
 import com.shorindo.docs.ApplicationContextConfig.Bean;
+import com.shorindo.docs.ApplicationContextConfig.Include;
 import com.shorindo.docs.ApplicationContextConfig.Property;
 import com.shorindo.docs.TxEvent.TxEventType;
+import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.repository.Transactional;
 
@@ -50,30 +54,40 @@ public class ApplicationContext {
     private static final Locale DEFAULT_LANG = Locale.JAPANESE;
     private static final ActionLogger LOG = ActionLogger.getLogger(ApplicationContext.class);
     private static final Properties props = new Properties();
-    public static final String WEB_INF_CLASSES = "/WEB-INF/classes";
-    public static final String WEB_INF_LIB = "/WEB-INF/lib";
     private static Map<Class<?>,Class<?>> interfaceMap = new ConcurrentHashMap<>();
     private static Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<>();
-    private static Map<String,Object> actionMap = new ConcurrentHashMap<>();
+    private static Map<Pattern,Object> actionMap = new ConcurrentHashMap<>();
     private static Set<TxEventListener> listenerSet = new HashSet<TxEventListener>();
 
     private ApplicationContext() {
     }
 
-    public static ApplicationContextConfig load(File file) throws IOException {
-    	ApplicationContextConfig config = ApplicationContextConfig.load(file);
+    public static void getRootContext() {
+    }
+
+    public static void getContext(String namespace) {
+    }
+
+    /**
+     * 
+     * @param is
+     * @return
+     * @throws IOException
+     */
+    public static ApplicationContextConfig load(InputStream is) throws IOException {
+    	ApplicationContextConfig config = ApplicationContextConfig.load(is);
     	evaluate(config);
     	return config;
     }
 
-    public static ApplicationContextConfig load(String xml) throws IOException {
-    	ApplicationContextConfig config = ApplicationContextConfig.load(xml);
-		LOG.info(APPL_004, config.getNamespace());
-    	evaluate(config);
-    	return config;
-    }
-
+    /**
+     * 
+     * @param config
+     */
 	private static void evaluate(ApplicationContextConfig config) {
+		for (Include include : config.getIncludes()) {
+			LOG.debug("include({0})", include.getFile());
+		}
     	for (Property prop : config.getProperties()) {
     		props.put(prop.getName(), prop.getValue());
     	}
@@ -89,7 +103,7 @@ public class ApplicationContext {
     				if (iface.isAssignableFrom(impl)) {
     					addBean(iface, impl);
     				} else {
-    					// TODO ERROR
+    					throw new BeanNotFoundException(name + " -> " + clazz);
     				}
     			}
     		} catch (Exception e) {
@@ -103,33 +117,51 @@ public class ApplicationContext {
     			try {
     				LOG.info(APPL_003, action.getPath(), action.getName());
 					Class<?> clazz = Class.forName(action.getName());
-					Object impl = instanceMap.get(clazz);
+					if (!ActionController.class.isAssignableFrom(clazz)) {
+						throw new BeanNotFoundException(action.getName() + " is not ActionController");
+					}
+    				Object impl = instanceMap.get(clazz);
 					if (impl != null) {
-						actionMap.put(action.getPath(), impl);
+						actionMap.put(Pattern.compile(action.getPath()), impl);
 					} else {
-						addBean(clazz);
-						actionMap.put(action.getPath(), getBean(clazz));
+						instanceMap.put(clazz, clazz);
+						actionMap.put(Pattern.compile(action.getPath()), getBean(clazz));
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new BeanNotFoundException(action.getName() + " -> " + action.getName());
 				}
     		}
     	}
     }
 
+	/**
+	 * 
+	 * @return
+	 */
     public static Properties getProperties() {
         return props;
     }
 
+    /**
+     * 
+     * @param key
+     * @return
+     */
     public static String getProperty(String key) {
         return props.getProperty(key);
     }
 
+    /**
+     * 
+     * @return
+     */
     public static Locale getLang() {
         return DEFAULT_LANG;
     }
-    
+
+    /**
+     * 
+     */
     public static void getClassPath() {
         LOG.info("context path=" + Thread.currentThread().getContextClassLoader().getResource("").getPath());
         String[] paths = System.getProperty("java.class.path").split(File.pathSeparator);
@@ -137,7 +169,11 @@ public class ApplicationContext {
             LOG.info("path=" + path);
         }
     }
-    
+
+    /**
+     * 
+     * @param impl
+     */
     public static synchronized void addBean(Class<?> impl) {
         if (interfaceMap.containsKey(impl)) {
             LOG.warn(DOCS_9006, impl.getName());
@@ -242,18 +278,28 @@ public class ApplicationContext {
         }
     }
 
-    public void getAction(String path) {
-    	
+    /**
+     * 
+     * @param path
+     * @return
+     */
+    public static Object getAction(String path) {
+    	return actionMap.entrySet()
+    		.stream()
+    		.filter(e -> { return e.getKey().matcher(path).matches(); })
+    		.map(e -> { return e.getValue(); })
+    		.findFirst()
+    		.orElse(null);
     }
 
-    /*
+    /**
      * トランザクションリスナーを登録する
      */
     private static void addListener(TxEventListener listener) {
         listenerSet.add(listener);
     }
 
-    /*
+    /**
      * methodと同一のシグネチャを持つobjectのメソッドが@Transactionalアノテーションを
      * 持つかどうか判定する。
      * 
@@ -278,7 +324,7 @@ public class ApplicationContext {
         return false;
     }
 
-    /*
+    /**
      * トランザクションリスナーにイベントを送信する
      */
     private static void sendEvent(boolean transactional, TxEventType type,

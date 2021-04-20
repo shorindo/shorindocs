@@ -9,7 +9,7 @@ public enum ApplicationMessages implements ActionMessages {
 	APPL_002,
 	@Message(lang = "ja", content="action[{0}] -> {1} を登録します")
 	APPL_003,
-	@Message(lang = "ja", content="プラグイン[{0}]が見つかりました")
+	@Message(lang = "ja", content="プラグイン[{0}]を読み込みました")
 	APPL_004
 	;
 }

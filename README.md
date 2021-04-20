@@ -1,63 +1,27 @@
+# 概要
 # 構成
+# 設定
+# コンテキスト
+## ApplicationContext
+## ActionContext
 # コントローラ
+## ActionController
 # ビュー
-## XUMLテンプレートエンジン
-## mustacheテンプレートエンジン
+## XUML
 # データベース
 # メッセージ・ログ・例外
 # プラグイン
-# XUML
-## 制御
 
-* xuml      - outer, title 
-* include   - source
-* script    - source
-* style     - source
-* inner
-* progress
-* menubar   -
-  * menu    -
-    * menuitem  -
-* popupmenu - 
-  * menuitem
+# TODO
 
-## レイアウト
+1. パスマッピング
+1. include
+1. ApplicationContextのnamespace対応
+1. ActionContextをThreadLocalにする
+1. Viewからpull
+1. バージョン管理・一時保存
+1. namespace
+1. 認証
+1. アクセス制御
+1. Repository修正
 
-* window    - title
-* dialog    - title
-* wizard    - title
-* message   - text
-* box       -
-* hbox      -
-* vbox      -
-* grid      - datasource
-* groupbox  -
-  * caption -
-* spacer
-* tabbox
-* listbox
-* treebox
-
-## フォーマット
-
-* link      - href
-* list      - datasource
-  * listitem
-* desc      -
-* image     - source
-* plaintext -
-
-## フォーム
-
-* form
-* label
-* text
-* textbox
-* button
-* select
-* radio
-* check
-* pulldown
-* combobox
-* hidden
-* calendar

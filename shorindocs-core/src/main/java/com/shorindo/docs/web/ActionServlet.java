@@ -32,7 +32,6 @@ import net.arnx.jsonic.JSON;
 import net.arnx.jsonic.JSONException;
 
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.BeanNotFoundException;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
@@ -49,32 +48,15 @@ import com.shorindo.docs.view.View;
 public class ActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionServlet.class);
-    private static RepositoryService repositoryService;
-    static {
-        try {
-			repositoryService = ApplicationContext.getBean(RepositoryService.class);
-		} catch (BeanNotFoundException e) {
-			LOG.error(e.getMessage(), e);
-		}
-    }
+    private static RepositoryService repositoryService = ApplicationContext.getBean(RepositoryService.class);
 
     /**
      * 
      */
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-    	LOG.debug("service({0})", req.getServletPath());
-        super.service(req, res);
-    }
-
-    /**
-     * 
-     */
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        LOG.info(DOCS_1105, "GET " + req.getServletPath());
+    		throws ServletException, IOException {
+        LOG.info(DOCS_1105, req.getMethod() + " " + req.getServletPath());
         long st = System.currentTimeMillis();
         String path = req.getServletPath();
         String documentId = path.substring(1);
@@ -118,17 +100,16 @@ public class ActionServlet extends HttpServlet {
             
             controller = DocumentServiceFactory.getController(entity);
             if (controller != null) {
-//            	context.setAttribute("document", entity);
                 output(context, res, controller.action(context, entity));
             } else {
                 LOG.error(DOCS_5003, path);
                 output(context, res, new ErrorView(404));
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOG.error(DOCS_9999, e);
             output(context, res, new ErrorView(500));
         } finally {
-            LOG.info(DOCS_1106, "GET " + req.getServletPath(),
+            LOG.info(DOCS_1106, req.getMethod() + " " + req.getServletPath(),
                 (System.currentTimeMillis() - st));
         }
     }
@@ -146,14 +127,6 @@ public class ActionServlet extends HttpServlet {
         		.path(req.getServletPath())
         		.contentType(req.getHeader("Conetnt-Type"))
         		.build();
-//        context.setRequestPath(req.getServletPath());
-//        context.setContextPath(req.getContextPath());
-//        context.setId(req.getServletPath().substring(1));
-//        context.setParameters(req.getParameterMap());
-//        for (Enumeration<String> e = req.getHeaderNames(); e.hasMoreElements();) {
-//            String name = e.nextElement();
-//            context.setHeader(name, req.getHeader(name));
-//        }
 
         try {
             DocumentEntity key = new DocumentEntity();
@@ -168,7 +141,6 @@ public class ActionServlet extends HttpServlet {
 
             ActionController controller = DocumentServiceFactory.getController(entity);
             if (controller != null) {
-//                context.setAttribute("document", entity);
                 output(context, res, controller.action(context, entity));
             } else {
                 LOG.error(DOCS_5003, path);
@@ -192,8 +164,6 @@ public class ActionServlet extends HttpServlet {
         ActionController controller = DocumentServiceFactory.getController(context.getPath());
         try {
             JsonRpcRequest req = JSON.decode(is, JsonRpcRequest.class);
-            //context.setAction(req.getMethod());
-            //context.setParameters(req.getParams());
             Object result = controller.action(context);
             JsonRpcResponse res = new JsonRpcResponse();
             res.setId(req.getId());

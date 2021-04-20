@@ -15,13 +15,10 @@
  */
 package com.shorindo.docs.plugin;
 
-import static com.shorindo.docs.document.DocumentMessages.*;
+import static com.shorindo.docs.ApplicationMessages.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -60,14 +57,8 @@ public class PluginServiceImpl implements PluginService {
         			JarEntry entry = e.nextElement();
         			String name = entry.getName();
         			if (PLUGIN_FILE.equals(name)) {
-        				Reader reader = new InputStreamReader(jarFile.getInputStream(entry), "UTF-8");
-        				StringBuilder sb = new StringBuilder();
-        				char c[] = new char[2048];
-        				int len = 0;
-        				while ((len = reader.read(c)) > 0) {
-        					sb.append(c, 0, len);
-        				}
-        				ApplicationContextConfig config = ApplicationContext.load(sb.toString());
+        				ApplicationContextConfig config = ApplicationContext.load(jarFile.getInputStream(entry));
+        				LOG.info(APPL_004, config.getNamespace());
         				break;
         			}
         		}

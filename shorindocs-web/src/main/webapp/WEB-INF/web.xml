@@ -7,6 +7,11 @@
   <display-name>shorindocs</display-name>
   <description>shorindocs - Document Management Platform</description>
 
+  <context-param>
+    <param-name>config</param-name>
+    <param-value>classpath:application-config.xml</param-value>
+  </context-param>
+
   <filter>
     <filter-name>authenticateFilter</filter-name>
     <filter-class>com.shorindo.docs.web.AuthenticateFilter</filter-class>

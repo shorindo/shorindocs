@@ -132,7 +132,7 @@ public class DocumentServiceImpl implements DocumentService {
                   "FROM   docs_document " +
                   "WHERE  version=0 " +
                   "ORDER  BY update_date DESC " +
-                  "LIMIT  10",
+                  "LIMIT  20",
                   DocumentEntity.class)
               .stream()
               .map(mapper -> {

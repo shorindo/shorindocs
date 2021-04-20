@@ -30,11 +30,15 @@ import com.shorindo.docs.view.View;
  */
 public class DataGridController extends DocumentController {
     private static ActionLogger LOG = ActionLogger.getLogger(DataGridController.class);
-    private DocumentService service = ApplicationContext.getBean(DocumentService.class);
+    private DocumentService service;
+
+    public DataGridController(DocumentService service) {
+    	this.service = service;
+    }
 
     @Override
     public View action(ActionContext context, Object...args) {
-        return view(context);
+        return view(context, args);
     }
 
     private View view(ActionContext context, Object...args) {

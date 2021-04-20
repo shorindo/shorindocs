@@ -38,14 +38,14 @@ public abstract class ActionController {
         }
     }
 
-    protected String createClassPath(String path) {
-        StringBuffer result = new StringBuffer();
-        result.append(getClass().getPackage().getName().replaceAll("\\.", "/"));
-        if (!path.startsWith("/")) {
-            result.append("/");
-        }
-        result.append(path);
-        return result.toString();
-    }
+//    protected String createClassPath(String path) {
+//        StringBuffer result = new StringBuffer();
+//        result.append(getClass().getPackage().getName().replaceAll("\\.", "/"));
+//        if (!path.startsWith("/")) {
+//            result.append("/");
+//        }
+//        result.append(path);
+//        return result.toString();
+//    }
 
 }
