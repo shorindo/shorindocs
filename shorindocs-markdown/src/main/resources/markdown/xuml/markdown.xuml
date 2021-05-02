@@ -1,0 +1,75 @@
+<xuml:xuml namespace="markdown" use="debug">
+
+  <xuml:label key="license">
+    <xuml:text lang="ja">Powered by 松林堂</xuml:text>
+    <xuml:text lang="en">Powered by shorindo.com</xuml:text>
+  </xuml:label>
+  <xuml:label key="recents">
+    <xuml:text lang="ja">最近の更新</xuml:text>
+    <xuml:text lang="en">Recent updates</xuml:text>
+  </xuml:label>
+  <xuml:label key="create">
+    <xuml:text lang="ja">新規</xuml:text>
+    <xuml:text lang="en">Create</xuml:text>
+  </xuml:label>
+  <xuml:label key="edit">
+    <xuml:text lang="ja">編集</xuml:text>
+    <xuml:text lang="en">Edit</xuml:text>
+  </xuml:label>
+  <xuml:label key="search">
+    <xuml:text lang="ja">検索</xuml:text>
+    <xuml:text lang="en">Search</xuml:text>
+  </xuml:label>
+
+  <xuml:template name="layout">
+    <!doctype html>
+    <html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>${document.title}</title>
+        <link rel="stylesheet" type="text/css" href="@{/css/xuml.css}">
+        <script type="text/javascript" src="@{/js/xuml.js}"></script>
+      </head>
+      <body class="xuml-width-fill xuml-height-fill">
+        <div class="xuml-vbox">${document.title}</div>
+        <div class="xuml-menubar">
+          <div class="xuml-menubar-left">
+            <button>#{create}</button>
+            <button onclick="location='?action=edit'">#{edit}</button>
+          </div>
+          &nbsp;
+          <div class="xuml-menubar-right">
+            <input type="text"/>
+            <button>#{search}</button>
+          </div>
+        </div>
+        <div class="xuml-hbox">
+          <div id="left" class="xuml-vbox" style="width:25%;"><xuml:apply name="left"/></div>
+          <div id="center" class="xuml-vbox" flex="1" style="overflow:auto"><xuml:apply name="center"/></div>
+          <div id="right" class="xuml-vbox" style="width:25%;"><xuml:apply name="right"/></div>
+        </div>
+        <div id="footer" class="xuml-vbox">#{license}</div>
+      </body>
+    </html>
+  </xuml:template>
+
+  <xuml:template name="left">
+    #{recents}
+    <ul>
+    <xuml:each item="recent" value="${recents}">
+      <li><a href="${recent.documentId}">${recent.title}</a></li>
+    </xuml:each>
+    </ul>
+  </xuml:template>
+
+  <xuml:template name="center">
+    *{html}
+  </xuml:template>
+
+  <xuml:template name="right">
+    右側ペイン
+  </xuml:template>
+
+  <xuml:apply name="layout"/>
+
+</xuml:xuml>

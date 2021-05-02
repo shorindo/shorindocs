@@ -18,6 +18,7 @@ package com.shorindo.docs.specout;
 import static com.shorindo.docs.specout.SpecoutMessages.*;
 
 import java.io.StringReader;
+import java.util.Locale;
 
 import javax.xml.bind.JAXB;
 
@@ -26,17 +27,19 @@ import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentType;
+import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.JsonView;
 import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlView2;
 
 /**
  * 
  */
 @ContentType("application/x-specout")
-public class SpecoutController extends ActionController {
+public class SpecoutController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(SpecoutController.class);
 
     public SpecoutController() {
@@ -51,7 +54,13 @@ public class SpecoutController extends ActionController {
         LOG.debug(SPEC_9003);
         try {
         	DocumentEntity model = (DocumentEntity)args[0];
-            return new SpecoutView(model);
+        	SpecoutEntity specout = JAXB.unmarshal(new StringReader(model.getContent()), SpecoutEntity.class);
+            context.addModel("lang", Locale.JAPANESE);
+            context.addModel("document", model);
+        	context.addModel("specout", specout);
+            context.addModel("recents", recents(context));
+        	return XumlView2.create("specout/xuml/specout.xuml");
+            //return new SpecoutView(model);
         } catch (Exception e) {
             LOG.error(SPEC_9001, e);
             return new ErrorView(500);

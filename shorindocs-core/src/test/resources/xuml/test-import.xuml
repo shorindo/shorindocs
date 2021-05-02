@@ -1,0 +1,3 @@
+<xuml:xuml namespace="import">
+    <xuml:import file="xuml/layout.xuml"/>
+</xuml:xuml>

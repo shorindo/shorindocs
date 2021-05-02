@@ -1,3 +1,3 @@
-<xuml:xuml>
+<xuml:xuml namespace="apply">
     <xuml:apply name="sample"/>
 </xuml:xuml>

@@ -5,7 +5,7 @@
     <artifactId>docs</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>shorindocs-spreadsheet</artifactId>
+  <artifactId>shorindocs-snapboard</artifactId>
   <dependencies>
   	<dependency>
   		<groupId>com.shorindo</groupId>

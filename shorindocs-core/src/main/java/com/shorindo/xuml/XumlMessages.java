@@ -33,8 +33,14 @@ public enum XumlMessages implements ActionMessages {
     XUML_1002,
     @Message(lang="ja", content="XUMLテンプレート[{0}]のクローズに失敗しました。")
     XUML_3001,
-    @Message(lang="ja", content="属性[{0}]は不明です。")
+    @Message(lang="ja", content="属性[{0}]は必須です。")
     XUML_3002,
+    @Message(lang="ja", content="要素[{0}]の属性[{1}]は無効です。")
+    XUML_3003,
+    @Message(lang="ja", content="要素[{0}]はここに指定できません。")
+    XUML_3004,
+    @Message(lang="ja", content="テンプレート[{0}]が見つかりません。")
+    XUML_3005,
     @Message(lang="ja", content="コンポーネント[{0}]の指定ができませんでした。")
     XUML_5001,
     @Message(lang="ja", content="XUMLエンジンの初期化に失敗しました。")
@@ -47,6 +53,10 @@ public enum XumlMessages implements ActionMessages {
     XUML_5125,
     @Message(lang="ja", content="データ出力に失敗しました。")
     XUML_5200,
+    @Message(lang="ja", content="構文エラー：{0}")
+    XUML_5300,
+    @Message(lang="ja", content="{0}を読み込めませんでした。")
+    XUML_5400,
     @Message(lang="ja", content="CSSセレクタの構文が不正です")
     XUML_6000,
     @Message(lang="ja", content="予期せぬエラーが発生しました：{0}")

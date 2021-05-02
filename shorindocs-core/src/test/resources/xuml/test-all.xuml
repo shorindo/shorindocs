@@ -1,35 +1,54 @@
-<xuml:xuml>
-    <xuml:template name="full">
-        <!doctype html>
-        <html>
-            <head>
-                <title>${title}</title>
-                <link ref="stylesheet" type="text/css" href="/docs/css/xuml.css"></link>
-                <script type="text/javascript" src="/docs/js/xuml.js"></script>
-            </head>
-            <body class="xuml-width-fill xuml-height-fill">
-                <div class="xuml-vbox"></div>
-                <div class="xuml-menubar">
-                    <div class="xuml-menubar-left"></div>
-                    <div class="xuml-menubar-right">
-                        <input type="text"/>
-                        <button>検索</button>
-                    </div>
-                </div>
-                <div class="xuml-hbox">
-                    <div id="left" class="xuml-vbox"><xuml:apply name="left"/></div>
-                    <div id="center" class="xuml-vbox" flex="1" style="overflow:auto"><xuml:apply name="center"/></div>
-                    <div id="right" class="xuml-vbox"><xuml:apply name="right"/></div>
-                </div>
-                <div id="footer" class="xuml-vbox"></div>
-            </body>
-        </html>
-    </xuml:template>
+<xuml:xuml namespace="all" use="strict">
+  <xuml:label key="license">
+    <xuml:text lang="ja">Powered by 松林堂</xuml:text>
+    <xuml:text lang="en">Powered by shorindo.com</xuml:text>
+  </xuml:label>
 
-    <xuml:template name="center">
-        LEFT
-    </xuml:template>
+  <xuml:import file="xuml/layout.xuml"/>
 
-    <xuml:apply name="full"/>
+  <xuml:template name="layout">
+    <!doctype html>
+    <html>
+      <head>
+        <title>${title}</title>
+        <link ref="stylesheet" type="text/css" href="@{/css/xuml.css}"></link>
+        <script type="text/javascript" src="@{/js/xuml.js}"></script>
+      </head>
+      <body class="xuml-width-fill xuml-height-fill">
+        <div class="xuml-vbox"></div>
+        <div class="xuml-menubar">
+          <div class="xuml-menubar-left"></div>
+          <div class="xuml-menubar-right">
+            <input type="text"/>
+            <button>検索</button>
+          </div>
+        </div>
+        <div class="xuml-hbox">
+          <div id="left" class="xuml-vbox"><xuml:apply name="left"/></div>
+          <div id="center" class="xuml-vbox" flex="1" style="overflow:auto"><xuml:apply name="center"/></div>
+          <div id="right" class="xuml-vbox"><xuml:apply name="right"/></div>
+        </div>
+        <div id="footer" class="xuml-vbox">#{license}</div>
+      </body>
+    </html>
+  </xuml:template>
+
+  <xuml:template name="left">
+    <ol>
+    <xuml:each item="item" value="${children}">
+      <li>${item.name}</li>
+    </xuml:each>
+    </ol>
+  </xuml:template>
+
+  <xuml:template name="center">
+    <xuml:switch value="${age}">
+      <xuml:case le="20">未成年</xuml:case>
+      <xuml:case le="40">不惑</xuml:case>
+      <xuml:default>老人</xuml:default>
+    </xuml:switch>
+  </xuml:template>
+
+  <xuml:apply name="layout"/>
 
 </xuml:xuml>

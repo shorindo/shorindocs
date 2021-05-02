@@ -15,6 +15,13 @@
  */
 package com.shorindo.docs.markdown;
 
+import static com.shorindo.docs.markdown.MarkdownMessages.MKDN_9000;
+import static com.shorindo.xuml.DOMBuilder.cdata;
+import static com.shorindo.xuml.DOMBuilder.text;
+import static com.shorindo.xuml.HTMLBuilder.button;
+
+import java.util.Locale;
+
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
@@ -26,13 +33,16 @@ import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
+import com.shorindo.tools.MarkdownParser.MarkdownException;
+import com.shorindo.xuml.XumlView2;
 
 /**
  * 
  */
 public class MarkdownController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(MarkdownController.class);
-    private DocumentService service = ApplicationContext.getBean(DocumentService.class);
+    private DocumentService documentService = ApplicationContext.getBean(DocumentService.class);
+    private MarkdownService markdownService = ApplicationContext.getBean(MarkdownService.class);
 
     public MarkdownController() {
     }
@@ -49,10 +59,14 @@ public class MarkdownController extends DocumentController {
                 return new MarkdownEdit(model);
             case "save":
                 ((DocumentEntity)model).setContent(context.getParameter("content"));
-                service.save(model);
+                documentService.save(model);
                 return new RedirectView(model.getDocumentId());
             default:
-                return new MarkdownView(model);
+                context.addModel("lang", Locale.JAPANESE);
+                context.addModel("document", model);
+                context.addModel("html", markdownService.parse(model.getContent()));
+                context.addModel("recents", recents(context));
+                return XumlView2.create("markdown/xuml/markdown.xuml");
             }
         } catch (Exception e) {
             LOG.error(DocumentMessages.DOCS_9001, e);

@@ -1,0 +1,85 @@
+/*
+ * Copyright 2018 Shorindo, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.shorindo.docs.action;
+
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
+import org.springframework.util.ObjectUtils;
+
+public class ActionMessageSource implements MessageSource {
+    private static final ActionLogger LOG = ActionLogger.getLogger(ActionMessageSource.class);
+    private Class<? extends Enum<? extends ActionMessages>> actionMessages;
+    private Map<String,Map<String,MessageFormat>> bundles;
+
+    public ActionMessageSource(Class<? extends Enum<? extends ActionMessages>> actionMessages) {
+        this.actionMessages = actionMessages;
+        this.bundles = new HashMap<>();
+    }
+
+    private Map<String,MessageFormat> initLocale(Locale locale) {
+        Map<String,MessageFormat> bundle = bundles.get(locale.getLanguage());
+        if (bundle == null) {
+            bundle = new HashMap<>();
+            bundles.put(locale.getLanguage(), bundle);
+
+            for (Enum<? extends ActionMessages> e : actionMessages.getEnumConstants()) {
+                String key = e.name();
+                MessageFormat format = ((ActionMessages)e).getFormat(locale);
+                bundle.put(key,  format);
+            }
+        }
+        return bundle;
+    }
+
+    public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
+        Map<String,MessageFormat> bundle = initLocale(locale);
+        MessageFormat format = bundle.get(code);
+        if (format != null) {
+            return format.format(args);
+        } else {
+            return defaultMessage;
+        }
+    }
+
+    public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
+        return getMessage(code, args, null, locale);
+    }
+
+    public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
+        String[] codes = resolvable.getCodes();
+        if (codes != null) {
+            for (String code : codes) {
+                String message = getMessage(code, resolvable.getArguments(), locale);
+                if (message != null) {
+                    return message;
+                }
+            }
+        }
+        String defaultMessage = resolvable.getDefaultMessage();
+        if (defaultMessage != null) {
+            return defaultMessage;
+        }
+        throw new NoSuchMessageException(!ObjectUtils.isEmpty(codes) ? codes[codes.length - 1] : "", locale);
+
+    }
+
+}

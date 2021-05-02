@@ -22,7 +22,8 @@ import com.shorindo.docs.action.ActionLogger;
  */
 @ComponentReady("dialog")
 public class Dialog extends Container {
-    private static final ActionLogger LOG = ActionLogger.getLogger(Dialog.class);
+    @SuppressWarnings("unused")
+	private static final ActionLogger LOG = ActionLogger.getLogger(Dialog.class);
     private String title;
 
     public Dialog(XumlView view) {

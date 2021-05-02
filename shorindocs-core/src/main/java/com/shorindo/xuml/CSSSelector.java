@@ -17,11 +17,8 @@ package com.shorindo.xuml;
 
 import static com.shorindo.xuml.CSSSelector.CSSTokens.*;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 import com.shorindo.docs.action.ActionMessages;

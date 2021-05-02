@@ -1,0 +1,17 @@
+<xuml:xuml namespace="each">
+    <ol>
+    <xuml:each item="item" value="${list}">
+        <li>${item}</li>
+    </xuml:each>
+    </ol>
+
+    <table>
+    <xuml:each item="row" value="${rows}">
+        <tr>
+            <xuml:each item="col" value="${row.cols}">
+                <td><xuml:apply name="column"/> ${col.name}</td>
+            </xuml:each>
+        </tr>
+    </xuml:each>
+    </table>
+</xuml:xuml>

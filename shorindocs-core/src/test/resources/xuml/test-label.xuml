@@ -1,0 +1,5 @@
+<xuml:xuml namespace="label">
+    <xuml:label key="hoge">
+        <xuml:text lang="ja">ほげ</xuml:text>
+    </xuml:label>
+</xuml:xuml>

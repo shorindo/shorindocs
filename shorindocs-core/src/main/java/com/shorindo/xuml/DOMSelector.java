@@ -17,11 +17,8 @@ package com.shorindo.xuml;
 
 import static com.shorindo.xuml.DOMSelector.CSSTokens.*;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -576,7 +573,7 @@ public class DOMSelector {
         private String attrName;
         private String attrValue;
         private String comparator;
-        private boolean ignoreCase = false;
+		private boolean ignoreCase = false;
         private boolean useExpr = false;
 
         public AttrSelector(PEGNode node) {

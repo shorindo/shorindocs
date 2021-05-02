@@ -1,4 +1,4 @@
-<xuml:xuml>
+<xuml:xuml namespace="template">
     <xuml:template name="sample">
         <div class="body">
           <div class="left">LEFT</div>

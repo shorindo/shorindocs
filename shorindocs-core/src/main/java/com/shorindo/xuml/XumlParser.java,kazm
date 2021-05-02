@@ -1,0 +1,444 @@
+package com.shorindo.xuml;
+
+import static com.shorindo.xuml.XumlParser2.XumlRules.*;
+
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.tools.PEGCombinator;
+import com.shorindo.tools.PEGCombinator.PEGContext;
+import com.shorindo.tools.PEGCombinator.PEGException;
+import com.shorindo.tools.PEGCombinator.PEGNode;
+import com.shorindo.tools.PEGCombinator.Rule;
+import com.shorindo.tools.PEGCombinator.RuleTypes;
+
+public class XumlParser2 {
+    private static final ActionLogger LOG = ActionLogger.getLogger(XumlParser2.class);
+    private static final PEGCombinator PEG = new PEGCombinator();
+    private static final String PREFIX = "xuml:";
+    private static final String TAG_XUML = PREFIX + "xuml";
+    private static final String TAG_IMPORT = PREFIX + "import";
+    private static final String TAG_TEMPLATE = PREFIX + "template";
+    private static final String TAG_APPLY = PREFIX + "apply";
+    private static final String TAG_SWITCH = PREFIX + "switch";
+    private static final String TAG_CASE = PREFIX + "case";
+    private static final String TAG_DEFAULT = PREFIX + "default";
+    private static final String TAG_EACH = PREFIX + "each";
+
+    static {
+        PEG.define(VERSION,
+            PEG.rule$RegExp("<\\?xml\\S+version=(\"1.0\"|'1.0')\\S*\\?>\\s*"));
+
+        PEG.define(XUML_XUML,
+            PEG.rule$Optional(PEG.rule(VERSION)),
+            createOpenTag(TAG_XUML),
+            PEG.rule$ZeroOrMore(
+                PEG.rule$Choice(
+                    PEG.rule(XUML_TEMPLATE),
+                    PEG.rule(XUML_APPLY),
+                    PEG.rule(XUML_IMPORT),
+                    PEG.rule(XUML_SWITCH),
+                    PEG.rule(XUML_EACH),
+                    PEG.rule(WS1),
+                    PEG.rule(XUML_VAR),
+                    PEG.rule(XUML_LITERAL))),
+            createCloseTag(TAG_XUML));
+
+        PEG.define(XUML_TEMPLATE,
+            createOpenTag(TAG_TEMPLATE),
+            PEG.rule$ZeroOrMore(
+                    PEG.rule$Choice(
+                        PEG.rule(XUML_APPLY),
+                        PEG.rule(XUML_IMPORT),
+                        PEG.rule(XUML_SWITCH),
+                        PEG.rule(XUML_EACH),
+                        PEG.rule(XUML_VAR),
+                        PEG.rule(XUML_LITERAL))),
+            createCloseTag(TAG_TEMPLATE));
+
+        PEG.define(XUML_APPLY,
+            createOmitTag(TAG_APPLY));
+
+        PEG.define(XUML_IMPORT,
+            createOmitTag(TAG_IMPORT));
+
+        PEG.define(XUML_SWITCH,
+            createOpenTag(TAG_SWITCH),
+            PEG.rule$OneOrMore(
+                PEG.rule$Choice(
+                    PEG.rule(XUML_CASE),
+                    PEG.rule(XUML_DEFAULT))),
+            createCloseTag(TAG_SWITCH));
+
+        PEG.define(XUML_CASE,
+            createOpenTag(TAG_CASE),
+            PEG.rule$ZeroOrMore(
+                PEG.rule$Choice(
+                    PEG.rule(XUML_VAR),
+                    PEG.rule(XUML_LITERAL))),
+            createCloseTag(TAG_CASE));
+
+        PEG.define(XUML_DEFAULT,
+            createOpenTag(TAG_DEFAULT),
+            PEG.rule$ZeroOrMore(
+                PEG.rule$Choice(
+                    PEG.rule(XUML_VAR),
+                    PEG.rule(XUML_LITERAL))),
+            createCloseTag(TAG_DEFAULT));
+
+        PEG.define(XUML_EACH,
+            createOpenTag(TAG_EACH),
+            PEG.rule$ZeroOrMore(
+                PEG.rule$Choice(
+                    PEG.rule(XUML_VAR),
+                    PEG.rule(XUML_LITERAL))),
+            createCloseTag(TAG_EACH));
+
+        PEG.define(XUML_ATTR,
+            PEG.rule(WS1),
+            PEG.rule(ATTR_NAME),
+            PEG.rule$Literal("="),
+            PEG.rule(ATTR_VALUE))
+        .action($$ -> {
+            PEGNode name = $$.get(1);
+            PEGNode value = $$.get(3);
+            $$.clear();
+            $$.add(name);
+            $$.add(value);
+            return $$;
+        });
+
+        PEG.define(ATTR_NAME,
+            PEG.rule$RegExp("[a-zA-Z][a-zA-Z0-9\\-:]*"));
+
+        PEG.define(ATTR_VALUE,
+            PEG.rule$Sequence(
+                PEG.rule$Literal("\""),
+                PEG.rule$RegExp("[^\"]*"),
+                PEG.rule$Literal("\"")))
+        .action($$ -> {
+            return $$.get(0).get(1);
+        });
+
+        PEG.define(XUML_VAR,
+            PEG.rule$RegExp("[\\$\\*#@\\*]\\{[^\\}]+?\\}"))
+            .action($$ -> {
+                $$.setValue($$.getSource());
+                return $$;
+            });
+
+        PEG.define(XUML_LITERAL,
+            PEG.rule$OneOrMore(
+                PEG.rule$Not(
+                    PEG.rule$Choice(
+                        PEG.rule(XUML_VAR),
+                        PEG.rule$RegExp("</?" + PREFIX))),
+                PEG.rule$Any()));
+
+        PEG.define(WS0, 
+                PEG.rule$RegExp("\\s*"));
+
+        PEG.define(WS1,
+                PEG.rule$RegExp("\\s+"));
+
+        PEG.define(EOF,
+            PEG.rule$Not(PEG.rule$Any()));
+
+//        PEG.define(XUML,
+//            PEG.rule$Optional(PEG.rule(VERSION)),
+//            PEG.rule$OneOrMore(
+//                PEG.rule$Choice(
+//                    PEG.rule(OMIT_TAG),
+//                    PEG.rule(OPEN_TAG),
+//                    PEG.rule(CLOSE_TAG),
+//                    PEG.rule(VARIABLE),
+//                    PEG.rule(WS1),
+//                    PEG.rule(LITERAL))),
+//            PEG.rule(EOF));
+//
+//      PEG.define(VERSION,
+//      PEG.rule$RegExp("<\\?xml\\S+version=(\"1.0\"|'1.0')\\S*\\?>"));
+//
+//        PEG.define(OPEN_TAG,
+//            PEG.rule$Literal("<" + PREFIX),
+//            PEG.rule(TAG_NAME),
+//            PEG.rule$ZeroOrMore(
+//                PEG.rule$Choice(
+//                    PEG.rule(ATTR),
+//                    PEG.rule(WS1))),
+//            PEG.rule$Literal(">"));
+//
+//        PEG.define(CLOSE_TAG,
+//            PEG.rule$Literal("</" + PREFIX),
+//            PEG.rule(TAG_NAME),
+//            PEG.rule(WS0),
+//            PEG.rule$Literal(">"));
+//
+//        PEG.define(OMIT_TAG,
+//            PEG.rule$Literal("<" + PREFIX),
+//            PEG.rule(TAG_NAME),
+//            PEG.rule$ZeroOrMore(
+//                PEG.rule$Choice(
+//                    PEG.rule(ATTR),
+//                    PEG.rule(WS1))),
+//            PEG.rule$Literal("/>"));
+//
+//        PEG.define(VARIABLE,
+//            PEG.rule$RegExp("[\\$\\*#@\\*]\\{[^\\}]+?\\}"));
+//
+//        PEG.define(LITERAL,
+//            PEG.rule$OneOrMore(
+//                PEG.rule$Not(
+//                    PEG.rule$Choice(
+//                        PEG.rule(VARIABLE),
+//                        PEG.rule$RegExp("</?" + PREFIX))),
+//                PEG.rule$Any()));
+//
+//        PEG.define(TAG_NAME,
+//            PEG.rule$RegExp("[a-zA-Z][a-zA-Z0-0\\-:]*"));
+//
+//        PEG.define(ATTR,
+//            PEG.rule(ATTR_NAME),
+//            PEG.rule$Literal("="),
+//            PEG.rule(ATTR_VALUE))
+//        .action($$ -> {
+//            PEGNode name = $$.get(0);
+//            PEGNode value = $$.get(2);
+//            $$.clear();
+//            $$.add(name);
+//            $$.add(value);
+//            return $$;
+//        });
+    }
+
+    protected enum XumlRules implements PEGCombinator.RuleTypes {
+//        XUML, VERSION, OPEN_TAG, CLOSE_TAG, OMIT_TAG, VARIABLE, LITERAL,
+//        TAG_NAME, ATTR, 
+
+        VERSION,
+        XUML_XUML, XUML_TEMPLATE, XUML_APPLY, XUML_IMPORT, XUML_SWITCH, XUML_CASE, XUML_DEFAULT,
+        XUML_EACH, XUML_VAR, XUML_LITERAL, XUML_ATTR,
+        ATTR_NAME, ATTR_VALUE, WS0, WS1, EOF,
+    }
+
+    private static Rule createOmitTag(String tagName) {
+        return PEG.rule$Sequence(
+            PEG.rule(WS0),
+            PEG.rule$Literal("<" + tagName),
+            PEG.rule$ZeroOrMore(PEG.rule(XUML_ATTR)),
+            PEG.rule(WS0),
+            PEG.rule$Literal("/>"),
+            PEG.rule(WS0));
+    }
+
+    private static Rule createOpenTag(String tagName) {
+        return PEG.rule$Sequence(
+            PEG.rule(WS0),
+            PEG.rule$Literal("<" + tagName),
+            PEG.rule$ZeroOrMore(
+                PEG.rule$Sequence(PEG.rule(XUML_ATTR))),
+            PEG.rule(WS0),
+            PEG.rule$Literal(">"),
+            PEG.rule(WS0))
+                .action($$ -> {
+                    return $$;
+                });
+    }
+
+    private static Rule createCloseTag(String tagName) {
+        return PEG.rule$Sequence(
+            PEG.rule(WS0),
+            PEG.rule$Literal("</" + tagName + ">"),
+            PEG.rule(WS0));
+    }
+
+    private PEGNode parse(String text) throws XumlException {
+        PEGContext ctx = PEG.createContext(text);
+        try {
+            PEGNode node = PEG.rule(XUML_XUML).accept(ctx);
+//            PEGNode node = PEG.rule(XUML).accept(ctx);
+            if (ctx.available() > 0) {
+                throw new XumlException(ctx.subString(ctx.position()));
+            }
+            return node.pack();
+        } catch (PEGException e) {
+            throw new XumlException(ctx.subString(ctx.position()));
+        }
+    }
+
+    public Statement compile(String text) throws XumlException {
+        PEGNode node = parse(text);
+        XumlStatement stmt = new XumlStatement();
+        walk(stmt, node);
+        return stmt;
+    }
+
+    private void walk(Statement curr, PEGNode node) {
+        RuleTypes type = node.getType();
+        if (type instanceof XumlRules) {
+            switch ((XumlRules)type) {
+//            case XUML:
+//                break;
+//            case OMIT_TAG:
+//            case OPEN_TAG:
+//            case CLOSE_TAG:
+//                LOG.debug("tag={0}", node.getSource());
+//                break;
+//            case ATTR:
+//                if (curr instanceof AbstractStatement) {
+//                    LOG.debug("found attr=[{0}, {1}]",
+//                            node.get(0).getValue(),
+//                            node.get(1).getValue());
+//                    ((AbstractStatement)curr).setAttr(
+//                            node.get(0).getValue(),
+//                            node.get(1).getValue());
+//                }
+//                break;
+//            case VARIABLE:
+//                LOG.debug("found var=" + node.getValue());
+//                break;
+//            case LITERAL:
+//                LOG.debug("found literal=" + node.getValue());
+//                break;
+            }
+        }
+        for (int i = 0; i < node.length(); i++) {
+            walk(curr, node.get(i));
+        }
+    }
+
+    public interface Statement {
+        public void add(Statement stmt);
+        public void execute(OutputStream os, Object model);
+    }
+
+    public static abstract class AbstractStatement implements Statement {
+        private Map<String,String> attrsMap = new HashMap<>();
+        private List<Statement> childList = new ArrayList<>();
+        public void add(Statement stmt) {
+            childList.add(stmt);
+        }
+        protected List<Statement> getChildList() {
+            return childList;
+        }
+        protected String getAttr(String name) {
+            return attrsMap.get(name);
+        }
+        protected void setAttr(String name, String value) {
+            attrsMap.put(name, value);
+        }
+        public abstract void execute(OutputStream os, Object model);
+    }
+
+    public static class XumlStatement extends AbstractStatement {
+        public String getNamespace() {
+            return null;
+        }
+        public void execute(OutputStream os, Object model) {
+            for (Statement stmt : getChildList()) {
+                stmt.execute(os, model);
+            }
+        }
+    }
+
+    public static class ImportStatement extends AbstractStatement {
+        @Override
+        public void execute(OutputStream os, Object model) {
+            // TODO Auto-generated method stub
+        }
+        public String getFile() {
+            return getAttr("file");
+        }
+    }
+
+    public static class TemplateStatement extends AbstractStatement {
+        @Override
+        public void execute(OutputStream os, Object model) {
+            for (Statement stmt : getChildList()) {
+                stmt.execute(os, model);
+            }
+        }
+    }
+
+    public static class ApplyStatement extends AbstractStatement {
+        @Override
+        public void execute(OutputStream os, Object model) {
+        }
+    }
+
+    public static class SwitchStatement extends AbstractStatement {
+        @Override
+        public void execute(OutputStream os, Object model) {
+            for (Statement stmt : getChildList()) {
+                stmt.execute(os, model);
+            }
+        }
+    }
+
+    public static class CaseStatement extends AbstractStatement {
+        @Override
+        public void execute(OutputStream os, Object model) {
+            for (Statement stmt : getChildList()) {
+                stmt.execute(os, model);
+            }
+        }
+    }
+
+    public static class DefaultStatement extends AbstractStatement {
+        @Override
+        public void execute(OutputStream os, Object model) {
+            for (Statement stmt : getChildList()) {
+                stmt.execute(os, model);
+            }
+        }
+    }
+
+    public static class EachStatement extends AbstractStatement {
+        @Override
+        public void execute(OutputStream os, Object model) {
+            for (Statement stmt : getChildList()) {
+                stmt.execute(os, model);
+            }
+        }
+    }
+
+    public static class VariableStatement implements Statement {
+        private String value;
+        @Override
+        public void add(Statement stmt) {
+        }
+        @Override
+        public void execute(OutputStream os, Object model) {
+        }
+        protected void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    public static class LiteralStatement implements Statement {
+        private String value;
+        @Override
+        public void add(Statement stmt) {
+        }
+        @Override
+        public void execute(OutputStream os, Object model) {
+        }
+        protected void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    public static class XumlException extends Exception {
+        private static final long serialVersionUID = 1L;
+        public XumlException(String message) {
+            super(message);
+        }
+        public XumlException(Exception e) {
+            super(e);
+        }
+    }
+}

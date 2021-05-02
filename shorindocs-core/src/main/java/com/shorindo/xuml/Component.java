@@ -77,7 +77,7 @@ public abstract class Component {
             attrMap.put(name, value);
             break;
         default:
-            LOG.warn(XUML_3002, name);
+            LOG.warn(XUML_3003, name);
         }
         return this;
     }

@@ -1,0 +1,27 @@
+table.specout {
+  table-layout:fixed;
+  border-collapse:collapse;
+  border:2px solid gray;
+  margin-left:5px;
+  margin-right:20px;
+  margin-bottom:20px;
+  position:relative;
+  width: calc(100% - 40px);
+}
+tr.spec { line-height:1.2em; }
+tr.spec td div.description { min-height: 40px; }
+tr.spec td div.level-0 { margin-left:0px; }
+tr.spec td div.level-1 { margin-left:20px; }
+tr.spec td div.level-2 { margin-left:40px; }
+tr.spec td div.level-3 { margin-left:60px; }
+tr.spec td div.level-4 { margin-left:80px; }
+tr.spec td div.level-5 { margin-left:100px; }
+tr.spec td {
+  border-right:1px solid gray;
+  border-bottom:1px dashed gray;
+  padding: 1px 3px 1px 3px;
+  vertical-align:top;
+}
+tr.spec:nth-child(odd) {
+  background:#F8F8F8;
+}

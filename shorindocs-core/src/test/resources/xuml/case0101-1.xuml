@@ -1,0 +1,9 @@
+<xuml:xuml namespace="case0101">
+  <xuml:template name="text">XXX</xuml:template>
+  <xuml:template name="parent">
+    <xuml:apply name="text"/>
+  </xuml:template>
+  <xuml:template name="template">
+    <xuml:apply name="param"/>
+  </xuml:template>
+</xuml:xuml>

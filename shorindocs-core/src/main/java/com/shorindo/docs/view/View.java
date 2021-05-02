@@ -19,13 +19,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.shorindo.docs.action.ActionContext;
 
 /**
  * 
  */
 public interface View {
-    public int getStatus();
+    default public int getStatus() {
+    	return HttpServletResponse.SC_OK;
+    }
     public Map<String,String> getMetaData();
     public void render(ActionContext ctx, OutputStream os) throws IOException;
 }

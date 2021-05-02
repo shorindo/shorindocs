@@ -1,0 +1,20 @@
+<xuml:xuml namespace="xuml-spec">
+
+  <xuml:template name="toc">
+    <xuml:apply name="SPEC-0001"/>
+  </xuml:template>
+
+  <xuml:template name="spec">
+    <tr>
+      <td><xuml:apply name="id"/></td>
+      <td><xuml:apply name="desc"/></td>
+      <td><xuml:apply name="reason"/></td>
+      <td><xuml:apply name="source"/></td>
+      <td><xuml:apply name="version"/></td>
+      <td><xuml:apply name="implemented"/></td>
+    </tr>
+  </xuml:template>
+
+  <xuml:apply name="toc"/>
+
+</xuml:xuml>

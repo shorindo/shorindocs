@@ -1,0 +1,73 @@
+<xuml:xuml namespace="layout">
+  <xuml:template name="base">
+    <!doctype html>
+    <html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+        <title>${document.title}</title>
+        <link rel="stylesheet" type="text/css" href="@{/css/xuml.css}"/>
+        <script type="text/javascript" src="@{/js/xuml.js}"></script>
+      </head>
+      <body class="xuml-width-fill xuml-height-fill">
+        <div class="xuml-vbox">
+          <div id="header-pane">${document.title}</div>
+          <div id="menubar" class="xuml-menubar">
+            <div class="xuml-menubar-left"><button>新規</button><button onclick="location='?action=edit'">編集</button></div>
+            <div class="xuml-menubar-right"><input type="text"/><button>検索</button></div>
+          </div>
+          <div id="main" class="xuml-hbox">
+            <xuml:apply name="main"/>
+          </div>
+          <div id="footer-pane">Powered by shorindo.com</div>
+        </div>
+      </body>
+    </html>
+  </xuml:template>
+
+  <xuml:template name="LCR">
+    <xuml:apply name="base">
+      <xuml:template name="main">
+        <div id="left-pane" class="xuml-vbox" style="width:25%;">
+          <xuml:apply name="LEFT"/>
+        </div>
+        <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;">
+          <xuml:apply name="CENTER"/>
+        </div>
+        <div id="right-pane" class="xuml-vbox" style="width:25%;">
+          <xuml:apply name="RIGHT"/>
+        </div>
+      </xuml:template>
+    </xuml:apply>
+  </xuml:template>
+
+  <xuml:template name="LC">
+    <!doctype html>
+    <html>
+     <head>
+       <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+       <title></title>
+       <link rel="stylesheet" type="text/css" href="/docs/css/xuml.css"/>
+       <script type="text/javascript" src="/docs/js/xuml.js"></script>
+     </head>
+     <body class="xuml-width-fill xuml-height-fill">
+       <div class="xuml-vbox">
+         <div id="header-pane"></div>
+       </div>
+      </body>
+    </html>
+  </xuml:template>
+
+  <xuml:template name="LEFT">
+    最近の更新
+    <ul>
+    <xuml:each item="recent" value="${recents}">
+      <li><a href="${recent.documentId}">${recent.title}</a></li>
+    </xuml:each>
+    </ul>
+  </xuml:template>
+
+  <xuml:template name="RIGHT">
+    RIGHT
+  </xuml:template>
+</xuml:xuml>
+

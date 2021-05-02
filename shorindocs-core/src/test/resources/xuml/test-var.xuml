@@ -1,0 +1,7 @@
+<xuml:xuml namespace="var">
+    ${foo}
+
+    <xuml:template name="foo">
+        foo ${string} baz
+    </xuml:template>
+</xuml:xuml>

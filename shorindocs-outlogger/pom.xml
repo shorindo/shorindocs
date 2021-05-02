@@ -15,6 +15,7 @@
   <build>
     <finalName>shorindocs-outlogger-${parent.version}</finalName>
     <plugins>
+      <!-- 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -26,6 +27,7 @@
           </archive>
         </configuration>
       </plugin>
+      -->
     </plugins>
   </build>
   <dependencies>

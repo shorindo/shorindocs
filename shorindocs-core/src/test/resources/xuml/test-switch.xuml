@@ -1,0 +1,8 @@
+<xuml:xuml namespace="switch">
+    <xuml:switch value="${age}">
+        <xuml:case eq="0">eq 0</xuml:case>
+        <xuml:case eq="20">eq 20</xuml:case>
+        <xuml:case gt="20">gt 20</xuml:case>
+        <xuml:default>default</xuml:default>
+    </xuml:switch>
+</xuml:xuml>

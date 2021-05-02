@@ -33,87 +33,83 @@ public class ActionContext {
     private String method;
     private String contentType;
     private Map<String,String[]> paramMap;
+    private Map<String,Object> model;
 
-    private ActionContext() {
-    	paramMap = new HashMap<>();
-    }
-
-    public static ActionContextBuilder builder() {
-    	return new ActionContextBuilder();
+    public ActionContext() {
+        paramMap = new HashMap<>();
+        model = new HashMap<>();
     }
 
     public String getPath() {
-		return path;
-	}
+        return path;
+    }
 
     public String getContextPath() {
-    	return contextPath;
+        return contextPath;
     }
 
-	public String getMethod() {
-		return method;
-	}
+    public String getMethod() {
+        return method;
+    }
 
-	public String getContentType() {
-		return contentType;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
     public String getParameter(String name) {
-    	return null;
+        return null;
     }
     public String[] getParameters(String name) {
-    	return null;
+        return null;
     }
 
-    public static class ActionContextBuilder {
-    	HttpServletRequest req;
-		ActionContext actionContext;
-    	private ActionContextBuilder() {
-    		actionContext = new ActionContext();
-    	}
+    public Map<String, Object> getModel() {
+        return model;
+    }
 
-    	public ActionContext build() {
-    		return actionContext;
-    	}
-    	public ActionContextBuilder path(String path) {
-    		actionContext.path = path;
-    		return this;
-    	}
-    	public ActionContextBuilder contextPath(String contextPath) {
-    		actionContext.contextPath = contextPath;
-    		return this;
-    	}
-    	public ActionContextBuilder method(String method) {
-    		actionContext.method = method;
-    		return this;
-    	}
-    	public ActionContextBuilder queryString(String queryString) {
-    		if (queryString != null) {
-    			Map<String,List<String>> map = new HashMap<>();
-    			for (String param : queryString.split("&")) {
-    				String keyval[] = param.split("=", 2);
-    				if (keyval.length < 2) {
-    					continue;
-    				}
-    				List<String> vals = map.get(keyval[0]);
-    				if (vals == null) {
-    					vals = new ArrayList<>();
-    					map.put(keyval[0], vals);
-    				}
-    				vals.add(keyval[1]);
-    			}
-    			map.entrySet().stream()
-    				.forEach((e) -> {
-    					actionContext.paramMap.put(
-    							e.getKey(),
-    							e.getValue().toArray(new String[] {}));
-    				});
-    		}
-    		return this;
-    	}
-    	public ActionContextBuilder contentType(String contentType) {
-    		actionContext.contentType = contentType;
-    		return this;
-    	}
+    public void addModel(String name, Object value) {
+        model.put(name, value);
+    }
+
+    public ActionContext path(String path) {
+        this.path = path;
+        return this;
+    }
+    public ActionContext contextPath(String contextPath) {
+        this.contextPath = contextPath;
+        addModel("context.path", contextPath);
+        return this;
+    }
+    public ActionContext method(String method) {
+        this.method = method;
+        return this;
+    }
+    public ActionContext queryString(String queryString) {
+        if (queryString != null) {
+            Map<String,List<String>> map = new HashMap<>();
+            for (String param : queryString.split("&")) {
+                String keyval[] = param.split("=", 2);
+                if (keyval.length < 2) {
+                    continue;
+                }
+                List<String> vals = map.get(keyval[0]);
+                if (vals == null) {
+                    vals = new ArrayList<>();
+                    map.put(keyval[0], vals);
+                }
+                vals.add(keyval[1]);
+            }
+            map.entrySet().stream()
+            .forEach((e) -> {
+                paramMap.put(
+                    e.getKey(),
+                    e.getValue().toArray(new String[] {}));
+            });
+        }
+        return this;
+    }
+    public ActionContext contentType(String contentType) {
+        this.contentType = contentType;
+        return this;
     }
 }

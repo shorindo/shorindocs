@@ -19,7 +19,6 @@ import static com.shorindo.xuml.DOMBuilder.text;
 import static com.shorindo.xuml.HTMLBuilder.*;
 import static com.shorindo.xuml.XumlMessages.XUML_1001;
 import static com.shorindo.xuml.XumlMessages.XUML_1002;
-import static com.shorindo.xuml.XumlMessages.XUML_5200;
 
 import java.io.IOException;
 import java.io.OutputStream;

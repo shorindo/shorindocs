@@ -55,18 +55,17 @@ public class ActionServlet extends HttpServlet {
      */
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
-    		throws ServletException, IOException {
+        throws ServletException, IOException {
         LOG.info(DOCS_1105, req.getMethod() + " " + req.getServletPath());
         long st = System.currentTimeMillis();
         String path = req.getServletPath();
         String documentId = path.substring(1);
-        ActionContext context = ActionContext.builder()
-        		.method(req.getMethod())
-        		.path(req.getServletPath())
-        		.contextPath(req.getContextPath())
-        		.contentType(req.getHeader("Conetnt-Type"))
-        		.queryString(req.getQueryString())
-        		.build();
+        ActionContext context = new ActionContext()
+            .method(req.getMethod())
+            .path(req.getServletPath())
+            .contextPath(req.getContextPath())
+            .contentType(req.getHeader("Conetnt-Type"))
+            .queryString(req.getQueryString());
 
         try {
             if (documentId == null || "".equals(documentId)) {
@@ -122,11 +121,10 @@ public class ActionServlet extends HttpServlet {
             throws ServletException, IOException {
         long st = System.currentTimeMillis();
         LOG.info(DOCS_1105, "POST " + req.getServletPath());
-        ActionContext context = ActionContext.builder()
-        		.method(req.getMethod())
-        		.path(req.getServletPath())
-        		.contentType(req.getHeader("Conetnt-Type"))
-        		.build();
+        ActionContext context = new ActionContext()
+            .method(req.getMethod())
+            .path(req.getServletPath())
+            .contentType(req.getHeader("Conetnt-Type"));
 
         try {
             DocumentEntity key = new DocumentEntity();
