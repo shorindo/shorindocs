@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config>
+    <property name="logger.rootLogger" value="debug, stdout"/>
+
+    <property name="datasource.driverClassName" value="com.mysql.jdbc.Driver"/>
+    <property name="datasource.url" value="jdbc:mysql://<host>:<port/<db>?useUnicode=true&amp;characterEncoding=utf8"/>
+    <property name="datasource.username" value="<user>"/>
+    <property name="datasource.password" value="<pass>"/> 
+    <property name="datasource.validationQuery" value="select 1"/> 
+    <property name="datasource.testOnBorrow" value="true"/>
+</config>
