@@ -30,7 +30,7 @@ public interface AuthenticateService {
     // session management
     public SessionModel login(String loginName, String password) throws AuthenticateException;
     public void logout(String sessionId);
-    public UserModel authenticate(String sessionId) throws AuthenticateException;
+    public UserModel authenticate(String sessionId, UserModel user) throws AuthenticateException;
 
     // user management
     public UserModel createUser(UserModel model) throws AuthenticateException;

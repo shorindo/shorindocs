@@ -15,16 +15,17 @@
  */
 package com.shorindo.docs.admin;
 
+import java.util.Locale;
+
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlView2;
 
 /**
  * 
  */
-@ActionMapping("/admin/user")
 public class UserController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(UserController.class);
 
@@ -33,7 +34,8 @@ public class UserController extends ActionController {
      */
     @Override
     public View action(ActionContext context, Object...args) {
-        return null;
+        context.addModel("lang", Locale.JAPANESE);
+        return XumlView2.create("admin/xuml/user.xuml");
     }
 
 }

@@ -1,10 +1,9 @@
-<xuml:xuml namespace="markdown" use="debug">
+<xuml:xuml namespace="plaintext">
   <xuml:import file="xuml/layout.xuml"/>
 
   <xuml:apply name="layout.LCR">
     <xuml:template name="CENTER">
-      *{html}
+      ${document.content}
     </xuml:template>
   </xuml:apply>
-
 </xuml:xuml>

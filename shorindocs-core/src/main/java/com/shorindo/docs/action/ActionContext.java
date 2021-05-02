@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * 
  */
@@ -57,10 +55,11 @@ public class ActionContext {
     }
 
     public String getParameter(String name) {
-        return null;
+        return paramMap.containsKey(name) ?
+            paramMap.get(name)[0] : null;
     }
     public String[] getParameters(String name) {
-        return null;
+        return paramMap.get(name);
     }
 
     public Map<String, Object> getModel() {

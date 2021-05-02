@@ -1,0 +1,37 @@
+<xuml:xuml>
+  <!doctype html>
+  <html>
+    <head>
+      <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+      <title>ログイン</title>
+      <link rel="stylesheet" type="text/css" href="@{/css/xuml.css}"/>
+      <script type="text/javascript" src="@{/js/xuml.js}"></script>
+    </head>
+    <body class="xuml-width-fill xuml-height-fill">
+      <div class="xuml-dialog-pane">
+        <div class="xuml-dialog">
+          <div class="xuml-dialog-head">ログインしてください</div>
+          <div class="xuml-dialog-body" style="vertical-align:middle">
+            <table style="width:100%;">
+              <tr>
+                <td>ユーザID</td>
+                <td><input type="text" name="userId"></td>
+              </tr>
+              <tr>
+                <td>パスワード</td>
+                <td><input type="password" name="password"></td>
+              </tr>
+              <tr>
+                <td colspan="2" style="text-align:center;">
+                  <button>ログイン</button>
+                  <button onclick="location='${refer}'">キャンセル</button>
+                  <input type="hidden" name="refer" value="${refer}">
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+</xuml:xuml>

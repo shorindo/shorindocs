@@ -52,19 +52,20 @@ public class PluginServiceImpl implements PluginService {
                 result.addAll(findPlugin(loader, base, child));
             }
         } else if (file.getName().endsWith(".jar")) {
-        	try (JarFile jarFile = new JarFile(file)) {
-        		for (Enumeration<JarEntry> e = jarFile.entries(); e.hasMoreElements();) {
-        			JarEntry entry = e.nextElement();
-        			String name = entry.getName();
-        			if (PLUGIN_FILE.equals(name)) {
-        				ApplicationContextConfig config = ApplicationContext.load(jarFile.getInputStream(entry));
-        				LOG.info(APPL_004, config.getNamespace());
-        				break;
-        			}
-        		}
-        	} catch (IOException e) {
-        		LOG.error(e.getMessage(), e);
-        	}
+            try (JarFile jarFile = new JarFile(file)) {
+                for (Enumeration<JarEntry> e = jarFile.entries(); e.hasMoreElements();) {
+                    JarEntry entry = e.nextElement();
+                    String name = entry.getName();
+                    if (PLUGIN_FILE.equals(name)) {
+                        LOG.info(APPL_004, file.getName());
+                        ApplicationContextConfig config = ApplicationContext.load(jarFile.getInputStream(entry));
+                        LOG.info(APPL_005, config.getNamespace());
+                        break;
+                    }
+                }
+            } catch (IOException e) {
+                LOG.error(e.getMessage(), e);
+            }
         }
         String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         return result;

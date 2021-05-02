@@ -15,15 +15,14 @@
  */
 package com.shorindo.docs.auth;
 
-import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.Map;
-
 import com.shorindo.docs.action.ActionMessages;
 
 /**
  * 
  */
 public enum AuthenticateMessages implements ActionMessages {
-    ;
+    @Message(lang="ja", content="パス[{0}]に対してユーザ[{1}]がアクセスしました。")
+    AUTH_0001,
+    @Message(lang="ja", content="ユーザ情報が取得できませんでした。")
+    AUTH_0501;
 }

@@ -20,6 +20,7 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.shorindo.docs.action.ActionLogger;
@@ -85,7 +86,7 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentModel save(DocumentModel model) {
         try {
             DocumentEntity entity = new DocumentEntity(model);
-            DocumentEntity prev = repositoryService.querySingle(
+            Optional<DocumentEntity> prev = repositoryService.querySingle(
                     "SELECT * " +
                     "FROM   DOCS_DOCUMENT " +
                     "WHERE  DOCUMENT_ID=? AND VERSION=0",
@@ -96,7 +97,7 @@ public class DocumentServiceImpl implements DocumentService {
             entity.setCreateDate(new java.util.Date());
             entity.setUpdateUser("updateUser"); // FIXME
             entity.setUpdateDate(new java.util.Date());
-            if (prev != null) {
+            if (prev.isPresent()) {
                 List<DocumentEntity> entityList = repositoryService.queryList(
                         "SELECT MAX(VERSION) VERSION " +
                         "FROM   DOCS_DOCUMENT " +
@@ -108,7 +109,7 @@ public class DocumentServiceImpl implements DocumentService {
                         "UPDATE DOCS_DOCUMENT " +
                         "SET    VERSION=? " +
                         "WHERE  DOCUMENT_ID=? AND VERSION=0",
-                        version + 1, prev.getDocumentId());
+                        version + 1, prev.get().getDocumentId());
             }
             repositoryService.insert(entity);
             return repositoryService.get(entity);

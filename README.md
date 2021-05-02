@@ -1,4 +1,10 @@
 # 概要
+
+```
+本プロジェクトは、ソフトウェアの実現可能性の調査・研究のための実験的なプロジェクトです。
+ご利用に伴う、あらゆるうトラブルに関し、開発者は一切の責任を負わないことをご承知おきください。
+```
+
 # 構成
 # 設定
 # コンテキスト
@@ -8,10 +14,10 @@
 ## ActionController
 # ビュー
 * http header
-    * 	status			固定
-　　　　* 	Content-Type	固定	
+  * status          固定
+  * Content-Type    固定	
 * http body
-　　  * 	outputstream	リクエストごと
+  * outputstream    リクエストごと
 * message property	リクエストごと
 * context path		初期化時
 * model				リクエストごと

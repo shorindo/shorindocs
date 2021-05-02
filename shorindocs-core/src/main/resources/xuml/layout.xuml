@@ -1,4 +1,29 @@
 <xuml:xuml namespace="layout">
+  <xuml:label key="license">
+    <xuml:text lang="ja">Powered by shorindo.com</xuml:text>
+    <xuml:text lang="en">Powered by shorindo.com</xuml:text>
+  </xuml:label>
+  <xuml:label key="recents">
+    <xuml:text lang="ja">最近の更新</xuml:text>
+    <xuml:text lang="en">Recent updates</xuml:text>
+  </xuml:label>
+  <xuml:label key="create">
+    <xuml:text lang="ja">新規</xuml:text>
+    <xuml:text lang="en">Create</xuml:text>
+  </xuml:label>
+  <xuml:label key="edit">
+    <xuml:text lang="ja">編集</xuml:text>
+    <xuml:text lang="en">Edit</xuml:text>
+  </xuml:label>
+  <xuml:label key="search">
+    <xuml:text lang="ja">検索</xuml:text>
+    <xuml:text lang="en">Search</xuml:text>
+  </xuml:label>
+  <xuml:label key="login">
+    <xuml:text lang="ja">ログイン</xuml:text>
+    <xuml:text lang="en">Login</xuml:text>
+  </xuml:label>
+
   <xuml:template name="base">
     <!doctype html>
     <html>
@@ -10,15 +35,27 @@
       </head>
       <body class="xuml-width-fill xuml-height-fill">
         <div class="xuml-vbox">
-          <div id="header-pane">${document.title}</div>
+          <div id="header-pane">
+            ${document.title}
+            <div style="float:right;"><a href="@{/login}?refer=/${document.documentId}">#{login}</a></div>
+          </div>
           <div id="menubar" class="xuml-menubar">
-            <div class="xuml-menubar-left"><button>新規</button><button onclick="location='?action=edit'">編集</button></div>
-            <div class="xuml-menubar-right"><input type="text"/><button>検索</button></div>
+            <div class="xuml-menubar-left">
+              <button>#{create}</button>
+              <button onclick="location='?action=edit'">#{edit}</button>
+              <button>一時保存</button>
+              <button>登録</button>
+              <button>キャンセル</button>
+            </div>
+            <div class="xuml-menubar-right">
+              <input type="text"/>
+              <button>#{search}</button>
+            </div>
           </div>
           <div id="main" class="xuml-hbox">
             <xuml:apply name="main"/>
           </div>
-          <div id="footer-pane">Powered by shorindo.com</div>
+          <div id="footer-pane">#{license}</div>
         </div>
       </body>
     </html>
@@ -41,29 +78,29 @@
   </xuml:template>
 
   <xuml:template name="LC">
-    <!doctype html>
-    <html>
-     <head>
-       <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-       <title></title>
-       <link rel="stylesheet" type="text/css" href="/docs/css/xuml.css"/>
-       <script type="text/javascript" src="/docs/js/xuml.js"></script>
-     </head>
-     <body class="xuml-width-fill xuml-height-fill">
-       <div class="xuml-vbox">
-         <div id="header-pane"></div>
-       </div>
-      </body>
-    </html>
+    <xuml:apply name="base">
+      <xuml:template name="main">
+        <div id="left-pane" class="xuml-vbox" style="width:25%;">
+          <xuml:apply name="LEFT"/>
+        </div>
+        <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;">
+          <xuml:apply name="CENTER"/>
+        </div>
+      </xuml:template>
+    </xuml:apply>
   </xuml:template>
 
   <xuml:template name="LEFT">
-    最近の更新
+    #{recents}
     <ul>
     <xuml:each item="recent" value="${recents}">
       <li><a href="${recent.documentId}">${recent.title}</a></li>
     </xuml:each>
     </ul>
+  </xuml:template>
+
+  <xuml:template name="CENTER">
+    CENTER
   </xuml:template>
 
   <xuml:template name="RIGHT">

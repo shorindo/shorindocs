@@ -75,8 +75,7 @@ public class AuthenticateServiceTest {
         authenticateService.createUser(expect);
 
         SessionModel session = authenticateService.login(expect.getLoginName(), expect.getPassword());
-
-        UserModel actual = authenticateService.authenticate(session.getSessionId());
+        UserModel actual = authenticateService.authenticate(session.getSessionId(), null);
         assertNotNull(actual);
         assertEquals(expect.getLoginName(), actual.getLoginName());
     }

@@ -17,7 +17,6 @@ package com.shorindo.docs.outlogger;
 
 import static org.junit.Assert.*;
 
-import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 

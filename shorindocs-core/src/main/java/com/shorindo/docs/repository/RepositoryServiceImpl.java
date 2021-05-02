@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.TreeMap;
@@ -386,7 +387,7 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
     /**
      *
      */
-    public final <E> E querySingle(String sql, Class<E> clazz, Object...params) throws RepositoryException {
+    public final <E> Optional<E> querySingle(String sql, Class<E> clazz, Object...params) throws RepositoryException {
         Connection conn = getThreadConnection();
         if (conn != null) {
             return querySingle(conn, sql, clazz, params);
@@ -402,9 +403,9 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
         }
     }
 
-    private <E> E querySingle(Connection conn, String sql, Class<E> clazz, Object...params) throws RepositoryException {
+    private <E> Optional<E> querySingle(Connection conn, String sql, Class<E> clazz, Object...params) throws RepositoryException {
         QueryStatement stmt = new QueryStatement(clazz);
-        return stmt.querySingle(conn, sql, params);
+        return Optional.ofNullable(stmt.querySingle(conn, sql, params));
     }
 
     /**

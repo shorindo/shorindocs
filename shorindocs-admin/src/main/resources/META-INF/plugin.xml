@@ -3,5 +3,9 @@
   <action path="/admin/acl" name="com.shorindo.docs.admin.AclController" />
   <action path="/admin/group" name="com.shorindo.docs.admin.GroupController" />
   <action path="/admin/user" name="com.shorindo.docs.admin.UserController" />
+  <action path="/admin/mapping" name="com.shorindo.docs.admin.MappingController" />
+  <!-- 
+  <action path="/admin/repository" name="com.shorindo.docs.admin.RepositoryController" />
+  -->
 </config>
 

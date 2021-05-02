@@ -75,69 +75,69 @@ public class ApplicationContext {
      * @throws IOException
      */
     public static ApplicationContextConfig load(InputStream is) throws IOException {
-    	ApplicationContextConfig config = ApplicationContextConfig.load(is);
-    	evaluate(config);
-    	return config;
+        ApplicationContextConfig config = ApplicationContextConfig.load(is);
+        evaluate(config);
+        return config;
     }
 
     /**
      * 
      * @param config
      */
-	private static void evaluate(ApplicationContextConfig config) {
-		for (Include include : config.getIncludes()) {
-			LOG.debug("include({0})", include.getFile());
-		}
-    	for (Property prop : config.getProperties()) {
-    		props.put(prop.getName(), prop.getValue());
-    	}
-    	for (Bean bean : config.getBeans()) {
-    		try {
-    			String name = bean.getName();
-    			String clazz = bean.getClassName();
-    			if (clazz == null) {
-    				addBean(Class.forName(name));
-    			} else {
-    				Class<?> iface = Class.forName(name);
-    				Class<?> impl = Class.forName(clazz);
-    				if (iface.isAssignableFrom(impl)) {
-    					addBean(iface, impl);
-    				} else {
-    					throw new BeanNotFoundException(name + " -> " + clazz);
-    				}
-    			}
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    		}
-    	}
-    	for (Action action : config.getActions()) {
-    		if (actionMap.containsKey(action.getPath())) {
-    			LOG.warn("duplication action path={0}", action.getPath());
-    		} else {
-    			try {
-    				LOG.info(APPL_003, action.getPath(), action.getName());
-					Class<?> clazz = Class.forName(action.getName());
-					if (!ActionController.class.isAssignableFrom(clazz)) {
-						throw new BeanNotFoundException(action.getName() + " is not ActionController");
-					}
-    				Object impl = instanceMap.get(clazz);
-					if (impl != null) {
-						actionMap.put(Pattern.compile(action.getPath()), impl);
-					} else {
-						instanceMap.put(clazz, clazz);
-						actionMap.put(Pattern.compile(action.getPath()), getBean(clazz));
-					}
-				} catch (Exception e) {
-					throw new BeanNotFoundException(action.getName() + " -> " + action.getName());
-				}
-    		}
-    	}
+    private static void evaluate(ApplicationContextConfig config) {
+        for (Include include : config.getIncludes()) {
+            LOG.debug("include({0})", include.getFile());
+        }
+        for (Property prop : config.getProperties()) {
+            props.put(prop.getName(), prop.getValue());
+        }
+        for (Bean bean : config.getBeans()) {
+            try {
+                String name = bean.getName();
+                String clazz = bean.getClassName();
+                if (clazz == null) {
+                    addBean(Class.forName(name));
+                } else {
+                    Class<?> iface = Class.forName(name);
+                    Class<?> impl = Class.forName(clazz);
+                    if (iface.isAssignableFrom(impl)) {
+                        addBean(iface, impl);
+                    } else {
+                        throw new BeanNotFoundException(name + " -> " + clazz);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        for (Action action : config.getActions()) {
+            if (actionMap.containsKey(action.getPath())) {
+                LOG.warn(APPL_3001, action.getPath());
+            } else {
+                try {
+                    LOG.info(APPL_003, action.getPath(), action.getName());
+                    Class<?> clazz = Class.forName(action.getName());
+                    if (!ActionController.class.isAssignableFrom(clazz)) {
+                        throw new BeanNotFoundException(action.getName() + " is not ActionController");
+                    }
+                    Object impl = instanceMap.get(clazz);
+                    if (impl != null) {
+                        actionMap.put(Pattern.compile(action.getPath()), impl);
+                    } else {
+                        addBean(clazz);
+                        actionMap.put(Pattern.compile(action.getPath()), getBean(clazz));
+                    }
+                } catch (Exception e) {
+                    throw new BeanNotFoundException(action.getName() + " -> " + action.getName());
+                }
+            }
+        }
     }
 
-	/**
-	 * 
-	 * @return
-	 */
+    /**
+     * 
+     * @return
+     */
     public static Properties getProperties() {
         return props;
     }
@@ -284,12 +284,12 @@ public class ApplicationContext {
      * @return
      */
     public static Object getAction(String path) {
-    	return actionMap.entrySet()
-    		.stream()
-    		.filter(e -> { return e.getKey().matcher(path).matches(); })
-    		.map(e -> { return e.getValue(); })
-    		.findFirst()
-    		.orElse(null);
+        return actionMap.entrySet()
+            .stream()
+            .filter(e -> { return e.getKey().matcher(path).matches(); })
+            .map(e -> { return e.getValue(); })
+            .findFirst()
+            .orElse(null);
     }
 
     /**

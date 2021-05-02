@@ -15,25 +15,17 @@
  */
 package com.shorindo.docs.markdown;
 
-import static com.shorindo.docs.markdown.MarkdownMessages.MKDN_9000;
-import static com.shorindo.xuml.DOMBuilder.cdata;
-import static com.shorindo.xuml.DOMBuilder.text;
-import static com.shorindo.xuml.HTMLBuilder.button;
-
 import java.util.Locale;
 
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentController;
-import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
-import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
-import com.shorindo.tools.MarkdownParser.MarkdownException;
 import com.shorindo.xuml.XumlView2;
 
 /**
@@ -41,10 +33,10 @@ import com.shorindo.xuml.XumlView2;
  */
 public class MarkdownController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(MarkdownController.class);
-    private DocumentService documentService = ApplicationContext.getBean(DocumentService.class);
-    private MarkdownService markdownService = ApplicationContext.getBean(MarkdownService.class);
+    private MarkdownService markdownService;
 
-    public MarkdownController() {
+    public MarkdownController(MarkdownService markdownService) {
+        this.markdownService = markdownService;
     }
 
     /**
@@ -54,20 +46,11 @@ public class MarkdownController extends DocumentController {
     public View action(ActionContext context, Object...args) {
         try {
         	DocumentModel model = (DocumentModel)args[0];
-            switch (getAction(context)) {
-            case "edit":
-                return new MarkdownEdit(model);
-            case "save":
-                ((DocumentEntity)model).setContent(context.getParameter("content"));
-                documentService.save(model);
-                return new RedirectView(model.getDocumentId());
-            default:
-                context.addModel("lang", Locale.JAPANESE);
-                context.addModel("document", model);
-                context.addModel("html", markdownService.parse(model.getContent()));
-                context.addModel("recents", recents(context));
-                return XumlView2.create("markdown/xuml/markdown.xuml");
-            }
+        	context.addModel("lang", Locale.JAPANESE);
+        	context.addModel("document", model);
+        	context.addModel("html", markdownService.parse(model.getContent()));
+        	context.addModel("recents", recents(context));
+        	return XumlView2.create("markdown/xuml/markdown.xuml");
         } catch (Exception e) {
             LOG.error(DocumentMessages.DOCS_9001, e);
             return new ErrorView(500);

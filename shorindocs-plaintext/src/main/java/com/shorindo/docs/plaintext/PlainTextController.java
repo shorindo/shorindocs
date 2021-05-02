@@ -15,18 +15,17 @@
  */
 package com.shorindo.docs.plaintext;
 
+import java.util.Locale;
+
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.annotation.ContentType;
 import com.shorindo.docs.document.DocumentController;
-import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
-import com.shorindo.docs.view.AbstractView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView;
+import com.shorindo.xuml.XumlView2;
 
 /**
  * 
@@ -47,12 +46,10 @@ public class PlainTextController extends DocumentController {
         //LOG.debug("action()->" + context.getParameter("action"));
         try {
             DocumentModel model = getModel(context);
-            switch (getAction(context)) {
-            case "edit":
-                return new PlainTextEdit(model);
-            default:
-                return new PlainTextView(model);
-            }
+            context.addModel("lang", Locale.JAPANESE);
+            context.addModel("document", model);
+            context.addModel("recents", recents(context));
+            return XumlView2.create("plaintext/xuml/plaintext.xuml");
         } catch (Exception e) {
             LOG.error(DocumentMessages.DOCS_9001, e);
             return new ErrorView(500);

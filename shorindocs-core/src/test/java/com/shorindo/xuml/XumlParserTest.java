@@ -527,10 +527,10 @@ public class XumlParserTest {
         assertXuml("xuml/test-all.xuml", "{'title':'タイトル'}");
     }
 
-    @Test
-    public void testSpecout() throws Exception {
-        assertXuml("specout/xuml/specout.xuml", "{}");
-    }
+//    @Test
+//    public void testSpecout() throws Exception {
+//        assertXuml("specout/xuml/specout.xuml", "{}");
+//    }
 
     private void assertXuml(String fileName, String json) throws Exception {
         InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);

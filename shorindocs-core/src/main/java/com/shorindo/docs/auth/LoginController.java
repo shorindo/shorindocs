@@ -17,17 +17,18 @@ package com.shorindo.docs.auth;
 
 import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
 
+import java.util.Optional;
+
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.annotation.ActionMapping;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlView2;
 
 /**
  * 
  */
-@ActionMapping("/login")
 public class LoginController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(LoginController.class);
 
@@ -37,9 +38,12 @@ public class LoginController extends ActionController {
     @Override
     public View action(ActionContext context, Object...args) {
         try {
-//            context.setAttribute("title", "ログイン");
-//            context.setAttribute("message", "ログインしてください");
-            return new LoginView();
+            StringBuilder sb = new StringBuilder()
+                .append(context.getContextPath())
+                .append(Optional.ofNullable(context.getParameter("refer"))
+                    .orElse("/"));
+            context.addModel("refer", sb.toString());
+            return XumlView2.create("auth/xuml/login.xuml");
         } catch (Exception e) {
             LOG.error(DOCS_9999, e);
             return new ErrorView(500);

@@ -23,6 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.IdentityManager;
@@ -115,9 +116,15 @@ public class AuthenticateServiceImpl implements AuthenticateService {
     public void logout(String sessionId) {
     }
 
-    public UserModel authenticate(String sessionId) throws AuthenticateException {
+    public UserModel authenticate(String sessionId, UserModel user) throws AuthenticateException {
+        if (sessionId == null) {
+            return new UserEntity();
+        }
+        if (user != null) {
+            return user;
+        }
         try {
-            List<UserEntity> userList = repositoryService.queryList(
+            Optional<UserEntity> ouser = repositoryService.querySingle(
                     "SELECT * " +
                     "FROM   AUTH_USER " +
                     "WHERE  USER_ID=( " +
@@ -127,10 +134,7 @@ public class AuthenticateServiceImpl implements AuthenticateService {
                     ")",
                     UserEntity.class,
                     sessionId);
-            if (userList.size() > 0)
-                return userList.get(0);
-            else
-                return null;
+            return ouser.orElse(new UserEntity());
         } catch (RepositoryException e) {
             throw new AuthenticateException(e);
         }

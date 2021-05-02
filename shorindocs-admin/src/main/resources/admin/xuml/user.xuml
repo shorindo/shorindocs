@@ -1,0 +1,6 @@
+<xuml:xuml>
+  <xuml:import file="xuml/layout.xuml"/>
+
+  <xuml:apply name="layout.LC">
+  </xuml:apply>
+</xuml:xuml>

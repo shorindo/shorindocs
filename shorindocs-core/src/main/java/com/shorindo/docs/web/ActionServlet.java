@@ -68,6 +68,12 @@ public class ActionServlet extends HttpServlet {
             .queryString(req.getQueryString());
 
         try {
+            ActionController controller = (ActionController)ApplicationContext.getAction(path);
+            if (controller != null) {
+                output(context, res, controller.action(context));
+                return;
+            }
+
             if (documentId == null || "".equals(documentId)) {
                 res.setStatus(302);
                 String location = context.getContextPath() + "/index";
@@ -81,8 +87,8 @@ public class ActionServlet extends HttpServlet {
                 output(context, res, new DefaultView(file, context));
                 return;
             }
-            
-            ActionController controller = DocumentServiceFactory.getController(context.getPath());
+
+            controller = DocumentServiceFactory.getController(context.getPath());
             if (controller != null) {
                 output(context, res, controller.action(context));
                 return;

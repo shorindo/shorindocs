@@ -116,6 +116,8 @@ textarea.text-editor {
   border-bottom: 1px solid gray;
   background: #EEEEEE;
   margin-bottom: 5px;
+  padding-top: 1px;
+  padding-bottom: 1px;
 }
 .xuml-menubar-left {
   float: left;
