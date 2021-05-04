@@ -23,8 +23,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.shorindo.docs.IdentityManager;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.auth.AuthenticateService;
 import com.shorindo.docs.model.DocumentModel;
+import com.shorindo.docs.model.UserModel;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.DatabaseSchema;
 import com.shorindo.docs.repository.RepositoryService;
@@ -34,15 +37,19 @@ import com.shorindo.docs.repository.Transactional;
  * 
  */
 public class DocumentServiceImpl implements DocumentService {
-    private static ActionLogger LOG =
-            ActionLogger.getLogger(DocumentServiceImpl.class);
+    private static ActionLogger LOG = ActionLogger.getLogger(DocumentServiceImpl.class);
+    protected AuthenticateService authenticateService;
     protected RepositoryService repositoryService;
 
     /**
      * 
      */
-    public DocumentServiceImpl(RepositoryService repositoryService) {
-    	this.repositoryService = repositoryService;
+    public DocumentServiceImpl(
+            AuthenticateService authenticateService,
+            RepositoryService repositoryService) {
+        this.authenticateService = authenticateService;
+        this.repositoryService = repositoryService;
+        //FIXME 起動時には初期化されないのでここじゃない this.validate();
     }
 
     public void validate() {
@@ -54,11 +61,8 @@ public class DocumentServiceImpl implements DocumentService {
         }
         try {
             DatabaseSchema schema = repositoryService.loadSchema(is);
-            for (DatabaseSchema.Entity e : schema.getEntityList()) {
-                String ddl = repositoryService.generateDDL((DatabaseSchema.Table)e);
-                LOG.info(ddl);
-            }
-        } catch (RepositoryException e) {
+            repositoryService.validateSchema(schema);
+        } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         } finally {
             if (is != null)
@@ -72,10 +76,14 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentModel load(String documentId) {
+        return load(documentId, 0);
+    }
+
+    public DocumentModel load(String documentId, int version) {
         try {
             DocumentEntity entity = new DocumentEntity();
             entity.setDocumentId(documentId);
-            entity.setVersion(0);
+            entity.setVersion(version);
             return repositoryService.get(entity);
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
@@ -83,8 +91,27 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Transactional
+    public DocumentModel create(String docType) throws RepositoryException {
+        UserModel user = authenticateService.getUser();
+        DocumentEntity entity = new DocumentEntity();
+        entity.setDocumentId(Long.toString(IdentityManager.newId()));
+        entity.setController(docType);
+        entity.setNamespace(docType);
+        entity.setVersion(-1);
+        entity.setTitle("");
+        entity.setOwnerId(user.getUserId());
+        entity.setCreateUser(user.getUserId());
+        entity.setCreateDate(new java.util.Date());
+        entity.setUpdateUser(user.getUserId());
+        entity.setUpdateDate(new java.util.Date());
+        repositoryService.insert(entity);
+        return load(entity.getDocumentId(), entity.getVersion());
+    }
+
+    @Transactional
     public DocumentModel save(DocumentModel model) {
         try {
+            UserModel user = authenticateService.getUser();
             DocumentEntity entity = new DocumentEntity(model);
             Optional<DocumentEntity> prev = repositoryService.querySingle(
                     "SELECT * " +
@@ -92,10 +119,10 @@ public class DocumentServiceImpl implements DocumentService {
                     "WHERE  DOCUMENT_ID=? AND VERSION=0",
                     DocumentEntity.class,
                     model.getDocumentId());
-            entity.setOwnerId("ownerId"); // FIXME
-            entity.setCreateUser("createUser"); // FIXME
+            entity.setOwnerId(user.getUserId());
+            entity.setCreateUser(user.getUserId());
             entity.setCreateDate(new java.util.Date());
-            entity.setUpdateUser("updateUser"); // FIXME
+            entity.setUpdateUser(user.getUserId());
             entity.setUpdateDate(new java.util.Date());
             if (prev.isPresent()) {
                 List<DocumentEntity> entityList = repositoryService.queryList(
@@ -107,9 +134,12 @@ public class DocumentServiceImpl implements DocumentService {
                 int version = entityList.get(0).getVersion();
                 repositoryService.execute(
                         "UPDATE DOCS_DOCUMENT " +
-                        "SET    VERSION=? " +
+                        "SET    VERSION=?, " +
+                        "       UPDATE_USER=?," +
+                        "       UPDATE_DATE=?" +
                         "WHERE  DOCUMENT_ID=? AND VERSION=0",
-                        version + 1, prev.get().getDocumentId());
+                        version + 1, prev.get().getDocumentId(),
+                        user.getUserId(), new java.util.Date());
             }
             repositoryService.insert(entity);
             return repositoryService.get(entity);
@@ -145,10 +175,10 @@ public class DocumentServiceImpl implements DocumentService {
       }
     }
 
-    @Override
-    public DocumentEntity newDocument() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//    @Override
+//    public DocumentEntity newDocument() {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
 
 }

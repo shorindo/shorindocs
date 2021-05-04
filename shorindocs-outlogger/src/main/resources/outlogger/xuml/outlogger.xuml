@@ -1,0 +1,14 @@
+<xuml:xuml namespace="specout">
+  <xuml:import file="xuml/layout.xuml"/>
+
+  <xuml:apply name="layout.LCR">
+    <xuml:template name="CENTER">
+      <ol>
+      <xuml:each item="log" value="${logList}">
+        <li>${log.content}</li>
+      </xuml:each>
+      </ol>
+    </xuml:template>
+  </xuml:apply>
+
+</xuml:xuml>

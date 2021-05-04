@@ -19,9 +19,9 @@ import java.util.Locale;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.annotation.ContentType;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentMessages;
+import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
@@ -30,12 +30,11 @@ import com.shorindo.xuml.XumlView2;
 /**
  * 
  */
-@ContentType("text/plain")
 public class PlainTextController extends DocumentController {
-    private static final ActionLogger LOG =
-            ActionLogger.getLogger(PlainTextController.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(PlainTextController.class);
 
-    public PlainTextController() {
+    public PlainTextController(DocumentService documentService) {
+        super(documentService);
     }
 
     /**

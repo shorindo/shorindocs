@@ -18,28 +18,32 @@ package com.shorindo.docs.outlogger;
 import static com.shorindo.docs.outlogger.OutloggerMessages.*;
 
 import java.util.List;
+import java.util.Locale;
 
-import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.annotation.ContentType;
 import com.shorindo.docs.document.DocumentController;
+import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentException;
+import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlView2;
 
 /**
  * 
  */
-@ContentType("application/x-outlogger")
 public class OutloggerController extends DocumentController {
     private static final ActionLogger LOG =
             ActionLogger.getLogger(OutloggerController.class);
     private OutloggerService outloggerService;
 
-    public OutloggerController(OutloggerService outloggerService) {
-    	this.outloggerService = outloggerService;
+    public OutloggerController(
+            DocumentService documentService,
+            OutloggerService outloggerService) {
+        super(documentService);
+        this.outloggerService = outloggerService;
     }
 
     /**
@@ -48,7 +52,17 @@ public class OutloggerController extends DocumentController {
     @Override @ActionMethod
     public View action(ActionContext context, Object...args) {
         try {
-            return new OutloggerView();
+            DocumentEntity document = (DocumentEntity)args[0];
+//            OutloggerMetaData metaData = JAXB.unmarshal(new StringReader(document.getContent()), OutloggerMetaData.class);
+            OutloggerEntity entity = new OutloggerEntity();
+            entity.setDocumentId(document.getDocumentId());
+            List<OutloggerEntity> entityList = outloggerService.listLog(entity);
+            context.addModel("lang", Locale.JAPANESE);
+            context.addModel("document", document);
+            context.addModel("logList", entityList);
+            context.addModel("recents", recents(context));
+            return XumlView2.create("outlogger/xuml/outlogger.xuml");
+            //return new OutloggerView();
         } catch (Exception e) {
             LOG.error(OLOG_9999, e);
             return new ErrorView(500);

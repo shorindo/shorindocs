@@ -17,10 +17,8 @@ package com.shorindo.docs.document;
 
 import static com.shorindo.docs.document.DocumentMessages.*;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.IdentityManager;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
@@ -39,16 +37,16 @@ import com.shorindo.docs.view.View;
  */
 public abstract class DocumentController extends ActionController
         implements DocumentControllable {
-    private static final ActionLogger LOG =
-            ActionLogger.getLogger(DocumentController.class);
-    private final DocumentService documentService =
-    	ApplicationContext.getBean(DocumentService.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(DocumentController.class);
+    private final DocumentService documentService;
 
-//    public static void setup(List<Class<?>> clazzList) {
-//        for (Class<?> clazz : clazzList) {
-//            LOG.info(DOCS_1120, clazz.getName());
-//        }
-//    }
+    public DocumentController(DocumentService documentService) {
+        this.documentService = documentService;
+    }
+
+    protected DocumentService getDocumentService() {
+        return documentService;
+    }
 
     /**
      * 
@@ -59,9 +57,6 @@ public abstract class DocumentController extends ActionController
 
     /**
      * 
-     * @param context
-     * @return
-     * @throws DocumentException
      */
     @ActionMethod
     @Override
@@ -74,9 +69,7 @@ public abstract class DocumentController extends ActionController
     }
 
     /**
-     * @param context
-     * @return
-     * @throws DocumentException
+     *
      */
     @ActionMethod
     @Override
@@ -90,9 +83,7 @@ public abstract class DocumentController extends ActionController
     }
 
     /**
-     * @param context
-     * @return
-     * @throws DocumentException
+     *
      */
     @ActionMethod
     public View create(ActionContext context) throws DocumentException {
@@ -117,9 +108,7 @@ public abstract class DocumentController extends ActionController
     }
 
     /**
-     * @param context
-     * @return
-     * @throws DocumentException
+     *
      */
     @ActionMethod
     @Override
@@ -137,8 +126,7 @@ public abstract class DocumentController extends ActionController
     }
 
     /**
-     * @return
-     * @throws SQLException
+     *
      */
     protected List<DocumentModel> recents(ActionContext context) throws RepositoryException {
         return documentService.recents(context.getPath().substring(1));

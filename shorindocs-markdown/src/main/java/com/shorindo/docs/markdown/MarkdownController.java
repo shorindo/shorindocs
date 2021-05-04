@@ -17,7 +17,6 @@ package com.shorindo.docs.markdown;
 
 import java.util.Locale;
 
-import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentController;
@@ -35,7 +34,9 @@ public class MarkdownController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(MarkdownController.class);
     private MarkdownService markdownService;
 
-    public MarkdownController(MarkdownService markdownService) {
+    public MarkdownController(DocumentService documentService,
+            MarkdownService markdownService) {
+        super(documentService);
         this.markdownService = markdownService;
     }
 

@@ -38,34 +38,34 @@ public class ActionListener implements ServletContextListener {
      * 
      */
     public void contextInitialized(ServletContextEvent event) {
-    	String configFile = event.getServletContext().getInitParameter("config");
-    	LOG.debug("config = {0}", configFile);
-    	if (configFile.startsWith("classpath:")) {
-    		try {
-        		String path = configFile.substring("classpath:".length());
-        		InputStream is = getClass().getClassLoader().getResourceAsStream(path);
-        		ApplicationContext.load(is);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	} else {
-    		File file = new File(event.getServletContext().getRealPath(configFile));
-    		try (InputStream is = new FileInputStream(file)) {
-    			ApplicationContext.load(is);
-    		} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	}
+        String configFile = event.getServletContext().getInitParameter("config");
+        LOG.debug("config = {0}", configFile);
+        if (configFile.startsWith("classpath:")) {
+            try {
+                String path = configFile.substring("classpath:".length());
+                InputStream is = getClass().getClassLoader().getResourceAsStream(path);
+                ApplicationContext.init(is);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            File file = new File(event.getServletContext().getRealPath(configFile));
+            try (InputStream is = new FileInputStream(file)) {
+                ApplicationContext.load(is);
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
         //XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
 
         ApplicationContext.getBean(PluginService.class)
-        	.findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
+            .findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
     }
 
     /**

@@ -32,10 +32,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import com.shorindo.docs.ApplicationContextConfig.Action;
@@ -53,40 +53,40 @@ import com.shorindo.docs.repository.Transactional;
 public class ApplicationContext {
     private static final Locale DEFAULT_LANG = Locale.JAPANESE;
     private static final ActionLogger LOG = ActionLogger.getLogger(ApplicationContext.class);
-    private static final Properties props = new Properties();
-    private static Map<Class<?>,Class<?>> interfaceMap = new ConcurrentHashMap<>();
-    private static Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<>();
-    private static Map<Pattern,Object> actionMap = new ConcurrentHashMap<>();
-    private static Set<TxEventListener> listenerSet = new HashSet<TxEventListener>();
+    private static ApplicationContext rootContext;
+    private String namespace;
+    private Properties props = new Properties();
+    private Map<String,ApplicationContext> contextMap = new ConcurrentHashMap<>();
+    private Map<Class<?>,Class<?>> interfaceMap = new ConcurrentHashMap<>();
+    private Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<>();
+    private Map<Pattern,Object> actionMap = new ConcurrentHashMap<>();
+    private Set<TxEventListener> listenerSet = new HashSet<TxEventListener>();
 
-    private ApplicationContext() {
+    public static void addContext(String namespace, ApplicationContext context) {
+        rootContext.contextMap.put(namespace, context);
     }
 
-    public static void getRootContext() {
+    public static ApplicationContext getContext(String namespace) {
+        return rootContext.contextMap.get(namespace);
     }
 
-    public static void getContext(String namespace) {
+    public static void init(InputStream is) throws IOException {
+        rootContext = load(is);
     }
 
-    /**
-     * 
-     * @param is
-     * @return
-     * @throws IOException
-     */
-    public static ApplicationContextConfig load(InputStream is) throws IOException {
+    public static ApplicationContext load(InputStream is) throws IOException {
         ApplicationContextConfig config = ApplicationContextConfig.load(is);
-        evaluate(config);
-        return config;
+        ApplicationContext context = new ApplicationContext(config);
+        return context;
     }
 
     /**
-     * 
      * @param config
      */
-    private static void evaluate(ApplicationContextConfig config) {
+    private ApplicationContext(ApplicationContextConfig config) {
         for (Include include : config.getIncludes()) {
             LOG.debug("include({0})", include.getFile());
+            include(include.getFile());
         }
         for (Property prop : config.getProperties()) {
             props.put(prop.getName(), prop.getValue());
@@ -96,12 +96,13 @@ public class ApplicationContext {
                 String name = bean.getName();
                 String clazz = bean.getClassName();
                 if (clazz == null) {
-                    addBean(Class.forName(name));
+                    Class<?> cls = Class.forName(name);
+                    addBeanPrivate(cls);
                 } else {
                     Class<?> iface = Class.forName(name);
                     Class<?> impl = Class.forName(clazz);
                     if (iface.isAssignableFrom(impl)) {
-                        addBean(iface, impl);
+                        addBeanPrivate(iface, impl);
                     } else {
                         throw new BeanNotFoundException(name + " -> " + clazz);
                     }
@@ -124,13 +125,30 @@ public class ApplicationContext {
                     if (impl != null) {
                         actionMap.put(Pattern.compile(action.getPath()), impl);
                     } else {
-                        addBean(clazz);
-                        actionMap.put(Pattern.compile(action.getPath()), getBean(clazz));
+                        addBeanPrivate(clazz);
+                        actionMap.put(Pattern.compile(action.getPath()), getBeanPrivate(clazz));
                     }
                 } catch (Exception e) {
                     throw new BeanNotFoundException(action.getName() + " -> " + action.getName());
                 }
             }
+        }
+
+        this.namespace = config.getNamespace();
+        if (namespace != null && "".equals(namespace)) {
+            rootContext.contextMap.put(namespace, this);
+        }
+    }
+
+    private void include(String fileName) {
+        try (InputStream is = ApplicationContext.class.getClassLoader().getResourceAsStream(fileName)) {
+            ApplicationContext context = load(is);
+            // TODO
+            for (Entry<Object,Object> prop : context.props.entrySet()) {
+                props.put(prop.getKey(), prop.getValue());
+            }
+        } catch (Exception e) {
+            LOG.error(APPL_5001, e, fileName);
         }
     }
 
@@ -139,7 +157,7 @@ public class ApplicationContext {
      * @return
      */
     public static Properties getProperties() {
-        return props;
+        return rootContext.props;
     }
 
     /**
@@ -148,7 +166,7 @@ public class ApplicationContext {
      * @return
      */
     public static String getProperty(String key) {
-        return props.getProperty(key);
+        return rootContext.props.getProperty(key);
     }
 
     /**
@@ -157,6 +175,10 @@ public class ApplicationContext {
      */
     public static Locale getLang() {
         return DEFAULT_LANG;
+    }
+
+    public String getNamespace() {
+        return namespace;
     }
 
     /**
@@ -175,10 +197,14 @@ public class ApplicationContext {
      * @param impl
      */
     public static synchronized void addBean(Class<?> impl) {
+        rootContext.addBeanPrivate(impl);
+    }
+
+    private synchronized void addBeanPrivate(Class<?> impl) {
         if (interfaceMap.containsKey(impl)) {
             LOG.warn(DOCS_9006, impl.getName());
         } else {
-        	LOG.info(APPL_001, impl.getName());
+            LOG.info(APPL_001, impl.getName());
             interfaceMap.put(impl, impl);
             instanceMap.remove(impl);
         }
@@ -191,10 +217,14 @@ public class ApplicationContext {
      * @param impl beanの実装クラス
      */
     public static synchronized <T> void addBean(Class<T> itfc, Class<?> impl) {
+        rootContext.addBeanPrivate(itfc, impl);
+    }
+
+    private synchronized <T> void addBeanPrivate(Class<T> itfc, Class<?> impl) {
         if (interfaceMap.containsKey(itfc)) {
             LOG.warn(DOCS_9006, itfc.getName());
         } else {
-        	LOG.info(APPL_002, itfc.getName(), impl.getName());
+            LOG.info(APPL_002, itfc.getName(), impl.getName());
             interfaceMap.put(itfc, impl);
             instanceMap.remove(itfc);
         }
@@ -207,13 +237,13 @@ public class ApplicationContext {
      * @param itfc beanのインターフェース
      * @param c    beanのインスタンス
      */
-    public static synchronized <T> void addBean(Class<T> itfc, Function<Class<T>,T> c) {
-        if (instanceMap.containsKey(itfc)) {
-            LOG.warn(DOCS_9006, itfc.getName());
-        } else {
-            instanceMap.put(itfc, c.apply(null));
-        }
-    }
+//    public static synchronized <T> void addBean(Class<T> itfc, Function<Class<T>,T> c) {
+//        if (instanceMap.containsKey(itfc)) {
+//            LOG.warn(DOCS_9006, itfc.getName());
+//        } else {
+//            instanceMap.put(itfc, c.apply(null));
+//        }
+//    }
 
     /**
      * beanをシングルトンで取得する
@@ -221,8 +251,22 @@ public class ApplicationContext {
      * @param itfc beanのインタフェース
      * @return     bean
      */
+    public static synchronized <T> T getBean(Class<T> itfc) {
+        try {
+            return rootContext.getBeanPrivate(itfc);
+        } catch (BeanNotFoundException e) {
+            for (Entry<String,ApplicationContext> entry : rootContext.contextMap.entrySet()) {
+                try {
+                    return entry.getValue().getBeanPrivate(itfc);
+                } catch (BeanNotFoundException ex) {
+                }
+            }
+        }
+        throw new BeanNotFoundException(itfc.getName());
+    }
+
     @SuppressWarnings("unchecked")
-	public static synchronized <T> T getBean(Class<T> itfc) {
+    private synchronized <T> T getBeanPrivate(Class<T> itfc) throws BeanNotFoundException {
         try {
             if (instanceMap.containsKey(itfc)) {
                 return (T)instanceMap.get(itfc);
@@ -274,7 +318,7 @@ public class ApplicationContext {
                 throw new BeanNotFoundException("No implementation defined for '" + itfc + "'.");
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new BeanNotFoundException(e);
         }
     }
 
@@ -284,6 +328,10 @@ public class ApplicationContext {
      * @return
      */
     public static Object getAction(String path) {
+        return rootContext.getActionPrivate(path);
+    }
+
+    private Object getActionPrivate(String path) {
         return actionMap.entrySet()
             .stream()
             .filter(e -> { return e.getKey().matcher(path).matches(); })
@@ -295,7 +343,7 @@ public class ApplicationContext {
     /**
      * トランザクションリスナーを登録する
      */
-    private static void addListener(TxEventListener listener) {
+    private void addListener(TxEventListener listener) {
         listenerSet.add(listener);
     }
 
@@ -327,7 +375,7 @@ public class ApplicationContext {
     /**
      * トランザクションリスナーにイベントを送信する
      */
-    private static void sendEvent(boolean transactional, TxEventType type,
+    private void sendEvent(boolean transactional, TxEventType type,
             Object instance, Method method) {
         if (transactional) {
             for (TxEventListener listener : listenerSet) {

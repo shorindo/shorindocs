@@ -24,8 +24,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.IdentityManager;
-import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.repository.RepositoryService;
@@ -48,20 +46,20 @@ public class OutloggerServiceTest {
         outloggerService = ApplicationContext.getBean(OutloggerService.class);
     }
 
-    @Test
-    public void testCreateMeta() throws Exception {
-        DocumentEntity entity = outloggerService.newDocument();
-        entity.setDocumentId(Long.toString(IdentityManager.newId()));
-        entity.setController(OutloggerController.class.getName());
-        entity.setTitle("test outlogger");
-        entity.setContent("");
-        entity.setOwnerId("outlogger");
-        entity.setCreateUser("outlogger");
-        entity.setCreateDate(new Date());
-        entity.setUpdateUser("outlogger");
-        entity.setUpdateDate(new Date());
-        outloggerService.save(entity);
-    }
+//    @Test
+//    public void testCreateMeta() throws Exception {
+//        DocumentEntity entity = outloggerService.newDocument();
+//        entity.setDocumentId(Long.toString(IdentityManager.newId()));
+//        entity.setController(OutloggerController.class.getName());
+//        entity.setTitle("test outlogger");
+//        entity.setContent("");
+//        entity.setOwnerId("outlogger");
+//        entity.setCreateUser("outlogger");
+//        entity.setCreateDate(new Date());
+//        entity.setUpdateUser("outlogger");
+//        entity.setUpdateDate(new Date());
+//        outloggerService.save(entity);
+//    }
 
     @Test
     public void testAddLog() throws Exception {

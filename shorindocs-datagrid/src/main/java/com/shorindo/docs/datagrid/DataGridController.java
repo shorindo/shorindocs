@@ -15,7 +15,6 @@
  */
 package com.shorindo.docs.datagrid;
 
-import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentController;
@@ -30,10 +29,9 @@ import com.shorindo.docs.view.View;
  */
 public class DataGridController extends DocumentController {
     private static ActionLogger LOG = ActionLogger.getLogger(DataGridController.class);
-    private DocumentService service;
 
     public DataGridController(DocumentService service) {
-    	this.service = service;
+        super(service);
     }
 
     @Override
@@ -49,7 +47,7 @@ public class DataGridController extends DocumentController {
             return new DataGridEdit(model);
         } else if ("save".equals(action)) {
             ((DocumentEntity)model).setContent(context.getParameter("content"));
-            service.save(model);
+            getDocumentService().save(model);
             return new RedirectView(model.getDocumentId());
         } else {
             return new DataGridView(model);

@@ -21,7 +21,7 @@
             <type>varchar</type>
             <size>32</size>
             <notNull>false</notNull>
-        </column
+        </column>
         <column>
             <name>CONTENT_TYPE</name>
             <type>varchar</type>

@@ -88,6 +88,7 @@ public class ActionServlet extends HttpServlet {
                 return;
             }
 
+            // キャッシュ
             controller = DocumentServiceFactory.getController(context.getPath());
             if (controller != null) {
                 output(context, res, controller.action(context));
@@ -98,11 +99,13 @@ public class ActionServlet extends HttpServlet {
             key.setDocumentId(path.substring(1));
             key.setVersion(0);
             DocumentEntity entity = repositoryService.get(key);
+            // NOT FOUND
             if (entity == null) {
                 output(context, res, new ErrorView(404));
                 return;
             }
-            
+
+            // namespace
             controller = DocumentServiceFactory.getController(entity);
             if (controller != null) {
                 output(context, res, controller.action(context, entity));

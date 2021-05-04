@@ -64,14 +64,13 @@
 
 # TODO
 
-1. xuml
-1. パスマッピング
-1. include
-1. ApplicationContextのnamespace対応
+1. <s>xuml</s>
+1. <s>パスマッピング</s>
+1. <s>include</s>
+1. <s>ApplicationContextのnamespace対応</s>
 1. ActionContextをThreadLocalにする
 1. Viewからpull
 1. バージョン管理 ・ 一時保存
-1. namespace
 1. 認証
 1. アクセス制御
 1. Repository修正

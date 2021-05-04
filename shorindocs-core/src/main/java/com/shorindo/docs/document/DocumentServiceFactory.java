@@ -31,20 +31,9 @@ import com.shorindo.docs.model.DocumentModel;
  */
 public abstract class DocumentServiceFactory {
     @SuppressWarnings("unused")
-	private static final ActionLogger LOG =
-            ActionLogger.getLogger(DocumentServiceFactory.class);
+	private static final ActionLogger LOG = ActionLogger.getLogger(DocumentServiceFactory.class);
     private static final Map<String,ActionController> controllerMap = new HashMap<>();
     private static final Map<String,ActionController> classMap = new HashMap<>();
-
-    /**
-     * 
-     * @param path
-     * @param clazz
-     */
-//    public static synchronized void addController(String path, Class<? extends ActionController> clazz) {
-//    	ApplicationContext.addBean(clazz);
-//    	controllerMap.put(path, ApplicationContext.getBean(clazz));
-//    }
 
     public static synchronized ActionController getController(DocumentModel model) throws ActionError {
         if (classMap.containsKey(model.getController())) {
@@ -66,6 +55,9 @@ public abstract class DocumentServiceFactory {
      * @return
      */
     public static synchronized ActionController getController(String path) {
-    	return controllerMap.get(path);
+        return controllerMap.get(path);
+    }
+
+    public static void list() {
     }
 }

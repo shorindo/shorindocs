@@ -19,12 +19,17 @@ import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
+import com.shorindo.docs.auth.AuthenticateService;
+import com.shorindo.docs.auth.entity.UserEntity;
 import com.shorindo.docs.model.DocumentModel;
+import com.shorindo.docs.model.GroupModel;
+import com.shorindo.docs.model.UserModel;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.repository.RepositoryServiceImpl;
 
@@ -34,14 +39,14 @@ import com.shorindo.docs.repository.RepositoryServiceImpl;
 public class DocumentServiceTest {
     @BeforeClass
     public static void setUpBefore() throws Exception {
-        InputStream is = new FileInputStream("src/test/resources/site.properties");
-//        ApplicationContext.load(is);
-        ApplicationContext.addBean(
-                RepositoryService.class,
-                RepositoryServiceImpl.class);
-        ApplicationContext.addBean(
-                DocumentService.class,
-                DocumentServiceImpl.class);
+        InputStream is = new FileInputStream("src/main/resources/application-config.xml");
+        ApplicationContext.init(is);
+//        ApplicationContext.addBean(
+//                RepositoryService.class,
+//                RepositoryServiceImpl.class);
+//        ApplicationContext.addBean(
+//                DocumentService.class,
+//                DocumentServiceImpl.class);
     }
 
     @Test
@@ -55,5 +60,47 @@ public class DocumentServiceTest {
         DocumentService service = ApplicationContext.getBean(DocumentService.class);
         DocumentModel model = service.load("index");
         assertNotNull(model);
+    }
+
+    @Test
+    public void testCreate() throws Exception {
+        AuthenticateService authenticateService = ApplicationContext.getBean(AuthenticateService.class);
+        authenticateService.setUser(createUser());
+        DocumentService service = ApplicationContext.getBean(DocumentService.class);
+        DocumentModel model = service.create(getClass().getSimpleName());
+        assertNotNull(model);
+    }
+
+    private UserModel createUser() {
+        return new UserModel() {
+            @Override
+            public String getId() {
+                return getUserId();
+            }
+            @Override
+            public String getUserId() {
+                return Thread.currentThread().getName();
+            }
+            @Override
+            public String getLoginName() {
+                return null;
+            }
+            @Override
+            public String getPassword() {
+                return null;
+            }
+            @Override
+            public String getDisplayName() {
+                return null;
+            }
+            @Override
+            public String getMail() {
+                return null;
+            }
+            @Override
+            public List<GroupModel> getGroupList() {
+                return null;
+            }
+        };
     }
 }

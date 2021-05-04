@@ -58,8 +58,9 @@ public class PluginServiceImpl implements PluginService {
                     String name = entry.getName();
                     if (PLUGIN_FILE.equals(name)) {
                         LOG.info(APPL_004, file.getName());
-                        ApplicationContextConfig config = ApplicationContext.load(jarFile.getInputStream(entry));
-                        LOG.info(APPL_005, config.getNamespace());
+                        ApplicationContext context = ApplicationContext.load(jarFile.getInputStream(entry));
+                        ApplicationContext.addContext(context.getNamespace(), context);
+                        LOG.info(APPL_005, context.getNamespace());
                         break;
                     }
                 }

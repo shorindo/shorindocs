@@ -15,8 +15,6 @@
  */
 package com.shorindo.docs.datagrid;
 
-import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
-
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionPlugin;

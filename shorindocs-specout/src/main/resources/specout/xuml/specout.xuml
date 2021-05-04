@@ -50,7 +50,7 @@ tr.spec:nth-child(odd) {
         <xuml:each item="spec" value="${specout.specList}">
           <tr class="spec">
             <td style="text-align:center;">${spec.specId}</td>
-            <td><div class="description level-0">${spec.description}</div></td>
+            <td><div class="description level-${spec.level}">${spec.description}</div></td>
             <td>${spec.reason}</td>
             <td>${spec.source}</td>
             <td>${spec.version}</td>

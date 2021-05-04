@@ -58,6 +58,11 @@ public class DocumentControllerTest {
             public String getContent() {
                 return new Date().toString();
             }
+            @Override
+            public String getNamespace() {
+                // TODO Auto-generated method stub
+                return null;
+            }
             
         };
         client.save(model);
@@ -131,6 +136,12 @@ public class DocumentControllerTest {
         @Override
         public String getContent() {
             return content;
+        }
+
+        @Override
+        public String getNamespace() {
+            // TODO Auto-generated method stub
+            return null;
         }
         
     }

@@ -27,6 +27,10 @@ import com.shorindo.docs.model.UserModel;
 public interface AuthenticateService {
     public void validate();
 
+    // user information
+    public void setUser(UserModel user);
+    public UserModel getUser();
+
     // session management
     public SessionModel login(String loginName, String password) throws AuthenticateException;
     public void logout(String sessionId);

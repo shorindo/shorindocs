@@ -18,12 +18,14 @@ package com.shorindo.docs.document;
 import java.util.List;
 
 import com.shorindo.docs.model.DocumentModel;
+import com.shorindo.docs.repository.RepositoryException;
 
 /**
  * 
  */
 public interface DocumentService extends DocumentControllable {
     public void validate();
-    public DocumentEntity newDocument();
+    public DocumentModel create(String id) throws RepositoryException;
+//    public DocumentEntity newDocument();
     public List<DocumentModel> recents(String documentId);
 }

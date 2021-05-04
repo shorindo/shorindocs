@@ -21,8 +21,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 
-import com.shorindo.docs.outlogger.ProxyInputStream;
-import com.shorindo.docs.outlogger.ProxyOutputStream;
 import com.shorindo.docs.web.JsonRpcRequest;
 import com.shorindo.docs.web.JsonRpcResponse;
 

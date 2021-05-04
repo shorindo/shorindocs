@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config>
+    <property name="logger.appender.stdout" value="org.apache.log4j.ConsoleAppender"/>
+    <property name="logger.appender.stdout.Target" value="System.out"/>
+    <property name="logger.appender.stdout.layout" value="org.apache.log4j.PatternLayout"/>
+    <property name="logger.appender.stdout.layout.ConversionPattern" value="%d %5p %c{1} - %m%n"/>
+    <property name="logger.rootLogger" value="debug, stdout"/>
+
+    <include file="site-config.xml"/>
+
+    <bean name="javax.sql.DataSource" class="com.shorindo.docs.repository.RepositoryDataSource" />
+    <bean name="com.shorindo.docs.plugin.PluginService" class="com.shorindo.docs.plugin.PluginServiceImpl" />
+    <bean name="com.shorindo.docs.repository.RepositoryService" class="com.shorindo.docs.repository.RepositoryServiceImpl"/>
+    <bean name="com.shorindo.docs.document.DocumentService" class="com.shorindo.docs.document.DocumentServiceImpl"/>
+    <bean name="com.shorindo.docs.document.DocumentController" />
+    <bean name="com.shorindo.docs.auth.AuthenticateService" class="com.shorindo.docs.auth.AuthenticateServiceImpl"/>
+
+    <action path="/login" name="com.shorindo.docs.auth.LoginController" />
+    <action path="/logout" name="com.shorindo.docs.auth.LogoutController" />
+    <!-- action path="/{[0-9]+}" name="com.shorindo.docs.document.DocumentController" / -->
+</config>

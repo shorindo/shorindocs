@@ -23,12 +23,11 @@ import java.util.Locale;
 import javax.xml.bind.JAXB;
 
 import com.shorindo.docs.action.ActionContext;
-import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.annotation.ContentType;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentEntity;
+import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.JsonView;
 import com.shorindo.docs.view.AbstractView;
@@ -38,11 +37,11 @@ import com.shorindo.xuml.XumlView2;
 /**
  * 
  */
-@ContentType("application/x-specout")
 public class SpecoutController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(SpecoutController.class);
 
-    public SpecoutController() {
+    public SpecoutController(DocumentService documentService) {
+        super(documentService);
     }
 
     /**
@@ -75,7 +74,7 @@ public class SpecoutController extends DocumentController {
      * @return
      */
     @ActionMethod
-    public AbstractView edit(ActionContext context, Object...args) {
+    public View edit(ActionContext context, Object...args) {
     	DocumentEntity model = (DocumentEntity)args[0];
         SpecoutEntity specout = JAXB.unmarshal(new StringReader(model.getContent()), SpecoutEntity.class);
         return new JsonView(specout, context);

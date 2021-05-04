@@ -44,6 +44,7 @@ import com.shorindo.docs.repository.Transactional;
  */
 public class AuthenticateServiceImpl implements AuthenticateService {
     private static final ActionLogger LOG = ActionLogger.getLogger(AuthenticateServiceImpl.class);
+    private static final ThreadLocal<UserModel> userLocal = new ThreadLocal<>();
     private RepositoryService repositoryService;
 
     public AuthenticateServiceImpl(RepositoryService repositoryService) {
@@ -77,16 +78,16 @@ public class AuthenticateServiceImpl implements AuthenticateService {
     @Transactional
     public SessionModel login(String loginName, String password) throws AuthenticateException {
         try {
-            List<UserEntity> userList = repositoryService.queryList(
+            Optional<UserEntity> user = repositoryService.querySingle(
                     "SELECT * " +
                     "FROM AUTH_USER WHERE LOGIN_NAME=?",
                     UserEntity.class,
                     loginName);
-            if (userList.size() == 0) {
+            if (user.isEmpty()) {
                 return null;
             }
 
-            UserEntity userEntity = userList.get(0);
+            UserEntity userEntity = user.get();
             List<GroupEntity> groupList = repositoryService.queryList(
                     "SELECT G.* " +
                     "FROM   AUTH_GROUP G, AUTH_GROUP_MEMBER M " +
@@ -97,7 +98,7 @@ public class AuthenticateServiceImpl implements AuthenticateService {
             for (GroupEntity group : groupList) {
                 userEntity.addGroup(group);
             }
-            
+
             SessionEntity session = new SessionEntity(
                     Long.toHexString(IdentityManager.newId()),
                     userEntity);
@@ -106,6 +107,7 @@ public class AuthenticateServiceImpl implements AuthenticateService {
             session.setExpiredDate(new Date());
             session.setStatus(0);
             repositoryService.insert(session);
+            setUser(userEntity);
             return session;
         } catch (RepositoryException e) {
             throw new AuthenticateException(e);
@@ -118,13 +120,10 @@ public class AuthenticateServiceImpl implements AuthenticateService {
 
     public UserModel authenticate(String sessionId, UserModel user) throws AuthenticateException {
         if (sessionId == null) {
-            return new UserEntity();
-        }
-        if (user != null) {
-            return user;
-        }
-        try {
-            Optional<UserEntity> ouser = repositoryService.querySingle(
+            user = new UserEntity();
+        } else if (user == null) {
+            try {
+                Optional<UserEntity> ouser = repositoryService.querySingle(
                     "SELECT * " +
                     "FROM   AUTH_USER " +
                     "WHERE  USER_ID=( " +
@@ -134,10 +133,13 @@ public class AuthenticateServiceImpl implements AuthenticateService {
                     ")",
                     UserEntity.class,
                     sessionId);
-            return ouser.orElse(new UserEntity());
-        } catch (RepositoryException e) {
-            throw new AuthenticateException(e);
+                return ouser.orElse(new UserEntity());
+            } catch (RepositoryException e) {
+                throw new AuthenticateException(e);
+            }
         }
+        setUser(user);
+        return user;
     }
 
     @Transactional
@@ -260,6 +262,16 @@ public class AuthenticateServiceImpl implements AuthenticateService {
     public List<GroupModel> searchGroup() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void setUser(UserModel user) {
+        userLocal.set(user);
+    }
+
+    @Override
+    public UserModel getUser() {
+        return userLocal.get();
     }
 
 }

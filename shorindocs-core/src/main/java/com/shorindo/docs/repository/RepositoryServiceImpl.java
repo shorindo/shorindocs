@@ -53,11 +53,9 @@ import com.shorindo.docs.repository.ExecuteStatement.*;
  * 
  */
 public class RepositoryServiceImpl implements RepositoryService, TxEventListener {
-    private static final ActionLogger LOG =
-            ActionLogger.getLogger(RepositoryServiceImpl.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(RepositoryServiceImpl.class);
+    private ThreadLocal<TxConnection> txMap = new ThreadLocal<TxConnection>();
     private DataSource dataSource;
-    private ThreadLocal<TxConnection> txMap =
-            new ThreadLocal<TxConnection>();
 
     /**
      * 

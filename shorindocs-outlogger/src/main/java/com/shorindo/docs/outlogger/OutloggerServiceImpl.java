@@ -19,12 +19,10 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 import static com.shorindo.docs.outlogger.OutloggerMessages.*;
 import static com.shorindo.docs.repository.DatabaseMessages.*;
 
-import java.util.Date;
 import java.util.List;
 
-import com.shorindo.docs.IdentityManager;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.document.DocumentEntity;
+import com.shorindo.docs.auth.AuthenticateService;
 import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentServiceImpl;
 import com.shorindo.docs.repository.RepositoryException;
@@ -37,21 +35,22 @@ import com.shorindo.docs.repository.Transactional;
 public class OutloggerServiceImpl extends DocumentServiceImpl implements OutloggerService {
 	private static final ActionLogger LOG = ActionLogger.getLogger(OutloggerServiceImpl.class);
 
-	public OutloggerServiceImpl(RepositoryService repositoryService) {
-		super(repositoryService);
+	public OutloggerServiceImpl(AuthenticateService authenticateService,
+	    RepositoryService repositoryService) {
+		super(authenticateService, repositoryService);
 	}
 
     /**=========================================================================
      * 
      */
-    @Override
-    public DocumentEntity newDocument() {
-        DocumentEntity entity = new DocumentEntity();
-        entity.setDocumentId(Long.toString(IdentityManager.newId()));
-        entity.setCreateDate(new Date());
-        entity.setUpdateDate(new Date());
-        return entity;
-    }
+//    @Override
+//    public DocumentEntity newDocument() {
+//        DocumentEntity entity = new DocumentEntity();
+//        entity.setDocumentId(Long.toString(IdentityManager.newId()));
+//        entity.setCreateDate(new Date());
+//        entity.setUpdateDate(new Date());
+//        return entity;
+//    }
 
     /*==========================================================================
      * 初期設定

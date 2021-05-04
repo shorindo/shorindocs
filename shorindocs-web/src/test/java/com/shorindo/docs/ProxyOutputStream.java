@@ -13,31 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.docs.outlogger;
+package com.shorindo.docs;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * 
  */
-public class ProxyInputStream extends InputStream {
-    private InputStream is;
+public class ProxyOutputStream extends OutputStream {
+    private OutputStream os;
     private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    public ProxyInputStream(InputStream is) {
-        this.is = is;
+    public ProxyOutputStream(OutputStream os) {
+        this.os = os;
     }
 
     @Override
-    public int read() throws IOException {
-        int c = is.read();
-        baos.write(c);
-        return c;
+    public void write(int b) throws IOException {
+        os.write(b);
+        baos.write(b);
     }
 
     public String toString() {
         return baos.toString();
     }
+
 }
