@@ -19,8 +19,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.shorindo.docs.action.ActionContext;
-
 /**
  * 
  */
@@ -35,6 +33,17 @@ public class ActionContextTest {
     public void testGetpath() {
         ApplicationContext.getClassPath();
     }
+
+//    @Test
+//    public void testFindBeans() throws Exception {
+//        InputStream is = getClass().getClassLoader()
+//            .getResourceAsStream("application-config.xml");
+//        ApplicationContext.init(is);
+//        List<Object> result = ApplicationContext.findBeans(DocumentController.class);
+//        for (Object c : result) {
+//            System.out.println(c);
+//        }
+//    }
 
 //    public static class MyContext extends ActionContext {
 ////        private RepositoryServiceImpl repository = getService(RepositoryServiceImpl.class);

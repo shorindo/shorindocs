@@ -17,7 +17,10 @@ package com.shorindo.docs.document;
 
 import static com.shorindo.docs.document.DocumentMessages.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.shorindo.docs.IdentityManager;
 import com.shorindo.docs.action.ActionContext;
@@ -35,9 +38,9 @@ import com.shorindo.docs.view.View;
 /**
  * 
  */
-public abstract class DocumentController extends ActionController
-        implements DocumentControllable {
+public abstract class DocumentController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(DocumentController.class);
+    private static final Map<String,DocumentController> controllerMap = new TreeMap<>();
     private final DocumentService documentService;
 
     public DocumentController(DocumentService documentService) {
@@ -48,10 +51,28 @@ public abstract class DocumentController extends ActionController
         return documentService;
     }
 
+    public static void addController(String namespace, DocumentController controller) {
+        if (controllerMap.containsKey(namespace)) {
+            LOG.warn("[{0}]は既に登録されているため無視します。", namespace);
+        } else {
+            LOG.info("ドキュメントタイプ[{0}]に[{1}]を登録します。", namespace, controller.getClass());
+            controllerMap.put(namespace, controller);
+        }
+    }
+
+    public static DocumentController getController(String namespace) {
+        LOG.debug("namespace={0}", namespace);
+        return controllerMap.get(namespace);
+    }
+
+    public final List<String> getControllerNames() {
+        return new ArrayList<String>(controllerMap.keySet());
+    }
+
     /**
      * 
      */
-    protected DocumentModel getModel(ActionContext context) {
+    protected final DocumentModel getModel(ActionContext context) {
         return documentService.load(context.getPath().substring(1));
     }
 
@@ -59,7 +80,6 @@ public abstract class DocumentController extends ActionController
      * 
      */
     @ActionMethod
-    @Override
     public DocumentModel load(String documentId) throws ActionError {
         try {
             return documentService.load(documentId);
@@ -72,7 +92,6 @@ public abstract class DocumentController extends ActionController
      *
      */
     @ActionMethod
-    @Override
     public DocumentModel save(@BeanParameter(DocumentEntity.class) DocumentModel model)
             throws ActionError {
         try {
@@ -111,7 +130,6 @@ public abstract class DocumentController extends ActionController
      *
      */
     @ActionMethod
-    @Override
     public DocumentModel remove(String documentId) {
         if ("index".equals(documentId)) {
             return null;

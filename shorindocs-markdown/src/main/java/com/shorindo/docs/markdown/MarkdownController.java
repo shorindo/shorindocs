@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.annotation.DocType;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentService;
@@ -30,6 +31,7 @@ import com.shorindo.xuml.XumlView2;
 /**
  * 
  */
+@DocType("markdown")
 public class MarkdownController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(MarkdownController.class);
     private MarkdownService markdownService;

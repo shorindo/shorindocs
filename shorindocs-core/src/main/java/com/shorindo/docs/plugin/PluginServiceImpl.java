@@ -26,7 +26,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import com.shorindo.docs.ApplicationContext;
-import com.shorindo.docs.ApplicationContextConfig;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionPlugin;
 
@@ -68,8 +67,10 @@ public class PluginServiceImpl implements PluginService {
                 LOG.error(e.getMessage(), e);
             }
         }
-        String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+//        String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         return result;
     }
-    
+
+    private void findDocumentController(ApplicationContext context) {
+    }
 }

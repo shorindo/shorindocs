@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.annotation.DocType;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentService;
@@ -30,6 +31,7 @@ import com.shorindo.xuml.XumlView2;
 /**
  * 
  */
+@DocType("plaintext")
 public class PlainTextController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(PlainTextController.class);
 
@@ -44,7 +46,7 @@ public class PlainTextController extends DocumentController {
     public View action(ActionContext context, Object...args) {
         //LOG.debug("action()->" + context.getParameter("action"));
         try {
-            DocumentModel model = getModel(context);
+            DocumentModel model = (DocumentModel)args[0];
             context.addModel("lang", Locale.JAPANESE);
             context.addModel("document", model);
             context.addModel("recents", recents(context));

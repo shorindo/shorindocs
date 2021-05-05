@@ -1,0 +1,13 @@
+<xuml:xuml namespace="component">
+  <xuml:template name="hbox">
+    <div class="xuml-hbox">
+      <xuml:apply name="content"/>
+    </div>
+  </xuml:template>
+
+  <xuml:apply name="hbox">
+    <xuml:template name="content">
+      <xuml:apply name="text"/>
+    </xuml:template>
+  </xuml:apply>
+</xuml:xuml>

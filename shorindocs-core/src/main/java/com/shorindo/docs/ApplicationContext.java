@@ -56,18 +56,18 @@ public class ApplicationContext {
     private static ApplicationContext rootContext;
     private String namespace;
     private Properties props = new Properties();
-    private Map<String,ApplicationContext> contextMap = new ConcurrentHashMap<>();
+    private Map<String,ApplicationContext> pluginMap = new ConcurrentHashMap<>();
     private Map<Class<?>,Class<?>> interfaceMap = new ConcurrentHashMap<>();
     private Map<Class<?>,Object> instanceMap = new ConcurrentHashMap<>();
     private Map<Pattern,Object> actionMap = new ConcurrentHashMap<>();
     private Set<TxEventListener> listenerSet = new HashSet<TxEventListener>();
 
     public static void addContext(String namespace, ApplicationContext context) {
-        rootContext.contextMap.put(namespace, context);
+        rootContext.pluginMap.put(namespace, context);
     }
 
-    public static ApplicationContext getContext(String namespace) {
-        return rootContext.contextMap.get(namespace);
+    public static ApplicationContext getPlugin(String namespace) {
+        return rootContext.pluginMap.get(namespace);
     }
 
     public static void init(InputStream is) throws IOException {
@@ -84,6 +84,11 @@ public class ApplicationContext {
      * @param config
      */
     private ApplicationContext(ApplicationContextConfig config) {
+        this.namespace = config.getNamespace();
+        if (namespace != null && "".equals(namespace)) {
+            rootContext.pluginMap.put(namespace, this);
+        }
+
         for (Include include : config.getIncludes()) {
             LOG.debug("include({0})", include.getFile());
             include(include.getFile());
@@ -132,11 +137,6 @@ public class ApplicationContext {
                     throw new BeanNotFoundException(action.getName() + " -> " + action.getName());
                 }
             }
-        }
-
-        this.namespace = config.getNamespace();
-        if (namespace != null && "".equals(namespace)) {
-            rootContext.contextMap.put(namespace, this);
         }
     }
 
@@ -193,13 +193,15 @@ public class ApplicationContext {
     }
 
     /**
-     * 
      * @param impl
      */
     public static synchronized void addBean(Class<?> impl) {
         rootContext.addBeanPrivate(impl);
     }
 
+    /**
+     * @param impl
+     */
     private synchronized void addBeanPrivate(Class<?> impl) {
         if (interfaceMap.containsKey(impl)) {
             LOG.warn(DOCS_9006, impl.getName());
@@ -208,6 +210,16 @@ public class ApplicationContext {
             interfaceMap.put(impl, impl);
             instanceMap.remove(impl);
         }
+    }
+
+    public <T> List<T> findBeans(Class<T> clazz) {
+        List<T> result = new ArrayList<>();
+        for (Entry<Class<?>,Class<?>> entry : interfaceMap.entrySet()) {
+            if (clazz.isAssignableFrom(entry.getKey())) {
+                result.add((T)getBean(entry.getKey()));
+            }
+        }
+        return result;
     }
 
     /**
@@ -230,19 +242,22 @@ public class ApplicationContext {
         }
     }
 
-    /**
-     * beanを登録する
-     * 
-     * @param <T>  beanのタイプ
-     * @param itfc beanのインターフェース
-     * @param c    beanのインスタンス
-     */
-//    public static synchronized <T> void addBean(Class<T> itfc, Function<Class<T>,T> c) {
-//        if (instanceMap.containsKey(itfc)) {
-//            LOG.warn(DOCS_9006, itfc.getName());
-//        } else {
-//            instanceMap.put(itfc, c.apply(null));
+//    public static <T> List<Object> findBeans(Class<T> clazz) {
+//        return rootContext.findBeansPrivate(clazz);
+//    }
+//
+//    @SuppressWarnings("unchecked")
+//    private <T> List<Object> findBeansPrivate(Class<T> clazz) {
+//        List<Object> result = new ArrayList<>();
+//        for (Entry<Class<?>,Class<?>> entry : interfaceMap.entrySet()) {
+//            if (clazz.isAssignableFrom(entry.getKey())) {
+//                result.add(entry.getKey());
+//            }
 //        }
+//        for (Entry<String,ApplicationContext> entry : contextMap.entrySet()) {
+//            result.addAll(entry.getValue().findBeansPrivate(clazz));
+//        }
+//        return result;
 //    }
 
     /**
@@ -255,7 +270,7 @@ public class ApplicationContext {
         try {
             return rootContext.getBeanPrivate(itfc);
         } catch (BeanNotFoundException e) {
-            for (Entry<String,ApplicationContext> entry : rootContext.contextMap.entrySet()) {
+            for (Entry<String,ApplicationContext> entry : rootContext.pluginMap.entrySet()) {
                 try {
                     return entry.getValue().getBeanPrivate(itfc);
                 } catch (BeanNotFoundException ex) {
@@ -382,5 +397,9 @@ public class ApplicationContext {
                 listener.onEvent(new TxEvent(type, instance, method));
             }
         }
+    }
+
+    public static Map<String,ApplicationContext> getPlugins() {
+        return rootContext.pluginMap;
     }
 }

@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shorindo.xuml;
+package com.shorindo.docs.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 
  */
-@ComponentReady("treechildren")
-public class TreeChildren extends Container {
-
-    public TreeChildren(XumlView view) {
-        super(view);
-    }
-
-    @Override
-    public String getHtml() {
-        StringBuilder sb = new StringBuilder();
-        for (Component c : getChildList()) {
-            sb.append(c.getHtml());
-        }
-        return sb.toString();
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface DocType {
+    String value();
 }

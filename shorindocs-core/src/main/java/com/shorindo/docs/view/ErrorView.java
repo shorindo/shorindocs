@@ -15,23 +15,20 @@
  */
 package com.shorindo.docs.view;
 
-import static com.shorindo.xuml.XumlBuilder.*;
 import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
 
+import java.io.IOException;
 import java.io.OutputStream;
-import java.text.MessageFormat;
-import java.util.Locale;
 import java.util.Map;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionMessages;
-import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-public class ErrorView extends XumlView {
+public class ErrorView implements View {
     private static final ActionLogger LOG = ActionLogger.getLogger(ErrorView.class);
     private ErrorViewMessages message;
 
@@ -47,16 +44,17 @@ public class ErrorView extends XumlView {
     @Override
     public void render(ActionContext context, OutputStream os) {
         try {
-            layout()
-                .put("title", text(message.getStatus() + " - " + message.getMessage()))
-                .put("header", text(message.getStatus() + " - " + message.getMessage()))
-                .add(dialog()
-                    .put("title", text(message.getStatus() + " - " + message.getMessage()))
-                    .put("body", text("description")))
-                .render(os);
-        } catch (Exception e) {
-            LOG.error(DOCS_9999, e);
+            os.write("ERROR".getBytes());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+    }
+
+    @Override
+    public Map<String, String> getMetaData() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public enum ErrorViewMessages implements ActionMessages {

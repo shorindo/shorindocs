@@ -20,12 +20,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.plugin.PluginService;
 
 /**
@@ -52,7 +54,7 @@ public class ActionListener implements ServletContextListener {
         } else {
             File file = new File(event.getServletContext().getRealPath(configFile));
             try (InputStream is = new FileInputStream(file)) {
-                ApplicationContext.load(is);
+                ApplicationContext.init(is);
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -62,10 +64,16 @@ public class ActionListener implements ServletContextListener {
             }
         }
 
-        //XumlView.init(event.getServletContext().getRealPath("/WEB-INF/classes"));
-
+        // プラグインを探す
         ApplicationContext.getBean(PluginService.class)
             .findPlugin(new File(event.getServletContext().getRealPath("/WEB-INF/lib")));
+
+        // プラグインのDocumentControllerを登録する
+        for (Entry<String,ApplicationContext> plugin : ApplicationContext.getPlugins().entrySet()) {
+            for (DocumentController controller : plugin.getValue().findBeans(DocumentController.class)) {
+                DocumentController.addController(plugin.getKey(), controller);
+            }
+        }
     }
 
     /**

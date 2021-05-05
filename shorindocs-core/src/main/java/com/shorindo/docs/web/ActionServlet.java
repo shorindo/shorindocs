@@ -35,6 +35,7 @@ import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentServiceFactory;
 import com.shorindo.docs.repository.RepositoryService;
@@ -106,7 +107,7 @@ public class ActionServlet extends HttpServlet {
             }
 
             // namespace
-            controller = DocumentServiceFactory.getController(entity);
+            controller = DocumentController.getController(entity.getNamespace());
             if (controller != null) {
                 output(context, res, controller.action(context, entity));
             } else {

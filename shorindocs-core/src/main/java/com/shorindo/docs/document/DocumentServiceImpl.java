@@ -74,6 +74,12 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
+//    public void listDocType() {
+//        for (Entry<String,ApplicationContext> entry : ApplicationContext.getContextMap().entrySet()) {
+//            //entry.getValue();
+//        }
+//    }
+
     @Override
     public DocumentModel load(String documentId) {
         return load(documentId, 0);

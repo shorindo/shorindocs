@@ -17,13 +17,13 @@ package com.shorindo.docs.form;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
-import com.shorindo.docs.annotation.ContentType;
+import com.shorindo.docs.annotation.DocType;
 import com.shorindo.docs.view.AbstractView;
 
 /**
  * 
  */
-@ContentType("application/x-form")
+@DocType("application/x-form")
 public class FormController extends ActionController {
 
     /**

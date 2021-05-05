@@ -23,9 +23,12 @@ import com.shorindo.docs.repository.RepositoryException;
 /**
  * 
  */
-public interface DocumentService extends DocumentControllable {
+public interface DocumentService {
     public void validate();
     public DocumentModel create(String id) throws RepositoryException;
 //    public DocumentEntity newDocument();
     public List<DocumentModel> recents(String documentId);
+    public DocumentModel load(String documentId);
+    public DocumentModel save(DocumentModel model);
+    public DocumentModel remove(String documentId);
 }
