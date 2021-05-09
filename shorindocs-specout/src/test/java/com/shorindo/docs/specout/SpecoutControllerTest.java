@@ -57,10 +57,10 @@ public class SpecoutControllerTest {
         while ((len = reader.read(buff)) > 0) {
             body.append(buff, 0, len);
         }
-       
+
         DocumentEntity entity = new DocumentEntity();
         entity.setDocumentId("testpov");
-        entity.setController(SpecoutController.class.getName());
+        entity.setDocType("specout");
         entity.setTitle("テスト観点");
         entity.setContent(body.toString());
         entity.setCreateUser(getClass().getSimpleName());
@@ -95,7 +95,7 @@ public class SpecoutControllerTest {
         String path = fileName.replaceAll("\\..*$", "");
         DocumentEntity entity = new DocumentEntity();
         entity.setDocumentId(path);
-        entity.setController(SpecoutController.class.getName());
+        entity.setDocType("specout");
         entity.setTitle(title);
         entity.setContent(body.toString());
         entity.setCreateUser(getClass().getSimpleName());

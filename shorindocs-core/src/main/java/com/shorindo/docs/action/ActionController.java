@@ -28,13 +28,11 @@ public abstract class ActionController {
     public abstract View action(ActionContext context, Object...args);
 
     public String getAction(ActionContext context) {
-        String[] params = context.getParameters("action");
+        Object params = context.getParameter("action");
         if (params == null) {
             return "view";
-        } else if (params.length > 0) {
-            return params[0];
         } else {
-            return "view";
+            return params.toString();
         }
     }
 

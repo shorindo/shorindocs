@@ -50,8 +50,8 @@ public class BeanUtil {
                         setterMethod.getParameterCount() != 1) {
                     continue;
                 }
-                String getterMethodName = "get" + setterMethod.getName().substring(3);
                 try {
+                    String getterMethodName = "get" + setterMethod.getName().substring(3);
                     Method getterMethod = source.getClass().getMethod(getterMethodName);
                     if (getterMethod.getReturnType().isAssignableFrom(setterMethod.getParameterTypes()[0])) {
                         setterMethod.invoke(dest, getterMethod.invoke(source));

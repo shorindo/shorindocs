@@ -96,24 +96,47 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
+//    @Override
+//    @Transactional
+//    public DocumentModel create(String docType) throws RepositoryException {
+//        UserModel user = authenticateService.getUser();
+//        DocumentEntity entity = new DocumentEntity();
+//        entity.setDocumentId(Long.toString(IdentityManager.newId()));
+//        entity.setDocType(docType);
+//        entity.setVersion(-1);
+//        entity.setTitle("");
+//        entity.setOwnerId(user.getUserId());
+//        entity.setCreateUser(user.getUserId());
+//        entity.setCreateDate(new java.util.Date());
+//        entity.setUpdateUser(user.getUserId());
+//        entity.setUpdateDate(new java.util.Date());
+//        repositoryService.insert(entity);
+//        return load(entity.getDocumentId(), entity.getVersion());
+//    }
+
+    @Override
     @Transactional
-    public DocumentModel create(String docType) throws RepositoryException {
-        UserModel user = authenticateService.getUser();
-        DocumentEntity entity = new DocumentEntity();
-        entity.setDocumentId(Long.toString(IdentityManager.newId()));
-        entity.setController(docType);
-        entity.setNamespace(docType);
-        entity.setVersion(-1);
-        entity.setTitle("");
-        entity.setOwnerId(user.getUserId());
-        entity.setCreateUser(user.getUserId());
-        entity.setCreateDate(new java.util.Date());
-        entity.setUpdateUser(user.getUserId());
-        entity.setUpdateDate(new java.util.Date());
-        repositoryService.insert(entity);
-        return load(entity.getDocumentId(), entity.getVersion());
+    public DocumentModel create(DocumentModel model) {
+        try {
+            UserModel user = authenticateService.getUser();
+            DocumentEntity entity = new DocumentEntity(model);
+            if (entity.getDocumentId() == null) {
+                entity.setDocumentId(Long.toString(IdentityManager.newId()));
+            }
+            entity.setVersion(-1);
+            entity.setOwnerId(user.getUserId());
+            entity.setCreateUser(user.getUserId());
+            entity.setCreateDate(new java.util.Date());
+            entity.setUpdateUser(user.getUserId());
+            entity.setUpdateDate(new java.util.Date());
+            repositoryService.insert(entity);
+            return repositoryService.get(entity);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e); // TODO
+        }
     }
 
+    @Override
     @Transactional
     public DocumentModel save(DocumentModel model) {
         try {
@@ -150,7 +173,7 @@ public class DocumentServiceImpl implements DocumentService {
             repositoryService.insert(entity);
             return repositoryService.get(entity);
         } catch (RepositoryException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // TODO
         }
     }
 

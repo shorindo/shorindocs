@@ -19,13 +19,11 @@ import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.annotation.DocType;
 import com.shorindo.docs.view.View;
 
 /**
  * 
  */
-@DocType("application/x-form-template")
 public class TemplateController extends ActionController {
     private static final ActionLogger LOG = ActionLogger.getLogger(TemplateController.class);
 

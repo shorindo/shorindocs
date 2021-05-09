@@ -15,10 +15,9 @@
  */
 package com.shorindo.docs.view;
 
-import static com.shorindo.docs.document.DocumentMessages.DOCS_9999;
-
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.shorindo.docs.action.ActionContext;
@@ -31,9 +30,12 @@ import com.shorindo.docs.action.ActionMessages;
 public class ErrorView implements View {
     private static final ActionLogger LOG = ActionLogger.getLogger(ErrorView.class);
     private ErrorViewMessages message;
+    private Map<String,String> meta;
 
     public ErrorView(int status) {
         message = ErrorViewMessages.of(status);
+        meta = new HashMap<>();
+        meta.put("Content-Type", "text/html; charset=UTF-8");
     }
 
     @Override
@@ -44,7 +46,7 @@ public class ErrorView implements View {
     @Override
     public void render(ActionContext context, OutputStream os) {
         try {
-            os.write("ERROR".getBytes());
+            os.write((message.getStatus() + " - " + message.getMessage()).getBytes("UTF-8"));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -53,8 +55,7 @@ public class ErrorView implements View {
 
     @Override
     public Map<String, String> getMetaData() {
-        // TODO Auto-generated method stub
-        return null;
+        return meta;
     }
 
     public enum ErrorViewMessages implements ActionMessages {

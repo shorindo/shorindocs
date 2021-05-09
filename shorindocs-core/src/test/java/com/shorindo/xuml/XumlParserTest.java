@@ -19,8 +19,6 @@ import com.shorindo.xuml.XumlParser.AbstractStatement;
 import com.shorindo.xuml.XumlParser.Statement;
 import com.shorindo.xuml.XumlParser.XumlException;
 
-import net.arnx.jsonic.JSON;
-
 /**
  * xuml[namespace?, use?] := (label / import / template / apply / switch / each / var / literal)*
  * label[key] := text+

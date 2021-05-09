@@ -58,6 +58,8 @@ public class UserEntity extends SchemaEntity implements UserModel {
     @Column(name="UPDATED_DATE")
     private Date updatedDate;
 
+    private boolean authenticated = false;
+
     private List<GroupModel> groupList = new ArrayList<GroupModel>();
 
     public UserEntity() {
@@ -149,5 +151,10 @@ public class UserEntity extends SchemaEntity implements UserModel {
 
     public void addGroup(GroupModel group) {
         this.groupList.add(group);
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+        return authenticated;
     }
 }

@@ -1,0 +1,28 @@
+<xuml:xuml namespace="plaintext">
+  <xuml:import file="xuml/layout.xuml"/>
+
+  <xuml:apply name="layout.LC">
+    <xuml:template name="LEFT">
+      プロパティ<br/>
+      タイトル<br/>
+      <input type="text" value="${document.title}" style="margin:1px 5px;"/><br/>
+      ID<br/>
+      <input type="text" value="${document.documentId}" readonly="true" style="margin:1px 5px;"/><br/>
+      ドキュメントの種別<br/>
+      <input type="text" value="${document.namespace}" readonly="true" style="margin:1px 5px;"/><br/>
+      作成日時<br/>
+      <input type="text" value="${document.createDate}" readonly="true" style="margin:1px 5px;"/><br/>
+      更新日時<br/>
+      <input type="text" value="${document.updateDate}" readonly="true" style="margin:1px 5px;"/><br/>
+    </xuml:template>
+
+    <xuml:template name="CENTER">
+      <textarea style="height:100%;">${document.content}</textarea>
+      <script type="text/javascript">
+      window.addEventListener("DOMContentLoaded", function() {
+        docs.flexHeight("#main");
+      });
+      </script>
+    </xuml:template>
+  </xuml:apply>
+</xuml:xuml>

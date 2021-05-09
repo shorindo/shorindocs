@@ -19,19 +19,19 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import com.shorindo.docs.auth.AuthenticateServiceTest;
+//import com.shorindo.docs.auth.AuthenticateServiceTest;
 import com.shorindo.docs.document.DocumentServiceTest;
-import com.shorindo.docs.repository.RepositoryServiceTest;
+//import com.shorindo.docs.repository.RepositoryServiceTest;
 
 /**
  * 
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-    BeanUtilTest.class,
-    IdentityProviderTest.class,
-    RepositoryServiceTest.class,
-    AuthenticateServiceTest.class,
+//    BeanUtilTest.class,
+//    IdentityProviderTest.class,
+//    RepositoryServiceTest.class,
+//    AuthenticateServiceTest.class,
     DocumentServiceTest.class
 })
 public class AllTests {

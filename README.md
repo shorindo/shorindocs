@@ -9,7 +9,17 @@
 # 設定
 # コンテキスト
 ## ApplicationContext
+* beans
+* pathMappings
+
 ## ActionContext
+* method
+* path
+* contextPath
+* contentType
+* parameter
+* user := authenticated, lang
+
 # コントローラ
 ## ActionController
 # ビュー
@@ -61,6 +71,7 @@
 # データベース
 # メッセージ・ログ・例外
 # プラグイン
+# メッセージング
 
 # TODO
 

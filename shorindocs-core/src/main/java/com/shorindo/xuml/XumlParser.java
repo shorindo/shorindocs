@@ -12,9 +12,12 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -272,7 +275,7 @@ public class XumlParser {
             PEG.rule(WS0));
     }
 
-    public static Statement compile(String text) throws XumlException, IOException {
+    public static RootStatement compile(String text) throws XumlException, IOException {
         // 構文解析木を生成する
         PEGNode peg = parse(text);
         // 抽象構文木を生成する
@@ -911,7 +914,7 @@ public class XumlParser {
     }
 
     /**
-     * <xuml:each value="..">..</xuml:each>
+     * <xuml:each item=".." value="..">..</xuml:each>
      */
     public static class EachStatement extends AbstractStatement {
         private String item;
@@ -1122,8 +1125,12 @@ public class XumlParser {
                 Object object = BeanUtil.getValue(bean, name);
                 if (object == null) {
                     result = new ArrayList<Object>();
-                } else if (List.class.isAssignableFrom(object.getClass())) {
-                    result = (List<Object>)object;
+//                } else if (List.class.isAssignableFrom(object.getClass())) {
+//                    result = (List<Object>)object;
+                } else if (Iterable.class.isAssignableFrom(object.getClass())) {
+                    for (Iterator<Object> iter = ((Iterable)object).iterator(); iter.hasNext();) {
+                        result.add(iter.next());
+                    }
                 } else if (object.getClass().isArray()) {
                     result = Arrays.asList(object);
                 } else {

@@ -16,22 +16,24 @@
 package com.shorindo.docs.snapboard;
 
 import com.shorindo.docs.action.ActionContext;
-import com.shorindo.docs.action.ActionController;
+import com.shorindo.docs.document.DocumentController;
+import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.view.View;
 
 /**
  * 
  */
-public class SnapboardController extends ActionController {
-	private SnapboardService snapboardService;
+public class SnapboardController extends DocumentController {
+    private SnapboardService snapboardService;
 
-	public SnapboardController(SnapboardService snapboardService) {
-		this.snapboardService = snapboardService;
-	}
+    public SnapboardController(DocumentService documentService) {
+        super(documentService);
+        //this.snapboardService = snapboardService;
+    }
 
-	@Override
-	public View action(ActionContext context, Object...args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public View action(ActionContext context, Object...args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

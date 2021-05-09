@@ -29,28 +29,30 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.view.View;
+import com.shorindo.xuml.XumlParser.RootStatement;
 import com.shorindo.xuml.XumlParser.Statement;
 
 /**
  * 
  */
-public class XumlView2 implements View{
-    private static final ActionLogger LOG = ActionLogger.getLogger(XumlView2.class);
+public class XumlView implements View {
+    private static final ActionLogger LOG = ActionLogger.getLogger(XumlView.class);
     private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
-    private static final Map<String,XumlView2> viewMap = new ConcurrentHashMap<>();
+    private static final Map<String,XumlView> viewMap = new ConcurrentHashMap<>();
     private Statement statement;
 
-    public static XumlView2 create(String name) {
-        XumlView2 view = viewMap.get(name);
+    public static XumlView create(String name) {
+        XumlView view = viewMap.get(name);
         if (view == null) {
-            view = new XumlView2(name);
+            view = new XumlView(name);
             viewMap.put(name, view);
         }
         return view;
     }
 
-    private XumlView2(String name) {
-        try (InputStream is = XumlView2.class.getClassLoader().getResourceAsStream(name)) {
+    private XumlView(String name) {
+        String[] names = name.split("#", 2);
+        try (InputStream is = XumlView.class.getClassLoader().getResourceAsStream(names[0])) {
             Reader reader = new InputStreamReader(is, "UTF-8");
             int len = 0;
             char[] c = new char[2048];
@@ -59,6 +61,9 @@ public class XumlView2 implements View{
                 sb.append(c, 0, len);
             }
             statement = XumlParser.compile(sb.toString());
+            if (names.length > 1 && statement instanceof RootStatement) {
+                statement = ((RootStatement)statement).getTemplate(names[1]);
+            }
         } catch (IOException e) {
             LOG.error(XUML_5400, e, name);
         }

@@ -28,4 +28,5 @@ public interface UserModel extends Principal {
     public String getDisplayName();
     public String getMail();
     public List<GroupModel> getGroupList();
+    public boolean isAuthenticated();
 }

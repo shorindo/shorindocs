@@ -125,3 +125,9 @@ textarea.text-editor {
 .xuml-menubar-right {
   float: right;
 }
+.xuml-selector:hover {
+  background: #F0F0F0;
+}
+.xuml-selector.selected {
+  background: #F0E0E0;
+}

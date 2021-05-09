@@ -38,31 +38,32 @@ public class RpcClient {
     }
 
     public Object execute(String docId, String methodName, Object... params) {
-        try {
-            long st = System.currentTimeMillis();
-            URLConnection conn = new URL(base + docId)
-                .openConnection();
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/json");
-            JsonRpcRequest request = new JsonRpcRequest();
-            request.setId(String.valueOf(System.currentTimeMillis()));
-            request.setMethod(methodName);
-            request.setParams(Arrays.asList(params));
-            ProxyOutputStream reqStream = new ProxyOutputStream(conn.getOutputStream());
-            JSON.encode(request, reqStream);
-            System.out.println(">> " + reqStream.toString());
-            ProxyInputStream resStream = new ProxyInputStream(conn.getInputStream());
-            TypeReference<JsonRpcResponse> ref = new TypeReference<JsonRpcResponse>(){};
-            JsonRpcResponse response = JSON.decode(resStream, ref);
-            System.out.println("<< " + resStream.toString());
-            System.out.println("elapsed: " + (System.currentTimeMillis() - st) + " ms");
-            return response.getResult();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return null;
+//        try {
+//            long st = System.currentTimeMillis();
+//            URLConnection conn = new URL(base + docId)
+//                .openConnection();
+//            conn.setDoInput(true);
+//            conn.setDoOutput(true);
+//            conn.setRequestProperty("Content-Type", "application/json");
+//            JsonRpcRequest request = new JsonRpcRequest();
+//            request.setId(String.valueOf(System.currentTimeMillis()));
+//            request.setMethod(methodName);
+//            request.setParam(Arrays.asList(params));
+//            ProxyOutputStream reqStream = new ProxyOutputStream(conn.getOutputStream());
+//            JSON.encode(request, reqStream);
+//            System.out.println(">> " + reqStream.toString());
+//            ProxyInputStream resStream = new ProxyInputStream(conn.getInputStream());
+//            TypeReference<JsonRpcResponse> ref = new TypeReference<JsonRpcResponse>(){};
+//            JsonRpcResponse response = JSON.decode(resStream, ref);
+//            System.out.println("<< " + resStream.toString());
+//            System.out.println("elapsed: " + (System.currentTimeMillis() - st) + " ms");
+//            return response.getResult();
+//        } catch (MalformedURLException e) {
+//            throw new RuntimeException(e);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
 }

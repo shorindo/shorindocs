@@ -21,14 +21,12 @@
                 <td>パスワード</td>
                 <td><input type="password" name="password"></td>
               </tr>
-              <tr>
-                <td colspan="2" style="text-align:center;">
-                  <button>ログイン</button>
-                  <button onclick="location='${refer}'">キャンセル</button>
-                  <input type="hidden" name="refer" value="${refer}">
-                </td>
-              </tr>
             </table>
+          </div>
+          <div class="xuml-dialog-foot">
+            <button>ログイン</button>
+            <button onclick="location='${referer}'">キャンセル</button>
+            <input type="hidden" name="referer" value="${referer}">
           </div>
         </div>
       </div>

@@ -15,21 +15,23 @@
  */
 package com.shorindo.docs.datagrid;
 
+import java.util.Locale;
+
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.annotation.DocType;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentEntity;
+import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.model.DocumentModel;
+import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView2;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-@DocType("datagrid")
 public class DataGridController extends DocumentController {
     private static ActionLogger LOG = ActionLogger.getLogger(DataGridController.class);
 
@@ -43,18 +45,25 @@ public class DataGridController extends DocumentController {
     }
 
     private View view(ActionContext context, Object...args) {
-    	DocumentModel model = (DocumentModel)args[0];
-        String action = context.getParameter("action");
+        try {
+            DocumentModel model = (DocumentModel)args[0];
+            String action = context.getParameterAsString("action");
+            context.addModel("lang", Locale.JAPANESE);
+            context.addModel("document", model);
+            context.addModel("recents", recents(context));
 
-        if ("edit".equals(action)) {
-//            return new DataGridEdit(model);
-            return XumlView2.create("datagrid/xuml/datagrid.xuml");
-        } else if ("save".equals(action)) {
-            ((DocumentEntity)model).setContent(context.getParameter("content"));
-            getDocumentService().save(model);
-            return new RedirectView(model.getDocumentId());
-        } else {
-            return XumlView2.create("datagrid/xuml/datagrid.xuml");
+            if ("edit".equals(action)) {
+                return XumlView.create("datagrid/xuml/datagrid.xuml");
+            } else if ("save".equals(action)) {
+                ((DocumentEntity)model).setContent(context.getParameterAsString("content"));
+                getDocumentService().save(model);
+                return new RedirectView(model.getDocumentId());
+            } else {
+                return XumlView.create("datagrid/xuml/datagrid.xuml");
+            }
+        } catch (Exception e) {
+            LOG.error(DocumentMessages.DOCS_9001, e);
+            return new ErrorView(500);
         }
     }
 

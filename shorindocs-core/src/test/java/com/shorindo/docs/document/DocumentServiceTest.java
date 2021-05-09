@@ -26,12 +26,9 @@ import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.auth.AuthenticateService;
-import com.shorindo.docs.auth.entity.UserEntity;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.model.GroupModel;
 import com.shorindo.docs.model.UserModel;
-import com.shorindo.docs.repository.RepositoryService;
-import com.shorindo.docs.repository.RepositoryServiceImpl;
 
 /**
  * 
@@ -67,7 +64,10 @@ public class DocumentServiceTest {
         AuthenticateService authenticateService = ApplicationContext.getBean(AuthenticateService.class);
         authenticateService.setUser(createUser());
         DocumentService service = ApplicationContext.getBean(DocumentService.class);
-        DocumentModel model = service.create(getClass().getSimpleName());
+        DocumentEntity entity = new DocumentEntity();
+        entity.setDocType("markdown");
+        entity.setTitle("test");
+        DocumentModel model = service.create(entity);
         assertNotNull(model);
     }
 
@@ -100,6 +100,10 @@ public class DocumentServiceTest {
             @Override
             public List<GroupModel> getGroupList() {
                 return null;
+            }
+            @Override
+            public boolean isAuthenticated() {
+                return false;
             }
         };
     }

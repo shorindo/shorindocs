@@ -6,6 +6,9 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>shorindocs-specout</artifactId>
+  <build>
+    <finalName>shorindocs-specout-${parent.version}</finalName>
+  </build>
   <dependencies>
   	<dependency>
   		<groupId>com.shorindo</groupId>

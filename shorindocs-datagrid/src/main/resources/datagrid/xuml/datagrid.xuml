@@ -1,2 +1,9 @@
 <xuml:xuml namespace="dagagrid">
+  <xuml:import file="xuml/layout.xuml"/>
+
+  <xuml:apply name="layout.LCR">
+    <xuml:template name="CENTER">
+      datagrid
+    </xuml:template>
+  </xuml:apply>
 </xuml:xuml>

@@ -36,11 +36,11 @@ public abstract class DocumentServiceFactory {
     private static final Map<String,ActionController> classMap = new HashMap<>();
 
     public static synchronized ActionController getController(DocumentModel model) throws ActionError {
-        if (classMap.containsKey(model.getController())) {
-            return classMap.get(model.getController());    
+        if (classMap.containsKey(model.getDocType())) {
+            return classMap.get(model.getDocType());    
         } else {
             try {
-                Class<?> clazz = Class.forName(model.getController());
+                Class<?> clazz = Class.forName(model.getDocType());
                 ActionController controller = (ActionController)ApplicationContext.getBean(clazz);
                 return controller;
             } catch (Exception e) {

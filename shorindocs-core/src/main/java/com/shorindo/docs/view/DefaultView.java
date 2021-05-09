@@ -17,6 +17,7 @@ package com.shorindo.docs.view;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,16 +35,20 @@ import com.shorindo.docs.document.DocumentMessages;
  */
 public class DefaultView extends AbstractView {
     private static final ActionLogger LOG = ActionLogger.getLogger(DefaultView.class);
-    private static final SimpleDateFormat format =
-        new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-    private File file;
+    private InputStream is;
 
-    public DefaultView(File file, ActionContext context) {
-        this.file = file;
+    public DefaultView(File file, ActionContext context) throws IOException {
+        this(file.getName(), new FileInputStream(file), context);
+        SimpleDateFormat format =
+            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
         getMetaData().put("Last-Modified",
                 format.format(new Date(file.lastModified())));
-        String ext = file.getName().replaceAll("^.*?(\\.([^\\.]+))?$", "$2");
+    }
+
+    public DefaultView(String name, InputStream is, ActionContext context) {
+        this.is = is;
+        String ext = name.replaceAll("^.*?(\\.([^\\.]+))?$", "$2");
         ContentTypes type = ContentTypes.of(ext);
         getMetaData().put("Content-Type", type.getContentType());
     }
@@ -53,9 +58,7 @@ public class DefaultView extends AbstractView {
      */
     @Override
     public void render(ActionContext context, OutputStream os) {
-        InputStream is = null;
         try {
-            is = new FileInputStream(file);
             byte[] b = new byte[4096];
             int l = 0;
             while ((l = is.read(b)) > 0) {
@@ -63,34 +66,26 @@ public class DefaultView extends AbstractView {
             }
         } catch (IOException e) {
             LOG.error(DocumentMessages.DOCS_9999, e);
-        } finally {
-            if (is != null)
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    LOG.error(DocumentMessages.DOCS_9999, e);
-                }
         }
     }
 
     public enum ContentTypes {
-        HTML("html", "text/html"),
-        CSS("css", "text/css"),
-        JS("js", "text/javascript"),
-        JPG("jpg", "image/jpeg"),
-        JPEG("jpeg", "image/jpeg"),
-        PNG("png", "image/png"),
-        GIF("gif", "image/gif"),
-        BINARY("", "application/octet-stream")
+        HTML("text/html"),
+        CSS("text/css"),
+        JS("text/javascript"),
+        JPG("image/jpeg"),
+        JPEG("image/jpeg"),
+        PNG("image/png"),
+        GIF("image/gif"),
+        BINARY("application/octet-stream")
         ;
         
-        private String extension;
         private String contentType;
 
         public static ContentTypes of(String extension) {
             if (extension != null) {
                 for (ContentTypes type : values()) {
-                    if (type.getExtension().equals(extension.toLowerCase())) {
+                    if (type.name().equalsIgnoreCase(extension)) {
                         return type;
                     }
                 }
@@ -98,13 +93,8 @@ public class DefaultView extends AbstractView {
             return BINARY;
         }
 
-        private ContentTypes(String extension, String contentType) {
-            this.extension = extension;
+        private ContentTypes(String contentType) {
             this.contentType = contentType;
-        }
-
-        public String getExtension() {
-            return extension;
         }
 
         public String getContentType() {

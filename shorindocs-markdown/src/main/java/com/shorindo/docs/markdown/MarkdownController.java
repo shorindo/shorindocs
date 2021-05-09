@@ -19,19 +19,17 @@ import java.util.Locale;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.docs.annotation.DocType;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView2;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-@DocType("markdown")
 public class MarkdownController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(MarkdownController.class);
     private MarkdownService markdownService;
@@ -51,9 +49,13 @@ public class MarkdownController extends DocumentController {
         	DocumentModel model = (DocumentModel)args[0];
         	context.addModel("lang", Locale.JAPANESE);
         	context.addModel("document", model);
-        	context.addModel("html", markdownService.parse(model.getContent()));
-        	context.addModel("recents", recents(context));
-        	return XumlView2.create("markdown/xuml/markdown.xuml");
+        	if ("edit".equals(context.getParameter("action"))) {
+        	    return XumlView.create("markdown/xuml/markdown-edit.xuml");
+        	} else {
+        	    context.addModel("html", markdownService.parse(model.getContent()));
+        	    context.addModel("recents", recents(context));
+        	    return XumlView.create("markdown/xuml/markdown-view.xuml");
+        	}
         } catch (Exception e) {
             LOG.error(DocumentMessages.DOCS_9001, e);
             return new ErrorView(500);

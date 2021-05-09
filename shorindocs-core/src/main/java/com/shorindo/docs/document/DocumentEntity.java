@@ -34,11 +34,14 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
     @Column(name="VERSION", primaryKey=2)
     private int version = 0;
 
-    @Column(name = "NAMESPACE")
-    private String namespace;
+    @Column(name = "DOC_TYPE")
+    private String docType;
 
-    @Column(name="CONTROLLER")
-    private String controller;
+//    @Column(name = "NAMESPACE")
+//    private String namespace;
+
+//    @Column(name="CONTROLLER")
+//    private String controller;
 
     @Column(name="TITLE")
     private String title;
@@ -66,7 +69,7 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
 
     public DocumentEntity(DocumentModel model) {
         setDocumentId(model.getDocumentId());
-        setController(model.getController());
+        setDocType(model.getDocType());
         setTitle(model.getTitle());
         setContent(model.getContent());
     }
@@ -87,20 +90,20 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
         this.version = version;
     }
 
-    public String getNamespace() {
-		return namespace;
-	}
+//    public String getNamespace() {
+//        return namespace;
+//    }
+//
+//    public void setNamespace(String namespace) {
+//        this.namespace = namespace;
+//    }
 
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
-
-	public String getController() {
-        return controller;
+	public String getDocType() {
+        return docType;
     }
 
-    public void setController(String controller) {
-        this.controller = controller;
+    public void setDocType(String docType) {
+        this.docType = docType;
     }
 
     public String getTitle() {

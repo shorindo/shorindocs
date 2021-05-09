@@ -344,7 +344,7 @@ window.onload = function() {
 				var reader = new FileReader();
 				reader.onload = (function(node) {
 					return function(evt) {
-						node.src = event.target.result;
+						node.src = evt.target.result;
 					};
 				})(img);
 				reader.readAsDataURL(files[i]);

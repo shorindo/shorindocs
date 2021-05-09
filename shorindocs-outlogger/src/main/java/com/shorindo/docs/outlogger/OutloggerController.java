@@ -29,7 +29,7 @@ import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView2;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -61,7 +61,7 @@ public class OutloggerController extends DocumentController {
             context.addModel("document", document);
             context.addModel("logList", entityList);
             context.addModel("recents", recents(context));
-            return XumlView2.create("outlogger/xuml/outlogger.xuml");
+            return XumlView.create("outlogger/xuml/outlogger.xuml");
             //return new OutloggerView();
         } catch (Exception e) {
             LOG.error(OLOG_9999, e);

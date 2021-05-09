@@ -25,19 +25,17 @@ import javax.xml.bind.JAXB;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.annotation.DocType;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.JsonView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView2;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
  */
-@DocType("specout")
 public class SpecoutController extends DocumentController {
     private static final ActionLogger LOG = ActionLogger.getLogger(SpecoutController.class);
 
@@ -59,7 +57,7 @@ public class SpecoutController extends DocumentController {
             context.addModel("document", model);
         	context.addModel("specout", specout);
             context.addModel("recents", recents(context));
-        	return XumlView2.create("specout/xuml/specout.xuml");
+        	return XumlView.create("specout/xuml/specout.xuml");
             //return new SpecoutView(model);
         } catch (Exception e) {
             LOG.error(SPEC_9001, e);

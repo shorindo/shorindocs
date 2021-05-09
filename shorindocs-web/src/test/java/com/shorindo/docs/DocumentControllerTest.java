@@ -47,7 +47,7 @@ public class DocumentControllerTest {
                 return "index";
             }
             @Override
-            public String getController() {
+            public String getDocType() {
                 return PlainTextController.class.getName();
             }
             @Override
@@ -58,12 +58,6 @@ public class DocumentControllerTest {
             public String getContent() {
                 return new Date().toString();
             }
-            @Override
-            public String getNamespace() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-            
         };
         client.save(model);
     }
@@ -98,7 +92,7 @@ public class DocumentControllerTest {
 
     public static class Document implements DocumentModel {
         private String documentId;
-        private String controller;
+        private String docType;
         private String title;
         private String content;
 
@@ -106,8 +100,8 @@ public class DocumentControllerTest {
             this.documentId = documentId;
         }
 
-        public void setController(String controller) {
-            this.controller = controller;
+        public void setDocType(String docType) {
+            this.docType = docType;
         }
 
         public void setTitle(String title) {
@@ -124,8 +118,8 @@ public class DocumentControllerTest {
         }
 
         @Override
-        public String getController() {
-            return controller;
+        public String getDocType() {
+            return docType;
         }
 
         @Override
@@ -138,11 +132,5 @@ public class DocumentControllerTest {
             return content;
         }
 
-        @Override
-        public String getNamespace() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-        
     }
 }

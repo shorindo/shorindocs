@@ -24,7 +24,7 @@ import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView2;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -40,10 +40,10 @@ public class LoginController extends ActionController {
         try {
             StringBuilder sb = new StringBuilder()
                 .append(context.getContextPath())
-                .append(Optional.ofNullable(context.getParameter("refer"))
+                .append(Optional.ofNullable(context.getParameterAsString("referer"))
                     .orElse("/"));
-            context.addModel("refer", sb.toString());
-            return XumlView2.create("auth/xuml/login.xuml");
+            context.addModel("referer", sb.toString());
+            return XumlView.create("auth/xuml/login.xuml");
         } catch (Exception e) {
             LOG.error(DOCS_9999, e);
             return new ErrorView(500);

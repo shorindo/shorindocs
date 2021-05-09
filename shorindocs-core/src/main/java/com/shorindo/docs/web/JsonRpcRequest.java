@@ -16,6 +16,7 @@
 package com.shorindo.docs.web;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -23,7 +24,7 @@ import java.util.List;
 public class JsonRpcRequest {
     private String id;
     private String method;
-    private List<Object> params;
+    private Map<String,Object> param;
 
     public String getId() {
         return id;
@@ -37,10 +38,10 @@ public class JsonRpcRequest {
     public void setMethod(String method) {
         this.method = method;
     }
-    public List<Object> getParams() {
-        return params;
+    public Map<String,Object> getParam() {
+        return param;
     }
-    public void setParams(List<Object> params) {
-        this.params = params;
+    public void setParam(Map<String,Object> params) {
+        this.param = params;
     }
 }

@@ -15,10 +15,13 @@
  */
 package com.shorindo.docs.action;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.shorindo.docs.model.UserModel;
 
 /**
  * 
@@ -30,8 +33,9 @@ public class ActionContext {
     private String contextPath;
     private String method;
     private String contentType;
-    private Map<String,String[]> paramMap;
+    private Map<String,Object> paramMap;
     private Map<String,Object> model;
+    private UserModel user;
 
     public ActionContext() {
         paramMap = new HashMap<>();
@@ -54,12 +58,21 @@ public class ActionContext {
         return contentType;
     }
 
-    public String getParameter(String name) {
-        return paramMap.containsKey(name) ?
-            paramMap.get(name)[0] : null;
-    }
-    public String[] getParameters(String name) {
+    public Object getParameter(String name) {
         return paramMap.get(name);
+    }
+
+    public String getParameterAsString(String name) {
+        Object param = paramMap.get(name);
+        if (param == null) {
+            return null;
+        } else if (Iterable.class.isAssignableFrom(param.getClass())) {
+            return ((Iterable<?>)param).iterator().next().toString();
+        } else if (param.getClass().isArray()) {
+            return Array.get(param, 0).toString();
+        } else {
+            return param.toString();
+        }
     }
 
     public Map<String, Object> getModel() {
@@ -68,6 +81,10 @@ public class ActionContext {
 
     public void addModel(String name, Object value) {
         model.put(name, value);
+    }
+
+    public UserModel getUser() {
+        return user;
     }
 
     public ActionContext path(String path) {
@@ -109,6 +126,14 @@ public class ActionContext {
     }
     public ActionContext contentType(String contentType) {
         this.contentType = contentType;
+        return this;
+    }
+    public ActionContext user(UserModel user) {
+        this.user = user;
+        return this;
+    }
+    public ActionContext paramMap(Map<String,Object> paramMap) {
+        this.paramMap = paramMap;
         return this;
     }
 }

@@ -22,8 +22,7 @@ import com.shorindo.docs.model.DocumentModel;
  */
 public class DocumentModelImpl implements DocumentModel {
     private String documentId;
-    private String namespace;
-    private String controller;
+    private String docType;
     private String title;
     private String content;
 
@@ -33,11 +32,11 @@ public class DocumentModelImpl implements DocumentModel {
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
-    public String getController() {
-        return controller;
+    public String getDocType() {
+        return docType;
     }
-    public void setController(String controller) {
-        this.controller = controller;
+    public void setDocType(String docType) {
+        this.docType = docType;
     }
     public String getTitle() {
         return title;
@@ -51,12 +50,4 @@ public class DocumentModelImpl implements DocumentModel {
     public void setContent(String content) {
         this.content = content;
     }
-    @Override
-    public String getNamespace() {
-        return namespace;
-    }
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-
 }

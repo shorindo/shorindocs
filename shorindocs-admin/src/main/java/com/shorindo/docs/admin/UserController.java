@@ -21,7 +21,7 @@ import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionController;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.view.View;
-import com.shorindo.xuml.XumlView2;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -35,7 +35,7 @@ public class UserController extends ActionController {
     @Override
     public View action(ActionContext context, Object...args) {
         context.addModel("lang", Locale.JAPANESE);
-        return XumlView2.create("admin/xuml/user.xuml");
+        return XumlView.create("admin/xuml/user.xuml");
     }
 
 }

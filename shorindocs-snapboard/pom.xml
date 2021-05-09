@@ -6,6 +6,9 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>shorindocs-snapboard</artifactId>
+  <build>
+    <finalName>shorindocs-snapboard-${parent.version}</finalName>
+  </build>
   <dependencies>
   	<dependency>
   		<groupId>com.shorindo</groupId>
