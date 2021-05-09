@@ -9,7 +9,7 @@
       ID<br/>
       <input type="text" value="${document.documentId}" readonly="true" style="margin:1px 5px;"/><br/>
       ドキュメントの種別<br/>
-      <input type="text" value="${document.namespace}" readonly="true" style="margin:1px 5px;"/><br/>
+      <input type="text" value="${document.docType}" readonly="true" style="margin:1px 5px;"/><br/>
       作成日時<br/>
       <input type="text" value="${document.createDate}" readonly="true" style="margin:1px 5px;"/><br/>
       更新日時<br/>

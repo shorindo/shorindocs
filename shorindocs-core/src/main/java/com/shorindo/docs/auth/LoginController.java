@@ -40,7 +40,7 @@ public class LoginController extends ActionController {
         try {
             StringBuilder sb = new StringBuilder()
                 .append(context.getContextPath())
-                .append(Optional.ofNullable(context.getParameterAsString("referer"))
+                .append(Optional.ofNullable(context.getParameter("referer"))
                     .orElse("/"));
             context.addModel("referer", sb.toString());
             return XumlView.create("auth/xuml/login.xuml");

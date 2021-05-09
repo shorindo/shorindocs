@@ -47,7 +47,7 @@ public class DataGridController extends DocumentController {
     private View view(ActionContext context, Object...args) {
         try {
             DocumentModel model = (DocumentModel)args[0];
-            String action = context.getParameterAsString("action");
+            String action = context.getParameter("action");
             context.addModel("lang", Locale.JAPANESE);
             context.addModel("document", model);
             context.addModel("recents", recents(context));
@@ -55,7 +55,7 @@ public class DataGridController extends DocumentController {
             if ("edit".equals(action)) {
                 return XumlView.create("datagrid/xuml/datagrid.xuml");
             } else if ("save".equals(action)) {
-                ((DocumentEntity)model).setContent(context.getParameterAsString("content"));
+                ((DocumentEntity)model).setContent(context.getParameter("content"));
                 getDocumentService().save(model);
                 return new RedirectView(model.getDocumentId());
             } else {

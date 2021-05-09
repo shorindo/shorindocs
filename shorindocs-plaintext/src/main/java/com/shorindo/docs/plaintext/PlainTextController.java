@@ -52,7 +52,7 @@ public class PlainTextController extends DocumentController {
             context.addModel("user", authenticateService.getUser());
             context.addModel("lang", Locale.JAPANESE);
             context.addModel("document", model);
-            if ("edit".equals(context.getParameterAsString("action"))) {
+            if ("edit".equals(context.getParameter("action"))) {
                 return XumlView.create("plaintext/xuml/plaintext-edit.xuml");
             } else {
                 context.addModel("recents", recents(context));
@@ -65,7 +65,8 @@ public class PlainTextController extends DocumentController {
     }
 
     @ActionMethod
-    public void save(ActionContext context) {
+    public Object save(ActionContext context) {
         LOG.debug("save()");
+        return super.save(context);
     }
 }

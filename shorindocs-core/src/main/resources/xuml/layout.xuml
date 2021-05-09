@@ -54,11 +54,11 @@
           </div>
           <div id="menubar" class="xuml-menubar">
             <div class="xuml-menubar-left">
-              <button onclick="docs.select()">#{create}</button>
-              <button onclick="location='?action=edit'">#{edit}</button>
-              <button>一時保存</button>
-              <button onclick="docs.save()">登録</button>
-              <button onclick="location=location.pathname;">キャンセル</button>
+              <button id="docs-select" onclick="docs.select()">#{create}</button>
+              <button id="docs-edit" onclick="location='?action=edit'">#{edit}</button>
+              <button id="docs-save">一時保存</button>
+              <button id="docs-commit">登録</button>
+              <button id="docs-cancel" onclick="location=location.pathname;">キャンセル</button>
             </div>
             <div class="xuml-menubar-right">
               <input type="text"/>

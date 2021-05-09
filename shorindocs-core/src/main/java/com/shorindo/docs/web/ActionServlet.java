@@ -64,8 +64,6 @@ public class ActionServlet extends HttpServlet {
         throws ServletException, IOException {
         LOG.info(DOCS_1105, req.getMethod() + " " + req.getServletPath());
         long st = System.currentTimeMillis();
-        //String path = req.getServletPath();
-        //String documentId = path.substring(1);
         ActionContext context = new ActionContext()
             .method(req.getMethod())
             .path(req.getServletPath())
@@ -176,6 +174,10 @@ public class ActionServlet extends HttpServlet {
         DocumentEntity key = new DocumentEntity();
         key.setDocumentId(req.getServletPath().substring(1));
         key.setVersion(0);
+        String version = context.getParameter("version");
+        if (version != null && version.matches("^\\-?[0-9]+$")) {
+            key.setVersion(Integer.parseInt(version));
+        }
         DocumentEntity entity = repositoryService.get(key);
         // NOT FOUND
         if (entity == null) {

@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
+import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentService;
@@ -62,4 +63,8 @@ public class MarkdownController extends DocumentController {
         }
     }
 
+    @ActionMethod
+    public Object save(ActionContext context) {
+        return super.save(context);
+    }
 }

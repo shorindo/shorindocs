@@ -64,9 +64,8 @@
                 document.body.appendChild(html);
             });
         },
-        "create":function(namespace, title) {
-            rpc("create", {"namespace":namespace, "title":title}, function(json) {
-try {
+        "create":function(docType, title) {
+            rpc("create", {"docType":docType, "title":title}, function(json) {
                 console.log(json);
                 var data = JSON.parse(json);
                 var html = document.createElement("div");
@@ -80,15 +79,12 @@ try {
                 }
                 console.log(html);
                 document.body.appendChild(html);
-} catch (e) {
-  console.error(e);
-}
             });
         },
-        "save":function() {
-            rpc("save", null, function(json) {
-            });
-        },
+//        "save":function() {
+//            rpc("save", null, function(json) {
+//            });
+//        },
         "flexHeight":function(selector) {
             var node = document.querySelector(selector);
             var height = window.innerHeight - node.offsetTop
@@ -97,7 +93,8 @@ try {
             window.onresize = function() {
                 docs.flexHeight(selector);
             };
-        }
+        },
+        "rpc":rpc
     };
  })();
 

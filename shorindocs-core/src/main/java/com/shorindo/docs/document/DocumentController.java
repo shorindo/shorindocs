@@ -54,18 +54,18 @@ public abstract class DocumentController extends ActionController {
         return documentService;
     }
 
-    public static void addController(String namespace, DocumentController controller) {
-        if (controllerMap.containsKey(namespace)) {
-            LOG.warn("[{0}]は既に登録されているため無視します。", namespace);
+    public static void addController(String docType, DocumentController controller) {
+        if (controllerMap.containsKey(docType)) {
+            LOG.warn("[{0}]は既に登録されているため無視します。", docType);
         } else {
-            LOG.info("ドキュメントタイプ[{0}]に[{1}]を登録します。", namespace, controller.getClass());
-            controllerMap.put(namespace, controller);
+            LOG.info("ドキュメントタイプ[{0}]に[{1}]を登録します。", docType, controller.getClass());
+            controllerMap.put(docType, controller);
         }
     }
 
-    public static DocumentController getController(String namespace) {
-        LOG.debug("namespace={0}", namespace);
-        return controllerMap.get(namespace);
+    public static DocumentController getController(String docType) {
+        LOG.debug("docType={0}", docType);
+        return controllerMap.get(docType);
     }
 
     /**
@@ -92,21 +92,21 @@ public abstract class DocumentController extends ActionController {
      */
     @ActionMethod
     public Object create(ActionContext context) throws ActionError {
-        LOG.debug("create({0}, {1})",
-            context.getParameterAsString("namespace"),
-            context.getParameterAsString("title"));
+//        LOG.debug("create({0}, {1})",
+//            context.getParameterAsString("docType"),
+//            context.getParameterAsString("title"));
         try {
             DocumentEntity model = new DocumentEntity();
-            model.setDocType(context.getParameterAsString("docType"));
-            model.setTitle(context.getParameterAsString("title"));
+            model.setDocType(context.getParameter("docType"));
+            model.setTitle(context.getParameter("title"));
             DocumentEntity entity = (DocumentEntity) documentService.create(model);
             XumlView view = XumlView.create("xuml/layout.xuml#create");
-            context.addModel("location", entity.getDocumentId());
+            context.addModel("location", entity.getDocumentId() + "?version=" + entity.getVersion() + "&action=edit");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             view.render(context, baos);
             return convert(baos.toString("UTF-8"));
         } catch (Exception e) {
-            throw new ActionError(DOCS_9002, e, context.getParameterAsString("title"));
+            throw new ActionError(DOCS_9002, e, context.getParameter("title"));
         }
     }
 
@@ -122,11 +122,31 @@ public abstract class DocumentController extends ActionController {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             view.render(context, baos);
             return convert(baos.toString("UTF-8"));
-        } catch (Throwable th) {
-            //LOG.error(DOCS_9002, th, id);
-            //return new ErrorView(500);
-            return null;
+        } catch (Exception e) {
+            throw new DocumentException(e.getMessage(), e);
         }
+    }
+
+    @ActionMethod
+    public Object save(ActionContext context) {
+        DocumentEntity entity = new DocumentEntity();
+        entity.setDocumentId(context.getPath().substring(1));
+        entity.setVersion(Integer.parseInt(context.getParameter("version")));
+        entity.setDocType(context.getParameter("docType"));
+        entity.setTitle(context.getParameter("title"));
+        entity.setContent(context.getParameter("content"));
+        return documentService.save(entity);
+    }
+
+    @ActionMethod
+    public Object commit(ActionContext context) {
+        DocumentEntity entity = new DocumentEntity();
+        entity.setDocumentId(context.getPath().substring(1));
+        entity.setVersion(0);
+        entity.setDocType(context.getParameter("docType"));
+        entity.setTitle(context.getParameter("title"));
+        entity.setContent(context.getParameter("content"));
+        return documentService.save(entity);
     }
 
     private MicroDOM convert(String xml) throws Exception {
@@ -134,45 +154,8 @@ public abstract class DocumentController extends ActionController {
         ByteArrayInputStream bais = new ByteArrayInputStream(root.getBytes("UTF-8"));
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = builder.parse(bais);
-//        return convert(document.getDocumentElement());
         return new MicroDOM(document.getDocumentElement());
     }
-
-//    private String convert(Node node) {
-//        if ("#text".equals(node.getNodeName())) {
-//            return "'" + node.getNodeValue() + "'";
-//        } else if ("#comment".equals(node.getNodeName())) {
-//            return "'" + node.getNodeValue() + "'";
-//        }
-//        StringBuilder sb = new StringBuilder("{'name':'" + node.getNodeName() + "'");
-//        NodeList childNodes = node.getChildNodes();
-//        if (childNodes.getLength() > 0) {
-//            String sep = "";
-//            sb.append(",'child':[");
-//            for (int i = 0; i < childNodes.getLength(); i++) {
-//                if (isEmpty(childNodes.item(i))) {
-//                    continue;
-//                }
-//                sb.append(sep + convert(childNodes.item(i)));
-//                sep = ",";
-//            }
-//            sb.append("]");
-//        }
-//        sb.append("}");
-//        return sb.toString();
-//    }
-
-//    private boolean isEmpty(Node node) {
-//        if ("#text".equals(node.getNodeName())) {
-//            if (node.getNodeValue().matches("^\\s+$")) {
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        } else {
-//            return false;
-//        }
-//    }
 
     /**
      *

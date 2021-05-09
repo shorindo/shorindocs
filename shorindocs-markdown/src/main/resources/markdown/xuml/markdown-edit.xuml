@@ -5,11 +5,12 @@
     <xuml:template name="LEFT">
       プロパティ<br/>
       タイトル<br/>
-      <input type="text" value="${document.title}" style="margin:1px 5px;"/><br/>
+      <input id="docs-title" type="text" value="${document.title}" style="margin:1px 5px;"/><br/>
       ID<br/>
+      <input id="docs-version" type="hidden" name="version" value="${document.version}"/>
       <input type="text" value="${document.documentId}" readonly="true" style="margin:1px 5px;"/><br/>
       ドキュメントの種別<br/>
-      <input type="text" value="${document.namespace}" readonly="true" style="margin:1px 5px;"/><br/>
+      <input id="docs-docType" type="text" value="${document.docType}" readonly="true" style="margin:1px 5px;"/><br/>
       作成日時<br/>
       <input type="text" value="${document.createDate}" readonly="true" style="margin:1px 5px;"/><br/>
       更新日時<br/>
@@ -17,11 +18,24 @@
     </xuml:template>
 
     <xuml:template name="CENTER">
-      <textarea style="height:100%;">${document.content}</textarea>
+      <textarea id="docs-content" style="height:100%;">${document.content}</textarea>
       <script type="text/javascript">
+      <!-- 
       window.addEventListener("DOMContentLoaded", function() {
         docs.flexHeight("#main");
+        document.querySelector("#docs-save").addEventListener("click", function() {
+          var param = {
+            "title":document.querySelector("#docs-title").value,
+            "version":document.querySelector("#docs-version").value,
+            "docType":document.querySelector("#docs-docType").value,
+            "content":document.querySelector("#docs-content").value
+          };
+          docs.rpc("save", param, function(json) {
+            console.log(json);
+          });
+        });
       });
+      -->
       </script>
     </xuml:template>
   </xuml:apply>

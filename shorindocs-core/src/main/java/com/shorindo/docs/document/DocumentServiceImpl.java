@@ -164,11 +164,11 @@ public class DocumentServiceImpl implements DocumentService {
                 repositoryService.execute(
                         "UPDATE DOCS_DOCUMENT " +
                         "SET    VERSION=?, " +
-                        "       UPDATE_USER=?," +
-                        "       UPDATE_DATE=?" +
+                        "       UPDATE_USER=?, " +
+                        "       UPDATE_DATE=? " +
                         "WHERE  DOCUMENT_ID=? AND VERSION=0",
-                        version + 1, prev.get().getDocumentId(),
-                        user.getUserId(), new java.util.Date());
+                        version + 1, user.getUserId(), 
+                        new java.util.Date(), prev.get().getDocumentId());
             }
             repositoryService.insert(entity);
             return repositoryService.get(entity);

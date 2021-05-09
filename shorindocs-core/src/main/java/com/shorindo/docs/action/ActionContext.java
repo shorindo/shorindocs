@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.shorindo.docs.model.UserModel;
+import com.shorindo.tools.BeanUtil;
+import com.shorindo.tools.BeanUtil.BeanNotFoundException;
 
 /**
  * 
@@ -58,22 +60,28 @@ public class ActionContext {
         return contentType;
     }
 
-    public Object getParameter(String name) {
-        return paramMap.get(name);
-    }
-
-    public String getParameterAsString(String name) {
-        Object param = paramMap.get(name);
-        if (param == null) {
+    public String getParameter(String name) {
+        try {
+            Object value = BeanUtil.getValue(paramMap, name);
+            return value != null ? value.toString() : null;
+        } catch (BeanNotFoundException e) {
+            LOG.warn("{0} not found", name);
             return null;
-        } else if (Iterable.class.isAssignableFrom(param.getClass())) {
-            return ((Iterable<?>)param).iterator().next().toString();
-        } else if (param.getClass().isArray()) {
-            return Array.get(param, 0).toString();
-        } else {
-            return param.toString();
         }
     }
+
+//    public String getParameterAsString(String name) {
+//        Object param = paramMap.get(name);
+//        if (param == null) {
+//            return null;
+//        } else if (Iterable.class.isAssignableFrom(param.getClass())) {
+//            return ((Iterable<?>)param).iterator().next().toString();
+//        } else if (param.getClass().isArray()) {
+//            return Array.get(param, 0).toString();
+//        } else {
+//            return param.toString();
+//        }
+//    }
 
     public Map<String, Object> getModel() {
         return model;
