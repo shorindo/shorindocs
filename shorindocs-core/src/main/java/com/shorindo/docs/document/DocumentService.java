@@ -27,6 +27,8 @@ public interface DocumentService {
     public List<DocumentModel> recents(String documentId);
     public DocumentModel load(String documentId);
     public DocumentModel create(DocumentModel model);
+    public DocumentModel edit(DocumentModel model) throws DocumentException;
     public DocumentModel save(DocumentModel model);
+    public DocumentModel commit(String documentId, int version) throws DocumentException;
     public DocumentModel remove(String documentId);
 }

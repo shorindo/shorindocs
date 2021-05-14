@@ -29,6 +29,9 @@ import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.plugin.PluginService;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Node;
 
 /**
  * 

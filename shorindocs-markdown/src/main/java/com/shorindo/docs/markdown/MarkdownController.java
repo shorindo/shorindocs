@@ -15,12 +15,17 @@
  */
 package com.shorindo.docs.markdown;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.document.DocumentController;
+import com.shorindo.docs.document.DocumentEntity;
+import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.model.DocumentModel;
@@ -47,16 +52,16 @@ public class MarkdownController extends DocumentController {
     @Override
     public View action(ActionContext context, Object...args) {
         try {
-        	DocumentModel model = (DocumentModel)args[0];
-        	context.addModel("lang", Locale.JAPANESE);
-        	context.addModel("document", model);
-        	if ("edit".equals(context.getParameter("action"))) {
-        	    return XumlView.create("markdown/xuml/markdown-edit.xuml");
-        	} else {
-        	    context.addModel("html", markdownService.parse(model.getContent()));
-        	    context.addModel("recents", recents(context));
-        	    return XumlView.create("markdown/xuml/markdown-view.xuml");
-        	}
+            DocumentModel model = (DocumentModel)args[0];
+            context.addModel("lang", Locale.JAPANESE);
+            context.addModel("document", model);
+            if ("edit".equals(context.getParameter("action"))) {
+                return XumlView.create("markdown/xuml/markdown-edit.xuml");
+            } else {
+                context.addModel("html", markdownService.parse(Optional.ofNullable(model.getContent()).orElse("")));
+                context.addModel("recents", recents(context));
+                return XumlView.create("markdown/xuml/markdown-view.xuml");
+            }
         } catch (Exception e) {
             LOG.error(DocumentMessages.DOCS_9001, e);
             return new ErrorView(500);
@@ -64,7 +69,27 @@ public class MarkdownController extends DocumentController {
     }
 
     @ActionMethod
-    public Object save(ActionContext context) {
-        return super.save(context);
+    public Object edit(ActionContext context) {
+        DocumentEntity entity = new DocumentEntity();
+        entity.setDocumentId(context.getPath().substring((1)));
+        String version = context.getParameter("version");
+        if (version == null) {
+            version = "0";
+        }
+        entity.setVersion(Integer.parseInt(version));
+        try {
+            DocumentModel model = getDocumentService().edit(entity);
+            context.addModel("document", model);
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        PartialView view = new PartialView();
+        view.setName("markdown/xuml/markdown-edit.xuml#editor");
+        view.setMethod("mod");
+        view.setTarget("#main-pane");
+        List<Object> resultList = new ArrayList<>();
+        resultList.add(updateView(context, view));
+        return resultList;
     }
 }

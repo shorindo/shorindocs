@@ -1,9 +1,22 @@
-<xuml>
-  <window title="{{status}} - {{message}}">
-    <dialog width="400" height="300" title="{{status}} - {{title}}">
-      <description value="{{message}}"/>
-    </dialog>
-  </window>
-</xuml>
-
-
+<xuml:xuml namespace="error">
+  <!doctype html>
+  <html>
+    <head>
+      <title>${message}</title>
+      <link rel="stylesheet" type="text/css" href="@{/css/xuml.css}"/>
+    </head>
+    <body>
+      <div id="doctype-selector-dialog" class="xuml-dialog-pane">
+        <div class="xuml-dialog">
+          <div class="xuml-dialog-head">エラー</div>
+          <div class="xuml-dialog-body" style="vertical-align:middle;overflow-y:hidden;">
+          ${message}
+          </div>
+          <div class="xuml-dialog-foot">
+            <button id="okButton" style="width:100px;" disabled="true">OK</button>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+</xuml:xuml>

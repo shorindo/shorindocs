@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Shorindo, Inc.
+ * Copyright 2016 Shorindo, Inc
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,19 +70,6 @@ public class ActionContext {
         }
     }
 
-//    public String getParameterAsString(String name) {
-//        Object param = paramMap.get(name);
-//        if (param == null) {
-//            return null;
-//        } else if (Iterable.class.isAssignableFrom(param.getClass())) {
-//            return ((Iterable<?>)param).iterator().next().toString();
-//        } else if (param.getClass().isArray()) {
-//            return Array.get(param, 0).toString();
-//        } else {
-//            return param.toString();
-//        }
-//    }
-
     public Map<String, Object> getModel() {
         return model;
     }
@@ -108,27 +95,26 @@ public class ActionContext {
         this.method = method;
         return this;
     }
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ActionContext queryString(String queryString) {
         if (queryString != null) {
-            Map<String,List<String>> map = new HashMap<>();
             for (String param : queryString.split("&")) {
                 String keyval[] = param.split("=", 2);
                 if (keyval.length < 2) {
                     continue;
                 }
-                List<String> vals = map.get(keyval[0]);
+                Object vals = paramMap.get(keyval[0]);
                 if (vals == null) {
-                    vals = new ArrayList<>();
-                    map.put(keyval[0], vals);
+                    paramMap.put(keyval[0], keyval[1]);
+                } else if (List.class.isAssignableFrom(vals.getClass())) {
+                    ((List)vals).add(keyval[1]);
+                } else {
+                    List values = new ArrayList<>();
+                    values.add(vals);
+                    values.add(keyval[1]);
+                    paramMap.put(keyval[0], values);
                 }
-                vals.add(keyval[1]);
             }
-            map.entrySet().stream()
-            .forEach((e) -> {
-                paramMap.put(
-                    e.getKey(),
-                    e.getValue().toArray(new String[] {}));
-            });
         }
         return this;
     }

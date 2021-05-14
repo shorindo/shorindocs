@@ -22,12 +22,16 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 
 import com.shorindo.tools.MarkdownParser;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 
 /**
  * https://github.github.com/gfm/
  */
 public class GFMTest {
     private static MarkdownParser MD = new MarkdownParser();
+    private Parser parser = Parser.builder().build();
+    private HtmlRenderer renderer = HtmlRenderer.builder().build();
 
     @Test
     public void example001() throws Exception {
@@ -3705,5 +3709,7 @@ public class GFMTest {
 
     private void GFM(String markdown, String expect) throws Exception {
         assertEquals(expect, MD.parse(markdown));
+//        String html = renderer.render(parser.parse(markdown));
+//        assertEquals(expect.replaceAll("[\\r\\n]", ""), html.replaceAll("[\\r\\n]", ""));
     }
 }

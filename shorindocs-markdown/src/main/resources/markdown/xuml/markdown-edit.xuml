@@ -8,6 +8,7 @@
       <input id="docs-title" type="text" value="${document.title}" style="margin:1px 5px;"/><br/>
       ID<br/>
       <input id="docs-version" type="hidden" name="version" value="${document.version}"/>
+      <input id="docs-token" type="hidden" name="token" value="${token}"/>
       <input type="text" value="${document.documentId}" readonly="true" style="margin:1px 5px;"/><br/>
       ドキュメントの種別<br/>
       <input id="docs-docType" type="text" value="${document.docType}" readonly="true" style="margin:1px 5px;"/><br/>
@@ -34,10 +35,56 @@
             console.log(json);
           });
         });
+        document.querySelector("#docs-commit").addEventListener("click", function() {
+          var param = {
+            "version":document.querySelector("#docs-version").value,
+            "title":document.querySelector("#docs-title").value,
+            "content":document.querySelector("#docs-content").value
+          };
+          docs.rpc("commit", param, function(json) {
+            console.log(json);
+          });
+        });
       });
       -->
       </script>
     </xuml:template>
   </xuml:apply>
 
+  <xuml:template name="editor">
+      <input id="docs-title" type="text" value="${document.title}" style="margin:1px 5px;"/><br/>
+      <textarea id="docs-content" style="height:100%;">${document.content}</textarea>
+      <input id="docs-version" type="hidden" name="version" value="${document.version}"/>
+      <input id="docs-version" type="hidden" name="docType" value="${document.docType}"/>
+      <input id="docs-token" type="hidden" name="token" value="${token}"/>
+      <script type="text/javascript">
+      <!-- 
+        docs.flexHeight("#main");
+        document.querySelector("#docs-save").addEventListener("click", function() {
+          var param = {
+            "title":document.querySelector("#docs-title").value,
+            "version":document.querySelector("#docs-version").value,
+//            "docType":document.querySelector("#docs-docType").value,
+            "content":document.querySelector("#docs-content").value
+          };
+          docs.rpc("save", param, function(json) {
+            //console.log(json);
+            console.log("saved");
+          });
+        });
+        document.querySelector("#docs-commit").addEventListener("click", function() {
+          var param = {
+            "version":document.querySelector("#docs-version").value,
+            "title":document.querySelector("#docs-title").value,
+            "content":document.querySelector("#docs-content").value
+          };
+          docs.rpc("commit", param, function(json) {
+            //console.log(json);
+            console.log("committed");
+            location = "";
+          });
+        });
+      -->
+      </script>
+  </xuml:template>
 </xuml:xuml>

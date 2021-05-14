@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import com.shorindo.docs.IdentityManager;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.auth.AuthenticateService;
+import com.shorindo.docs.auth.entity.UserEntity;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.model.UserModel;
 import com.shorindo.docs.repository.RepositoryException;
@@ -74,12 +75,6 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
-//    public void listDocType() {
-//        for (Entry<String,ApplicationContext> entry : ApplicationContext.getContextMap().entrySet()) {
-//            //entry.getValue();
-//        }
-//    }
-
     @Override
     public DocumentModel load(String documentId) {
         return load(documentId, 0);
@@ -96,40 +91,130 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
-//    @Override
-//    @Transactional
-//    public DocumentModel create(String docType) throws RepositoryException {
-//        UserModel user = authenticateService.getUser();
-//        DocumentEntity entity = new DocumentEntity();
-//        entity.setDocumentId(Long.toString(IdentityManager.newId()));
-//        entity.setDocType(docType);
-//        entity.setVersion(-1);
-//        entity.setTitle("");
-//        entity.setOwnerId(user.getUserId());
-//        entity.setCreateUser(user.getUserId());
-//        entity.setCreateDate(new java.util.Date());
-//        entity.setUpdateUser(user.getUserId());
-//        entity.setUpdateDate(new java.util.Date());
-//        repositoryService.insert(entity);
-//        return load(entity.getDocumentId(), entity.getVersion());
-//    }
-
     @Override
     @Transactional
     public DocumentModel create(DocumentModel model) {
         try {
-            UserModel user = authenticateService.getUser();
+//            UserModel user = authenticateService.getUser();
             DocumentEntity entity = new DocumentEntity(model);
             if (entity.getDocumentId() == null) {
                 entity.setDocumentId(Long.toString(IdentityManager.newId()));
             }
-            entity.setVersion(-1);
-            entity.setOwnerId(user.getUserId());
-            entity.setCreateUser(user.getUserId());
-            entity.setCreateDate(new java.util.Date());
-            entity.setUpdateUser(user.getUserId());
-            entity.setUpdateDate(new java.util.Date());
-            repositoryService.insert(entity);
+//            entity.setVersion(-1);
+//            entity.setOwnerId(user.getUserId());
+//            entity.setCreateUser(user.getUserId());
+//            entity.setCreateDate(new java.util.Date());
+//            entity.setUpdateUser(user.getUserId());
+//            entity.setUpdateDate(new java.util.Date());
+//            repositoryService.insert(entity);
+//            return repositoryService.get(entity);
+            return edit(entity);
+        } catch (DocumentException e) {
+            // TODO Auto-generated catch block
+            //throw new DocumentException(DOCS_9999, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public DocumentModel edit(DocumentModel model) throws DocumentException {
+        try {
+            DocumentEntity document;
+            UserModel user = authenticateService.getUser();
+            List<DocumentEntity> entityList = repositoryService.queryList(
+                "SELECT * " +
+                "FROM   DOCS_DOCUMENT " +
+                "WHERE  DOCUMENT_ID=? " +
+                "AND    VERSION <= 0 " +
+                "ORDER  BY VERSION DESC",
+                DocumentEntity.class, model.getDocumentId());
+            if (entityList.size() == 0) {
+                document = new DocumentEntity(model);
+                document.setVersion(-1);
+                document.setOwnerId(user.getUserId());
+                document.setCreateUser(user.getUserId());
+                document.setCreateDate(new java.util.Date());
+                document.setUpdateUser(user.getUserId());
+                document.setUpdateDate(new java.util.Date());
+            } else if (entityList.get(0).getVersion() < 0) {
+                // ドキュメントなし・誰かが編集中あり
+                Optional<DocumentEntity> entity = entityList.stream()
+                    .filter(e -> {
+                        return e.getVersion() != 0 &&
+                            user.getUserId().equals(e.getUpdateUser());
+                     })
+                    .findFirst();
+                if (entity.isEmpty()) {
+                    // 自分の編集中なし
+                    document = new DocumentEntity(model);
+                    DocumentEntity last = entityList.get(entityList.size() - 1);
+                    document.setVersion(last.getVersion() - 1);
+                } else {
+                    // 自分の編集中あり
+                    return entity.get();
+                }
+            } else {
+                Optional<DocumentEntity> entity = entityList.stream()
+                    .filter(e -> {
+                        return e.getVersion() != 0 &&
+                            user.getUserId().equals(e.getUpdateUser());
+                     })
+                    .findFirst();
+                if (entity.isEmpty()) {
+                    // ドキュメントあり・編集中なし
+                    DocumentEntity first = entityList.get(0);
+                    DocumentEntity last = entityList.get(entityList.size() - 1);
+                    first.setVersion(last.getVersion() - 1);
+                    document = first;
+                } else {
+                    // ドキュメントあり・編集中あり
+                    return entity.get();
+                }
+            }
+            document.setUpdateUser(user.getUserId());
+            document.setUpdateDate(new java.util.Date());
+            repositoryService.insert(document);
+            return repositoryService.get(document);
+        } catch (RepositoryException e) {
+            throw new DocumentException(DOCS_9000, e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public DocumentModel commit(String documentId, int version) {
+        try {
+            UserModel user = authenticateService.getUser();
+            DocumentEntity entity = new DocumentEntity();
+            entity.setDocumentId(documentId);
+            entity.setVersion(version);
+            entity = repositoryService.get(entity);
+            Optional<DocumentEntity> optEntity = repositoryService.querySingle(
+                "SELECT MAX(VERSION) VERSION " +
+                "FROM   DOCS_DOCUMENT " +
+                "WHERE  DOCUMENT_ID=? " +
+                "AND    VERSION >= 0",
+                DocumentEntity.class, documentId);
+            if (optEntity.isPresent()) {
+                int maxVersion = optEntity.get().getVersion();
+                repositoryService.execute(
+                    "UPDATE DOCS_DOCUMENT " +
+                    "SET    VERSION=?, " +
+                    "       UPDATE_USER=?, " +
+                    "       UPDATE_DATE=? " +
+                    "WHERE  DOCUMENT_ID=? AND VERSION=0",
+                    maxVersion + 1, user.getUserId(), 
+                    new java.util.Date(), documentId);
+            }
+            repositoryService.execute(
+                "UPDATE DOCS_DOCUMENT " +
+                "SET    VERSION=0, " +
+                "       UPDATE_USER=?, " +
+                "       UPDATE_DATE=? " +
+                "WHERE  DOCUMENT_ID=? AND VERSION=?",
+                user.getUserId(), new java.util.Date(), documentId, version);
+            entity.setVersion(0);
             return repositoryService.get(entity);
         } catch (RepositoryException e) {
             throw new RuntimeException(e); // TODO
@@ -139,48 +224,53 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Transactional
     public DocumentModel save(DocumentModel model) {
+        UserModel user = authenticateService.getUser();
         try {
-            UserModel user = authenticateService.getUser();
-            DocumentEntity entity = new DocumentEntity(model);
-            Optional<DocumentEntity> prev = repositoryService.querySingle(
-                    "SELECT * " +
-                    "FROM   DOCS_DOCUMENT " +
-                    "WHERE  DOCUMENT_ID=? AND VERSION=0",
-                    DocumentEntity.class,
-                    model.getDocumentId());
-            entity.setOwnerId(user.getUserId());
-            entity.setCreateUser(user.getUserId());
-            entity.setCreateDate(new java.util.Date());
-            entity.setUpdateUser(user.getUserId());
-            entity.setUpdateDate(new java.util.Date());
-            if (prev.isPresent()) {
-                List<DocumentEntity> entityList = repositoryService.queryList(
-                        "SELECT MAX(VERSION) VERSION " +
-                        "FROM   DOCS_DOCUMENT " +
-                        "WHERE  DOCUMENT_ID=?",
-                        DocumentEntity.class,
-                        model.getDocumentId());
-                int version = entityList.get(0).getVersion();
-                repositoryService.execute(
-                        "UPDATE DOCS_DOCUMENT " +
-                        "SET    VERSION=?, " +
-                        "       UPDATE_USER=?, " +
-                        "       UPDATE_DATE=? " +
-                        "WHERE  DOCUMENT_ID=? AND VERSION=0",
-                        version + 1, user.getUserId(), 
-                        new java.util.Date(), prev.get().getDocumentId());
-            }
-            repositoryService.insert(entity);
-            return repositoryService.get(entity);
+            repositoryService.execute(
+                "UPDATE DOCS_DOCUMENT " +
+                "SET    TITLE=?, " +
+                "       CONTENT=?, " +
+                "       UPDATE_USER=?, " +
+                "       UPDATE_DATE=? " +
+                "WHERE  DOCUMENT_ID=? AND VERSION=?",
+                model.getTitle(), model.getContent(), user.getUserId(),
+                new java.util.Date(), model.getDocumentId(),
+                ((DocumentEntity)model).getVersion());
+            return repositoryService.get(model);
         } catch (RepositoryException e) {
             throw new RuntimeException(e); // TODO
         }
+
     }
+
+//    @Override
+//    @Transactional
+//    public DocumentModel commit(String documentId, int version) throws DocumentException {
+//        try {
+//            UserModel user = authenticateService.getUser();
+//            int count = repositoryService.execute(
+//                    "UPDATE DOCS_DOCUMENT " +
+//                    "SET    VERSION=0, UPDATE_USER=?, UPDATE_DATE=? " +
+//                    "WHERE  DOCUMENT_ID=? AND VERSION=?",
+//                    DocumentEntity.class, user.getUserId(), new java.util.Date(),
+//                    documentId, version);
+//            if (count > 0) {
+//                DocumentEntity entity = new DocumentEntity();
+//                entity.setDocumentId(documentId);
+//                entity.setVersion(0);
+//                return repositoryService.get(entity);
+//            } else {
+//                throw new DocumentException(DOCS_9007, documentId);
+//            }
+//        } catch (RepositoryException e) {
+//            throw new DocumentException(DOCS_9007, e, documentId);
+//        }
+//    }
 
     @Override
     @Transactional
     public DocumentModel remove(String documentId) {
-        // TODO Auto-generated method stub
+        // TODO versionを最大値+1とし、version=0をなくすことで削除とする
         return null;
     }
 
@@ -203,11 +293,5 @@ public class DocumentServiceImpl implements DocumentService {
           throw new RuntimeException(e);
       }
     }
-
-//    @Override
-//    public DocumentEntity newDocument() {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
 
 }

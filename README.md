@@ -81,10 +81,11 @@
 1. <s>ApplicationContextのnamespace対応</s>
 1. ActionContextをThreadLocalにする
 1. Viewからpull
-1. バージョン管理 ・ 一時保存
+1. <s>バージョン管理 ・ 一時保存</s>
 1. 認証
 1. アクセス制御
 1. Repository修正
 1. copy
-
+1. Jackson対応
+1. ドキュメントの関連付け
 

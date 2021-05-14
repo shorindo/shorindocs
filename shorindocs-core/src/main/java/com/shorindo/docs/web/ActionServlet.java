@@ -40,7 +40,6 @@ import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.auth.AuthenticateService;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentEntity;
-import com.shorindo.docs.document.DocumentServiceFactory;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.view.DefaultView;
@@ -103,7 +102,11 @@ public class ActionServlet extends HttpServlet {
             DocumentEntity key = new DocumentEntity();
             String path = req.getServletPath();
             key.setDocumentId(path.substring(1));
-            key.setVersion(0);
+            String version = context.getParameter("version");
+            if (version == null || !version.matches("^\\-[0-9]+$")) {
+                version = "0";
+            }
+            key.setVersion(Integer.parseInt(version));
             DocumentEntity entity = repositoryService.get(key);
             if (entity == null) {
                 output(context, res, new ErrorView(404));
@@ -165,11 +168,11 @@ public class ActionServlet extends HttpServlet {
     }
     private void doDocument(ActionContext context, HttpServletRequest req, HttpServletResponse res) throws SuccessException, IOException, RepositoryException {
         // キャッシュ
-        ActionController controller = DocumentServiceFactory.getController(context.getPath());
-        if (controller != null) {
-            output(context, res, controller.action(context));
-            throw SUCCESS;
-        }
+//        ActionController controller = DocumentServiceFactory.getController(context.getPath());
+//        if (controller != null) {
+//            output(context, res, controller.action(context));
+//            throw SUCCESS;
+//        }
 
         DocumentEntity key = new DocumentEntity();
         key.setDocumentId(req.getServletPath().substring(1));
@@ -187,7 +190,7 @@ public class ActionServlet extends HttpServlet {
         }
 
         // namespace
-        controller = DocumentController.getController(entity.getDocType());
+        ActionController controller = DocumentController.getController(entity.getDocType());
         if (controller != null) {
             output(context, res, controller.action(context, entity));
             throw SUCCESS;

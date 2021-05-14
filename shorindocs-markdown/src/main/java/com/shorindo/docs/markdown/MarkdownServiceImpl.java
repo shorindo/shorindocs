@@ -18,22 +18,26 @@ package com.shorindo.docs.markdown;
 import static com.shorindo.docs.markdown.MarkdownMessages.*;
 
 import com.shorindo.docs.action.ActionLogger;
-import com.shorindo.tools.MarkdownParser;
 import com.shorindo.tools.MarkdownParser.MarkdownException;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Node;
 
 /**
  * 
  */
 public class MarkdownServiceImpl implements MarkdownService {
     private static final ActionLogger LOG = ActionLogger.getLogger(MarkdownServiceImpl.class);
-    private MarkdownParser parser = new MarkdownParser();
+    private Parser parser = Parser.builder().build();
+    private HtmlRenderer renderer = HtmlRenderer.builder().build();
 
     @Override
     public String parse(String text) throws MarkdownException {
         LOG.debug(MKDN_1000);
         long st = System.currentTimeMillis();
         try {
-            return parser.parse(text);
+            Node document = parser.parse(text);
+            return renderer.render(document);
         } finally {
             LOG.debug(MKDN_1001, System.currentTimeMillis() - st);
         }

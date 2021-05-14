@@ -35,7 +35,11 @@ public class DocumentException extends Exception {
         super(message);
     }
 
-    public DocumentException(ActionMessages messages, Throwable cause) {
-        super(messages.getCode() + ":" + messages.getMessage(LANG), cause);
+    public DocumentException(ActionMessages messages, Object...args) {
+        super(messages.getCode() + ":" + messages.getMessage(LANG, args));
+    }
+
+    public DocumentException(ActionMessages messages, Throwable cause, Object...args) {
+        super(messages.getCode() + ":" + messages.getMessage(LANG, args), cause);
     }
 }

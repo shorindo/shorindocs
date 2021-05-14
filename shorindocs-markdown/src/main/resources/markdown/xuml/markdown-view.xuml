@@ -3,8 +3,10 @@
 
   <xuml:apply name="layout.LCR">
     <xuml:template name="CENTER">
+      <link rel="stylesheet" href="@{/markdown/css/markdown.css}"/>
+      <div class="markdown">
       *{html}
-      </script>
+      </div>
     </xuml:template>
   </xuml:apply>
 

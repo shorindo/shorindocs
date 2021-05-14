@@ -120,7 +120,7 @@ public class ActionLogger {
     }
 
     public void warn(String message, Object...args) {
-        logger.info(MessageFormat.format(message, args));
+        logger.warn(MessageFormat.format(message, args));
     }
 
     public String error(ActionMessages code, Object...args) {

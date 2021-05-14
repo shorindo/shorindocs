@@ -23,6 +23,7 @@ import java.util.Map;
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.action.ActionMessages;
+import com.shorindo.xuml.XumlView;
 
 /**
  * 
@@ -46,7 +47,9 @@ public class ErrorView implements View {
     @Override
     public void render(ActionContext context, OutputStream os) {
         try {
-            os.write((message.getStatus() + " - " + message.getMessage()).getBytes("UTF-8"));
+            XumlView view = XumlView.create("xuml/error.xuml");
+            context.addModel("message", message.getStatus() + " - " + message.getMessage());
+            view.render(context, os);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -90,6 +90,8 @@ public enum DocumentMessages implements ActionMessages {
     DOCS_9005,
     @Message(lang="ja", content="[{0}]は既に登録されているため、無視します。")
     DOCS_9006,
+    @Message(lang="ja", content="ドキュメント[{0}]のコミットに失敗しました。")
+    DOCS_9007,
     @Message(lang="ja", content="未知のエラーです。")
     DOCS_9999;
 

@@ -12,6 +12,10 @@ public class MicroDOM {
     private Map<String,String> attr;
     private List<Object> child;
 
+    public static MicroDOM create(Node node) {
+        return null;
+    }
+
     public MicroDOM(Node node) {
         this.name = node.getNodeName();
         this.attr = new HashMap<>();

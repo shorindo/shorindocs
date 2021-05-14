@@ -19,6 +19,9 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -92,15 +95,12 @@ public abstract class DocumentController extends ActionController {
      */
     @ActionMethod
     public Object create(ActionContext context) throws ActionError {
-//        LOG.debug("create({0}, {1})",
-//            context.getParameterAsString("docType"),
-//            context.getParameterAsString("title"));
         try {
             DocumentEntity model = new DocumentEntity();
             model.setDocType(context.getParameter("docType"));
             model.setTitle(context.getParameter("title"));
             DocumentEntity entity = (DocumentEntity) documentService.create(model);
-            XumlView view = XumlView.create("xuml/layout.xuml#create");
+            XumlView view = XumlView.create("xuml/layout.xuml#redirect");
             context.addModel("location", entity.getDocumentId() + "?version=" + entity.getVersion() + "&action=edit");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             view.render(context, baos);
@@ -128,6 +128,29 @@ public abstract class DocumentController extends ActionController {
     }
 
     @ActionMethod
+    public Object edit(ActionContext context) {
+        try {
+            DocumentEntity entity = new DocumentEntity();
+            entity.setDocumentId(context.getPath().substring((1)));
+            String version = context.getParameter("version");
+            if (version == null) {
+                version = "0";
+            }
+            entity.setVersion(Integer.parseInt(version));
+            DocumentModel model = getDocumentService().edit(entity);
+            XumlView view = XumlView.create("xuml/layout.xuml#redirect");
+            context.addModel("location",
+                model.getDocumentId() + "?version=" +
+                ((DocumentEntity)model).getVersion() + "&action=edit");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            view.render(context, baos);
+            return convert(baos.toString("UTF-8"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @ActionMethod
     public Object save(ActionContext context) {
         DocumentEntity entity = new DocumentEntity();
         entity.setDocumentId(context.getPath().substring(1));
@@ -140,21 +163,27 @@ public abstract class DocumentController extends ActionController {
 
     @ActionMethod
     public Object commit(ActionContext context) {
-        DocumentEntity entity = new DocumentEntity();
-        entity.setDocumentId(context.getPath().substring(1));
-        entity.setVersion(0);
-        entity.setDocType(context.getParameter("docType"));
-        entity.setTitle(context.getParameter("title"));
-        entity.setContent(context.getParameter("content"));
-        return documentService.save(entity);
+        try {
+            save(context);
+            return documentService.commit(context.getPath().substring(1),
+                Integer.parseInt(context.getParameter("version")));
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private MicroDOM convert(String xml) throws Exception {
-        String root = "<div>" + xml + "</div>";
-        ByteArrayInputStream bais = new ByteArrayInputStream(root.getBytes("UTF-8"));
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document document = builder.parse(bais);
-        return new MicroDOM(document.getDocumentElement());
+    @ActionMethod
+    public Object cancel(ActionContext context) {
+        return null;
+    }
+
+    protected MicroDOM convert(String xml) throws Exception {
+        String root = "<root>" + xml + "</root>";
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(root.getBytes("UTF-8"))) {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = builder.parse(bais);
+            return new MicroDOM(document.getDocumentElement());
+        }
     }
 
     /**
@@ -171,6 +200,63 @@ public abstract class DocumentController extends ActionController {
                 LOG.error(DOCS_9003, e, documentId);
                 return null;
             }
+        }
+    }
+
+//    @ActionMethod
+//    public Object test(ActionContext context) {
+//        try {
+//            XumlView view = XumlView.create("xuml/layout.xuml#doctype-selector-dialog");
+//            context.addModel("size", controllerMap.size());
+//            context.addModel("docTypes", controllerMap.keySet());
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            view.render(context, baos);
+//            Map<String,Object> result = new HashMap<>();
+//            result.put("method", "add");
+//            result.put("locator", "body");
+//            result.put("mdom", convert(baos.toString("UTF-8")));
+//            return result;
+//        } catch (Exception e) {
+//            throw new RuntimeException(e.getMessage(), e);
+//        }
+//    }
+
+    protected Object updateView(ActionContext context, PartialView partialView) {
+        try {
+            XumlView view = XumlView.create(partialView.getName());
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            view.render(context, baos);
+            Map<String,Object> resultMap = new HashMap<>();
+            resultMap.put("method", partialView.getMethod());
+            resultMap.put("locator", partialView.getTarget());
+            resultMap.put("mdom", convert(baos.toString("UTF-8")));
+            return resultMap;
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public static class PartialView {
+        String name;
+        String method;
+        String target;
+        public String getName() {
+            return name;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
+        public String getMethod() {
+            return method;
+        }
+        public void setMethod(String method) {
+            this.method = method;
+        }
+        public String getTarget() {
+            return target;
+        }
+        public void setTarget(String target) {
+            this.target = target;
         }
     }
 

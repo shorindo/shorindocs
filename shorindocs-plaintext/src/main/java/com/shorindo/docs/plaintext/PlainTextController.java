@@ -66,7 +66,6 @@ public class PlainTextController extends DocumentController {
 
     @ActionMethod
     public Object save(ActionContext context) {
-        LOG.debug("save()");
         return super.save(context);
     }
 }
