@@ -34,7 +34,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
         <title>${document.title}</title>
-        <link rel="stylesheet" type="text/css" href="@{/css/xuml.css}"/>
+        <link rel="stylesheet" type="text/css" media="all" href="@{/css/xuml.css}"/>
         <script type="text/javascript" src="@{/js/script.js}"></script>
       </head>
       <body class="xuml-width-fill xuml-height-fill">
@@ -52,7 +52,7 @@
               </xuml:switch>
             </div>
           </div>
-          <div id="menubar" class="xuml-menubar">
+          <div id="menubar" class="xuml-menubar noprint">
             <div class="xuml-menubar-left">
               <button id="docs-select" onclick="docs.select()">#{create}</button>
               <button id="docs-edit" onclick="docs.edit()">#{edit}</button>
@@ -69,7 +69,7 @@
           <div id="main" class="xuml-hbox">
             <xuml:apply name="main"/>
           </div>
-          <div id="footer-pane">#{license}</div>
+          <div id="footer-pane" class="noprint">#{license}</div>
         </div>
       </body>
     </html>
@@ -78,13 +78,13 @@
   <xuml:template name="LCR">
     <xuml:apply name="expand">
       <xuml:template name="main">
-        <div id="left-pane" class="xuml-vbox" style="width:25%;overflow:auto;">
+        <div id="left-pane" class="xuml-vbox noprint" style="width:25%;overflow:auto;">
           <xuml:apply name="LEFT"/>
         </div>
         <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;">
           <xuml:apply name="CENTER"/>
         </div>
-        <div id="right-pane" class="xuml-vbox" style="width:25%;overflow:auto;">
+        <div id="right-pane" class="xuml-vbox noprint" style="width:25%;overflow:auto;">
           <xuml:apply name="RIGHT"/>
         </div>
       </xuml:template>
@@ -158,7 +158,7 @@
   <xuml:template name="LC">
     <xuml:apply name="expand">
       <xuml:template name="main">
-        <div id="left-pane" class="xuml-vbox" style="width:25%;">
+        <div id="left-pane" class="xuml-vbox noprint" style="width:25%;">
           <xuml:apply name="LEFT"/>
         </div>
         <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;">
@@ -171,7 +171,7 @@
   <xuml:template name="CR">
     <xuml:apply name="expand">
       <xuml:template name="main">
-        <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;">
+        <div id="main-pane" class="xuml-vbox noprint" flex="1" style="overflow:auto;">
           <xuml:apply name="CENTER"/>
         </div>
         <div id="right-pane" class="xuml-vbox" style="width:25%;">

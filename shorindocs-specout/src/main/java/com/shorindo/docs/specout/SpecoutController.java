@@ -18,6 +18,8 @@ package com.shorindo.docs.specout;
 import static com.shorindo.docs.specout.SpecoutMessages.*;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.xml.bind.JAXB;
@@ -27,7 +29,10 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentEntity;
+import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentService;
+import com.shorindo.docs.document.DocumentController.PartialView;
+import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.JsonView;
 import com.shorindo.docs.view.View;
@@ -57,7 +62,7 @@ public class SpecoutController extends DocumentController {
             context.addModel("document", model);
         	context.addModel("specout", specout);
             context.addModel("recents", recents(context));
-        	return XumlView.create("specout/xuml/specout.xuml");
+        	return XumlView.create("specout/xuml/specout-view.xuml");
             //return new SpecoutView(model);
         } catch (Exception e) {
             LOG.error(SPEC_9001, e);
@@ -72,10 +77,29 @@ public class SpecoutController extends DocumentController {
      * @param context
      * @return
      */
+//    @ActionMethod
+//    public View edit(ActionContext context, Object...args) {
+//    	DocumentEntity model = (DocumentEntity)args[0];
+//        SpecoutEntity specout = JAXB.unmarshal(new StringReader(model.getContent()), SpecoutEntity.class);
+//        return new JsonView(specout, context);
+//    }
     @ActionMethod
-    public View edit(ActionContext context, Object...args) {
-    	DocumentEntity model = (DocumentEntity)args[0];
-        SpecoutEntity specout = JAXB.unmarshal(new StringReader(model.getContent()), SpecoutEntity.class);
-        return new JsonView(specout, context);
+    public Object edit(ActionContext context) throws Exception {
+        DocumentEntity entity = new DocumentEntity();
+        entity.setDocumentId(context.getPath().substring((1)));
+        String version = context.getParameter("version");
+        if (version == null) {
+            version = "0";
+        }
+        entity.setVersion(Integer.parseInt(version));
+        DocumentModel model = getDocumentService().edit(entity);
+        context.addModel("document", model);
+        PartialView view = new PartialView();
+        view.setName("specout/xuml/specout-edit.xuml#editor");
+        view.setMethod("mod");
+        view.setTarget("#main-pane");
+        List<Object> resultList = new ArrayList<>();
+        resultList.add(updateView(context, view));
+        return resultList;
     }
 }

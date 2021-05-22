@@ -77,7 +77,24 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentModel load(String documentId) {
-        return load(documentId, 0);
+        UserModel user = authenticateService.getUser();
+        try {
+            List<DocumentEntity> documents = repositoryService.queryList(
+                "SELECT * " +
+                "FROM   DOCS_DOCUMENT " +
+                "WHERE   DOCUMENT_ID=? AND VERSION=0 " +
+                "UNION ALL " +
+                "SELECT * " +
+                "FROM   DOCS_DOCUMENT " +
+                "WHERE   DOCUMENT_ID=? AND VERSION<0 AND UPDATE_USER=? " +
+                "ORDER BY VERSION DESC",
+                DocumentEntity.class,
+                documentId, documentId, user.getUserId());
+            return documents.stream().findFirst().orElse(null);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+//        return load(documentId, 0);
     }
 
     public DocumentModel load(String documentId, int version) {
@@ -95,23 +112,13 @@ public class DocumentServiceImpl implements DocumentService {
     @Transactional
     public DocumentModel create(DocumentModel model) {
         try {
-//            UserModel user = authenticateService.getUser();
             DocumentEntity entity = new DocumentEntity(model);
             if (entity.getDocumentId() == null) {
                 entity.setDocumentId(Long.toString(IdentityManager.newId()));
             }
-//            entity.setVersion(-1);
-//            entity.setOwnerId(user.getUserId());
-//            entity.setCreateUser(user.getUserId());
-//            entity.setCreateDate(new java.util.Date());
-//            entity.setUpdateUser(user.getUserId());
-//            entity.setUpdateDate(new java.util.Date());
-//            repositoryService.insert(entity);
-//            return repositoryService.get(entity);
+            entity.setVersion(-1);
             return edit(entity);
         } catch (DocumentException e) {
-            // TODO Auto-generated catch block
-            //throw new DocumentException(DOCS_9999, e);
             throw new RuntimeException(e);
         }
     }

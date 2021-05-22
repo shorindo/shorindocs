@@ -75,6 +75,7 @@
 
 # TODO
 
+1. resourcesの下を闇雲に公開するのはよくないな
 1. <s>xuml</s>
 1. <s>パスマッピング</s>
 1. <s>include</s>

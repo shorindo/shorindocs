@@ -1,0 +1,49 @@
+<xuml:xuml namespace="dagagrid">
+  <xuml:import file="xuml/layout.xuml"/>
+
+  <xuml:apply name="layout.LCR">
+    <xuml:template name="CENTER">
+      <!-- 
+      <link rel="stylesheet" href="@{/datagrid/css/handsontable.full.min.css}"/>
+      <script type="text/javascript" src="@{/datagrid/js/handsontable.full.min.js}"></script>
+      -->
+      <link rel="stylesheet" href="@{/datagrid/css/datagrid.css}"/>
+      <style type="text/css">
+      <xuml:each item="col" value="${schema.columns}">
+      table.datagrid td.c${col.id} { ${col.style} }
+      </xuml:each>
+      </style>
+      <table class="datagrid">
+        <tr>
+        <xuml:each item="col" value="${schema.columns}">
+          <th class="datagrid" style="${col.style}">${col.name}</th>
+        </xuml:each>
+        </tr>
+        <tr class="noprint">
+        <xuml:each item="col" value="${schema.columns}">
+          <td class="datagrid" style="padding:2px;"><input type="text" placeholder="フィルタ"/></td>
+        </xuml:each>
+        </tr>
+        <xuml:each item="record" value="${records}">
+          <tr>
+            <xuml:each item="cell" value="${record.cells}">
+              <td class="datagrid c${cell.id}">${cell.value}</td>
+            </xuml:each>
+          </tr>
+        </xuml:each>
+      </table>
+<!--
+      <div id="grid"></div>
+      <script type="text/javascript">
+      document.addEventListener("DOMContentLoaded", function() {
+        var target = document.getElementById('grid');
+        window.datagrid = new Handsontable(target, *{config});
+        docs.rpc('loadData', null, function(responseText) {
+          datagrid.loadData(JSON.parse(responseText).result);
+        });
+      });
+      </script>
+-->
+    </xuml:template>
+  </xuml:apply>
+</xuml:xuml>

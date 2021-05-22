@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema name="daily-report">
+  <columns>
+    <column id="1" name="日付" type="text" required="true" style="width:80px;align:center;"/>
+    <column id="2" name="開始" type="text" required="true" style="width:80px;align:center;"/>
+    <column id="3" name="終了" type="text" required="true" style="width:80px;align:center;"/>
+    <column id="4" name="時間" type="text" required="true" style="width:40px;align:center;"/>
+    <column id="5" name="適用" type="text" required="true" style="width:flex;"/>
+  </columns>
+</schema>

@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.tools.BeanUtil;
@@ -1125,14 +1126,16 @@ public class XumlParser {
                 Object object = BeanUtil.getValue(bean, name);
                 if (object == null) {
                     result = new ArrayList<Object>();
-//                } else if (List.class.isAssignableFrom(object.getClass())) {
-//                    result = (List<Object>)object;
                 } else if (Iterable.class.isAssignableFrom(object.getClass())) {
                     for (Iterator<Object> iter = ((Iterable)object).iterator(); iter.hasNext();) {
                         result.add(iter.next());
                     }
                 } else if (object.getClass().isArray()) {
                     result = Arrays.asList(object);
+//                } else if (Map.class.isAssignableFrom(bean.getClass())) {
+//                    for (Entry<Object,Object> entry : ((Map<Object,Object>)bean).entrySet()) {
+//                        result.add(entry.getValue());
+//                    }
                 } else {
                     result = new ArrayList<Object>();
                     result.add(object);

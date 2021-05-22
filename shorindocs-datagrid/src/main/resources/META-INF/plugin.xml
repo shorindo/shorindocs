@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <config namespace="datagrid">
   <bean name="com.shorindo.docs.datagrid.DataGridController" />
+  <bean name="com.shorindo.docs.datagrid.DataGridService"
+        class="com.shorindo.docs.datagrid.DataGridServiceImpl" />
 </config>
 

@@ -131,3 +131,9 @@ textarea.text-editor {
 .xuml-selector.selected {
   background: #F0E0E0;
 }
+
+@media print {
+	.noprint { display:none; }
+	#header-pane { text-align:center; margin-bottom:20px; font-size:16pt; }
+	#header-pane a { display:none; }
+}

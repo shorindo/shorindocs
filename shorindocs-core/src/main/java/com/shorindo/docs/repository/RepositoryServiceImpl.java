@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -380,6 +382,46 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
             throws RepositoryException {
         QueryStatement stmt = new QueryStatement(clazz);
         return stmt.queryList(conn, sql, params);
+    }
+
+    public final List<Map<String,Object>> queryMap(String sql, Object...params) throws RepositoryException {
+        Connection conn = getThreadConnection();
+        if (conn != null) {
+            return queryMap(conn, sql, params);
+        } else {
+            try {
+                conn = getConnection();
+                return queryMap(conn, sql, params);
+            } catch (SQLException e) {
+                throw new RepositoryException(e);
+            } finally {
+                dispose(conn);
+            }
+        }
+    }
+
+    private List<Map<String,Object>> queryMap(Connection conn, String sql, Object...params) throws RepositoryException {
+        try {
+            LOG.debug("SQL = " + sql);
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            for (int i = 0; i < params.length; i++) {
+                stmt.setObject(i + 1, params[i]);
+            }
+            List<Map<String,Object>> resultList = new ArrayList<>();
+            ResultSet rset = stmt.executeQuery();
+            ResultSetMetaData meta = rset.getMetaData();
+            while (rset.next()) {
+                Map<String,Object> map = new LinkedHashMap<>();
+                for (int i = 1; i <= meta.getColumnCount(); i++) {
+                    map.put(meta.getColumnLabel(i), rset.getObject(i));
+                }
+                resultList.add(map);
+            }
+            return resultList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

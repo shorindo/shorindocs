@@ -128,7 +128,7 @@ public abstract class DocumentController extends ActionController {
     }
 
     @ActionMethod
-    public Object edit(ActionContext context) {
+    public Object edit(ActionContext context) throws Exception {
         try {
             DocumentEntity entity = new DocumentEntity();
             entity.setDocumentId(context.getPath().substring((1)));

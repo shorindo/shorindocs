@@ -58,6 +58,7 @@
     <module>shorindocs-wiki</module>
     <module>shorindocs-markdown</module>
     <module>shorindocs-datagrid</module>
+    <module>shorindocs-drawio</module>
   </modules>
   <name>shorindocs</name>
   <dependencyManagement>

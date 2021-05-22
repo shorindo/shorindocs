@@ -40,6 +40,8 @@ import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.auth.AuthenticateService;
 import com.shorindo.docs.document.DocumentController;
 import com.shorindo.docs.document.DocumentEntity;
+import com.shorindo.docs.document.DocumentService;
+import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;
 import com.shorindo.docs.repository.RepositoryService;
 import com.shorindo.docs.view.DefaultView;
@@ -54,6 +56,7 @@ public class ActionServlet extends HttpServlet {
     private static final ActionLogger LOG = ActionLogger.getLogger(ActionServlet.class);
     private static RepositoryService repositoryService = ApplicationContext.getBean(RepositoryService.class);
     private static AuthenticateService authenticateService = ApplicationContext.getBean(AuthenticateService.class);
+    private static DocumentService documentService = ApplicationContext.getBean(DocumentService.class);
 
     /**
      * 
@@ -174,25 +177,24 @@ public class ActionServlet extends HttpServlet {
 //            throw SUCCESS;
 //        }
 
-        DocumentEntity key = new DocumentEntity();
-        key.setDocumentId(req.getServletPath().substring(1));
-        key.setVersion(0);
-        String version = context.getParameter("version");
-        if (version != null && version.matches("^\\-?[0-9]+$")) {
-            key.setVersion(Integer.parseInt(version));
-        }
-        DocumentEntity entity = repositoryService.get(key);
+        DocumentModel model = documentService.load(req.getServletPath().substring(1));
+//        DocumentEntity key = new DocumentEntity();
+//        key.setDocumentId(req.getServletPath().substring(1));
+//        key.setVersion(0);
+//        String version = context.getParameter("version");
+//        if (version != null && version.matches("^\\-?[0-9]+$")) {
+//            key.setVersion(Integer.parseInt(version));
+//        }
+//        DocumentEntity entity = repositoryService.get(key);
         // NOT FOUND
-        if (entity == null) {
-            //output(context, res, new ErrorView(404));
-            //throw SUCCESS;
+        if (model == null) {
             return;
         }
 
         // namespace
-        ActionController controller = DocumentController.getController(entity.getDocType());
+        ActionController controller = DocumentController.getController(model.getDocType());
         if (controller != null) {
-            output(context, res, controller.action(context, entity));
+            output(context, res, controller.action(context, model));
             throw SUCCESS;
         }
     }

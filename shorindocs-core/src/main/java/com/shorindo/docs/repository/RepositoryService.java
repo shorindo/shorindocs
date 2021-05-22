@@ -17,6 +17,7 @@ package com.shorindo.docs.repository;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -31,10 +32,11 @@ public interface RepositoryService {
     public int execute(String sql, Object...params) throws RepositoryException;
     public <E> Optional<E> querySingle(String sql, Class<E> clazz, Object...params) throws RepositoryException;
     public <E> List<E> queryList(String sql, Class<E> clazz, Object...params) throws RepositoryException;
+    public List<Map<String,Object>> queryMap(String sql, Object...params) throws RepositoryException;
     public int insert(Object entity) throws RepositoryException;
     public int update(Object entity) throws RepositoryException;
     public int delete(Object entity) throws RepositoryException;
 
     public <E> E get(E entity) throws RepositoryException;
     public int put(Object entity) throws RepositoryException;
-    }
+}
