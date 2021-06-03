@@ -27,7 +27,7 @@ import com.shorindo.docs.model.UserModel;
 public interface AuthenticateService {
     public void validate();
 
-    // user information
+    // thread user information
     public void setUser(UserModel user);
     public UserModel getUser();
 
@@ -47,4 +47,7 @@ public interface AuthenticateService {
     public GroupModel updateGroup(GroupModel model);
     public GroupModel removeGroup(GroupModel model);
     public List<GroupModel> searchGroup();
+//    public void addGroupMember(UserModel user);
+//    public void removeGroupMember(UserModel user);
+//    public void searchGroupMember();
 }

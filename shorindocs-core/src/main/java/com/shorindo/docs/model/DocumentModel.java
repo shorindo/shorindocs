@@ -25,6 +25,8 @@ import com.shorindo.docs.document.DocumentEntity;
 public interface DocumentModel {
     public String getDocumentId();
     public String getDocType();
+    public String getIcon();
     public String getTitle();
     public String getContent();
+    public Permission getPermission();
 }

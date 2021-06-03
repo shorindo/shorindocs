@@ -170,22 +170,8 @@ public class ActionServlet extends HttpServlet {
         }
     }
     private void doDocument(ActionContext context, HttpServletRequest req, HttpServletResponse res) throws SuccessException, IOException, RepositoryException {
-        // キャッシュ
-//        ActionController controller = DocumentServiceFactory.getController(context.getPath());
-//        if (controller != null) {
-//            output(context, res, controller.action(context));
-//            throw SUCCESS;
-//        }
-
         DocumentModel model = documentService.load(req.getServletPath().substring(1));
-//        DocumentEntity key = new DocumentEntity();
-//        key.setDocumentId(req.getServletPath().substring(1));
-//        key.setVersion(0);
-//        String version = context.getParameter("version");
-//        if (version != null && version.matches("^\\-?[0-9]+$")) {
-//            key.setVersion(Integer.parseInt(version));
-//        }
-//        DocumentEntity entity = repositoryService.get(key);
+
         // NOT FOUND
         if (model == null) {
             return;

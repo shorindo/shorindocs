@@ -19,8 +19,6 @@ import static com.shorindo.docs.document.DocumentMessages.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -264,7 +262,7 @@ public abstract class DocumentController extends ActionController {
      *
      */
     protected List<DocumentModel> recents(ActionContext context) throws RepositoryException {
-        return documentService.recents(context.getPath().substring(1));
+        return documentService.recents();
     }
     
 }

@@ -24,6 +24,7 @@ import net.arnx.jsonic.JSON;
 import org.junit.Test;
 
 import com.shorindo.docs.model.DocumentModel;
+import com.shorindo.docs.model.Permission;
 import com.shorindo.docs.plaintext.PlainTextController;
 
 /**
@@ -57,6 +58,16 @@ public class DocumentControllerTest {
             @Override
             public String getContent() {
                 return new Date().toString();
+            }
+            @Override
+            public String getIcon() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            @Override
+            public Permission getPermission() {
+                // TODO Auto-generated method stub
+                return null;
             }
         };
         client.save(model);
@@ -130,6 +141,18 @@ public class DocumentControllerTest {
         @Override
         public String getContent() {
             return content;
+        }
+
+        @Override
+        public String getIcon() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Permission getPermission() {
+            // TODO Auto-generated method stub
+            return null;
         }
 
     }

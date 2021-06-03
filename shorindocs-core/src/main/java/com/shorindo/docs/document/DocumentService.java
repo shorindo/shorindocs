@@ -24,7 +24,7 @@ import com.shorindo.docs.model.DocumentModel;
  */
 public interface DocumentService {
     public void validate();
-    public List<DocumentModel> recents(String documentId);
+    public List<DocumentModel> recents();
     public DocumentModel load(String documentId);
     public DocumentModel create(DocumentModel model);
     public DocumentModel edit(DocumentModel model) throws DocumentException;

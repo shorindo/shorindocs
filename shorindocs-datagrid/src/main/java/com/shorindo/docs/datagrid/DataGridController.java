@@ -18,14 +18,10 @@ package com.shorindo.docs.datagrid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import com.shorindo.docs.action.ActionContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
-import com.shorindo.docs.datagrid.entity.CellEntity;
 import com.shorindo.docs.datagrid.entity.RecordEntity;
 import com.shorindo.docs.datagrid.entity.SchemaEntity;
 import com.shorindo.docs.document.DocumentController;
@@ -33,7 +29,6 @@ import com.shorindo.docs.document.DocumentEntity;
 import com.shorindo.docs.document.DocumentException;
 import com.shorindo.docs.document.DocumentMessages;
 import com.shorindo.docs.document.DocumentService;
-import com.shorindo.docs.document.DocumentController.PartialView;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.view.ErrorView;
 import com.shorindo.docs.view.RedirectView;
@@ -65,6 +60,7 @@ public class DataGridController extends DocumentController {
             context.addModel("lang", Locale.JAPANESE);
             context.addModel("document", model);
             context.addModel("recents", recents(context));
+            context.addModel("favicon", context.getContextPath() + "/datagrid/img/datagrid.ico");
 
             if ("edit".equals(action)) {
                 return XumlView.create("datagrid/xuml/datagrid-view.xuml");

@@ -44,7 +44,7 @@ public class IdentityManager {
         } else {
             last = time;
         }
-        return time | (seq << 4) | host;
+        return time | (host << 6) | seq;
     }
 
     public static String hash(String source) {
@@ -60,6 +60,7 @@ public class IdentityManager {
     }
 
     private static long getTime() {
-        return ((System.currentTimeMillis() - BASE_TIME) & TIME_MASK) << 10;
+        long result = Long.reverse((System.currentTimeMillis() - BASE_TIME));
+        return result & (TIME_MASK << 10);
     }
 }

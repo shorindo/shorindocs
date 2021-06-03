@@ -62,6 +62,7 @@ public class SpecoutController extends DocumentController {
             context.addModel("document", model);
         	context.addModel("specout", specout);
             context.addModel("recents", recents(context));
+            context.addModel("favicon", context.getContextPath() + "/img/favicon.ico");
         	return XumlView.create("specout/xuml/specout-view.xuml");
             //return new SpecoutView(model);
         } catch (Exception e) {

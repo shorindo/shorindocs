@@ -21,5 +21,5 @@ package com.shorindo.docs.model;
 public enum Permission {
     READ,
     WRITE,
-    DELETE
+    MANAGE
 }

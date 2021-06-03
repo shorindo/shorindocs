@@ -52,6 +52,7 @@ public class PlainTextController extends DocumentController {
             context.addModel("user", authenticateService.getUser());
             context.addModel("lang", Locale.JAPANESE);
             context.addModel("document", model);
+            context.addModel("favicon", context.getContextPath() + "/img/favicon.ico");
             if ("edit".equals(context.getParameter("action"))) {
                 return XumlView.create("plaintext/xuml/plaintext-edit.xuml");
             } else {

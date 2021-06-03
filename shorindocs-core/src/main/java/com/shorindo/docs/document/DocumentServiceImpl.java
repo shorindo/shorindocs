@@ -282,7 +282,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<DocumentModel> recents(String documentId) {
+    public List<DocumentModel> recents() {
       try {
         return repositoryService.queryList(
                   "SELECT document_id,title,update_date " +

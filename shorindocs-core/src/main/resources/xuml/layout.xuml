@@ -34,6 +34,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
         <title>${document.title}</title>
+        <link rel="icon" type="image/x-icon" href="${favicon}">
         <link rel="stylesheet" type="text/css" media="all" href="@{/css/xuml.css}"/>
         <script type="text/javascript" src="@{/js/script.js}"></script>
       </head>

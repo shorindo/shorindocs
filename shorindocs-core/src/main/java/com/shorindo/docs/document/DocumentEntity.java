@@ -18,6 +18,7 @@ package com.shorindo.docs.document;
 import java.util.Date;
 
 import com.shorindo.docs.model.DocumentModel;
+import com.shorindo.docs.model.Permission;
 import com.shorindo.docs.repository.Column;
 import com.shorindo.docs.repository.SchemaEntity;
 import com.shorindo.docs.repository.Table;
@@ -36,12 +37,6 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
 
     @Column(name = "DOC_TYPE")
     private String docType;
-
-//    @Column(name = "NAMESPACE")
-//    private String namespace;
-
-//    @Column(name="CONTROLLER")
-//    private String controller;
 
     @Column(name="TITLE")
     private String title;
@@ -63,6 +58,9 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
 
     @Column(name="UPDATE_DATE")
     private Date updateDate;
+
+    private String icon;
+    private Permission permission = Permission.MANAGE;
 
     public DocumentEntity() {
     }
@@ -90,20 +88,20 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
         this.version = version;
     }
 
-//    public String getNamespace() {
-//        return namespace;
-//    }
-//
-//    public void setNamespace(String namespace) {
-//        this.namespace = namespace;
-//    }
-
 	public String getDocType() {
         return docType;
     }
 
     public void setDocType(String docType) {
         this.docType = docType;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getTitle() {
@@ -160,5 +158,13 @@ public class DocumentEntity extends SchemaEntity implements DocumentModel {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public Permission getPermission() {
+        return permission;
+    }
+
+    public void setPermission(Permission permission) {
+        this.permission = permission;
     }
 }

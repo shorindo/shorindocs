@@ -1,0 +1,136 @@
+ALTER TABLE AUTH_GROUP_MEMBER
+ADD COLUMN MEMBER_TYPE SMALLINT NOT NULL
+;
+
+ALTER TABLE DOCS_DOCUMENT
+ADD COLUMN ACL_ID VARCHAR(36)
+;
+
+--
+-- 自分が所属するグループ
+--
+SELECT *
+FROM   AUTH_GROUP_MEMBER
+WHERE  MEMBER_ID = 'u1'
+AND    MEMBER_TYPE = 0
+;
+
+--
+-- 所属するグループのパーミッション
+--
+SELECT MAX(A.PERMISSION)
+FROM   AUTH_ACL_MEMBER A,
+       AUTH_GROUP_MEMBER G
+WHERE  A.GROUP_ID = G.GROUP_ID
+AND    G.MEMBER_TYPE = 0
+AND    G.MEMBER_ID = 'u1'
+AND    A.ACL_ID = 'a2'
+;
+
+--
+-- ドキュメントのパーミッション
+--
+SELECT X.*
+FROM (
+    SELECT D.DOCUMENT_ID,
+           D.TITLE,
+           4 PERMISSION
+    FROM   DOCS_DOCUMENT D
+    WHERE  D.OWNER_ID = 'u1'
+    AND    D.VERSION = 0
+    UNION
+    SELECT D.DOCUMENT_ID,
+           D.TITLE,
+           P.PERMISSION
+    FROM   DOCS_DOCUMENT D
+    LEFT JOIN (
+        SELECT A.ACL_ID,
+           MAX(A.PERMISSION) PERMISSION
+        FROM   AUTH_ACL_MEMBER A,
+           AUTH_GROUP_MEMBER G
+        WHERE  A.GROUP_ID = G.GROUP_ID
+        AND    G.MEMBER_TYPE = 0
+        AND    G.MEMBER_ID = 'u1'
+        GROUP BY A.ACL_ID
+    ) P
+    ON     P.ACL_ID = D.ACL_ID
+    WHERE D.VERSION = 0
+    AND   P.PERMISSION > 0
+    AND   D.OWNER_ID <> 'u1'
+) X
+;
+
+--
+-- ACLのパーミッション(いらんか？)
+--
+ALTER TABLE AUTH_ACL
+DROP COLUMN ACL
+;
+
+--
+-- ユーザのパーミッション
+--
+ALTER TABLE AUTH_USER
+DROP COLUMN ACL,
+ADD COLUMN ACL_ID VARCHAR(36)
+;
+
+SELECT X.*
+FROM (
+    SELECT U.*,
+           4 PERMISSION
+    FROM   AUTH_USER U
+    WHERE  USER_ID = 'u1'
+UNION
+    SELECT U.*,
+           P.PERMISSION
+    FROM   AUTH_USER U
+    LEFT JOIN (
+        SELECT A.ACL_ID,
+               MAX(A.PERMISSION) PERMISSION
+        FROM   AUTH_ACL_MEMBER A,
+               AUTH_GROUP_MEMBER G
+        WHERE  A.GROUP_ID = G.GROUP_ID
+        AND    G.MEMBER_TYPE = 0
+        AND    G.MEMBER_ID = 'u1'
+        GROUP BY A.ACL_ID
+    ) P
+    ON     P.ACL_ID = U.ACL_ID
+    WHERE  P.PERMISSION > 0
+    AND    USER_ID <> 'u1'
+) X
+;
+
+--
+-- グループのパーミッション
+--
+ALTER TABLE AUTH_GROUP
+DROP COLUMN ACL,
+ADD COLUMN ACL_ID VARCHAR(36)
+;
+
+SELECT X.*
+FROM (
+    SELECT G.*,
+           4 PERMISSION
+    FROM   AUTH_GROUP G
+    WHERE  OWNER_ID = 'u1'
+UNION
+    SELECT G.*,
+           P.PERMISSION
+    FROM   AUTH_GROUP G
+    LEFT JOIN (
+        SELECT A.ACL_ID,
+               MAX(A.PERMISSION) PERMISSION
+        FROM   AUTH_ACL_MEMBER A,
+               AUTH_GROUP_MEMBER G
+        WHERE  A.GROUP_ID = G.GROUP_ID
+        AND    G.MEMBER_TYPE = 0
+        AND    G.MEMBER_ID = 'u1'
+        GROUP BY A.ACL_ID
+    ) P
+    ON     P.ACL_ID = G.ACL_ID
+    WHERE  P.PERMISSION > 0
+    AND    OWNER_ID <> 'u1'
+) X
+;

@@ -55,6 +55,7 @@ public class MarkdownController extends DocumentController {
             DocumentModel model = (DocumentModel)args[0];
             context.addModel("lang", Locale.JAPANESE);
             context.addModel("document", model);
+            context.addModel("favicon", context.getContextPath() + "/markdown/img/markdown-icon.ico");
             if ("edit".equals(context.getParameter("action"))) {
                 return XumlView.create("markdown/xuml/markdown-edit.xuml");
             } else {
