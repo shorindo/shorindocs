@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 
 import java.util.regex.Pattern;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.shorindo.tools.MarkdownParser;
@@ -28,6 +29,7 @@ import com.vladsch.flexmark.parser.Parser;
 /**
  * https://github.github.com/gfm/
  */
+@Ignore
 public class GFMTest {
     private static MarkdownParser MD = new MarkdownParser();
     private Parser parser = Parser.builder().build();

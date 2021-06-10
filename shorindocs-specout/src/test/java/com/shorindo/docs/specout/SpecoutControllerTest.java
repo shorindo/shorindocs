@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.sql.Timestamp;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
@@ -35,6 +36,7 @@ import com.shorindo.docs.specout.SpecoutController;
 /**
  * 
  */
+@Ignore
 public class SpecoutControllerTest {
     private static final ActionLogger LOG = ActionLogger.getLogger(SpecoutControllerTest.class);
     private static RepositoryService repositoryService;

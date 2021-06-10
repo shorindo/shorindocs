@@ -134,6 +134,7 @@ public class ApplicationContext {
                         actionMap.put(Pattern.compile(action.getPath()), getBeanPrivate(clazz));
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     throw new BeanNotFoundException(action.getName() + " -> " + action.getName());
                 }
             }

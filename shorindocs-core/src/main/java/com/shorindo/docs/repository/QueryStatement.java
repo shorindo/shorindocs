@@ -18,6 +18,7 @@ package com.shorindo.docs.repository;
 import static com.shorindo.docs.repository.DatabaseMessages.*;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -156,18 +157,22 @@ public class QueryStatement extends RepositoryStatement {
         Set<String> columnSet = new HashSet<String>();
         ResultSetMetaData meta = rset.getMetaData();
         for (int index = 1; index <= meta.getColumnCount(); index++) {
-            columnSet.add(meta.getColumnName(index));
+            columnSet.add(meta.getColumnLabel(index).toUpperCase());
         }
         return columnSet;
     }
 
     /**
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
      * 
      */
-    private <T> T getResult(ResultSet rset, Set<String> columnSet, Class<T> clazz) throws SQLException, BeanNotFoundException, InstantiationException, IllegalAccessException {
-        T entity = clazz.newInstance();
+    private <T> T getResult(ResultSet rset, Set<String> columnSet, Class<T> clazz) throws SQLException, BeanNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        T entity = clazz.getConstructor().newInstance();
         for (String columnName : columnSet) {
-            ColumnMapper mapper = getColumnByName(columnName);
+            ColumnMapper mapper = getColumnByName(columnName.toUpperCase());
             if (mapper == null) {
                 LOG.warn(DBMS_5109, clazz.getSimpleName(), columnName);
                 continue;
@@ -223,7 +228,7 @@ public class QueryStatement extends RepositoryStatement {
             case DATE:
                 BeanUtil.setProperty(entity,
                         mapper.getField().getName(),
-                        new Date(rset.getDate(columnName).getTime()));
+                        new Date(rset.getTimestamp(columnName).getTime()));
                 break;
             default:
                 LOG.warn(DBMS_5131, columnName);

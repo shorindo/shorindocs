@@ -36,7 +36,7 @@ import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.annotation.ActionMethod;
 import com.shorindo.docs.model.DocumentModel;
 import com.shorindo.docs.repository.RepositoryException;
-import com.shorindo.tools.MicroDOM;
+import com.shorindo.tools.DOMLite;
 import com.shorindo.xuml.XumlView;
 
 /**
@@ -175,12 +175,12 @@ public abstract class DocumentController extends ActionController {
         return null;
     }
 
-    protected MicroDOM convert(String xml) throws Exception {
+    protected DOMLite convert(String xml) throws Exception {
         String root = "<root>" + xml + "</root>";
         try (ByteArrayInputStream bais = new ByteArrayInputStream(root.getBytes("UTF-8"))) {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.parse(bais);
-            return new MicroDOM(document.getDocumentElement());
+            return new DOMLite(document.getDocumentElement());
         }
     }
 
@@ -262,7 +262,7 @@ public abstract class DocumentController extends ActionController {
      *
      */
     protected List<DocumentModel> recents(ActionContext context) throws RepositoryException {
-        return documentService.recents();
+        return documentService.recents(0, 20);
     }
     
 }

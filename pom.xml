@@ -60,6 +60,7 @@
     <module>shorindocs-datagrid</module>
     <module>shorindocs-drawio</module>
     <module>shorindocs-portal</module>
+    <module>shorindocs-chat</module>
   </modules>
   <name>shorindocs</name>
   <dependencyManagement>

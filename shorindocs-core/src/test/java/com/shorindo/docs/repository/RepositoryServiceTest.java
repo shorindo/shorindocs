@@ -31,6 +31,7 @@ import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
@@ -43,6 +44,7 @@ import com.shorindo.docs.repository.ExecuteStatement.DeleteStatement;
 /**
  * 
  */
+@Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RepositoryServiceTest {
     private static final ActionLogger LOG = ActionLogger.getLogger(RepositoryServiceTest.class);

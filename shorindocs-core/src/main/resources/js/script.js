@@ -139,6 +139,7 @@
                 docs.flexHeight(selector);
             };
         },
+        "parseVDOM":parseVDOM,
         "rpc":rpc
     };
  })();

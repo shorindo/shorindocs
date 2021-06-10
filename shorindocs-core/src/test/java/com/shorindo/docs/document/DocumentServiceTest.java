@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
@@ -33,6 +34,7 @@ import com.shorindo.docs.model.UserModel;
 /**
  * 
  */
+@Ignore
 public class DocumentServiceTest {
     @BeforeClass
     public static void setUpBefore() throws Exception {

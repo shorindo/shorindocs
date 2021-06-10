@@ -14,8 +14,10 @@
     <bean name="com.shorindo.docs.document.DocumentService" class="com.shorindo.docs.document.DocumentServiceImpl"/>
     <bean name="com.shorindo.docs.document.DocumentController" />
     <bean name="com.shorindo.docs.auth.AuthenticateService" class="com.shorindo.docs.auth.AuthenticateServiceImpl"/>
+    <bean name="com.shorindo.xuml.FunctionService" class="com.shorindo.xuml.FunctionServiceImpl" />
 
-    <action path="/login" name="com.shorindo.docs.auth.LoginController" />
+    <action path="/login"  name="com.shorindo.docs.auth.LoginController" />
     <action path="/logout" name="com.shorindo.docs.auth.LogoutController" />
+    <action path="/"       name="com.shorindo.docs.document.IndexController" />
     <!-- action path="/{[0-9]+}" name="com.shorindo.docs.document.DocumentController" / -->
 </config>

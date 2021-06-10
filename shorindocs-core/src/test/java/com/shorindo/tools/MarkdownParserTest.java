@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.shorindo.docs.action.ActionLogger;
@@ -27,6 +28,7 @@ import com.shorindo.docs.action.ActionLogger;
 /**
  * 
  */
+@Ignore
 public class MarkdownParserTest {
     private static final ActionLogger LOG = ActionLogger.getLogger(MarkdownParserTest.class);
     private static MarkdownParser MD = new MarkdownParser();

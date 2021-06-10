@@ -32,7 +32,11 @@ public class IdentityManager {
     private static long host = 0;
 
     public synchronized static long newId() {
-        long time = getTime();
+        return newId(true);
+    }
+
+    public synchronized static long newId(boolean reverse) {
+        long time = getTime(reverse);
         seq = (seq  + 1) & SEQ_MASK;
         if (last == time && seq == 0) {
             try {
@@ -40,7 +44,7 @@ public class IdentityManager {
             } catch (InterruptedException e) {
                 LOG.warn(DocumentMessages.DOCS_3004, e);
             }
-            last = time = getTime();
+            last = time = getTime(reverse);
         } else {
             last = time;
         }
@@ -59,8 +63,10 @@ public class IdentityManager {
         return l;
     }
 
-    private static long getTime() {
-        long result = Long.reverse((System.currentTimeMillis() - BASE_TIME));
+    private static long getTime(boolean reverse) {
+        long result = reverse
+            ? Long.reverse((System.currentTimeMillis() - BASE_TIME))
+            : (System.currentTimeMillis() - BASE_TIME);
         return result & (TIME_MASK << 10);
     }
 }

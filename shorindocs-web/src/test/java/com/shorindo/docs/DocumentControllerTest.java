@@ -21,6 +21,7 @@ import java.util.Date;
 
 import net.arnx.jsonic.JSON;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.shorindo.docs.model.DocumentModel;
@@ -30,6 +31,7 @@ import com.shorindo.docs.plaintext.PlainTextController;
 /**
  * 
  */
+@Ignore
 public class DocumentControllerTest {
     private DocumentClient client = new DocumentClient();
 

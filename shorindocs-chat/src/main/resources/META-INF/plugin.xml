@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config namespace="chat">
+  <bean name="com.shorindo.docs.chat.ChatService"
+        class="com.shorindo.docs.chat.ChatServiceImpl"/>
+  <bean name="com.shorindo.docs.chat.ChatController" />
+</config>

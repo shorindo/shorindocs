@@ -24,11 +24,12 @@ import com.shorindo.docs.model.DocumentModel;
  */
 public interface DocumentService {
     public void validate();
-    public List<DocumentModel> recents();
     public DocumentModel load(String documentId);
     public DocumentModel create(DocumentModel model);
     public DocumentModel edit(DocumentModel model) throws DocumentException;
     public DocumentModel save(DocumentModel model);
     public DocumentModel commit(String documentId, int version) throws DocumentException;
     public DocumentModel remove(String documentId);
+
+    public List<DocumentModel> recents(int offset, int length);
 }

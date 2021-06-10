@@ -8,21 +8,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.tools.BeanUtil;
 import com.shorindo.tools.BeanUtil.BeanNotFoundException;
@@ -183,7 +180,7 @@ public class XumlParser {
         });
 
         PEG.define(XUML_VARRIABLE,
-            PEG.rule$RegExp("[\\$\\*#@]\\{[^\\}]+?\\}"))
+            PEG.rule$RegExp("[\\$\\*#@&]\\{[^\\}]+?\\}"))
             .action($$ -> {
                 $$.pack();
                 $$.clear();
@@ -1035,7 +1032,7 @@ public class XumlParser {
     }
 
     /**
-     * ${..} / @{..} / #{..} / *{..}
+     * ${..} / @{..} / #{..} / *{..} / &{..}
      */
     public static class VariableStatement extends AbstractStatement {
         private VarExpression expr;
@@ -1093,7 +1090,7 @@ public class XumlParser {
     }
 
     public abstract static class VarExpression {
-        private static final Pattern pattern = Pattern.compile("^([\\$\\*#@])\\{(.*?)\\}$");
+        private static final Pattern pattern = Pattern.compile("^([\\$\\*#@&])\\{(.*?)\\}$");
         private String name;
 
         public VarExpression(String name) {
@@ -1110,6 +1107,7 @@ public class XumlParser {
                 case "*": return new RawExpression(name);
                 case "@": return new PrefixExpression(name);
                 case "#": return new LabelExpression(name, stmt);
+                case "&": return new FunctionExpression(name);
                 default:
                     throw new RuntimeException(type + " is unknown.");
                 }
@@ -1209,6 +1207,37 @@ public class XumlParser {
         public Object getObject(Map<String, Object> scope) {
             // FIXME
             return scope.get("context.path") + getName();
+        }
+    }
+    public static class FunctionExpression extends VarExpression {
+
+        public FunctionExpression(String name) {
+            super(name);
+        }
+
+        @Override
+        public Object getObject(Map<String, Object> scope) {
+            return ApplicationContext
+                .getBean(FunctionService.class)
+                .execute(getName());
+        }
+        public List<Object> getList(Object bean) {
+            List<Object> result = new ArrayList<>();
+            Object object = ApplicationContext.getBean(FunctionService.class)
+                .execute(getName());
+            if (object == null) {
+                result = new ArrayList<Object>();
+            } else if (Iterable.class.isAssignableFrom(object.getClass())) {
+                for (Iterator<Object> iter = ((Iterable)object).iterator(); iter.hasNext();) {
+                    result.add(iter.next());
+                }
+            } else if (object.getClass().isArray()) {
+                result = Arrays.asList(object);
+            } else {
+                result = new ArrayList<Object>();
+                result.add(object);
+            }
+            return result;
         }
     }
 

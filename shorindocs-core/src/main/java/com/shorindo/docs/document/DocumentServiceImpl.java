@@ -282,15 +282,15 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<DocumentModel> recents() {
+    public List<DocumentModel> recents(int offset, int length) {
       try {
         return repositoryService.queryList(
                   "SELECT document_id,title,update_date " +
                   "FROM   docs_document " +
                   "WHERE  version=0 " +
                   "ORDER  BY update_date DESC " +
-                  "LIMIT  20",
-                  DocumentEntity.class)
+                  "LIMIT  ?, ?",
+                  DocumentEntity.class, offset, length)
               .stream()
               .map(mapper -> {
                   return (DocumentModel)mapper;

@@ -54,6 +54,40 @@ textarea.text-editor {
   margin:0;
   padding:0;
 }
+#header-pane img {
+  vertical-align:middle;
+  margin:2px;
+  width:1.2em;
+  height:1.2em;
+}
+.xuml-window {
+  border:1px solid gray;
+  background:white;
+  opacity:1;
+  margin: 0px 5px 5px 5px;
+  display: flex;
+  flex-direction: column;
+}
+.xuml-window-head {
+  background:#EEEEEE;
+  color:black;
+  padding:2px 5px;
+  border-bottom: 1px solid gray;
+}
+.xuml-window-body {
+  flex: 1;
+}
+.xuml-window-body a.xuml-window-item {
+  display: block;
+  text-decoration: none;
+  padding: 0 5px;
+}
+.xuml-window-body a.xuml-window-item:hover {
+  background: #F0F0F0;
+}
+.xuml-window-body div.xuml-window-item {
+  padding:0 5px;
+}
 .xuml-dialog-pane {
   position:fixed;
   left:0;

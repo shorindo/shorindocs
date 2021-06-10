@@ -7,6 +7,10 @@
     <xuml:text lang="ja">最近の更新</xuml:text>
     <xuml:text lang="en">Recent updates</xuml:text>
   </xuml:label>
+  <xuml:label key="notice">
+    <xuml:text lang="ja">お知らせ</xuml:text>
+    <xuml:text lang="ja">Notice</xuml:text>
+  </xuml:label>
   <xuml:label key="create">
     <xuml:text lang="ja">新規</xuml:text>
     <xuml:text lang="en">Create</xuml:text>
@@ -82,7 +86,7 @@
         <div id="left-pane" class="xuml-vbox noprint" style="width:25%;overflow:auto;">
           <xuml:apply name="LEFT"/>
         </div>
-        <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;">
+        <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;padding:0 5px;">
           <xuml:apply name="CENTER"/>
         </div>
         <div id="right-pane" class="xuml-vbox noprint" style="width:25%;overflow:auto;">
@@ -162,7 +166,7 @@
         <div id="left-pane" class="xuml-vbox noprint" style="width:25%;">
           <xuml:apply name="LEFT"/>
         </div>
-        <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;">
+        <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;padding:0 5px;">
           <xuml:apply name="CENTER"/>
         </div>
       </xuml:template>
@@ -172,7 +176,7 @@
   <xuml:template name="CR">
     <xuml:apply name="expand">
       <xuml:template name="main">
-        <div id="main-pane" class="xuml-vbox noprint" flex="1" style="overflow:auto;">
+        <div id="main-pane" class="xuml-vbox noprint" flex="1" style="overflow:auto;padding:0 5px;">
           <xuml:apply name="CENTER"/>
         </div>
         <div id="right-pane" class="xuml-vbox" style="width:25%;">
@@ -183,16 +187,27 @@
   </xuml:template>
 
   <xuml:template name="HEAD">
+    <a href="@{/}"><img src="@{/img/docs-icon.png}"/></a>
     ${document.title}
   </xuml:template>
 
   <xuml:template name="LEFT">
-    #{recents}
-    <ul>
-    <xuml:each item="recent" value="${recents}">
-      <li><a href="${recent.documentId}">${recent.title}</a></li>
-    </xuml:each>
-    </ul>
+    <div class="xuml-window">
+      <div class="xuml-window-head">#{recents}</div>
+      <div class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
+      <xuml:each item="recent" value="&{recents(0, 20)}">
+        <a class="xuml-window-item" href="${recent.documentId}">${recent.title}</a>
+      </xuml:each>
+      </div>
+    </div>
+    <div class="xuml-window">
+      <div class="xuml-window-head">#{notice}</div>
+      <div class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
+      <xuml:each item="notice" value="&{notices()}">
+        <div class="xuml-window-item">${notice}</div>
+      </xuml:each>
+      </div>
+    </div>
   </xuml:template>
 
   <xuml:template name="CENTER">

@@ -7,16 +7,16 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-public class MicroDOM {
+public class DOMLite {
     private String name;
     private Map<String,String> attr;
     private List<Object> child;
 
-    public static MicroDOM create(Node node) {
+    public static DOMLite create(Node node) {
         return null;
     }
 
-    public MicroDOM(Node node) {
+    public DOMLite(Node node) {
         this.name = node.getNodeName();
         this.attr = new HashMap<>();
         this.child = new ArrayList<>();
@@ -38,7 +38,7 @@ public class MicroDOM {
                         this.child.add(item.getNodeValue());
                     }
                 } else {
-                    this.child.add(new MicroDOM(item));
+                    this.child.add(new DOMLite(item));
                 }
             }
         }

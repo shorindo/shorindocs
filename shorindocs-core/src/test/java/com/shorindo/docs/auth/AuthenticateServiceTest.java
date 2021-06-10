@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import java.io.InputStream;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.shorindo.docs.ApplicationContext;
@@ -34,6 +35,7 @@ import com.shorindo.docs.repository.RepositoryServiceImpl;
 /**
  * 
  */
+@Ignore
 public class AuthenticateServiceTest {
     private static AuthenticateService authenticateService;
 

@@ -1,0 +1,45 @@
+<xuml:xuml namespace="dagagrid">
+  <xuml:import file="xuml/layout.xuml"/>
+
+  <xuml:apply name="layout.LCR">
+    <xuml:template name="CENTER">
+      <link rel="stylesheet" href="@{/chat/css/chat.css}"/> 
+      <script type="text/javascript" src="@{/chat/js/chat.js}"></script>
+      <div id="chat-wrapper">
+      <div class="xuml-window" style="width:calc()100% - 12px);">
+        <div class="xuml-window-head">チャンネルA</div>
+        <div id="chat-list" class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
+          <xuml:each item="chat" value="${chatList}">
+            <xuml:apply name="message"/>
+          </xuml:each>
+        </div>
+      </div>
+      <textarea style="border:1px solid gray;width:calc(100% - 17px);min-height:3em;margin-left:5px;overflow:hidden;height:auto;resize:none;" oninput="adjust(event)"></textarea>
+      <div style="width:calc(100% - 15px);margin-left:5px;overflow:hidden;">
+        <button style="width:100px;">編集</button>
+        <button style="width:100px;">プレビュー</button>
+        <button style="width:100px;float:right;" onclick="chat.send(event);">送信</button>
+      </div>
+      </div>
+    </xuml:template>
+
+    <xuml:template name="RIGHT">
+      <div class="xuml-window">
+        <div class="xuml-window-head">関連チャンネル</div>
+        <div class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
+        <xuml:each item="notice" value="&{['A', 'B', 'C']}">
+          <div class="xuml-window-item">${notice}</div>
+        </xuml:each>
+        </div>
+      </div>
+    </xuml:template>
+  </xuml:apply>
+
+  <xuml:template name="message">
+    <hr style="width:90%;"/>
+    <div class="chat-markdown">
+    ${chat.date} / ${chat.userId}<br/>
+    *{chat.message}
+    </div>
+  </xuml:template>
+</xuml:xuml>
