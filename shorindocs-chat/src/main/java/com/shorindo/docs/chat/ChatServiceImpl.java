@@ -1,10 +1,13 @@
 package com.shorindo.docs.chat;
 
+import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.shorindo.docs.IdentityManager;
+import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.auth.AuthenticateService;
 import com.shorindo.docs.document.DocumentService;
 import com.shorindo.docs.model.UserModel;
@@ -14,6 +17,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 
 public class ChatServiceImpl implements ChatService {
+    private static final ActionLogger LOG = ActionLogger.getLogger(ChatServiceImpl.class);
     private RepositoryService repositoryService;
     private AuthenticateService authenticateService;
     private DocumentService documentService;
@@ -31,7 +35,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public List<ChatMessageModel> search(String docId) {
         try {
-            return repositoryService.queryList(
+            List<ChatMessageModel> result = repositoryService.queryList(
                 "SELECT CHAT.DOCUMENT_ID, " +
                 "       CHAT.CHAT_ID, " +
                 "       CHAT.DATE, " +
@@ -41,7 +45,8 @@ public class ChatServiceImpl implements ChatService {
                 "LEFT JOIN AUTH_USER USER " +
                 "ON     USER.USER_ID = CHAT.USER_ID " +
                 "WHERE  CHAT.DOCUMENT_ID = ? " +
-                "ORDER BY CHAT.CHAT_ID",
+                "ORDER BY CHAT.CHAT_ID DESC " +
+                "LIMIT 0, 10",
                 ChatMessageEntity.class, docId)
                 .stream()
                 .map(e -> {
@@ -49,11 +54,41 @@ public class ChatServiceImpl implements ChatService {
                     return (ChatMessageModel)e;
                 })
                 .collect(Collectors.toList());
+            Collections.reverse(result);
+            return result;
         } catch (RepositoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return null;
+    }
+
+    @Override
+    public List<ChatMessageModel> search(String docId, String minChatId, int size) {
+        try {
+            List<ChatMessageModel> result = repositoryService.queryList(
+                "SELECT CHAT.DOCUMENT_ID, " +
+                "       CHAT.CHAT_ID, " +
+                "       CHAT.DATE, " +
+                "       CHAT.MESSAGE, " +
+                "       USER.DISPLAY_NAME AS USER_ID " +
+                "FROM   DOCS_CHAT CHAT " +
+                "LEFT JOIN AUTH_USER USER " +
+                "ON     USER.USER_ID = CHAT.USER_ID " +
+                "WHERE  CHAT.DOCUMENT_ID = ? " +
+                "AND    CHAT.CHAT_ID < ? " +
+                "ORDER BY CHAT.CHAT_ID DESC " +
+                "LIMIT 0, ?",
+                ChatMessageEntity.class, docId, minChatId, 10)
+                .stream()
+                .map(e -> {
+                    e.setMessage(renderer.render(parser.parse(e.getMessage())));
+                    return (ChatMessageModel)e;
+                })
+                .collect(Collectors.toList());
+            Collections.reverse(result);
+            return result;
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -83,8 +118,17 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatMessageModel removeMessage(String docId, long id) {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            UserModel user = authenticateService.getUser();
+            ChatMessageEntity entity = new ChatMessageEntity();
+            entity.setDocumentId(docId);
+            entity.setId(id);
+            entity = repositoryService.get(entity);
+            repositoryService.delete(entity);
+            return entity;
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

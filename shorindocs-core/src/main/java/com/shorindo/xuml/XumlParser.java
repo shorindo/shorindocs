@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class XumlParser {
                     PEG.rule(XUML_EACH),
                     PEG.rule(XUML_LABEL),
                     PEG.rule(COMMENT),
-                    PEG.rule(WS1),
+//                    PEG.rule(WS1),
                     PEG.rule(XUML_VARRIABLE),
                     PEG.rule(XUML_LITERAL))),
             createCloseTag(TAG_XUML));
@@ -84,7 +85,7 @@ public class XumlParser {
                         PEG.rule(XUML_SWITCH),
                         PEG.rule(XUML_EACH),
                         PEG.rule(COMMENT),
-                        PEG.rule(WS1),
+//                        PEG.rule(WS1),
                         PEG.rule(XUML_VARRIABLE),
                         PEG.rule(XUML_LITERAL))),
             createCloseTag(TAG_TEMPLATE));
@@ -119,7 +120,7 @@ public class XumlParser {
             PEG.rule$ZeroOrMore(
                 PEG.rule$Choice(
                     PEG.rule(COMMENT),
-                    PEG.rule(WS1),
+//                    PEG.rule(WS1),
                     PEG.rule(XUML_VARRIABLE),
                     PEG.rule(XUML_LITERAL))),
             createCloseTag(TAG_CASE));
@@ -129,7 +130,7 @@ public class XumlParser {
             PEG.rule$ZeroOrMore(
                 PEG.rule$Choice(
                     PEG.rule(COMMENT),
-                    PEG.rule(WS1),
+//                    PEG.rule(WS1),
                     PEG.rule(XUML_VARRIABLE),
                     PEG.rule(XUML_LITERAL))),
             createCloseTag(TAG_DEFAULT));
@@ -142,7 +143,7 @@ public class XumlParser {
                     PEG.rule(XUML_SWITCH),
                     PEG.rule(XUML_EACH),
                     PEG.rule(COMMENT),
-                    PEG.rule(WS1),
+//                    PEG.rule(WS1),
                     PEG.rule(XUML_VARRIABLE),
                     PEG.rule(XUML_LITERAL))),
             createCloseTag(TAG_EACH));
@@ -1095,6 +1096,7 @@ public class XumlParser {
 
         public VarExpression(String name) {
             this.name = name;
+            this.name = name;
         }
         public abstract Object getObject(Map<String, Object> scope);
         public static VarExpression newInstance(String expr, AbstractStatement stmt) {
@@ -1130,12 +1132,14 @@ public class XumlParser {
                     }
                 } else if (object.getClass().isArray()) {
                     result = Arrays.asList(object);
+                    //TODO format
 //                } else if (Map.class.isAssignableFrom(bean.getClass())) {
 //                    for (Entry<Object,Object> entry : ((Map<Object,Object>)bean).entrySet()) {
 //                        result.add(entry.getValue());
 //                    }
                 } else {
                     result = new ArrayList<Object>();
+                    //TODO format
                     result.add(object);
                 }
             } catch (BeanNotFoundException e) {
@@ -1146,13 +1150,28 @@ public class XumlParser {
     }
 
     public static class BeanExpression extends VarExpression {
+        private String name;
+        private String formatType;
+        private String format;
+
         public BeanExpression(String name) {
             super(name);
+            String[] parts = name.split(":", 3);
+            if (parts.length == 3) {
+                this.name = parts[0];
+                this.formatType = parts[1];
+                this.format = parts[2];
+            } else {
+                this.name = name;
+            }
         }
         @Override
         public Object getObject(Map<String, Object> model) {
             try {
-                Object result = BeanUtil.getValue(model, getName());
+                Object result = BeanUtil.getValue(model, name);
+                if (format != null) {
+                    result = MessageFormat.format("{0," + formatType + "," + format + "}", result);
+                }
                 return result != null ? escape(result) : null;
             } catch (BeanNotFoundException e) {
                 LOG.warn(e.getMessage());

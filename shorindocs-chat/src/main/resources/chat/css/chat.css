@@ -1,3 +1,45 @@
 .chat-markdown p {
   margin:0;
 }
+#chat-wrapper .edit-button {
+  color:#A0A0A0;
+  cursor:pointer;
+  float:right;
+  margin-right:5px;
+}
+#chat-wrapper .edit-button .popup-menu {
+  float:left;
+  display:none;
+  color:black;
+  background:white;
+  width:100px;
+  border:1px solid gray;
+  font-size:80%;
+}
+#chat-wrapper .edit-button .popup-menu .popup-menu-item {
+  display:block;
+  text-decoration:none;
+}
+#chat-wrapper .edit-button .popup-menu .popup-menu-item:hover {
+  background:#E0E0E0;
+}
+#chat-wrapper input.search-text {
+  border:1px solid gray;
+  font-size:100%;
+  float:right;
+  margin-right:5px;
+}
+#chat-wrapper .search-button {
+  float:right;
+  margin-right:5px;
+  cursor:pointer;
+}
+#chat-wrapper .search-button span {
+  vertical-align:middle;
+}
+#chat-pane {
+  /*overflow-y:scroll;*/
+}
+#chat-wrapper .xuml-window-body {
+  overflow-y:scroll;
+}

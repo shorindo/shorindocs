@@ -4,42 +4,44 @@
   <xuml:apply name="layout.LCR">
     <xuml:template name="CENTER">
       <link rel="stylesheet" href="@{/chat/css/chat.css}"/> 
-      <script type="text/javascript" src="@{/chat/js/chat.js}"></script>
       <div id="chat-wrapper">
       <div class="xuml-window" style="width:calc()100% - 12px);">
-        <div class="xuml-window-head">チャンネルA</div>
-        <div id="chat-list" class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
-          <xuml:each item="chat" value="${chatList}">
-            <xuml:apply name="message"/>
-          </xuml:each>
+        <div class="xuml-window-head">
+          ${document.title}
+          <a class="search-button"><span class="material-icons" style="">search</span></a>
+          <input type="text" class="search-text"/>
+        </div>
+        <div class="xuml-window-body" style="vertical-align:middle;">
+          <xuml:apply name="messages"/>
         </div>
       </div>
-      <textarea style="border:1px solid gray;width:calc(100% - 17px);min-height:3em;margin-left:5px;overflow:hidden;height:auto;resize:none;" oninput="adjust(event)"></textarea>
-      <div style="width:calc(100% - 15px);margin-left:5px;overflow:hidden;">
-        <button style="width:100px;">編集</button>
-        <button style="width:100px;">プレビュー</button>
-        <button style="width:100px;float:right;" onclick="chat.send(event);">送信</button>
-      </div>
-      </div>
-    </xuml:template>
-
-    <xuml:template name="RIGHT">
-      <div class="xuml-window">
-        <div class="xuml-window-head">関連チャンネル</div>
-        <div class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
-        <xuml:each item="notice" value="&{['A', 'B', 'C']}">
-          <div class="xuml-window-item">${notice}</div>
-        </xuml:each>
+      <div class="chat-control">
+        <textarea style="border:1px solid gray;width:calc(100% - 17px);min-height:3em;margin-left:5px;overflow:hidden;height:auto;resize:none;" oninput="chat.adjust(event)"></textarea>
+        <div style="width:calc(100% - 15px);margin-left:5px;overflow:hidden;">
+          <button style="width:100px;" disabled>編集</button>
+          <button style="width:100px;" disabled>プレビュー</button>
+          <button style="width:100px;float:right;" onclick="chat.send(event);">送信</button>
         </div>
       </div>
+      </div>
+      <script type="text/javascript" src="@{/chat/js/chat.js}"></script>
     </xuml:template>
   </xuml:apply>
 
-  <xuml:template name="message">
-    <hr style="width:90%;"/>
-    <div class="chat-markdown">
-    ${chat.date} / ${chat.userId}<br/>
-    *{chat.message}
-    </div>
+  <xuml:template name="messages">
+    <xuml:each item="chat" value="${chatList}">
+      <div class="chat-markdown" data-chatId="${chat.id}">
+        <hr style="width:90%;"/>
+        <span class="edit-button">
+          <span class="material-icons" onclick="chat.toggleMenu(event);">menu</span>
+          <div class="popup-menu">
+            <a class="popup-menu-item" href="javascript:void(0);">編集</a>
+            <a class="popup-menu-item" href="javascript:chat.removeMessage(${chat.id});void(0);">削除</a>
+          </div>
+        </span>
+        ${chat.date:date:yyyy-MM-dd HH:mm:ss} / ${chat.userId}<br/>
+        *{chat.message}
+      </div>
+    </xuml:each>
   </xuml:template>
 </xuml:xuml>

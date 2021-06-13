@@ -121,6 +121,13 @@
                 <exclude>**/*.java</exclude>
             </excludes>
         </resource>
+        <resource>
+            <filtering>false</filtering>
+            <directory>../</directory>
+            <includes>
+                <include>README.md</include>
+            </includes>
+        </resource>
     </resources>
   </build>
   <parent>

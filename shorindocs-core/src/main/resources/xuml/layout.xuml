@@ -41,6 +41,31 @@
         <link rel="icon" type="image/x-icon" href="${favicon}">
         <link rel="stylesheet" type="text/css" media="all" href="@{/css/xuml.css}"/>
         <script type="text/javascript" src="@{/js/script.js}"></script>
+        <style tyle="text/css">
+        @font-face {
+          font-family: 'Material Icons';
+          font-style: normal;
+          font-weight: 400;
+          src: url(@{/fonts/MaterialIcons-Regular.ttf}) format("truetype");
+        }
+        .material-icons {
+          font-family: 'Material Icons';
+          font-weight: normal;
+          font-style: normal;
+          font-size: 18px;
+          display: inline-block;
+          line-height: 1;
+          text-transform: none;
+          letter-spacing: normal;
+          word-wrap: normal;
+          white-space: nowrap;
+          direction: ltr;
+          -webkit-font-smoothing: antialiased;
+          text-rendering: optimizeLegibility;
+          -moz-osx-font-smoothing: grayscale;
+          font-feature-settings: 'liga';
+        }
+        </style>
       </head>
       <body class="xuml-width-fill xuml-height-fill">
         <div class="xuml-vbox">
@@ -196,7 +221,7 @@
       <div class="xuml-window-head">#{recents}</div>
       <div class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
       <xuml:each item="recent" value="&{recents(0, 20)}">
-        <a class="xuml-window-item" href="${recent.documentId}">${recent.title}</a>
+        <a class="xuml-window-item" href="@{/}${recent.documentId}">${recent.title}</a>
       </xuml:each>
       </div>
     </div>
@@ -215,7 +240,15 @@
   </xuml:template>
 
   <xuml:template name="RIGHT">
-    RIGHT
+    <div class="xuml-window">
+      <div class="xuml-window-head">関連ドキュメント</div>
+      <div class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
+      <xuml:each item="notice" value="&{['A', 'B', 'C']}">
+        <div class="xuml-window-item">${notice}</div>
+      </xuml:each>
+      </div>
+    </div>
   </xuml:template>
+
 </xuml:xuml>
 
