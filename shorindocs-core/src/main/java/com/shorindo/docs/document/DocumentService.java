@@ -32,4 +32,5 @@ public interface DocumentService {
     public DocumentModel remove(String documentId);
 
     public List<DocumentModel> recents(int offset, int length);
+    public List<DocumentModel> drafts();
 }

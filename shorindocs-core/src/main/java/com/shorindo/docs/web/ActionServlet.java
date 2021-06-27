@@ -99,12 +99,12 @@ public class ActionServlet extends HttpServlet {
             .contextPath(req.getContextPath())
             .contentType(req.getHeader("Conetnt-Type"))
             .queryString(req.getQueryString())
-            .user(authenticateService.getUser());;
+            .user(authenticateService.getUser());
 
         try {
             DocumentEntity key = new DocumentEntity();
             String path = req.getServletPath();
-            key.setDocumentId(path.substring(1));
+            key.setDocumentId(context.getDocumentId());
             String version = context.getParameter("version");
             if (version == null || !version.matches("^\\-[0-9]+$")) {
                 version = "0";
@@ -132,6 +132,7 @@ public class ActionServlet extends HttpServlet {
     }
 
     private void doContent(ActionContext context, HttpServletRequest req, HttpServletResponse res) throws IOException {
+        long st = System.currentTimeMillis();
         try {
             doFile(context, req, res);
             doResource(context, req, res);
@@ -139,6 +140,8 @@ public class ActionServlet extends HttpServlet {
             doDocument(context, req, res);
             doNotFound(context, req, res);
         } catch (SuccessException e) {
+            long et = System.currentTimeMillis() - st;
+            LOG.debug("doContent({0} {1}ms", req.getServletPath(), et);
         } catch (Exception e) {
             LOG.error(DOCS_9999, e);
         }
@@ -170,7 +173,7 @@ public class ActionServlet extends HttpServlet {
         }
     }
     private void doDocument(ActionContext context, HttpServletRequest req, HttpServletResponse res) throws SuccessException, IOException, RepositoryException {
-        DocumentModel model = documentService.load(req.getServletPath().substring(1));
+        DocumentModel model = documentService.load(context.getDocumentId());
 
         // NOT FOUND
         if (model == null) {

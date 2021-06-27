@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.shorindo.docs.ApplicationContext;
 import com.shorindo.docs.IdentityManager;
 import com.shorindo.docs.action.ActionLogger;
 import com.shorindo.docs.auth.AuthenticateService;
@@ -90,7 +91,13 @@ public class DocumentServiceImpl implements DocumentService {
                 "ORDER BY VERSION DESC",
                 DocumentEntity.class,
                 documentId, documentId, user.getUserId());
-            return documents.stream().findFirst().orElse(null);
+            return documents.stream()
+                .findFirst()
+                .map(e -> {
+                    e.setIcon(ApplicationContext.getIcon(e.getDocType()));
+                    return e;
+                })
+                .orElse(null);
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
@@ -228,22 +235,40 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
+    /**
+     * 
+     */
     @Override
     @Transactional
     public DocumentModel save(DocumentModel model) {
         UserModel user = authenticateService.getUser();
         try {
-            repositoryService.execute(
-                "UPDATE DOCS_DOCUMENT " +
-                "SET    TITLE=?, " +
-                "       CONTENT=?, " +
-                "       UPDATE_USER=?, " +
-                "       UPDATE_DATE=? " +
-                "WHERE  DOCUMENT_ID=? AND VERSION=?",
-                model.getTitle(), model.getContent(), user.getUserId(),
-                new java.util.Date(), model.getDocumentId(),
-                ((DocumentEntity)model).getVersion());
-            return repositoryService.get(model);
+            Optional<DocumentEntity> optEntity = repositoryService.querySingle(
+                "SELECT MAX(VERSION) VERSION, " +
+                "       DOCUMENT_ID " +
+                "FROM   DOCS_DOCUMENT " +
+                "WHERE  DOCUMENT_ID = ? " +
+                "AND    VERSION < 0 " +
+                "AND    UPDATE_USER = ?  " +
+                "GROUP BY DOCUMENT_ID",
+                DocumentEntity.class,
+                model.getDocumentId(),
+                user.getUserId());
+            if (optEntity.isPresent()) {
+                DocumentEntity entity = optEntity.get();
+                repositoryService.execute(
+                    "UPDATE DOCS_DOCUMENT " +
+                    "SET    TITLE=?, " +
+                    "       CONTENT=?, " +
+                    "       UPDATE_USER=?, " +
+                    "       UPDATE_DATE=? " +
+                    "WHERE  DOCUMENT_ID=? AND VERSION=?",
+                    model.getTitle(), model.getContent(), user.getUserId(),
+                    new java.util.Date(), model.getDocumentId(),
+                    entity.getVersion());
+                return repositoryService.get(entity);
+            }
+            return null;
         } catch (RepositoryException e) {
             throw new RuntimeException(e); // TODO
         }
@@ -283,22 +308,44 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public List<DocumentModel> recents(int offset, int length) {
-      try {
-        return repositoryService.queryList(
-                  "SELECT document_id,title,update_date " +
-                  "FROM   docs_document " +
-                  "WHERE  version=0 " +
-                  "ORDER  BY update_date DESC " +
-                  "LIMIT  ?, ?",
-                  DocumentEntity.class, offset, length)
-              .stream()
-              .map(mapper -> {
-                  return (DocumentModel)mapper;
-              })
-              .collect(Collectors.toList());
-      } catch (RepositoryException e) {
-          throw new RuntimeException(e);
-      }
+        try {
+            return repositoryService.queryList(
+                      "SELECT document_id, doc_type, title, update_date " +
+                      "FROM   docs_document " +
+                      "WHERE  version=0 " +
+                      "ORDER  BY update_date DESC " +
+                      "LIMIT  ?, ?",
+                      DocumentEntity.class, offset, length)
+                  .stream()
+                  .map(mapper -> {
+                      mapper.setIcon(ApplicationContext.getIcon(mapper.getDocType()));
+                      return (DocumentModel)mapper;
+                  })
+                  .collect(Collectors.toList());
+          } catch (RepositoryException e) {
+              throw new RuntimeException(e);
+          }
     }
 
+    @Override
+    public List<DocumentModel> drafts() {
+        try {
+            UserModel user = authenticateService.getUser();
+            return repositoryService.queryList(
+                      "SELECT document_id, doc_type, title, update_date " +
+                      "FROM   docs_document " +
+                      "WHERE  version < 0 " +
+                      "AND    owner_id = ? " +
+                      "ORDER  BY update_date DESC ",
+                      DocumentEntity.class, user.getUserId())
+                  .stream()
+                  .map(mapper -> {
+                      mapper.setIcon(ApplicationContext.getIcon(mapper.getDocType()));
+                      return (DocumentModel)mapper;
+                  })
+                  .collect(Collectors.toList());
+          } catch (RepositoryException e) {
+              throw new RuntimeException(e);
+          }
+    }
 }

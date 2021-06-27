@@ -119,6 +119,7 @@ public class XumlParser {
             createOpenTag(TAG_CASE),
             PEG.rule$ZeroOrMore(
                 PEG.rule$Choice(
+                    PEG.rule(XUML_EACH),
                     PEG.rule(COMMENT),
 //                    PEG.rule(WS1),
                     PEG.rule(XUML_VARRIABLE),
@@ -129,6 +130,7 @@ public class XumlParser {
             createOpenTag(TAG_DEFAULT),
             PEG.rule$ZeroOrMore(
                 PEG.rule$Choice(
+                    PEG.rule(XUML_EACH),
                     PEG.rule(COMMENT),
 //                    PEG.rule(WS1),
                     PEG.rule(XUML_VARRIABLE),

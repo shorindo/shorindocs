@@ -15,11 +15,12 @@
  */
 package com.shorindo.docs.action;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.shorindo.docs.model.UserModel;
 import com.shorindo.tools.BeanUtil;
@@ -29,9 +30,11 @@ import com.shorindo.tools.BeanUtil.BeanNotFoundException;
  * 
  */
 public class ActionContext {
-    @SuppressWarnings("unused")
-	private static final ActionLogger LOG = ActionLogger.getLogger(ActionContext.class);
+    private static final ActionLogger LOG = ActionLogger.getLogger(ActionContext.class);
+    private static final Pattern PATTERN = Pattern.compile("^/([^/]+)(/(.*))?$");
     private String path;
+    private String documentId;
+    private String action;
     private String contextPath;
     private String method;
     private String contentType;
@@ -46,6 +49,14 @@ public class ActionContext {
 
     public String getPath() {
         return path;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public String getAction() {
+        return action;
     }
 
     public String getContextPath() {
@@ -70,6 +81,10 @@ public class ActionContext {
         }
     }
 
+    public Map<String,Object> getParamMap() {
+        return paramMap;
+    }
+
     public Map<String, Object> getModel() {
         return model;
     }
@@ -84,6 +99,11 @@ public class ActionContext {
 
     public ActionContext path(String path) {
         this.path = path;
+        Matcher matcher = PATTERN.matcher(path);
+        if (matcher.matches()) {
+            documentId = matcher.group(1);
+            action = matcher.group(3);
+        }
         return this;
     }
     public ActionContext contextPath(String contextPath) {

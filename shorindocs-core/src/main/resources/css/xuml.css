@@ -60,6 +60,15 @@ textarea.text-editor {
   width:1.2em;
   height:1.2em;
 }
+#document-icon {
+  float:left;
+}
+#document-title {
+  float:left;
+}
+#document-title:focus {
+  background:#F0F0F0;
+}
 .xuml-window {
   border:1px solid gray;
   background:white;
@@ -77,16 +86,18 @@ textarea.text-editor {
 .xuml-window-body {
   flex: 1;
 }
-.xuml-window-body a.xuml-window-item {
+.xuml-window-body .xuml-window-item {
   display: block;
   text-decoration: none;
   padding: 0 5px;
 }
-.xuml-window-body a.xuml-window-item:hover {
-  background: #F0F0F0;
+.xuml-window-body .xuml-window-item img.icon {
+  width:1.2em;
+  height:1.2em;
+  vertical-align:middle;
 }
-.xuml-window-body div.xuml-window-item {
-  padding:0 5px;
+.xuml-window-body .xuml-window-item:hover {
+  background: #F0F0F0;
 }
 .xuml-dialog-pane {
   position:fixed;
@@ -164,6 +175,19 @@ textarea.text-editor {
 }
 .xuml-selector.selected {
   background: #F0E0E0;
+}
+span.material-icons {
+  vertical-align:middle;
+}
+.xuml-toast {
+  position:fixed;
+  top:90vh;
+  left:50vw;
+  padding:1px 10px;
+  color:white;
+  background:green;
+  border-radius:3px;
+  transform:translate(-50%,-50%);
 }
 
 @media print {

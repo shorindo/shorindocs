@@ -58,7 +58,7 @@ public enum DatabaseMessages implements ActionMessages {
     DBMS_1104,
     @Message(lang="ja", content="エンティティ[{0}]の定義に異常があります。")
     DBMS_1107,
-    @Message(lang="ja", content="DB接続：{0}")
+    @Message(lang="ja", content="DB接続：{0}({1}ms)")
     DBMS_1105,
     @Message(lang="ja", content="DB切断：{0}")
     DBMS_1106,

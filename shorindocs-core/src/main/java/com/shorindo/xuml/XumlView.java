@@ -42,12 +42,17 @@ public class XumlView implements View {
     private Statement statement;
 
     public static XumlView create(String name) {
-        XumlView view = viewMap.get(name);
-        if (view == null) {
-            view = new XumlView(name);
-            viewMap.put(name, view);
+        long st = System.currentTimeMillis();
+        try {
+            XumlView view = viewMap.get(name);
+            if (view == null) {
+                view = new XumlView(name);
+                viewMap.put(name, view);
+            }
+            return view;
+        } finally {
+            LOG.debug("create({0}) {1}ms", name, System.currentTimeMillis() - st);
         }
-        return view;
     }
 
     private XumlView(String name) {

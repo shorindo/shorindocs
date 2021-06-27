@@ -62,7 +62,7 @@ public class ChatController extends DocumentController {
 
     @ActionMethod
     public Object searchMessage(ActionContext context) {
-        String docId = context.getPath().substring(1);
+        String docId = context.getDocumentId();
         try {
             context.addModel("chatList", chatService.search(
                 docId,
@@ -81,7 +81,7 @@ public class ChatController extends DocumentController {
 
     @ActionMethod
     public Object addMessage(ActionContext context) {
-        String docId = context.getPath().substring(1);
+        String docId = context.getDocumentId();
         try {
             ChatMessageEntity chat = new ChatMessageEntity();
             chat.setUserId(context.getUser().getUserId());
@@ -102,7 +102,7 @@ public class ChatController extends DocumentController {
 
     @ActionMethod
     public Object removeMessage(ActionContext context) {
-        String docId = context.getPath().substring(1);
+        String docId = context.getDocumentId();
         try {
             chatService.removeMessage(docId, Long.parseLong(context.getParameter("chatId")));
             context.addModel("chatList", chatService.search(docId));

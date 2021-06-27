@@ -1,0 +1,30 @@
+.outline {
+  margin-left:24px;
+}
+.outline span.material-icons {
+  margin-left:-24px;
+  cursor:pointer;
+  float:left;
+  margin-top:3px;
+}
+.outline.open div.outline {
+  display:block;
+}
+.outline.close div.outline {
+  display:none;
+}
+.outline.open span.material-icons.open {
+  display:initial;
+}
+.outline.open span.material-icons.close {
+  display:none;
+}
+.outline.close span.material-icons.close {
+  display:initial;
+}
+.outline.close span.material-icons.open {
+  display:none;
+}
+.outline .outline-text:focus {
+  background:#F0F0F0;
+}

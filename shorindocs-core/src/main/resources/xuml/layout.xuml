@@ -3,6 +3,10 @@
     <xuml:text lang="ja">Powered by shorindo.com</xuml:text>
     <xuml:text lang="en">Powered by shorindo.com</xuml:text>
   </xuml:label>
+  <xuml:label key="drafts">
+    <xuml:text lang="ja">ドラフト</xuml:text>
+    <xuml:text lang="en">Drafts</xuml:text>
+  </xuml:label>
   <xuml:label key="recents">
     <xuml:text lang="ja">最近の更新</xuml:text>
     <xuml:text lang="en">Recent updates</xuml:text>
@@ -40,7 +44,7 @@
         <title>${document.title}</title>
         <link rel="icon" type="image/x-icon" href="${favicon}">
         <link rel="stylesheet" type="text/css" media="all" href="@{/css/xuml.css}"/>
-        <script type="text/javascript" src="@{/js/script.js}"></script>
+        <script type="text/javascript" src="@{/js/xuml.js}"></script>
         <style tyle="text/css">
         @font-face {
           font-family: 'Material Icons';
@@ -71,16 +75,6 @@
         <div class="xuml-vbox">
           <div id="header-pane">
             <xuml:apply name="HEAD"/>
-            <div style="float:right;">
-              <xuml:switch value="${user.authenticated}">
-                <xuml:case eq="true">
-                  <a href="@{/logout}">#{logout}</a>
-                </xuml:case>
-                <xuml:default>
-                  <a href="@{/login}?referer=/${document.documentId}">#{login}</a>
-                </xuml:default>
-              </xuml:switch>
-            </div>
           </div>
           <div id="menubar" class="xuml-menubar noprint">
             <div class="xuml-menubar-left">
@@ -89,6 +83,7 @@
               <button id="docs-preview">プレビュー</button>
               <button id="docs-save">一時保存</button>
               <button id="docs-commit">コミット</button>
+              <button id="docs-remove" onclick="docs.remove()">削除</button>
               <button id="docs-cancel" onclick="location=location.pathname;">キャンセル</button>
             </div>
             <div class="xuml-menubar-right">
@@ -108,13 +103,13 @@
   <xuml:template name="LCR">
     <xuml:apply name="expand">
       <xuml:template name="main">
-        <div id="left-pane" class="xuml-vbox noprint" style="width:25%;overflow:auto;">
+        <div id="left-pane" class="xuml-vbox noprint" style="width:25%;min-width:200px;overflow:auto;">
           <xuml:apply name="LEFT"/>
         </div>
         <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;padding:0 5px;">
           <xuml:apply name="CENTER"/>
         </div>
-        <div id="right-pane" class="xuml-vbox noprint" style="width:25%;overflow:auto;">
+        <div id="right-pane" class="xuml-vbox noprint" style="width:25%;min-width:200px;overflow:auto;">
           <xuml:apply name="RIGHT"/>
         </div>
       </xuml:template>
@@ -188,7 +183,7 @@
   <xuml:template name="LC">
     <xuml:apply name="expand">
       <xuml:template name="main">
-        <div id="left-pane" class="xuml-vbox noprint" style="width:25%;">
+        <div id="left-pane" class="xuml-vbox noprint" style="width:25%;min-with:200px;">
           <xuml:apply name="LEFT"/>
         </div>
         <div id="main-pane" class="xuml-vbox" flex="1" style="overflow:auto;padding:0 5px;">
@@ -204,7 +199,7 @@
         <div id="main-pane" class="xuml-vbox noprint" flex="1" style="overflow:auto;padding:0 5px;">
           <xuml:apply name="CENTER"/>
         </div>
-        <div id="right-pane" class="xuml-vbox" style="width:25%;">
+        <div id="right-pane" class="xuml-vbox" style="width:25%;min-width:200px;">
           <xuml:apply name="RIGHT"/>
         </div>
       </xuml:template>
@@ -212,16 +207,46 @@
   </xuml:template>
 
   <xuml:template name="HEAD">
-    <a href="@{/}"><img src="@{/img/docs-icon.png}"/></a>
-    ${document.title}
+    <a id="document-icon" href="@{/}"><img src="@{/}${document.icon}"/></a>
+    <div id="document-title" class="xuml-title" contentEditable="${editable}">
+      ${document.title}
+    </div>
+    <div style="float:right;">
+      <xuml:switch value="${user.authenticated}">
+        <xuml:case eq="true">
+          <a href="@{/logout}">#{logout}</a>
+        </xuml:case>
+        <xuml:default>
+          <a href="@{/login}?referer=/${document.documentId}">#{login}</a>
+        </xuml:default>
+      </xuml:switch>
+    </div>
   </xuml:template>
 
   <xuml:template name="LEFT">
+    <xuml:switch value="&{drafts().size()}">
+      <xuml:case gt="0">
+        <div class="xuml-window">
+          <div class="xuml-window-head">#{drafts}</div>
+          <div class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
+          <xuml:each item="draft" value="&{drafts()}">
+            <a class="xuml-window-item" href="@{/}${draft.documentId}/edit">
+              <img class="icon" src="@{/}${draft.icon}"/>
+              ${draft.title}
+            </a>
+          </xuml:each>
+          </div>
+        </div>
+      </xuml:case>
+    </xuml:switch>
     <div class="xuml-window">
       <div class="xuml-window-head">#{recents}</div>
       <div class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
       <xuml:each item="recent" value="&{recents(0, 20)}">
-        <a class="xuml-window-item" href="@{/}${recent.documentId}">${recent.title}</a>
+        <a class="xuml-window-item" href="@{/}${recent.documentId}">
+          <img class="icon" src="@{/}${recent.icon}"/>
+          ${recent.title}
+        </a>
       </xuml:each>
       </div>
     </div>
@@ -241,6 +266,14 @@
 
   <xuml:template name="RIGHT">
     <div class="xuml-window">
+      <div class="xuml-window-head">タグ</div>
+      <div class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
+      <xuml:each item="tag" value="&{['#x', '#y', '#z']}">
+        <div class="xuml-window-item">${tag}</div>
+      </xuml:each>
+      </div>
+    </div>
+    <div class="xuml-window">
       <div class="xuml-window-head">関連ドキュメント</div>
       <div class="xuml-window-body" style="vertical-align:middle;overflow-y:hidden;">
       <xuml:each item="notice" value="&{['A', 'B', 'C']}">
@@ -250,5 +283,10 @@
     </div>
   </xuml:template>
 
+  <xuml:template name="message">
+    <span style="position:absolute;top:0;left:50vw;border:1px solid red; border-radius:3px; padding:0 10px;background:#FFEEDD;transform:translate(-50%,0%);">
+      ${message}
+    </span>
+   </xuml:template>
 </xuml:xuml>
 

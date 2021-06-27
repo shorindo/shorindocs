@@ -65,7 +65,6 @@ public abstract class DocumentController extends ActionController {
     }
 
     public static DocumentController getController(String docType) {
-        LOG.debug("docType={0}", docType);
         return controllerMap.get(docType);
     }
 
@@ -73,7 +72,7 @@ public abstract class DocumentController extends ActionController {
      * 
      */
     protected final DocumentModel getModel(ActionContext context) {
-        return documentService.load(context.getPath().substring(1));
+        return documentService.load(context.getDocumentId());
     }
 
     /**
@@ -129,12 +128,12 @@ public abstract class DocumentController extends ActionController {
     public Object edit(ActionContext context) throws Exception {
         try {
             DocumentEntity entity = new DocumentEntity();
-            entity.setDocumentId(context.getPath().substring((1)));
-            String version = context.getParameter("version");
-            if (version == null) {
-                version = "0";
-            }
-            entity.setVersion(Integer.parseInt(version));
+            entity.setDocumentId(context.getDocumentId());
+//            String version = context.getParameter("version");
+//            if (version == null) {
+//                version = "0";
+//            }
+//            entity.setVersion(Integer.parseInt(version));
             DocumentModel model = getDocumentService().edit(entity);
             XumlView view = XumlView.create("xuml/layout.xuml#redirect");
             context.addModel("location",
@@ -149,9 +148,9 @@ public abstract class DocumentController extends ActionController {
     }
 
     @ActionMethod
-    public Object save(ActionContext context) {
+    public DocumentModel save(ActionContext context) {
         DocumentEntity entity = new DocumentEntity();
-        entity.setDocumentId(context.getPath().substring(1));
+        entity.setDocumentId(context.getDocumentId());
         entity.setVersion(Integer.parseInt(context.getParameter("version")));
         entity.setDocType(context.getParameter("docType"));
         entity.setTitle(context.getParameter("title"));
@@ -160,14 +159,10 @@ public abstract class DocumentController extends ActionController {
     }
 
     @ActionMethod
-    public Object commit(ActionContext context) {
-        try {
-            save(context);
-            return documentService.commit(context.getPath().substring(1),
-                Integer.parseInt(context.getParameter("version")));
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
+    public Object commit(ActionContext context) throws DocumentException {
+        DocumentModel draft = save(context);
+        return documentService.commit(context.getDocumentId(),
+            draft.getVersion());
     }
 
     @ActionMethod

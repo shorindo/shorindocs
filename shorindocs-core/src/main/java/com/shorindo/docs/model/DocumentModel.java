@@ -24,6 +24,7 @@ import com.shorindo.docs.document.DocumentEntity;
 @Implementation(DocumentEntity.class)
 public interface DocumentModel {
     public String getDocumentId();
+    public int getVersion();
     public String getDocType();
     public String getIcon();
     public String getTitle();

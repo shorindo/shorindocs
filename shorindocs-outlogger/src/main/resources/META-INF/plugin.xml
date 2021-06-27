@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<plugin namespace="outlogger">
+<plugin namespace="outlogger" icon="outlogger/img/outlogger-icon.png">
     <bean name="com.shorindo.docs.outlogger.OutloggerController"/>
     <bean name="com.shorindo.docs.outlogger.OutloggerService" class="com.shorindo.docs.outlogger.OutloggerServiceImpl"/>
 </plugin>

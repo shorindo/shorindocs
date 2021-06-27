@@ -3,12 +3,39 @@
 
   <xuml:apply name="layout.LCR">
     <xuml:template name="CENTER">
-      <ol>
-      <xuml:each item="log" value="${logList}">
-        <li>${log.content}</li>
-      </xuml:each>
-      </ol>
+      <link rel="stylesheet" href="@{/outlogger/css/outlogger.css}"/>
+      <script src="@{/outlogger/js/outlogger.js}"></script>
+      <div id="outlogger-pane">
+        <xuml:each item="outline" value="${outlines}">
+          <xuml:apply name="outline"/>
+        </xuml:each>
+      </div>
     </xuml:template>
   </xuml:apply>
+
+  <xuml:template name="outline">
+    <div class="outline close">
+      <span class="material-icons open" onclick="outlogger.toggleTree(event);">expand_more</span>
+      <span class="material-icons close" onclick="outlogger.toggleTree(event);">chevron_right</span>
+      <div class="outline-text" contenteditable="${editable}" onkeydown="outlogger.input(event);" onpaste="outlogger.onPaste(event);">${outline.text}</div>
+      <xuml:each item="outline" value="${outline.children}">
+        <xuml:apply name="outline"/>
+      </xuml:each>
+    </div>
+  </xuml:template>
+
+  <!--
+  -- 編集用 
+  -->
+  <xuml:template name="edit">
+    <xuml:each item="outline" value="${outlines}">
+      <xuml:apply name="outline"/>
+    </xuml:each>
+    <script type="text/javascript">
+    <!--
+    document.querySelector(".outline .outline-text").focus(); 
+    -->
+    </script>
+  </xuml:template>
 
 </xuml:xuml>

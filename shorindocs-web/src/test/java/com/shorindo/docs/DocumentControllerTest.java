@@ -71,6 +71,11 @@ public class DocumentControllerTest {
                 // TODO Auto-generated method stub
                 return null;
             }
+            @Override
+            public int getVersion() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
         };
         client.save(model);
     }
@@ -155,6 +160,12 @@ public class DocumentControllerTest {
         public Permission getPermission() {
             // TODO Auto-generated method stub
             return null;
+        }
+
+        @Override
+        public int getVersion() {
+            // TODO Auto-generated method stub
+            return 0;
         }
 
     }

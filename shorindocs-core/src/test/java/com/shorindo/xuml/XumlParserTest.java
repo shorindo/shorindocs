@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.shorindo.xuml.XumlParser.AbstractStatement;
@@ -30,6 +31,7 @@ import com.shorindo.xuml.XumlParser.XumlException;
  * case[eq / ne / lt / le / gt / ge] := (var / literal)*
  * each[item, value] := (apply / switch / each / var / literal)*
  */
+//@Ignore
 public class XumlParserTest {
 
     /**
@@ -98,20 +100,20 @@ public class XumlParserTest {
     @Test
     public void case0101() throws Exception {
         assertRender("<xuml:xuml>" +
-            "  <xuml:import file=\"xuml/case0101-1.xuml\"/>" +
-            "  <xuml:apply name=\"case0101.text\"/>" +
+            "<xuml:import file=\"xuml/case0101-1.xuml\"/>" +
+            "<xuml:apply name=\"case0101.text\"/>" +
             "</xuml:xuml>",
             "XXX", null);
         assertRender("<xuml:xuml>" +
-            "  <xuml:import file=\"xuml/case0101-1.xuml\"/>" +
-            "  <xuml:apply name=\"case0101.parent\"/>" +
+            "<xuml:import file=\"xuml/case0101-1.xuml\"/>" +
+            "<xuml:apply name=\"case0101.parent\"/>" +
             "</xuml:xuml>",
             "XXX", null);
         assertRender("<xuml:xuml>" +
-            "  <xuml:import file=\"xuml/case0101-1.xuml\"/>" +
-            "  <xuml:apply name=\"case0101.template\">" +
-            "    <xuml:template name=\"param\">XXX</xuml:template>" +
-            "  </xuml:apply>" +
+            "<xuml:import file=\"xuml/case0101-1.xuml\"/>" +
+            "<xuml:apply name=\"case0101.template\">" +
+            "<xuml:template name=\"param\">XXX</xuml:template>" +
+            "</xuml:apply>" +
             "</xuml:xuml>",
             "XXX", null);
     }
@@ -202,7 +204,7 @@ public class XumlParserTest {
     @Test
     public void case0205() throws Exception {
         assertRender("<xuml:xuml>" +
-            "  <xuml:template name=\"component\">${name}</xuml:template>" +
+            "<xuml:template name=\"component\">${name}</xuml:template>" +
             "</xuml:xuml>",
             "", createScope());
     }
@@ -244,9 +246,9 @@ public class XumlParserTest {
     @Test
     public void case0208() throws Exception {
         assertRender("<xuml:xuml>" +
-            "  <xuml:template name=\"component\">" +
-            "    <xuml:apply name=\"child\"/>" +
-            "  </xuml:template>" +
+            "<xuml:template name=\"component\">" +
+            "<xuml:apply name=\"child\"/>" +
+            "</xuml:template>" +
             "</xuml:xuml>",
             "", createScope());
     }
@@ -257,7 +259,7 @@ public class XumlParserTest {
     @Test
     public void case0209() throws Exception {
         assertRender("<xuml:xuml><xuml:template name=\"component\">" +
-            "  <xuml:each item=\"child\" value=\"${children}\"></xuml:each>" +
+            "<xuml:each item=\"child\" value=\"${children}\"></xuml:each>" +
             "</xuml:template></xuml:xuml>",
             "", createScope());
     }
@@ -323,10 +325,10 @@ public class XumlParserTest {
     @Test
     public void case0301() throws Exception {
         assertRender("<xuml:xuml>" +
-            "  <xuml:template name=\"xxx\">XXX</xuml:template>" +
-            "  <xuml:apply name=\"yyy\"/>" +
-            "  <xuml:apply name=\"xxx\"/>" +
-            "  <xuml:template name=\"yyy\">YYY</xuml:template>" +
+            "<xuml:template name=\"xxx\">XXX</xuml:template>" +
+            "<xuml:apply name=\"yyy\"/>" +
+            "<xuml:apply name=\"xxx\"/>" +
+            "<xuml:template name=\"yyy\">YYY</xuml:template>" +
             "</xuml:xuml>",
             "YYYXXX", createScope());
     }
@@ -337,12 +339,12 @@ public class XumlParserTest {
     @Test
     public void case0302() throws Exception {
         assertRender("<xuml:xuml>" +
-            "  <xuml:template name=\"AAA\">" +
-            "    <xuml:apply name=\"BBB\"/>" +
-            "  </xuml:template>" +
-            "  <xuml:apply name=\"AAA\">" +
-            "    <xuml:template name=\"BBB\">XXX</xuml:template>" +
-            "  </xuml:apply>" +
+            "<xuml:template name=\"AAA\">" +
+            "<xuml:apply name=\"BBB\"/>" +
+            "</xuml:template>" +
+            "<xuml:apply name=\"AAA\">" +
+            "<xuml:template name=\"BBB\">XXX</xuml:template>" +
+            "</xuml:apply>" +
             "</xuml:xuml>",
             "XXX", createScope());
     }
@@ -356,9 +358,9 @@ public class XumlParserTest {
     @Test
     public void case0601() throws Exception {
         assertRender("<xuml:xuml>" +
-            "  <xuml:each item=\"item\" value=\"${person.children}\">" +
-            "    ${item.name}" +
-            "  </xuml:each>" +
+            "<xuml:each item=\"item\" value=\"${person.children}\">" +
+            "${item.name}" +
+            "</xuml:each>" +
             "</xuml:xuml>",
             "taro&lt;hanako&gt;tara", createScope());
     }
@@ -369,10 +371,10 @@ public class XumlParserTest {
     @Test
     public void case0701() throws Exception {
         String source = "<xuml:xuml>" +
-            "  <xuml:label key=\"language\">" +
-            "    <xuml:text lang=\"ja\">日本語</xuml:text>" +
-            "    <xuml:text lang=\"en\">English</xuml:text>" +
-            "  </xuml:label>" +
+            "<xuml:label key=\"language\">" +
+            "<xuml:text lang=\"ja\">日本語</xuml:text>" +
+            "<xuml:text lang=\"en\">English</xuml:text>" +
+            "</xuml:label>" +
             "#{language}" +
             "</xuml:xuml>";
         Map<String,Object> scope = createScope();
@@ -523,6 +525,11 @@ public class XumlParserTest {
     @Test
     public void testAll() throws Exception {
         assertXuml("xuml/test-all.xuml", "{'title':'タイトル'}");
+    }
+
+    @Test
+    public void testLayout() throws Exception {
+        assertXuml("xuml/layout.xuml", "");
     }
 
 //    @Test

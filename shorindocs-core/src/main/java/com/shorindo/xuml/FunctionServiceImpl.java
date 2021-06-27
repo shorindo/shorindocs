@@ -24,22 +24,23 @@ public class FunctionServiceImpl implements FunctionService {
     private Context getContext() {
         Context ctx = threadContext.get();
         if (ctx == null) {
-          ctx = Context.enter();
-          ctx.setClassShutter(new ClassShutter() {
-              @Override
-              public boolean visibleToScripts(String fullClassName) {
-                  if (fullClassName.equals(FunctionServiceImpl.class.getName())) {
-                      return true;
-                  } else {
-                      return false;
-                  }
-              }
-          });
-          threadContext.set(ctx);
-          ScriptableObject globalScope = ctx.initStandardObjects();
-          String[] funcNames = { "recents", "notices" };
-          globalScope.defineFunctionProperties(funcNames, FunctionServiceImpl.class, ScriptableObject.DONTENUM);
-          threadScope.set(globalScope);
+            ctx = Context.enter();
+            ctx.setClassShutter(new ClassShutter() {
+                @Override
+                public boolean visibleToScripts(String fullClassName) {
+                    if (fullClassName.startsWith("java.util.") ||
+                        fullClassName.equals(FunctionServiceImpl.class.getName())) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+            threadContext.set(ctx);
+            ScriptableObject globalScope = ctx.initStandardObjects();
+            String[] funcNames = { "drafts", "recents", "notices" };
+            globalScope.defineFunctionProperties(funcNames, FunctionServiceImpl.class, ScriptableObject.DONTENUM);
+            threadScope.set(globalScope);
         }
         return ctx;
     }
@@ -55,6 +56,12 @@ public class FunctionServiceImpl implements FunctionService {
             LOG.error(DocumentMessages.DOCS_9999, e);
             return null;
         }
+    }
+
+    public static Object drafts() {
+        return ApplicationContext
+            .getBean(DocumentService.class)
+            .drafts();
     }
 
     public static Object recents(int offset, int length) {

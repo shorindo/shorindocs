@@ -14,14 +14,15 @@
  * limitations under the License.
  */
  var docs = (function() {
-    function rpc(method, params, onload) {
+    function rpc(method, params, success, error) {
         var rpc = new XMLHttpRequest();
         rpc.onreadystatechange = function() {
             if (rpc.readyState == 4) {
                 if (rpc.status == 200) {
-                    onload(rpc.responseText);
+                    success(rpc.responseText);
                 } else {
                     console.error("status = " + rpc.status);
+                    error();
                 }
             }
         };
@@ -48,21 +49,7 @@
         return node;
     }
 
-    function render(json) {
-        var data = JSON.parse(json);
-        var html = document.createElement("div");
-        var root = parseVDOM(data.result);
-        var nodes = [];
-        for (var i = 0; i < root.childNodes.length; i++) {
-           nodes.push(root.childNodes.item(i));
-        }
-        for (var i = 0; i < nodes.length; i++) {
-           html.appendChild(nodes[i]);
-        }
-        document.body.appendChild(html);
-    }
-
-    function render2(result) {
+    function render(result) {
         //console.log(result);
         var target = document.querySelector(result.locator);
         if (!target) {
@@ -126,9 +113,12 @@
             rpc("edit", {}, function(json) {
                 var data = JSON.parse(json);
                 for (var i = 0; i < data.result.length; i++) {
-                    render2(data.result[i]);
+                    render(data.result[i]);
                 }
             });
+        },
+        "remove":function() {
+            console.log("remove");
         },
         "flexHeight":function(selector) {
             var node = document.querySelector(selector);
@@ -144,4 +134,17 @@
     };
  })();
 
+ var xuml = (function() {
+   return {
+     "toast":function(message) {
+       var toast = document.createElement("span");
+       toast.className = "xuml-toast";
+       toast.innerText = message;
+       document.body.appendChild(toast);
+       setTimeout(function() {
+         document.body.removeChild(toast);
+       }, 3000);
+     }
+   };
+ })();
  

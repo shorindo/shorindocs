@@ -15,6 +15,9 @@ public class ApplicationContextConfig {
     @JacksonXmlProperty(localName = "namespace", isAttribute = true)
     private String namespace;
 
+    @JacksonXmlProperty(localName = "icon", isAttribute = true)
+    private String icon;
+
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "property")
     private List<Property> properties = new ArrayList<>();
@@ -33,6 +36,10 @@ public class ApplicationContextConfig {
 
     public String getNamespace() {
         return namespace;
+    }
+
+    public String getIcon() {
+        return icon;
     }
 
     public List<Property> getProperties() {

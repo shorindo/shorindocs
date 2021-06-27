@@ -306,8 +306,10 @@ public class RepositoryServiceImpl implements RepositoryService, TxEventListener
     }
 
     private Connection getConnection() throws SQLException {
+        long st = System.currentTimeMillis();
         Connection conn = dataSource.getConnection();
-        LOG.debug(DBMS_1105, Integer.toHexString(conn.toString().hashCode()));
+        long et = System.currentTimeMillis() - st;
+        LOG.debug(DBMS_1105, Integer.toHexString(conn.toString().hashCode()), et);
         return conn;
     }
 

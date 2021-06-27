@@ -55,6 +55,7 @@ public class ApplicationContext {
     private static final ActionLogger LOG = ActionLogger.getLogger(ApplicationContext.class);
     private static ApplicationContext rootContext;
     private String namespace;
+    private String icon;
     private Properties props = new Properties();
     private Map<String,ApplicationContext> pluginMap = new ConcurrentHashMap<>();
     private Map<Class<?>,Class<?>> interfaceMap = new ConcurrentHashMap<>();
@@ -68,6 +69,14 @@ public class ApplicationContext {
 
     public static ApplicationContext getPlugin(String namespace) {
         return rootContext.pluginMap.get(namespace);
+    }
+
+    public static String getIcon(String namespace) {
+        ApplicationContext context = getPlugin(namespace);
+        if (context != null && context.icon != null) {
+            return context.icon;
+        }
+        return "img/docs-icon.png";
     }
 
     public static void init(InputStream is) throws IOException {
@@ -88,6 +97,8 @@ public class ApplicationContext {
         if (namespace != null && "".equals(namespace)) {
             rootContext.pluginMap.put(namespace, this);
         }
+
+        this.icon = config.getIcon();
 
         for (Include include : config.getIncludes()) {
             LOG.debug("include({0})", include.getFile());
@@ -275,6 +286,7 @@ public class ApplicationContext {
                 try {
                     return entry.getValue().getBeanPrivate(itfc);
                 } catch (BeanNotFoundException ex) {
+                    //ex.printStackTrace();
                 }
             }
         }
@@ -334,6 +346,7 @@ public class ApplicationContext {
                 throw new BeanNotFoundException("No implementation defined for '" + itfc + "'.");
             }
         } catch (Exception e) {
+            //e.printStackTrace();
             throw new BeanNotFoundException(e);
         }
     }

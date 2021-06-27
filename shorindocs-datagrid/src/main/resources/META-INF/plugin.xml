@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<config namespace="datagrid">
+<config namespace="datagrid" icon="datagrid/img/datagrid.png">
   <bean name="com.shorindo.docs.datagrid.DataGridController" />
   <bean name="com.shorindo.docs.datagrid.DataGridService"
         class="com.shorindo.docs.datagrid.DataGridServiceImpl" />

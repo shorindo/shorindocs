@@ -40,7 +40,8 @@
          */
         var urlParams = {
             'embed':'1',
-            'noExitBtn':'1'
+            'noExitBtn':'1',
+            'drafts':"1"
         };
 
         // Forces CDN caches by passing URL parameters via URL hash
@@ -448,6 +449,9 @@ window.addEventListener('load', function()
     DocsFile.prototype.getTitle = function(){
         return this.desc.title || '';
     };
+    DocsFile.prototype.saveDraft = function(sameName, success, error) {
+        console.log("saveDraft")
+    };
     DocsFile.prototype.save = function(sameName, success, error) {
         this.setModified(false);
         var rpc = new XMLHttpRequest();
@@ -463,7 +467,8 @@ window.addEventListener('load', function()
         rpc.open("POST", location);
         rpc.setRequestHeader("Content-Type" , "application/json");
         rpc.send(JSON.stringify({
-            "method":"save",
+            //"method":"save",
+            "method":"commit",
             "id":new Date().getTime(),
             "param": {
                 "title":this.getTitle(),
@@ -482,6 +487,7 @@ window.addEventListener('load', function()
     checkAllLoaded();
     Draw.loadPlugin(function(ui) {
         window.ui = ui;
+
         ui.editor.autosave = false;
         ui.actions.get('rename').visible = true;
         var rpc = new XMLHttpRequest();
@@ -494,10 +500,22 @@ window.addEventListener('load', function()
                     var file = new DocsFile(ui, data, {
                         title:title
                     });
-//                    file.isEditable = function() {
-//                        return false;
-//                    };
+                    file.isEditable = function() {
+                        return json.result.editable;
+                    };
                     ui.loadFile("E", true, file);
+
+                    mxResources.parse('edit=編集');
+                    ui.actions.addAction('edit', edit, true);
+
+                    var menu = ui.menus.get('file');
+                    if (menu != null) {
+                        var oldFunct = menu.funct;
+                        menu.funct = function(menu, parent) {
+                           oldFunct.apply(this, arguments);
+                           ui.menus.addMenuItems(menu, ['-', 'edit'], parent);
+                       };
+                    }
                 } else {
                     console.error("status = " + rpc.status);
                 }
@@ -507,10 +525,40 @@ window.addEventListener('load', function()
         rpc.setRequestHeader("Content-Type" , "application/json");
         rpc.send(JSON.stringify({
             "method":"load",
+            //"method":"edit",
             "id":new Date().getTime(),
             "param":null
         }));
     });
+
+    function edit() {
+        var rpc = new XMLHttpRequest();
+        rpc.onreadystatechange = function() {
+            if (rpc.readyState == 4) {
+                if (rpc.status == 200) {
+                    var json = JSON.parse(rpc.responseText);
+                    var title = json.result.title;
+                    var data = json.result.data ? json.result.data : ui.emptyDiagramXml;
+                    var file = new DocsFile(ui, data, {
+                        title:title
+                    });
+                    file.isEditable = function() {
+                        return json.result.editable;
+                    };
+                    ui.loadFile("E", true, file);
+                } else {
+                    console.error("status = " + rpc.status);
+                }
+            }
+        };
+        rpc.open("POST", location);
+        rpc.setRequestHeader("Content-Type" , "application/json");
+        rpc.send(JSON.stringify({
+            "method":"edit",
+            "id":new Date().getTime(),
+            "param":null
+        }));
+    }
 });
 </script>
 </body>

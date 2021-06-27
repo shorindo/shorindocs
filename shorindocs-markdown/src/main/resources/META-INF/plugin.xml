@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<config namespace="markdown">
+<config namespace="markdown" icon="markdown/img/markdown-icon.png">
     <bean name="com.shorindo.docs.markdown.MarkdownService" class="com.shorindo.docs.markdown.MarkdownServiceImpl" />
     <bean name="com.shorindo.docs.markdown.MarkdownController" />
 </config>
